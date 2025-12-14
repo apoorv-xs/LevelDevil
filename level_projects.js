@@ -639,7 +639,7 @@ scene("projects", () => {
     guy.onCollideUpdate("project_door", (d) => {
         infoText.text = d.projectData.title.toUpperCase() + "\n[ENTER] TO VIEW";
         // Also make doors responsive
-        if (isKeyPressed("enter") || isKeyDown("enter")) {
+        if (isKeyPressed("enter")) {
             shake(5);
             infoText.text = "OPENING LINK...";
             console.log("Opening: " + d.projectData.link);
@@ -654,7 +654,7 @@ scene("projects", () => {
 
     guy.onCollideUpdate("back_gate", () => {
         infoText.text = "BACK TO INTRO\n[ENTER]";
-        if (isKeyPressed("up") || isKeyDown("enter")) {
+        if (isKeyPressed("up") || isKeyPressed("enter")) {
             window.enterGate(guy, backGate, "intro");
         }
     });
