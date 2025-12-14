@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level Devil Portfolio</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script src="https://unpkg.com/kaboom@3000.0.1/dist/kaboom.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Courier+Prime&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* --- HYBRID START SCREEN (User's "Older Version") --- */
+        #start-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            cursor: pointer;
+            transition: opacity 0.5s;
+            user-select: none;
+        }
+
+        h1 {
+            color: #fce566;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 4px 4px #000;
+            text-align: center;
+        }
+
+        p {
+            color: #fff;
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.5rem;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* --- CANVAS (Transition & Game) --- */
+        #game-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 1. HTML START OVERLAY -->
+    <div id="start-overlay">
+        <h1>START GAME</h1>
+        <p>[ CLICK TO START ]</p>
+    </div>
+
+    <!-- 2. KABOOM CONTAINER -->
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+    </div>
+
+    <!-- DEBUG: ERROR HANDLER -->
+    <script>
+        window.onerror = function (msg, url, lineNo, columnNo, error) {
+            const div = document.createElement("div");
+            div.style.position = "fixed";
+            div.style.top = "0";
+            div.style.left = "0";
+            div.style.width = "100%";
+            div.style.backgroundColor = "red";
+            div.style.color = "white";
+            div.style.padding = "20px";
+            div.style.zIndex = "999999";
+            div.style.fontSize = "20px";
+            div.style.fontFamily = "monospace";
+            div.innerText = "ERROR: " + msg + "\nLine: " + lineNo + "\nCol: " + columnNo;
+            document.body.appendChild(div);
+            return false;
+        };
+    </script>
+
+    <script src="init.js"></script>
+    <script src="player.js"></script>
+    <script src="traps.js"></script>
+    <script src="level_intro.js"></script>
+    <script src="level_about.js"></script>
+    <script src="level_projects.js"></script>
+    <script src="level_contact.js"></script>
+    <script>
+        // --- SCENES ---
+
+
+        // --- SCENES ---
+
+
+
+        // --- INIT ---
+        scene("empty", () => { });
+        scene("empty", () => { });
+        go("empty");
+
+    </script>
+</body>
+
+</html>

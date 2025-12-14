@@ -1,0 +1,19 @@
+{
+  "name": "level-devil-portfolio",
+  "version": "1.0.0",
+  "description": "Interactive Portfolio Game",
+  "scripts": {
+    "dev": "vite",
+    "build": "echo 'No build step required for static legacy scripts' && mkdir -p dist && cp *.html *.js *.css *.pdf *.png dist/ 2>/dev/null || :",
+    "start": "vite preview"
+  },
+  "keywords": [],
+  "author": "Apoorv",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "kaboom": "^3000.0.1"
+  }
+}
