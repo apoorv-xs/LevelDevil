@@ -4,7 +4,7 @@
   "description": "Interactive Portfolio Game",
   "scripts": {
     "dev": "vite",
-    "build": "echo 'No build step required for static legacy scripts' && mkdir -p dist && cp *.html *.js *.css *.pdf *.png dist/ 2>/dev/null || :",
+    "build": "echo 'Building...' && mkdir -p dist && cp *.html *.js *.png *.pdf dist/",
     "start": "vite preview"
   },
   "keywords": [],
