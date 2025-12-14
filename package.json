@@ -4,7 +4,7 @@
   "description": "Interactive Portfolio Game",
   "scripts": {
     "dev": "vite",
-    "build": "echo 'Building...' && mkdir -p dist && cp *.html *.js *.png *.pdf dist/",
+    "build": "node build.js",
     "start": "vite preview"
   },
   "keywords": [],
