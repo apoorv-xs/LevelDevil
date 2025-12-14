@@ -11,7 +11,8 @@ try {
     console.log("INT: Config set", CANVAS_WIDTH, CANVAS_HEIGHT);
 
     // --- KABOOM SETUP ---
-    kaboom({
+    // --- KABOOM SETUP ---
+    const k = kaboom({
         width: CANVAS_WIDTH,
         height: CANVAS_HEIGHT,
         background: [0, 0, 0, 0], // TRANSPARENT BACKGROUND
@@ -19,8 +20,58 @@ try {
         root: document.getElementById("game-container"),
         stretch: false,
         letterbox: false,
-        // debug: true // Helper for seeing physics boxes if needed
+        global: true, // EXPLICIT GLOBAL
+        // debug: true 
     });
+
+    // FORCE GLOBALS (Azure Safety Net)
+    window.scene = k.scene;
+    window.go = k.go;
+    window.add = k.add;
+    window.pos = k.pos;
+    window.rect = k.rect;
+    window.color = k.color;
+    window.area = k.area;
+    window.body = k.body;
+    window.anchor = k.anchor;
+    window.z = k.z;
+    window.text = k.text;
+    window.rotate = k.rotate;
+    window.scale = k.scale;
+    window.opacity = k.opacity;
+    window.outline = k.outline;
+    window.move = k.move;
+    window.lerp = k.lerp;
+    window.dt = k.dt;
+    window.rand = k.rand;
+    window.vec2 = k.vec2;
+    window.rgb = k.rgb;
+    window.time = k.time;
+    window.wait = k.wait;
+    window.tween = k.tween;
+    window.easings = k.easings;
+    window.camPos = k.camPos;
+    window.width = k.width;
+    window.height = k.height;
+    window.onUpdate = k.onUpdate;
+    window.onDraw = k.onDraw;
+    window.onCollide = k.onCollide;
+    window.isKeyPressed = k.isKeyPressed;
+    window.isKeyDown = k.isKeyDown;
+    window.destroy = k.destroy;
+    window.drawRect = k.drawRect;
+    window.drawCircle = k.drawCircle;
+    window.drawPolygon = k.drawPolygon;
+    window.setGravity = k.setGravity;
+    window.circle = k.circle;
+    window.lifespan = k.lifespan;
+    window.loop = k.loop;
+    window.Rect = k.Rect;
+    window.Polygon = k.Polygon;
+    window.UP = k.UP;
+    window.DOWN = k.DOWN;
+    window.LEFT = k.LEFT;
+    window.RIGHT = k.RIGHT;
 
     console.log("INT: Kaboom initialized");
 
