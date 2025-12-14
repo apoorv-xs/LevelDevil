@@ -371,6 +371,16 @@ try {
         document.title = originalTitle;
     });
 
+    // --- STARTUP (Moved from index.html) ---
+    // Create empty scene to wait for user interaction
+    if (window.scene) {
+        console.log("INT: Initializing Empty Scene");
+        window.scene("empty", () => { });
+        window.go("empty");
+    } else {
+        console.error("INT: Critical - Scene not globally defined!");
+    }
+
 } catch (e) {
     console.error("INT: Critical Error in init.js", e);
     alert("INT: Init Error: " + e.message);
