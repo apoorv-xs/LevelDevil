@@ -80,6 +80,9 @@ function createPlayer(x, y) {
         // 1. Movement & Input
         let isMoving = false;
 
+        // Safety: Prevent sticky keys running when window loses focus
+        if (!document.hasFocus()) return;
+
         // Note: isKeyDown/isKeyPressed are global Kaboom functions
         if (isKeyDown("left") && guy.pos.x > 10) {
             guy.move(-SPEED, 0);

@@ -23,6 +23,7 @@ try {
         global: true, // EXPLICIT GLOBAL
         // debug: true 
     });
+    window.k = k; // Expose K for pausing
 
     // FORCE GLOBALS (Azure Safety Net)
     window.scene = k.scene;
@@ -365,10 +366,14 @@ try {
 
     window.addEventListener("blur", () => {
         document.title = "💀 Don't give up yet!";
+        // Pause game to prevent physics explosions from large dt
+        if (window.k) window.k.debug.paused = true;
     });
 
     window.addEventListener("focus", () => {
         document.title = originalTitle;
+        // Resume game
+        if (window.k) window.k.debug.paused = false;
     });
 
     // --- STARTUP (Moved from index.html) ---

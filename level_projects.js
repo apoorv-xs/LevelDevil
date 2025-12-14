@@ -44,27 +44,33 @@ scene("projects", () => {
 
     // --- CLOUDS ---
     function addWideClouds() {
-        const cloudCount = 15;
+        const cloudCount = 50;
+        const cloudLimit = 4000; // Limit to playable area approx
         for (let i = 0; i < cloudCount; i++) {
-            const x = rand(0, worldWidth);
-            const y = rand(height() * 0.05, height() * 0.4);
-            const speed = rand(10, 30);
+            const x = rand(0, cloudLimit);
+            // Spawn high up: groundY - 400 is roughly above the first jump pads.
+            // groundY - 2000 is very high.
+            // This leaves the ground floor clear.
+            const y = rand(groundY - 2000, groundY - 400);
+            const speed = rand(5, 40);
+            const scaleFactor = rand(0.5, 1.5);
 
             const cloud = add([
                 pos(x, y),
-                rect(60, 20),
+                rect(60 * scaleFactor, 20 * scaleFactor),
                 color(255, 255, 255),
-                opacity(0.8),
+                opacity(rand(0.3, 0.7)),
                 z(0.5),
                 "cloud"
             ]);
-            cloud.add([rect(30, 20), pos(15, -15), color(255, 255, 255)]);
-            cloud.add([rect(20, 10), pos(40, 5), color(255, 255, 255)]);
+            cloud.add([rect(30 * scaleFactor, 20 * scaleFactor), pos(15 * scaleFactor, -15 * scaleFactor), color(255, 255, 255)]);
+            cloud.add([rect(20 * scaleFactor, 10 * scaleFactor), pos(40 * scaleFactor, 5 * scaleFactor), color(255, 255, 255)]);
 
             cloud.onUpdate(() => {
                 cloud.move(-speed, 0);
-                if (cloud.pos.x < -100) {
-                    cloud.pos.x = worldWidth + 100;
+                if (cloud.pos.x < -200) {
+                    cloud.pos.x = cloudLimit; // Recycle closer
+                    cloud.pos.y = rand(groundY - 2000, groundY - 400);
                 }
             });
         }
@@ -640,10 +646,10 @@ scene("projects", () => {
         infoText.text = d.projectData.title.toUpperCase() + "\n[ENTER] TO VIEW";
         // Also make doors responsive
         if (isKeyPressed("enter")) {
-            shake(5);
-            infoText.text = "OPENING LINK...";
-            console.log("Opening: " + d.projectData.link);
-            window.open(d.projectData.link, "_blank");
+            // Simple open, no effects
+            setTimeout(() => {
+                window.open(d.projectData.link, "_blank");
+            }, 50);
         }
     });
 
