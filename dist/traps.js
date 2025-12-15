@@ -63,8 +63,11 @@ window.createLightningCloud = function (startX, startY, player, floorHeight, onD
                     trapCloud.pos.x = camX + screenHalfW + 200;
                 }
 
-                // Only hunt if NOT in Recruiter Mode
-                if (!window.RECRUITER_MODE && Math.abs(player.pos.x - trapCloud.pos.x) < 150) {
+                // Only hunt if NOT in Recruiter Mode AND Player is BELOW the cloud (y is higher)
+                if (!window.RECRUITER_MODE &&
+                    Math.abs(player.pos.x - trapCloud.pos.x) < 150 &&
+                    player.pos.y > trapCloud.pos.y // Ignore if player is above
+                ) {
                     trapCloud.state = "hunt";
                 }
                 break;
