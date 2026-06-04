@@ -482,7 +482,10 @@ scene("projects", () => {
             doorColor: rgb(50, 205, 50), // Lime Green
             icon: "globe",
             desc: "Personal Website",
-            link: "https://red-meadow-01ad20b00.2.azurestaticapps.net/"
+            links: [
+                { name: "Live Website", url: "https://red-meadow-01ad20b00.2.azurestaticapps.net/" },
+                { name: "GitHub Repository", url: "https://github.com/apoorv-xs/Portfolio" }
+            ]
         }
     ];
 
