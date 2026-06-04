@@ -29,7 +29,7 @@ function createPlayer(x, y) {
         z(-1) // Behind/Below player
     ]);
 
-    const skin = color(44, 44, 44);
+    const skin = color(220, 220, 230); // Cybernetic silver
 
     // Body
     const torso = guy.add([

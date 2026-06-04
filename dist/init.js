@@ -291,7 +291,8 @@ try {
                 pos(i * segmentW, 0),
                 anchor("botleft"),
                 color(farHillColor),
-                opacity(0.7)
+                opacity(0.7),
+                z(0.2)
             ]);
             // Neon cyan line edge
             farHills.add([
@@ -299,7 +300,8 @@ try {
                 pos(i * segmentW, -240),
                 anchor("botleft"),
                 color(0, 240, 255),
-                opacity(0.75)
+                opacity(0.75),
+                z(0.2)
             ]);
 
             // Near hill
@@ -308,7 +310,8 @@ try {
                 pos(i * segmentW + segmentW * 0.5, 0),
                 anchor("botleft"),
                 color(nearHillColor),
-                opacity(0.85)
+                opacity(0.85),
+                z(0.3)
             ]);
             // Neon magenta line edge
             nearHills.add([
@@ -316,7 +319,8 @@ try {
                 pos(i * segmentW + segmentW * 0.5, -140),
                 anchor("botleft"),
                 color(255, 0, 127),
-                opacity(0.85)
+                opacity(0.85),
+                z(0.3)
             ]);
         }
 
