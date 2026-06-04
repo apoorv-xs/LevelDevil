@@ -68,41 +68,30 @@ scene("contact", () => {
     const bridgeCount = 4; // User requested +1 platform & wider lava
     const lavaSectionWidth = (gapSize * (bridgeCount + 1)) + (bridgeWidth * bridgeCount);
 
-    // 1. Safe Zone (Start)
-    add([
-        rect(safeStartWidth, safeFloorHeight),
-        pos(0, safeGroundY),
-        color(C_FLOOR),
-        z(1),
-        area(),
-        body({ isStatic: true }),
-        "floor"
-    ]);
+    // --- VECTOR SILHOUETTE SPLIT PLATFORMS ---
+    // 1. Safe Zone Start (0 to 400)
+    window.addVectorPlatform(0, safeGroundY, 400, safeFloorHeight, rgb(0, 240, 255), ["floor"]);
 
     // --- BACK GATE (Start) ---
-    const backGateX = 100;
     const backGate = add([
-        pos(backGateX, safeGroundY),
+        pos(100, safeGroundY),
         area({ shape: new Rect(vec2(0, -40), 60, 80) }),
         body({ isStatic: true }),
         anchor("bot"),
         z(5),
-        "gate"
+        "back_gate"
     ]);
 
-    // Gate Visuals (Silver Retro)
-    backGate.add([rect(60, 50), pos(0, 0), anchor("bot"), color(C_FLOOR), z(6)]);
-    backGate.add([rect(60, 10), pos(0, -50), anchor("bot"), color(C_FLOOR), z(6)]);
-    backGate.add([rect(50, 6), pos(0, -60), anchor("bot"), color(C_FLOOR), z(6)]);
-    backGate.add([rect(30, 4), pos(0, -66), anchor("bot"), color(C_FLOOR), z(6)]);
-
-    // Inner Silver
+    const C_GATE_BASE = rgb(6, 6, 12);
+    backGate.add([rect(60, 50), pos(0, 0), anchor("bot"), color(C_GATE_BASE), z(6)]);
+    backGate.add([rect(60, 10), pos(0, -50), anchor("bot"), color(C_GATE_BASE), z(6)]);
+    backGate.add([rect(50, 6), pos(0, -60), anchor("bot"), color(C_GATE_BASE), z(6)]);
+    backGate.add([rect(30, 4), pos(0, -66), anchor("bot"), color(C_GATE_BASE), z(6)]);
     backGate.add([rect(52, 50), pos(0, 0), anchor("bot"), color(180, 180, 180), z(7)]);
     backGate.add([rect(52, 10), pos(0, -50), anchor("bot"), color(180, 180, 180), z(7)]);
     backGate.add([rect(42, 6), pos(0, -60), anchor("bot"), color(180, 180, 180), z(7)]);
     backGate.add([rect(22, 4), pos(0, -66), anchor("bot"), color(180, 180, 180), z(7)]);
 
-    // Label
     backGate.add([
         text("BACK", { size: 10, font: "'Press Start 2P'", align: "center" }),
         pos(0, -90),
@@ -111,12 +100,8 @@ scene("contact", () => {
         z(10)
     ]);
 
-
-
-    // Gate Interaction
     backGate.onUpdate(() => {
         if (!guy.exists()) return;
-
         if (guy.isColliding(backGate)) {
             if (isKeyPressed("up") || isKeyPressed("enter") || isKeyPressed("w")) {
                 window.enterGate(guy, backGate, "intro");
@@ -124,31 +109,27 @@ scene("contact", () => {
         }
     });
 
+    // 2. Chasm Floating Platform Stepping Stones (400 to 2000)
+    const plat1 = window.addVectorPlatform(650, safeGroundY - 45, 120, 20, rgb(255, 0, 127), ["floor"]);
+    const plat2 = window.addVectorPlatform(1050, safeGroundY - 80, 120, 20, rgb(255, 0, 127), ["floor"]);
+    const plat3 = window.addVectorPlatform(1450, safeGroundY - 60, 120, 20, rgb(255, 0, 127), ["floor"]);
+    const plat4 = window.addVectorPlatform(1850, safeGroundY - 30, 120, 20, rgb(255, 0, 127), ["floor"]);
 
+    // 3. Ending Safe Zone (2000 onwards)
+    const finishX = 2000;
+    worldWidth = finishX + 1100;
+    window.addVectorPlatform(finishX, safeGroundY, 8000, safeFloorHeight, rgb(0, 240, 255), ["floor"]);
 
-    // 2. REALISTIC LAVA (The Danger Zone)
-    const lavaX = safeStartWidth;
-    const lavaY = groundY;
-    const lavaW = lavaSectionWidth;
-    const lavaH = floorHeight;
+    // --- PERSPECTIVE GRID FLOOR ---
+    if (window.addPerspectiveGrid) {
+        window.addPerspectiveGrid();
+    }
 
-    // Base Lava Object
-    const lava = add([
-        rect(lavaW, lavaH),
-        pos(lavaX, lavaY),
-        color(C_LAVA_BASE),
-        opacity(0),
-        z(1),
-        area(),
-        "danger"
-    ]);
-
-    // --- BRIDGE (Recruiter Exclusive) ---
-    // A digital bridge that only exists in Recruiter Mode (Delayed)
+    // --- RECRUITER DIGITAL BRIDGE (Recruiter Mode Shortcut) ---
     const recruiterBridge = add([
-        rect(lavaW, 20),
-        pos(lavaX, safeGroundY),
-        color(0, 255, 255), // Cyan High-Tech Look
+        rect(finishX - 400, 20),
+        pos(400, safeGroundY),
+        color(0, 255, 255),
         area(),
         body({ isStatic: true }),
         z(2),
@@ -157,322 +138,51 @@ scene("contact", () => {
     ]);
 
     recruiterBridge.onUpdate(() => {
-        // Use Delayed Helper
         if (window.isRecruiterActive()) {
-            recruiterBridge.opacity = 0.6; // Holographic look
-            if (recruiterBridge.pos.y !== safeGroundY) {
-                recruiterBridge.pos.y = safeGroundY;
-            }
+            recruiterBridge.opacity = 0.6;
+            if (recruiterBridge.pos.y !== safeGroundY) recruiterBridge.pos.y = safeGroundY;
         } else {
             recruiterBridge.opacity = 0;
-            recruiterBridge.pos.y = -9999; // Disable collision
+            recruiterBridge.pos.y = -9999;
         }
     });
 
-    // VISUALS
-    const particles = [];
-    lava.onUpdate(() => {
-        if (Math.abs(lavaX - camPos().x) < 1000) {
-            if (rand(0, 1) < 0.1) {
-                particles.push({ x: rand(0, lavaW), y: rand(0, lavaH), vy: rand(20, 50), life: 0, maxLife: rand(1, 2), type: "ember" });
-            }
-            if (rand(0, 1) < 0.05) {
-                particles.push({ x: rand(0, lavaW), y: 0, vy: 0, radius: 0, life: 0, maxLife: rand(1, 2), type: "bubble" });
-            }
-            for (let i = particles.length - 1; i >= 0; i--) {
-                let p = particles[i];
-                p.life += dt();
-                if (p.life > p.maxLife) { particles.splice(i, 1); continue; }
-                if (p.type === "ember") { p.y -= p.vy * dt(); }
-                else if (p.type === "bubble") { if (p.life < p.maxLife * 0.8) { p.radius += dt() * 10; } }
-            }
-        }
-    });
-
-    lava.onDraw(() => {
-        if (Math.abs(lavaX - camPos().x) > 1500) return;
-
-        drawRect({ width: lavaW, height: lavaH, color: C_LAVA_BASE });
-        const t = time() * 4;
-        const waveHeight = 10;
-        const segments = 20;
-        const segmentWidth = lavaW / segments;
-
-        let pts = [vec2(0, lavaH)];
-        for (let i = 0; i <= segments; i++) {
-            const x = i * segmentWidth;
-            const y = Math.sin(t + i * 0.5) * waveHeight * 0.5;
-            pts.push(vec2(x, y + 10));
-        }
-        pts.push(vec2(lavaW, lavaH));
-        drawPolygon({ pts: pts, color: C_LAVA_SURFACE });
-
-        // Particles
-        particles.forEach(p => {
-            if (p.type === "ember") {
-                drawRect({ pos: vec2(p.x, p.y), width: 4, height: 4, color: rgb(255, 200, 50), opacity: 1 - (p.life / p.maxLife) });
-            } else if (p.type === "bubble") {
-                const myY = Math.sin(t + (p.x / segmentWidth) * 0.5) * waveHeight * 0.5 + 10;
-                drawCircle({ pos: vec2(p.x, myY), radius: p.radius, color: C_LAVA_BUBBLE, opacity: 0.8 });
-            }
-        });
-    });
-
-    // --- FLOATING PLATFORMS (Normal Path) ---
-    // These are always visible (or maybe visible for everyone?)
-    // Yes, users said "normal people have to jump and go", so these must exist.
-    const platY = groundY - 40;
-    const gapCenters = [];
-
-    for (let i = 0; i < bridgeCount; i++) {
-        const px = safeStartWidth + gapSize + (i * (bridgeWidth + gapSize));
-        add([
-            rect(bridgeWidth, 20),
-            pos(px, platY),
-            color(C_FLOOR),
-            area(),
-            body({ isStatic: true }),
-            z(2),
-            "floor"
-        ]);
-        gapCenters.push(px - gapSize / 2);
-    }
-    const endSafeX = lavaX + lavaW;
-    gapCenters.push(endSafeX - gapSize / 2);
-
-    // --- FIREBALLS ---
-    function spawnFireball(x, y) {
-        const speed = rand(550, 700);
-        const fb = add([
-            circle(12),
-            pos(x, y + 20),
-            anchor("center"),
-            color(255, 220, 50),
-            area({ scale: 0.7 }),
-            z(3),
-            "danger",
-            "fireball",
-            { vy: -speed }
-        ]);
-        fb.add([circle(16), color(255, 80, 0), opacity(0.5), z(-1), anchor("center")]);
-
-        fb.onUpdate(() => {
-            fb.vy += 1200 * dt();
-            fb.pos.y += fb.vy * dt();
-            if (rand() < 0.3) {
-                add([
-                    rect(4, 4), pos(fb.pos), color(255, 100, 0), anchor("center"),
-                    opacity(1), lifespan(0.3, { fade: 0.3 }),
-                    move(rand(0, 360), 20), z(2)
-                ]);
-            }
-            if (fb.vy > 0 && fb.pos.y > y + 50) destroy(fb);
-        });
+    // --- INITIAL GRAVITATIONAL VORTEX PULL ---
+    if (window.addFluidVortex) {
+        // Active whirlpool below Platform 2
+        window.addFluidVortex("contact_vortex", 1110, safeGroundY + 120, 230, 280);
     }
 
-    loop(1.5, () => {
-        gapCenters.forEach((cx) => {
-            wait(rand(0, 0.8), () => {
-                if (Math.abs(cx - camPos().x) < 800) {
-                    spawnFireball(cx, lavaY);
+    // --- SHIFTING VORTEX TRAP LOGIC ---
+    let vortexShifted = false;
+    guy.onUpdate(() => {
+        if (!vortexShifted && guy.pos.x > 1000) {
+            vortexShifted = true;
+            window.showFluidWarning("WARNING: CORE VORTEX COLLAPSE!");
+            wait(0.75, () => {
+                if (window.addFluidVortex) {
+                    // Shift suction center to Platform 3
+                    window.clearFluidVortexes();
+                    window.addFluidVortex("contact_vortex", 1510, safeGroundY + 120, 260, 320);
+                    if (window.SFX && window.SFX.playTroll) window.SFX.playTroll();
                 }
             });
-        });
-    });
-
-
-    // --- 3. THE MOUNTAIN ---
-
-    // A. "Flat surface bfr the volcano starts"
-    // DOWNSCALED from 400
-    const flatBaseWidth = 150;
-    add([
-        rect(flatBaseWidth, safeFloorHeight),
-        pos(endSafeX, safeGroundY),
-        color(C_FLOOR),
-        area(),
-        body({ isStatic: true }),
-        z(1),
-        "floor"
-    ]);
-
-
-
-    // B. The Volcano Geometry
-    // FIX 1: OVERLAP
-    const overlap = 20; // pull it back slightly to cover gap
-    const mountainStartX = endSafeX + flatBaseWidth - overlap;
-
-    // DOWNSCALED & FLATTENED
-    const mHeight = 220; // Lower
-    const mSlopeW = 300; // Wider slope = Less steep
-    const mTopW = 150;
-    const pitMargin = 30;
-    const pitDepth = 40;
-    const pitWidth = mTopW - (pitMargin * 2);
-
-    const polyPts = [
-        vec2(0, 0),
-        vec2(mSlopeW, -mHeight),
-        vec2(mSlopeW + pitMargin, -mHeight),
-        vec2(mSlopeW + pitMargin, -mHeight + pitDepth),
-        vec2(mSlopeW + pitMargin + pitWidth, -mHeight + pitDepth),
-        vec2(mSlopeW + pitMargin + pitWidth, -mHeight),
-        vec2(mSlopeW + mTopW, -mHeight),
-        vec2(mSlopeW + mTopW + mSlopeW, 0),
-
-        vec2(mSlopeW + mTopW + mSlopeW, 350), // Ensure bottom covers
-        vec2(0, 350)
-    ];
-
-    const mountain = add([
-        pos(mountainStartX, safeGroundY),
-        area({ shape: new Polygon(polyPts) }),
-        body({ isStatic: true }),
-        color(C_FLOOR),
-        z(1),
-        "floor"
-    ]);
-
-    // C. Visuals - Gradient Corrected
-    mountain.onDraw(() => {
-        // Base
-        drawPolygon({ pts: polyPts, color: C_FLOOR });
-
-        // "Top Cap"
-        const halfSlope = mSlopeW * 0.5;
-        const halfH = mHeight * 0.5;
-
-        const capPts = [
-            vec2(halfSlope, -halfH),
-            vec2(mSlopeW, -mHeight),
-            vec2(mSlopeW + mTopW, -mHeight),
-            vec2(mSlopeW + mTopW + (mSlopeW * 0.5), -halfH)
-        ];
-
-        drawPolygon({
-            pts: capPts,
-            color: rgb(255, 255, 255), // Snow? No, just lighter brown
-            opacity: 0.2
-        });
-
-        // "Tip Cap"
-        const tipSlope = mSlopeW * 0.8;
-        const tipH = mHeight * 0.8;
-        const tipPts = [
-            vec2(tipSlope, -tipH),
-            vec2(mSlopeW, -mHeight),
-            vec2(mSlopeW + mTopW, -mHeight),
-            vec2(mSlopeW + mTopW + (mSlopeW * 0.2), -tipH)
-        ];
-        drawPolygon({
-            pts: tipPts,
-            color: rgb(0, 0, 0),
-            opacity: 0.3
-        });
-    });
-
-    // D. "Lava Pit at Structure"
-    const pitX = mountainStartX + mSlopeW + pitMargin;
-    const pitY = safeGroundY - mHeight - 10; // Raised ABOVE rim to ensure contact
-
-    add([
-        rect(pitWidth, pitDepth),
-        pos(pitX, pitY),
-        color(C_LAVA_BASE),
-        opacity(0.8),
-        area(),
-        z(2),
-        "danger"
-    ]);
-
-    loop(0.5, () => {
-        const px = pitX + rand(0, pitWidth);
-        add([
-            circle(rand(2, 5)),
-            pos(px, pitY + rand(0, 10)),
-            color(C_LAVA_BUBBLE),
-            move(270, 20),
-            lifespan(0.5, { fade: 0.5 }),
-            z(2)
-        ]);
-    });
-
-
-    // Final Flat Area after mountain
-    const backSlopeEnd = mountainStartX + mSlopeW + mTopW + mSlopeW;
-
-    // --- CUTTERS (Moving Chainsaws) ---
-    function createCutter(x, y, range = 100, speed = 2) {
-        // Center pivot for movement
-        const pivot = add([
-            pos(x, y),
-            z(2)
-        ]);
-
-        // The actual spinning blade
-        const cutter = pivot.add([
-            circle(25), // Smaller (was 35)
-            anchor("center"),
-            color(C_FLOOR), // Camouflage
-            area({ scale: 0.9 }),
-            rotate(0),
-            "danger",
-            "cutter"
-        ]);
-
-        // Visual Teeth (Chainsaw style - dense)
-        const teethCount = 16;
-        for (let i = 0; i < teethCount; i++) {
-            cutter.add([
-                rect(12, 12),
-                pos(0, -25), // Adjusted for smaller circle
-                anchor("center"),
-                color(140, 90, 20), // Slightly darker for contrast
-                rotate(i * (360 / teethCount))
-            ]);
         }
+    });
 
-        // Center Bolt
-        cutter.add([circle(12), color(80, 50, 10), anchor("center")]);
-
-        // 1. PIN to PIVOT (Already done by hierarchy)
-
-        // 2. SPIN
-        cutter.onUpdate(() => {
-            cutter.angle += dt() * 800;
-        });
-
-        // 3. PATROL (Move Pivot)
-        let t = 0;
-        pivot.onUpdate(() => {
-            t += dt() * speed;
-            pivot.pos.x = x + Math.sin(t) * range;
-        });
-    }
-
-    // Place Cutters: Half-buried (Lower Y)
-    // safeGroundY is the surface. We want circle center below it.
-    const cutterY = safeGroundY;
-    const backEnd = mountainStartX + mSlopeW + mTopW + mSlopeW;
-
-    // Moves closer to the slope (Leftward shift)
-    createCutter(backEnd + 150, cutterY, 80, 2);
-    createCutter(backEnd + 450, cutterY, 100, 3);
-
-    // Final Flat Area & Buffer
-    const finishX = backEnd + 700;
-    worldWidth = finishX + 900;
-
-    add([
-        rect(5000, safeFloorHeight + 800),
-        pos(backSlopeEnd - 20, safeGroundY),
-        color(C_FLOOR),
-        area(),
-        body({ isStatic: true }),
-        z(1),
-        "floor"
-    ]);
+    // --- VOID DEATH LOGIC ---
+    guy.onUpdate(() => {
+        if (guy.pos.y > safeGroundY + 180) {
+            if (window.isRecruiterActive()) {
+                guy.pos.y = safeGroundY - 200;
+                guy.vel.y = 0;
+                return;
+            }
+            if (window.SFX && window.SFX.playDeath) window.SFX.playDeath();
+            window.DEATH_COUNT = (window.DEATH_COUNT || 0) + 1;
+            go("contact");
+        }
+    });
 
 
 
@@ -915,16 +625,7 @@ scene("contact", () => {
     // BUT! I see "scene('contact')" usually implies end of journey.
     // Let's stick to decorations.
 
-    // Add neon cyan outlines to all solid static floors
-    get("floor").forEach((fl) => {
-        if (fl.opacity === 0.6 || !fl.width) return;
-        add([
-            rect(fl.width, 4),
-            pos(fl.pos.x, fl.pos.y),
-            color(0, 240, 255), // Cyan neon edge
-            z(1.1)
-        ]);
-    });
+
 
     // --- TRANSITION ENTRY ---
     const topJaw = window.g_TransitionJaws ? window.g_TransitionJaws.top : null;
