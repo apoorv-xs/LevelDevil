@@ -307,6 +307,30 @@ scene("projects", () => {
         obj.add([rect(36, 2), pos(0, 0), anchor("center"), color(line), rotate(45)]);
         obj.add([rect(36, 2), pos(0, 0), anchor("center"), color(line), rotate(-45)]);
     }
+    function drawEye(obj) {
+        const white = rgb(255, 255, 255);
+        const iris = rgb(220, 20, 60);
+        const pupil = rgb(0, 0, 0);
+        obj.add([rect(24, 16), pos(0, 0), anchor("center"), color(white), outline(2, C_OUTLINE)]);
+        obj.add([rect(4, 8), pos(-12, 0), anchor("center"), color(white), outline(2, C_OUTLINE)]);
+        obj.add([rect(4, 8), pos(12, 0), anchor("center"), color(white), outline(2, C_OUTLINE)]);
+        obj.add([rect(10, 10), pos(0, 0), anchor("center"), color(iris)]);
+        obj.add([rect(4, 4), pos(0, 0), anchor("center"), color(pupil)]);
+        obj.add([rect(2, 2), pos(-2, -2), anchor("center"), color(white)]);
+    }
+    function drawRadar(obj) {
+        const green = rgb(0, 210, 0);
+        const darkGreen = rgb(10, 60, 10);
+        const line = rgb(0, 150, 0);
+        const blipColor = rgb(255, 255, 0);
+        obj.add([rect(28, 28), pos(0, 0), anchor("center"), color(darkGreen), outline(2, C_OUTLINE)]);
+        obj.add([rect(20, 20), pos(0, 0), anchor("center"), color(0, 0, 0, 0), outline(1, line)]);
+        obj.add([rect(10, 10), pos(0, 0), anchor("center"), color(0, 0, 0, 0), outline(1, line)]);
+        obj.add([rect(28, 1), pos(0, 0), anchor("center"), color(line)]);
+        obj.add([rect(1, 28), pos(0, 0), anchor("center"), color(line)]);
+        obj.add([rect(12, 2), pos(0, 0), anchor("left"), color(green), rotate(-30)]);
+        obj.add([rect(4, 4), pos(6, -6), anchor("center"), color(blipColor)]);
+    }
 
     // --- MOVING ISLAND BUILDER ---
     function createIsland(x, y, type, project = null, moveConfig = null) {
@@ -432,6 +456,8 @@ scene("projects", () => {
         if (project.icon === "paw") drawPaw(icon);
         else if (project.icon === "cart") drawCart(icon);
         else if (project.icon === "globe") drawGlobe(icon);
+        else if (project.icon === "eye") drawEye(icon);
+        else if (project.icon === "radar") drawRadar(icon);
 
         let iconTime = 0;
         icon.onUpdate(() => {
@@ -449,7 +475,7 @@ scene("projects", () => {
             title: "Oversight",
             type: "tech",
             doorColor: rgb(220, 20, 60),
-            icon: "globe",
+            icon: "eye",
             desc: "Adaptive Network Threat Detection Engine",
             link: "https://github.com/apoorv-xs/Oversight"
         },
@@ -458,7 +484,7 @@ scene("projects", () => {
             title: "Radarhire",
             type: "tech",
             doorColor: rgb(0, 191, 255),
-            icon: "globe",
+            icon: "radar",
             desc: "GitHub Project",
             link: "https://github.com/apoorv-xs/Radarhire"
         },
