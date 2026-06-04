@@ -11,18 +11,15 @@ scene("about", () => {
     const C_FLOOR = rgb(24, 24, 38); // Dark indigo-slate
     const C_TEXT = rgb(240, 240, 240); // Off-white
 
-    // Floor - SPLIT for Pit
+    // Clear any residual fluid dynamics forces
+    if (window.clearFluidEmitters) window.clearFluidEmitters();
+    if (window.clearFluidVortexes) window.clearFluidVortexes();
+
+    // Let the background WebGL canvas show through by NOT drawing an opaque rectangle!
+
+    // Floor
     const floorHeight = height() * 0.2;
-
-    // --- PARALLAX BACKGROUND ---
-    if (window.addParallaxBackground) {
-        window.addParallaxBackground(width() * 4, floorHeight);
-    }
-
-    // --- TWINKLING STARS ---
-    if (window.addCyberStars) {
-        window.addCyberStars(width() * 4);
-    }
+    const groundY = height() - floorHeight;
 
     const LEFT_MARGIN_CALC = (width() * 0.05) + 150;
     const startX_CALC = LEFT_MARGIN_CALC + 460 + 350;
@@ -32,47 +29,29 @@ scene("about", () => {
     const chestX = cratesCenterX_CALC + 500; // Old gate position
     const gatesStartX_CALC = chestX + 300; // Gap reduced to 300px
 
-    // Pit Config (Trap Door)
-    const pitWidth = 60; // Narrower
-    const pitX = chestX - 180; // Moved before the chest
+    // Define Updraft Chasm coordinates
+    const chasmX = LEFT_MARGIN_CALC + 280;
+    const chasmWidth = 180;
 
-    // Floor 1: Start to Pit
-    add([
-        rect(pitX, floorHeight),
-        pos(0, height() - floorHeight),
-        color(C_FLOOR),
-        z(1), // LAYER 1
-        area(),
-        body({ isStatic: true }),
-        "floor"
-    ]);
+    // --- VECTOR SILHOUETTE PLATFORMS ---
+    // Floor 1: Start to Chasm
+    window.addVectorPlatform(0, groundY, chasmX, floorHeight, rgb(0, 240, 255), ["floor"]);
 
-    // Neon floor strip 1
-    add([
-        rect(pitX, 4),
-        pos(0, height() - floorHeight),
-        color(0, 240, 255),
-        z(1.1)
-    ]);
+    // Floor 2: Chasm End to Infinity (Width * 4)
+    window.addVectorPlatform(chasmX + chasmWidth, groundY, (width() * 4) - (chasmX + chasmWidth), floorHeight, rgb(0, 240, 255), ["floor"]);
 
-    // Floor 2: Pit End to Infinity (Width * 4)
-    add([
-        rect((width() * 4) - (pitX + pitWidth), floorHeight),
-        pos(pitX + pitWidth, height() - floorHeight),
-        color(C_FLOOR),
-        z(1), // LAYER 1
-        area(),
-        body({ isStatic: true }),
-        "floor"
-    ]);
+    // --- PERSPECTIVE GRID FLOOR ---
+    if (window.addPerspectiveGrid) {
+        window.addPerspectiveGrid();
+    }
 
-    // Neon floor strip 2
-    add([
-        rect((width() * 4) - (pitX + pitWidth), 4),
-        pos(pitX + pitWidth, height() - floorHeight),
-        color(0, 240, 255),
-        z(1.1)
-    ]);
+    // --- FLUID PHYSICS TUNNEL (UP-DRAFT ENGINE) ---
+    if (window.addFluidEmitter) {
+        // Upward current in the middle of Gap 1
+        window.addFluidEmitter("about_updraft", chasmX + chasmWidth / 2, groundY + 30, 0, -1, [0.0, 0.9, 1.0], 520, 65);
+        const em = window.fluidEmitters.find(e => e.id === "about_updraft");
+        if (em) em.type = "column";
+    }
 
 
 
@@ -262,31 +241,105 @@ scene("about", () => {
 
 
     // --- PLAYER SPAWN ---
-    const guy = createPlayer(100, height() - floorHeight - 100);
+    const guy = createPlayer(100, groundY - 100);
 
-    // --- OBSTACLES ---
-    createSpikes(LEFT_MARGIN + 350, height() - floorHeight, 3, C_FLOOR);
-
-    // More spikes further down
-    const movingSpikes = createSpikes(LEFT_MARGIN + 350 + 220, height() - floorHeight, 3, C_FLOOR);
-
-    // --- PIT TRAP ---
-    createPit(pitX, height() - floorHeight, pitWidth, floorHeight, C_FLOOR, guy);
-
-    // Trap Logic
-    let spikeTrapTriggered = false;
-    const spikeTriggerX = LEFT_MARGIN + 350 + 160;
-
-    onUpdate(() => {
-        if (!spikeTrapTriggered && guy.pos.x > spikeTriggerX) {
-            spikeTrapTriggered = true;
-            movingSpikes.forEach(s => {
-                tween(s.pos.x, s.pos.x - 40, 0.1, (val) => s.pos.x = val, easings.easeOutQuad);
+    // --- FLUID PHYSICS UP-DRAFT TRAP LOGIC ---
+    let updraftShifted = false;
+    guy.onUpdate(() => {
+        const px = guy.pos.x - (camPos().x - width() / 2);
+        // Trigger flow shift when player floats in the gap
+        if (!updraftShifted && guy.pos.x > chasmX + 25 && guy.pos.x < chasmX + chasmWidth - 25 && guy.pos.y > groundY - 180) {
+            updraftShifted = true;
+            window.showFluidWarning("WARNING: DRAFT PRESSURE REVERSAL!");
+            wait(0.65, () => {
+                if (window.updateFluidEmitter) {
+                    // Reverse draft to pull down!
+                    window.updateFluidEmitter("about_updraft", undefined, undefined, 0, 1);
+                    const em = window.fluidEmitters.find(e => e.id === "about_updraft");
+                    if (em) {
+                        em.force = 360;
+                        em.color = [1.0, 0.0, 0.5]; // Hot Pink / Red
+                    }
+                    if (window.SFX && window.SFX.playTroll) window.SFX.playTroll();
+                }
             });
-            console.log("Spike Trap Triggered!");
         }
     });
 
+    // --- CORROSIVE SPLAT DROPLET TRAP ---
+    loop(2.4, () => {
+        // Only drop if player is near the skills crates (between startX and startX + 480)
+        if (guy.pos.x > startX - 80 && guy.pos.x < startX + 520) {
+            const dropX = guy.pos.x + rand(-100, 100);
+            
+            // Flashing warning laser
+            const laser = add([
+                rect(2, groundY),
+                pos(dropX, 0),
+                color(255, 0, 127),
+                opacity(0.4),
+                z(2)
+            ]);
+
+            let blink = 0;
+            const laserBlink = laser.onUpdate(() => {
+                blink += dt() * 12;
+                laser.opacity = (Math.floor(blink) % 2 === 0) ? 0.6 : 0.08;
+            });
+
+            wait(0.8, () => {
+                destroy(laser);
+                laserBlink.cancel();
+
+                // Drop droplet
+                const droplet = add([
+                    circle(8),
+                    pos(dropX, 0),
+                    color(255, 0, 127),
+                    outline(2, rgb(255, 255, 255)),
+                    area(),
+                    z(15),
+                    "danger",
+                    "droplet"
+                ]);
+
+                droplet.onUpdate(() => {
+                    droplet.move(0, 380);
+                    if (droplet.pos.y >= groundY) {
+                        const splatX = droplet.pos.x;
+                        destroy(droplet);
+
+                        // Trigger WebGL splat in background
+                        if (window.triggerFluidSplat) {
+                            const ux = splatX / width();
+                            const uy = groundY / height();
+                            window.triggerFluidSplat(ux, 1.0 - uy, 0, 0.25, [1.0, 0.0, 0.5], 0.005);
+                        }
+
+                        // Play buzzer sfx
+                        if (window.SFX && window.SFX.playTroll) {
+                            // Quick buzz
+                        }
+
+                        // Spawn temporary floor hazard zone
+                        const hazard = add([
+                            rect(36, 12),
+                            pos(splatX, groundY - 12),
+                            anchor("bot"),
+                            color(255, 0, 127),
+                            area(),
+                            z(12),
+                            "danger",
+                            "splash"
+                        ]);
+
+                        // Fade hazard out
+                        tween(1, 0, 0.7, (v) => hazard.opacity = v).onEnd(() => destroy(hazard));
+                    }
+                });
+            });
+        }
+    });
 
     // Collision with Danger
     guy.onCollide("danger", () => {
@@ -301,7 +354,7 @@ scene("about", () => {
     // Collision with Void
     guy.onCollide("void", () => {
         if (window.RECRUITER_MODE) {
-            guy.pos.y = height() - floorHeight - 100; // Teleport back up
+            guy.pos.y = groundY - 100;
             guy.vel.y = 0;
             return;
         }
@@ -549,93 +602,51 @@ scene("about", () => {
     let chestOpened = false;
     let chestTrollTriggered = false;
 
+    let chestVortexActive = false;
+
     // Interaction with Chest
     onUpdate(() => {
-        if (chestOpened) return;
-
         const d = guy.pos.dist(chestBody.pos);
 
-        // Troll Logic: Chest jumps away
-        if (!chestTrollTriggered && d < 120) {
-            chestTrollTriggered = true;
-            // Play Troll SFX
-            if (window.SFX) window.SFX.playTroll();
-
-            // Show "TOO SLOW!" text
-            const textTooSlow = add([
-                text("TOO SLOW!", { size: 12, font: "'Press Start 2P'" }),
-                pos(chestBody.pos.x, chestBody.pos.y - 120),
-                anchor("center"),
-                color(255, 0, 0),
-                opacity(1),
-                z(30)
-            ]);
-            tween(textTooSlow.pos.y, textTooSlow.pos.y - 45, 0.8, (v) => textTooSlow.pos.y = v, easings.easeOutQuad);
-            tween(1, 0, 0.8, (v) => textTooSlow.opacity = v, easings.easeInQuad)
-                .onEnd(() => destroy(textTooSlow));
-
-            // Leap to the right: move chestBody, chestLid, resumePaper, and chestHint by +120px.
-            const jumpTime = 0.5;
-            const targetX = chestBody.pos.x + 120;
-            const peakY = chestBody.pos.y - 80;
-            const groundYVal = chestBody.pos.y;
-
-            // Tween X for all chest components
-            tween(chestBody.pos.x, targetX, jumpTime, (val) => chestBody.pos.x = val, easings.easeInOutQuad);
-            tween(chestLid.pos.x, targetX, jumpTime, (val) => chestLid.pos.x = val, easings.easeInOutQuad);
-            tween(resumePaper.pos.x, targetX, jumpTime, (val) => resumePaper.pos.x = val, easings.easeInOutQuad);
-            tween(chestHint.pos.x, targetX, jumpTime, (val) => chestHint.pos.x = val, easings.easeInOutQuad);
-
-            // Tween Y to create arch (sine wave for jump)
-            let timeElapsed = 0;
-            const anim = onUpdate(() => {
-                timeElapsed += dt();
-                const ratio = Math.min(timeElapsed / jumpTime, 1);
-                const arch = Math.sin(ratio * Math.PI);
-                const currentY = groundYVal - (arch * 80);
-
-                chestBody.pos.y = currentY;
-                chestLid.pos.y = currentY - 40;
-                resumePaper.pos.y = currentY - 20;
-                chestHint.pos.y = currentY - 80;
-
-                if (ratio >= 1) {
-                    anim.cancel();
-                    // Reset positions firmly at target
-                    chestBody.pos.y = groundYVal;
-                    chestLid.pos.y = groundYVal - 40;
-                    resumePaper.pos.y = groundYVal - 20;
-                    chestHint.pos.y = groundYVal - 80;
+        if (!chestOpened) {
+            // Trigger vortex pull when player approaches chest
+            if (!chestVortexActive && d < 180) {
+                chestVortexActive = true;
+                window.showFluidWarning("WARNING: GRAVITATIONAL VORTEX ENGAGED!");
+                if (window.addFluidVortex) {
+                    window.addFluidVortex("chest_vortex", chestX, groundY - 140, 220, 280);
                 }
-            });
-            return;
-        }
-
-        if (d < 80) {
-            chestHint.hidden = false;
-            if (isKeyPressed("enter")) {
-                chestOpened = true;
-                if (window.SFX) window.SFX.playCoin();
-                chestHint.text = "DOWNLOADING...";
-                shake(5);
-                tween(chestLid.pos.y, chestLid.pos.y - 20, 0.5, (val) => chestLid.pos.y = val, easings.easeOutBounce);
-                tween(chestLid.angle, -45, 0.5, (val) => chestLid.angle = val, easings.easeOutBack);
-                wait(0.2, () => {
-                    resumePaper.z = 8;
-                    tween(resumePaper.pos.y, height() - floorHeight - 80, 0.5, (val) => resumePaper.pos.y = val, easings.easeOutElastic);
-
-                    // TRIGGER DOWNLOAD
-                    const link = document.createElement('a');
-                    link.href = 'resume.pdf';
-                    link.download = 'resume.pdf';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    chestHint.text = "RESUME ACQUIRED!";
-                });
             }
-        } else {
-            chestHint.hidden = true;
+
+            if (d < 80) {
+                chestHint.hidden = false;
+                if (isKeyPressed("enter")) {
+                    chestOpened = true;
+                    // Disable vortex
+                    if (window.clearFluidVortexes) window.clearFluidVortexes();
+
+                    if (window.SFX) window.SFX.playCoin();
+                    chestHint.text = "DOWNLOADING...";
+                    shake(5);
+                    tween(chestLid.pos.y, chestLid.pos.y - 20, 0.5, (val) => chestLid.pos.y = val, easings.easeOutBounce);
+                    tween(chestLid.angle, -45, 0.5, (val) => chestLid.angle = val, easings.easeOutBack);
+                    wait(0.2, () => {
+                        resumePaper.z = 8;
+                        tween(resumePaper.pos.y, groundY - 80, 0.5, (val) => resumePaper.pos.y = val, easings.easeOutElastic);
+
+                        // TRIGGER DOWNLOAD
+                        const link = document.createElement('a');
+                        link.href = 'resume.pdf';
+                        link.download = 'resume.pdf';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        chestHint.text = "RESUME ACQUIRED!";
+                    });
+                }
+            } else {
+                chestHint.hidden = true;
+            }
         }
     });
 
@@ -744,8 +755,7 @@ scene("about", () => {
         });
     }
 
-    // --- OBSTACLES ---
-    createSpikes(LEFT_MARGIN + 350, height() - floorHeight, 3, C_FLOOR);
+
 
 
     // --- EXIT GATES ---
