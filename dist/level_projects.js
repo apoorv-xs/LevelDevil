@@ -445,13 +445,13 @@ scene("projects", () => {
     // --- DATA ---
     const projects = [
         {
-            id: "pet",
-            title: "Pet Adoption",
-            type: "earth",
-            doorColor: rgb(255, 140, 0),
-            icon: "paw",
-            desc: "Helping paws find homes.",
-            link: "https://www.figma.com/design/mKajJpIhWmZbKDm1mwcaZ6/Untitled?node-id=0-1&t=RWvLvXejy9jmVpEL-1"
+            id: "oversight",
+            title: "Oversight",
+            type: "tech",
+            doorColor: rgb(220, 20, 60),
+            icon: "globe",
+            desc: "Adaptive Network Threat Detection Engine",
+            link: "https://github.com/apoorv-xs/Oversight"
         },
         {
             id: "radar",
