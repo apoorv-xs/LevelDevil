@@ -2,6 +2,7 @@ scene("intro", () => {
     // Clear any residual fluid dynamics forces
     if (window.clearFluidEmitters) window.clearFluidEmitters();
     if (window.clearFluidVortexes) window.clearFluidVortexes();
+    if (window.clearFluidGround) window.clearFluidGround();
 
     // Let the background WebGL canvas show through by NOT drawing an opaque rectangle!
 

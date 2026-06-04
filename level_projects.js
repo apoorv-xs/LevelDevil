@@ -6,15 +6,7 @@ scene("projects", () => {
     let islandsMoving = false;
     let spikesTriggered = false;
 
-    // Background (Opaque color to match intro, extended bounds)
-    const C_BG = color(10, 10, 25); // Dark Cyber Night
-
-    add([
-        rect(width() * 20, height() * 10), // Extremely wide bg
-        C_BG,
-        pos(-width() * 5, -height() * 5),
-        z(0)
-    ]);
+    // Let the background WebGL fluid canvas show through — NO opaque background rect!
 
     // Palette
     const C_FLOOR = rgb(24, 24, 38); // Dark indigo-slate
@@ -28,6 +20,7 @@ scene("projects", () => {
     // Clear fluid forces
     if (window.clearFluidEmitters) window.clearFluidEmitters();
     if (window.clearFluidVortexes) window.clearFluidVortexes();
+    if (window.clearFluidGround) window.clearFluidGround();
 
     // Floor Base Coordinates
     const floorHeight = height() * 0.2;
@@ -389,6 +382,85 @@ scene("projects", () => {
     backGate.add([rect(42, 6), pos(0, -60), anchor("bot"), color(180, 180, 180), z(7)]);
     backGate.add([rect(22, 4), pos(0, -66), anchor("bot"), color(180, 180, 180), z(7)]);
 
+
+    // --- JUMP PAD BUILDER ---
+    function createJumpPad(x, y, parent = null) {
+        // Base
+        const padConfig = [
+            pos(x, y),
+            rect(40, 5),
+            anchor("top"),
+            color(0, 0, 0),
+            z(1.5),
+            "jump_pad_base"
+        ];
+
+        let pad;
+        if (parent) {
+            pad = parent.add(padConfig);
+        } else {
+            pad = add(padConfig);
+        }
+
+        // Plate
+        const plateConfig = [
+            rect(36, 8),
+            pos(0, 0),
+            anchor("bot"),
+            color(200, 50, 50),
+            outline(2, C_OUTLINE),
+            area(),
+            z(1.6),
+            "jump_pad",
+            "spring_top"
+        ];
+
+        const plate = pad.add(plateConfig);
+        plate.basePad = pad;
+
+        // RECRUITER MODE LOGIC for PADS (Delayed)
+        plate.onUpdate(() => {
+            if (window.isRecruiterActive()) {
+                plate.opacity = 0;
+                pad.opacity = 0;
+            } else {
+                plate.opacity = 1;
+                pad.opacity = 1;
+            }
+        });
+
+        return plate;
+    }
+
+    // Logic for Jump Pads
+    guy.onCollide("jump_pad", (plate) => {
+        // IGNORE in Recruiter Mode (Delayed)
+        if (window.isRecruiterActive()) return;
+
+        // ACTIVATE ISLANDS & SPIKES on first touch
+        if (!islandsMoving) {
+            islandsMoving = true;
+
+            // Trigger Lava
+            if (!spikesTriggered) {
+                spikesTriggered = true;
+                // Tween all lava UP
+                get("lava").forEach((l) => {
+                    tween(l.pos.y, l.targetY, 0.4, (v) => l.pos.y = v, easings.easeOutBack);
+                });
+            }
+        }
+
+        if (guy.vel && guy.vel.y < 0) return;
+
+        shake(2);
+        guy.jump(1200);
+
+        tween(plate.pos.y, plate.pos.y + 5, 0.05, (v) => plate.pos.y = v, easings.easeOutQuad)
+            .onEnd(() => {
+                tween(plate.pos.y, plate.pos.y - 5, 0.2, (v) => plate.pos.y = v, easings.easeOutElastic);
+            });
+    });
 
     // 1. Ground Pads
     createJumpPad(400, groundY);

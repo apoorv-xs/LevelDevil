@@ -372,6 +372,21 @@ try {
             z(1.1)
         ]);
 
+        // Auto-register as fluid ground segment (color 0-255 → 0-1)
+        if (window.fluidGroundSegments) {
+            window.fluidGroundSegments.push({
+                x: x,
+                w: w,
+                y: y,
+                h: h,
+                color: [
+                    (neonColor.r || 0) / 255,
+                    (neonColor.g || 0) / 255,
+                    (neonColor.b || 0) / 255
+                ]
+            });
+        }
+
         return block;
     };
 

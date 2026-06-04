@@ -1,4 +1,4 @@
-// --- WEBGL NAVIER-STOKES FLUID SIMULATION BACKGROUND ENGINE ---
+// --- WEBGL NAVIER-STOKES FLUID SIMULATION — GROUND-TRACKING ENGINE ---
 
 (function () {
     const VERTEX_SHADER_SRC = `#version 300 es
@@ -103,10 +103,17 @@
     uniform sampler2D uDye;
     uniform sampler2D uVelocity;
     void main() {
-      vec3 color = texture(uDye, vUv).rgb;
-      // Add very deep cyber blue background color mapping
-      vec3 bg = vec3(0.04, 0.04, 0.1);
-      fragColor = vec4(max(color, bg), 1.0);
+      vec3 raw = texture(uDye, vUv).rgb;
+      // Boost saturation for vivid Flux colors
+      float lum = dot(raw, vec3(0.2126, 0.7152, 0.0722));
+      vec3 saturated = mix(vec3(lum), raw, 1.5);
+      vec3 glow = saturated * 1.2;
+      // Deep void background
+      vec3 bg = vec3(0.02, 0.02, 0.06);
+      vec3 final = max(glow, bg);
+      // Subtle vignette
+      float vig = 1.0 - 0.25 * length(vUv - 0.5);
+      fragColor = vec4(final * vig, 1.0);
     }
     `;
 
@@ -137,15 +144,13 @@
     }
 
     class FluidSolver {
-        constructor(gl, simW = 128, simH = 128) {
+        constructor(gl, simW = 192, simH = 192) {
             this.gl = gl;
             this.simWidth = simW;
             this.simHeight = simH;
 
-            // Enable extension
             gl.getExtension("EXT_color_buffer_float");
 
-            // Compile shaders
             this.splatProgram = createProgram(gl, VERTEX_SHADER_SRC, SPLAT_SHADER_SRC);
             this.advectProgram = createProgram(gl, VERTEX_SHADER_SRC, ADVECT_SHADER_SRC);
             this.divergenceProgram = createProgram(gl, VERTEX_SHADER_SRC, DIVERGENCE_SHADER_SRC);
@@ -153,7 +158,6 @@
             this.subtractProgram = createProgram(gl, VERTEX_SHADER_SRC, SUBTRACT_SHADER_SRC);
             this.renderProgram = createProgram(gl, VERTEX_SHADER_SRC, RENDER_SHADER_SRC);
 
-            // Quad buffer
             this.quadBuffer = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, this.quadBuffer);
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
@@ -165,7 +169,6 @@
             gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
             gl.bindVertexArray(null);
 
-            // Create FBOs (use HALF_FLOAT for performance & compat)
             this.velocity = this.createDoubleBuffer(gl.RGBA16F, gl.RGBA, gl.HALF_FLOAT);
             this.dye = this.createDoubleBuffer(gl.RGBA16F, gl.RGBA, gl.HALF_FLOAT);
             this.pressure = this.createDoubleBuffer(gl.R16F, gl.RED, gl.HALF_FLOAT);
@@ -185,7 +188,6 @@
             const fbo = gl.createFramebuffer();
             gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
             gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-
             return { texture, fbo };
         }
 
@@ -202,7 +204,7 @@
             };
         }
 
-        splat(fbo, x, y, dx, dy, color, radius) {
+        splat(fbo, x, y, color, radius) {
             const gl = this.gl;
             gl.viewport(0, 0, this.simWidth, this.simHeight);
             gl.useProgram(this.splatProgram);
@@ -235,7 +237,7 @@
             gl.useProgram(this.advectProgram);
             gl.uniform2f(gl.getUniformLocation(this.advectProgram, "uTexelSize"), tx, ty);
             gl.uniform1f(gl.getUniformLocation(this.advectProgram, "uDt"), dt);
-            gl.uniform1f(gl.getUniformLocation(this.advectProgram, "uDissipation"), 0.98); // vel dissipation
+            gl.uniform1f(gl.getUniformLocation(this.advectProgram, "uDissipation"), 0.97);
 
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, this.velocity.read.texture);
@@ -249,7 +251,7 @@
             this.velocity.swap();
 
             // 2. Advect Dye
-            gl.uniform1f(gl.getUniformLocation(this.advectProgram, "uDissipation"), dissipation); // dye dissipation
+            gl.uniform1f(gl.getUniformLocation(this.advectProgram, "uDissipation"), dissipation);
             gl.activeTexture(gl.TEXTURE1);
             gl.bindTexture(gl.TEXTURE_2D, this.dye.read.texture);
 
@@ -320,9 +322,12 @@
         }
     }
 
-    // --- GLOBAL REFERENCES AND INTERACTION API ---
-    window.fluidEmitters = []; // [{ id, x, y, dx, dy, colorRGB, force, radius }] - CPU math and GPU Splat inputs
-    window.fluidVortexes = []; // [{ id, x, y, force, radius }]
+    // ===================================================================
+    // INTERACTION API
+    // ===================================================================
+    window.fluidEmitters = [];
+    window.fluidVortexes = [];
+    window.fluidGroundSegments = []; // [{x, w, y, h, color: [r,g,b]}]
 
     let solver = null;
     let canvas = null;
@@ -330,14 +335,11 @@
 
     window.triggerFluidSplat = function (x, y, dx, dy, colorRGB = [0.0, 0.9, 1.0], radius = 0.001) {
         if (!solver) return;
-        // Inject velocity (dx, dy)
-        solver.splat(solver.velocity, x, y, [dx * 10, dy * 10, 0], radius, 1.0);
-        // Inject dye
-        solver.splat(solver.dye, x, y, colorRGB, radius, 1.0);
+        solver.splat(solver.velocity, x, y, [dx * 10, dy * 10, 0], radius);
+        solver.splat(solver.dye, x, y, colorRGB, radius);
     };
 
     window.addFluidEmitter = function (id, x, y, dx, dy, colorRGB = [0.0, 0.9, 1.0], force = 200, radius = 0.04) {
-        // Clear duplicates
         window.fluidEmitters = window.fluidEmitters.filter(e => e.id !== id);
         window.fluidEmitters.push({ id, x, y, dx, dy, color: colorRGB, force, radius });
     };
@@ -352,30 +354,58 @@
         }
     };
 
-    window.clearFluidEmitters = function () {
-        window.fluidEmitters = [];
-    };
+    window.clearFluidEmitters = function () { window.fluidEmitters = []; };
 
     window.addFluidVortex = function (id, x, y, force = 120, radius = 250) {
         window.fluidVortexes = window.fluidVortexes.filter(v => v.id !== id);
         window.fluidVortexes.push({ id, x, y, force, radius });
     };
 
-    window.clearFluidVortexes = function () {
-        window.fluidVortexes = [];
+    window.clearFluidVortexes = function () { window.fluidVortexes = []; };
+
+    // --- GROUND REGISTRATION ---
+    // Levels register their floor platforms here. Each segment:
+    //   { x, w, y, h, color: [r, g, b] }  (world coordinates, color 0..1)
+    window.setFluidGround = function (segments) {
+        window.fluidGroundSegments = segments || [];
+    };
+    window.clearFluidGround = function () {
+        window.fluidGroundSegments = [];
     };
 
+    // Camera helper
+    function getCam() {
+        try {
+            if (window.k && window.k.camPos) {
+                const c = window.k.camPos();
+                return { x: c.x, y: c.y };
+            }
+        } catch (e) {}
+        return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    }
+
+    // World → UV (WebGL flipped Y)
+    function w2uv(wx, wy, cam, vw, vh) {
+        return {
+            u: (wx - cam.x + vw / 2) / vw,
+            v: 1.0 - ((wy - cam.y + vh / 2) / vh)
+        };
+    }
+
+    // ===================================================================
+    // MAIN LOOP
+    // ===================================================================
     window.initFluid = function () {
         canvas = document.getElementById("bg-canvas");
         if (!canvas) return;
 
         gl = canvas.getContext("webgl2", { alpha: false, antialias: false, depth: false });
         if (!gl) {
-            console.error("WebGL2 not supported on this device. Fluid visualizer disabled.");
+            console.error("WebGL2 not supported. Fluid disabled.");
             return;
         }
 
-        solver = new FluidSolver(gl, 128, 128);
+        solver = new FluidSolver(gl, 192, 192);
 
         const resize = () => {
             canvas.width = window.innerWidth;
@@ -385,45 +415,114 @@
         resize();
 
         let lastTime = performance.now();
+
         const tick = (now) => {
             requestAnimationFrame(tick);
             if (!solver) return;
 
             const dt = Math.min((now - lastTime) / 1000, 0.03);
             lastTime = now;
+            const t = now / 1000;
+            const cam = getCam();
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
 
-            // 1. Splat continuous emitters
+            // ==========================================
+            // 0. GROUND PATH — Fluid IS the floor
+            // ==========================================
+            const SPACING = 50; // px between splat sample points
+
+            window.fluidGroundSegments.forEach((seg, si) => {
+                const camL = cam.x - vw / 2;
+                const camR = cam.x + vw / 2;
+
+                // Skip fully off-screen segments
+                if (seg.x + seg.w < camL - 80 || seg.x > camR + 80) return;
+
+                // Visible range (clamped to screen + margin)
+                const vL = Math.max(seg.x, camL - 60);
+                const vR = Math.min(seg.x + seg.w, camR + 60);
+                const n = Math.max(2, Math.ceil((vR - vL) / SPACING));
+
+                for (let i = 0; i <= n; i++) {
+                    const wx = vL + (i / n) * (vR - vL);
+                    const uv = w2uv(wx, seg.y, cam, vw, vh);
+
+                    if (uv.u < -0.08 || uv.u > 1.08) continue;
+
+                    // Organic surface wobble
+                    const wobble = Math.sin(t * 1.4 + wx * 0.008 + si) * 0.006;
+
+                    // Flow velocity: forward drift with slight wave motion
+                    const fdx = 0.6 + Math.sin(t * 0.5 + i * 0.4) * 0.2;
+                    const fdy = -0.1 + Math.cos(t * 0.7 + i * 0.3) * 0.08;
+
+                    solver.splat(solver.velocity, uv.u, uv.v + wobble, [fdx, fdy, 0], 0.012);
+
+                    // Color with gentle pulsing
+                    const pulse = 0.5 + 0.25 * Math.sin(t * 1.6 + wx * 0.004);
+                    const col = seg.color.map(c => c * pulse);
+                    solver.splat(solver.dye, uv.u, uv.v + wobble, col, 0.016);
+                }
+
+                // Fill body below surface with dimmer color
+                const bodyH = Math.min(seg.h || 80, 150);
+                for (let row = 1; row <= 3; row++) {
+                    const by = seg.y + bodyH * row / 4;
+                    // Sample 3 points across the visible width
+                    for (let col = 0; col < 3; col++) {
+                        const bx = vL + (col / 2) * (vR - vL);
+                        const buv = w2uv(bx, by, cam, vw, vh);
+                        if (buv.u < -0.05 || buv.u > 1.05) continue;
+
+                        const dim = seg.color.map(c => c * 0.15 * (1 - row / 4));
+                        solver.splat(solver.dye, buv.u, buv.v, dim, 0.02);
+                        solver.splat(solver.velocity, buv.u, buv.v, [0.08, 0, 0], 0.008);
+                    }
+                }
+            });
+
+            // ==========================================
+            // 1. SUBTLE AMBIENT VOID HAZE
+            // ==========================================
+            // Very dim background so void areas aren't pure black
+            for (let i = 0; i < 3; i++) {
+                const ax = 0.25 + i * 0.25 + Math.sin(t * 0.08 + i * 2.1) * 0.15;
+                const ay = 0.3 + Math.cos(t * 0.06 + i * 1.7) * 0.2;
+                solver.splat(solver.dye, ax, ay, [0.015, 0.015, 0.04], 0.035);
+                solver.splat(solver.velocity, ax, ay, [Math.sin(t * 0.15 + i) * 0.08, 0.03, 0], 0.02);
+            }
+
+            // ==========================================
+            // 2. GAME EMITTERS (player, traps)
+            // ==========================================
             window.fluidEmitters.forEach(e => {
-                // Convert coordinates from screen coordinates to WebGL UV (0..1)
-                const ux = e.x / window.innerWidth;
-                // WebGL y starts at bottom left
-                const uy = 1.0 - (e.y / window.innerHeight);
-                solver.splat(solver.velocity, ux, uy, [e.dx * 1.5, -e.dy * 1.5, 0], 0.0015, 1.0);
-                solver.splat(solver.dye, ux, uy, e.color, 0.001, 1.0);
+                const uv = w2uv(e.x, e.y, cam, vw, vh);
+                solver.splat(solver.velocity, uv.u, uv.v, [e.dx * 1.5, -e.dy * 1.5, 0], 0.003);
+                solver.splat(solver.dye, uv.u, uv.v, e.color, 0.003);
             });
 
-            // 2. Vortex Splats
+            // ==========================================
+            // 3. VORTEX TRAPS
+            // ==========================================
             window.fluidVortexes.forEach(v => {
-                const ux = v.x / window.innerWidth;
-                const uy = 1.0 - (v.y / window.innerHeight);
-                // Rotate force perpendicular to vector from center to create swirl
-                const angle = (now / 1000) * 2;
-                const vx = Math.cos(angle);
-                const vy = Math.sin(angle);
-                solver.splat(solver.velocity, ux, uy, [vx * 2, vy * 2, 0], 0.003, 1.0);
-                solver.splat(solver.dye, ux, uy, [0.6, 0.1, 1.0], 0.0015, 1.0);
+                const uv = w2uv(v.x, v.y, cam, vw, vh);
+                if (uv.u < -0.15 || uv.u > 1.15) return;
+                const a = t * 2;
+                solver.splat(solver.velocity, uv.u, uv.v, [Math.cos(a) * 2.5, Math.sin(a) * 2.5, 0], 0.005);
+                solver.splat(solver.dye, uv.u, uv.v, [0.6, 0.1, 1.0], 0.004);
             });
 
-            // 3. Sim step
-            solver.step(dt, 0.95); // High dissipation to clear trails cleanly
-
-            // 4. Render
+            // ==========================================
+            // 4. STEP & RENDER
+            // ==========================================
+            solver.step(dt, 0.988);
             solver.render(canvas.width, canvas.height);
         };
+
         requestAnimationFrame(tick);
     };
 
-    // Auto-launch
     window.addEventListener("DOMContentLoaded", () => {
         window.initFluid();
     });

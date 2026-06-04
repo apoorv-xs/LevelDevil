@@ -1,12 +1,6 @@
 scene("about", () => {
     // --- SETUP ---
-    // Background Color (Matches Intro) - EXTENDED for Scroll
-    add([
-        rect(width() * 4, height()),
-        color(10, 10, 25), // Dark Cyber Night
-        pos(0, 0),
-        z(0)
-    ]);
+    // Let the background WebGL fluid canvas show through — NO opaque background rect!
 
     const C_FLOOR = rgb(24, 24, 38); // Dark indigo-slate
     const C_TEXT = rgb(240, 240, 240); // Off-white
@@ -14,6 +8,7 @@ scene("about", () => {
     // Clear any residual fluid dynamics forces
     if (window.clearFluidEmitters) window.clearFluidEmitters();
     if (window.clearFluidVortexes) window.clearFluidVortexes();
+    if (window.clearFluidGround) window.clearFluidGround();
 
     // Let the background WebGL canvas show through by NOT drawing an opaque rectangle!
 
