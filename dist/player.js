@@ -47,29 +47,16 @@ function createPlayer(x, y) {
         skin
     ]);
 
-    // Eyes
-    const leftEye = head.add([
-        rect(2, 2),
-        pos(-3, -7),
-        color(255, 255, 255),
+    // Cyber Visor
+    const visor = head.add([
+        rect(10, 2),
+        pos(0, -7),
+        color(0, 240, 255),
         anchor("center"),
-        z(1)
+        z(2)
     ]);
-    const rightEye = head.add([
-        rect(2, 2),
-        pos(3, -7),
-        color(255, 255, 255),
-        anchor("center"),
-        z(1)
-    ]);
-    // Blink loop
-    loop(2.5, () => {
-        leftEye.hidden = true;
-        rightEye.hidden = true;
-        wait(0.12, () => {
-            leftEye.hidden = false;
-            rightEye.hidden = false;
-        });
+    visor.onUpdate(() => {
+        visor.opacity = map(Math.sin(time() * 8), -1, 1, 0.6, 1.0);
     });
 
     // Arms
@@ -121,6 +108,29 @@ function createPlayer(x, y) {
             guy.move(SPEED, 0);
             isMoving = true;
             guy.facingLeft = false;
+        }
+
+        // Digital particle dust trail when running
+        if (isMoving && rand() > 0.6) {
+            const particleX = guy.pos.x + rand(-6, 6);
+            const particleY = guy.pos.y - rand(5, 25);
+            const trailColor = (rand() > 0.5) ? rgb(0, 240, 255) : rgb(255, 0, 127);
+            const pSize = rand(2, 4);
+            const trail = add([
+                pos(particleX, particleY),
+                rect(pSize, pSize),
+                color(trailColor),
+                opacity(0.8),
+                z(18),
+                "trail"
+            ]);
+            trail.onUpdate(() => {
+                trail.opacity -= dt() * 2.5;
+                trail.pos.y -= dt() * 15;
+                if (trail.opacity <= 0) {
+                    destroy(trail);
+                }
+            });
         }
 
         if (isKeyPressed("space") && guy.isGrounded()) {

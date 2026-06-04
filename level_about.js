@@ -3,13 +3,13 @@ scene("about", () => {
     // Background Color (Matches Intro) - EXTENDED for Scroll
     add([
         rect(width() * 4, height()),
-        color(233, 180, 90), // #E9B45A
+        color(10, 10, 25), // Dark Cyber Night
         pos(0, 0),
         z(0)
     ]);
 
-    const C_FLOOR = rgb(176, 113, 29); // #B0711D
-    const C_TEXT = rgb(44, 44, 44); // #2C2C2C
+    const C_FLOOR = rgb(24, 24, 38); // Dark indigo-slate
+    const C_TEXT = rgb(240, 240, 240); // Off-white
 
     // Floor - SPLIT for Pit
     const floorHeight = height() * 0.2;
@@ -17,6 +17,11 @@ scene("about", () => {
     // --- PARALLAX BACKGROUND ---
     if (window.addParallaxBackground) {
         window.addParallaxBackground(width() * 4, floorHeight);
+    }
+
+    // --- TWINKLING STARS ---
+    if (window.addCyberStars) {
+        window.addCyberStars(width() * 4);
     }
 
     const LEFT_MARGIN_CALC = (width() * 0.05) + 150;
@@ -42,6 +47,14 @@ scene("about", () => {
         "floor"
     ]);
 
+    // Neon floor strip 1
+    add([
+        rect(pitX, 4),
+        pos(0, height() - floorHeight),
+        color(0, 240, 255),
+        z(1.1)
+    ]);
+
     // Floor 2: Pit End to Infinity (Width * 4)
     add([
         rect((width() * 4) - (pitX + pitWidth), floorHeight),
@@ -51,6 +64,14 @@ scene("about", () => {
         area(),
         body({ isStatic: true }),
         "floor"
+    ]);
+
+    // Neon floor strip 2
+    add([
+        rect((width() * 4) - (pitX + pitWidth), 4),
+        pos(pitX + pitWidth, height() - floorHeight),
+        color(0, 240, 255),
+        z(1.1)
     ]);
 
 

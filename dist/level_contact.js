@@ -2,18 +2,18 @@ scene("contact", () => {
     // --- SETUP ---
     window.SCENE_START_TIME = time(); // Reset Timer for Delay
 
-    // 1. SKY COLOR (Reverted)
+    // 1. SKY COLOR (Dark Cyber Night)
     add([
         rect(width(), height()),
-        color(233, 180, 90), // #E9B45A
+        color(10, 10, 25), // Cyber Navy
         pos(0, 0),
         z(0),
         fixed()
     ]);
 
-    // 2. GROUND COLOR (Reverted)
-    const C_FLOOR = rgb(176, 113, 29); // #B0711D
-    const C_TEXT = rgb(44, 44, 44); // #2C2C2C
+    // 2. GROUND COLOR (Dark indigo-slate)
+    const C_FLOOR = rgb(24, 24, 38); // Dark indigo-slate
+    const C_TEXT = rgb(240, 240, 240); // Off-white
 
     // Lava Palette
     const C_LAVA_BASE = rgb(200, 40, 0);
@@ -39,6 +39,11 @@ scene("contact", () => {
     // --- PARALLAX BACKGROUND ---
     if (window.addParallaxBackground) {
         window.addParallaxBackground(worldWidth, safeFloorHeight);
+    }
+
+    // --- TWINKLING STARS ---
+    if (window.addCyberStars) {
+        window.addCyberStars(worldWidth);
     }
 
     // --- RECRUITER MODE UI ---
@@ -909,6 +914,17 @@ scene("contact", () => {
 
     // BUT! I see "scene('contact')" usually implies end of journey.
     // Let's stick to decorations.
+
+    // Add neon cyan outlines to all solid static floors
+    get("floor").forEach((fl) => {
+        if (fl.opacity === 0.6 || !fl.width) return;
+        add([
+            rect(fl.width, 4),
+            pos(fl.pos.x, fl.pos.y),
+            color(0, 240, 255), // Cyan neon edge
+            z(1.1)
+        ]);
+    });
 
     // --- TRANSITION ENTRY ---
     const topJaw = window.g_TransitionJaws ? window.g_TransitionJaws.top : null;

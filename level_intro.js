@@ -1,15 +1,15 @@
 scene("intro", () => {
-    // OPAQUE BACKGROUND (#E9B45A)
+    // OPAQUE BACKGROUND (Dark Cyber Night)
     add([
         rect(width(), height()),
-        color(233, 180, 90), // #E9B45A
+        color(10, 10, 25), // Cyber Navy
         pos(0, 0),
         z(0)
     ]);
 
     // Colors
-    const C_FLOOR = rgb(176, 113, 29); // #B0711D
-    const C_TEXT = rgb(44, 44, 44); // #2C2C2C
+    const C_FLOOR = rgb(24, 24, 38); // Dark indigo-slate
+    const C_TEXT = rgb(240, 240, 240); // Off-white
 
     // BLUE FLOOR (Bottom ~35% of screen) - NOW DARKER ORANGE/BROWN
     // NOTE: height() varies on resize, but fine for static scene
@@ -24,6 +24,14 @@ scene("intro", () => {
         "floor"
     ]);
 
+    // Neon floor strip
+    add([
+        rect(width(), 4),
+        pos(0, height() - floorHeight),
+        color(0, 240, 255), // Cyan neon glow strip
+        z(1.1)
+    ]);
+
 
 
 
@@ -33,6 +41,11 @@ scene("intro", () => {
     // --- PARALLAX BACKGROUND ---
     if (window.addParallaxBackground) {
         window.addParallaxBackground(width(), floorHeight);
+    }
+
+    // --- TWINKLING STARS ---
+    if (window.addCyberStars) {
+        window.addCyberStars(width());
     }
 
     // --- RECRUITER MODE UI ---

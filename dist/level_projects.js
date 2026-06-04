@@ -7,7 +7,7 @@ scene("projects", () => {
     let spikesTriggered = false;
 
     // Background (Opaque color to match intro, extended bounds)
-    const C_BG = color(233, 180, 90); // #E9B45A
+    const C_BG = color(10, 10, 25); // Dark Cyber Night
 
     add([
         rect(width() * 20, height() * 10), // Extremely wide bg
@@ -17,10 +17,10 @@ scene("projects", () => {
     ]);
 
     // Palette
-    const C_FLOOR = rgb(176, 113, 29); // #B0711D
-    const C_TEXT = rgb(44, 44, 44); // #2C2C2C
+    const C_FLOOR = rgb(24, 24, 38); // Dark indigo-slate
+    const C_TEXT = rgb(240, 240, 240); // Off-white
     const C_OUTLINE = color(0, 0, 0); // Thick Black
-    const C_TECH_BASE = rgb(100, 100, 100); // Dark Grey
+    const C_TECH_BASE = rgb(40, 40, 55); // Dark Grey with blue-navy tint for tech base
 
     // Using Global Recruiter UI
     if (window.addRecruiterUI) window.addRecruiterUI();
@@ -42,9 +42,22 @@ scene("projects", () => {
         "floor"
     ]);
 
+    // Neon floor strip
+    add([
+        rect(worldWidth, 4),
+        pos(0, groundY),
+        color(0, 240, 255), // Cyan neon glow strip
+        z(1.1)
+    ]);
+
     // --- PARALLAX BACKGROUND ---
     if (window.addParallaxBackground) {
         window.addParallaxBackground(worldWidth, floorHeight);
+    }
+
+    // --- TWINKLING STARS ---
+    if (window.addCyberStars) {
+        window.addCyberStars(worldWidth);
     }
 
     // --- CLOUDS ---
@@ -419,6 +432,14 @@ scene("projects", () => {
         ]);
 
         island.baseObj = base;
+
+        // Neon platform line strip (top edge)
+        island.add([
+            rect(islandW, 3),
+            pos(-islandW / 2, 0),
+            color(255, 0, 127), // Neon magenta line strip
+            z(2.1)
+        ]);
 
         // Decos
         island.add([rect(15, 15), pos(-islandW / 4, islandH), color(baseColor), outline(4, C_OUTLINE), z(-1)]);

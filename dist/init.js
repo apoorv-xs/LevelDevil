@@ -278,8 +278,8 @@ try {
             "parallax_near"
         ]);
 
-        const farHillColor = rgb(215, 165, 75); // Lighter desaturated orange-brown
-        const nearHillColor = rgb(195, 135, 45); // Closer to floor color
+        const farHillColor = rgb(30, 15, 60); // Dark purple synthwave hill
+        const nearHillColor = rgb(50, 20, 80); // Deep magenta synthwave hill
 
         const segmentW = 400;
         const totalSegments = Math.ceil(worldWidth / segmentW) + 5;
@@ -291,7 +291,15 @@ try {
                 pos(i * segmentW, 0),
                 anchor("botleft"),
                 color(farHillColor),
-                opacity(0.35)
+                opacity(0.7)
+            ]);
+            // Neon cyan line edge
+            farHills.add([
+                rect(segmentW + 100, 2),
+                pos(i * segmentW, -240),
+                anchor("botleft"),
+                color(0, 240, 255),
+                opacity(0.75)
             ]);
 
             // Near hill
@@ -300,7 +308,15 @@ try {
                 pos(i * segmentW + segmentW * 0.5, 0),
                 anchor("botleft"),
                 color(nearHillColor),
-                opacity(0.45)
+                opacity(0.85)
+            ]);
+            // Neon magenta line edge
+            nearHills.add([
+                rect(segmentW, 2),
+                pos(i * segmentW + segmentW * 0.5, -140),
+                anchor("botleft"),
+                color(255, 0, 127),
+                opacity(0.85)
             ]);
         }
 
@@ -310,6 +326,25 @@ try {
             farHills.pos.x = cx * 0.7 - cx;
             nearHills.pos.x = cx * 0.5 - cx;
         });
+    };
+
+    window.addCyberStars = function (worldWidth) {
+        const starLimit = worldWidth || width();
+        for (let i = 0; i < 70; i++) {
+            const star = add([
+                pos(rand(-100, starLimit + 100), rand(-100, height() - 250)),
+                rect(rand(2, 4), rand(2, 4)),
+                color(255, 255, 255),
+                opacity(rand(0.2, 0.7)),
+                z(0.1),
+                "cyber_star"
+            ]);
+            star.onUpdate(() => {
+                if (rand() > 0.985) {
+                    star.opacity = rand(0.1, 0.7);
+                }
+            });
+        }
     };
 
     // --- RECRUITER MODE (Global Invincibility) ---
@@ -452,7 +487,9 @@ try {
         overlay.style.left = "0";
         overlay.style.width = "100%";
         overlay.style.height = "100%";
-        overlay.style.backgroundColor = "rgba(0, 0, 0, 0.85)";
+        overlay.style.backgroundColor = "rgba(10, 10, 20, 0.75)";
+        overlay.style.backdropFilter = "blur(12px)";
+        overlay.style.webkitBackdropFilter = "blur(12px)";
         overlay.style.display = "flex";
         overlay.style.flexDirection = "column";
         overlay.style.justifyContent = "center";
@@ -463,12 +500,13 @@ try {
 
         // Create content box
         const box = document.createElement("div");
-        box.style.border = "6px double #fff";
+        box.style.border = "3px solid #00f0ff";
         box.style.padding = "40px";
-        box.style.backgroundColor = "#111";
+        box.style.backgroundColor = "rgba(15, 15, 30, 0.9)";
         box.style.textAlign = "center";
         box.style.maxWidth = "550px";
-        box.style.boxShadow = "0px 0px 20px rgba(255, 255, 255, 0.25)";
+        box.style.boxShadow = "0px 0px 25px rgba(0, 240, 255, 0.4), inset 0px 0px 15px rgba(0, 240, 255, 0.2)";
+        box.style.borderRadius = "8px";
 
         // Title
         const title = document.createElement("h2");
@@ -524,12 +562,15 @@ try {
             selectedIndex = idx;
             optionElements.forEach((el, i) => {
                 if (i === idx) {
-                    el.style.backgroundColor = "#fff";
+                    el.style.backgroundColor = "#ff007f";
                     el.style.color = "#000";
+                    el.style.boxShadow = "0px 0px 15px #ff007f";
+                    el.style.borderRadius = "4px";
                     el.innerText = "> " + menuOptions[i].name.toUpperCase() + " <";
                 } else {
                     el.style.backgroundColor = "transparent";
                     el.style.color = "#fff";
+                    el.style.boxShadow = "none";
                     el.innerText = menuOptions[i].name.toUpperCase();
                 }
             });
@@ -683,12 +724,15 @@ try {
             selectedIndex = idx;
             optionElements.forEach((el, i) => {
                 if (i === idx) {
-                    el.style.backgroundColor = "#fff";
+                    el.style.backgroundColor = "#ff007f";
                     el.style.color = "#000";
+                    el.style.boxShadow = "0px 0px 15px #ff007f";
+                    el.style.borderRadius = "4px";
                     el.innerText = "> " + menuOptions[i].name.toUpperCase() + " <";
                 } else {
                     el.style.backgroundColor = "transparent";
                     el.style.color = "#fff";
+                    el.style.boxShadow = "none";
                     el.innerText = menuOptions[i].name.toUpperCase();
                 }
             });
