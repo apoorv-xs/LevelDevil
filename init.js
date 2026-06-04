@@ -27,7 +27,14 @@ try {
 
     // FORCE GLOBALS (Azure Safety Net)
     window.scene = k.scene;
-    window.go = k.go;
+    const originalGo = k.go;
+    window.go = function (sceneName, ...args) {
+        if (sceneName !== "empty") {
+            window.CURRENT_SCENE = sceneName;
+        }
+        return originalGo(sceneName, ...args);
+    };
+    k.go = window.go;
     window.add = k.add;
     window.pos = k.pos;
     window.rect = k.rect;
@@ -406,6 +413,8 @@ try {
 
             window.runDevilTransition("intro", () => {
                 startOverlay.style.display = 'none';
+                const pBtn = document.getElementById('pause-btn');
+                if (pBtn) pBtn.style.display = 'block';
             });
         });
     } else {
@@ -569,6 +578,203 @@ try {
 
         document.addEventListener("keydown", handleKeyDown);
     };
+
+    // --- PAUSE MENU SYSTEM ---
+    window.isPaused = false;
+    window.pauseMenuOverlay = null;
+    window.pauseMenuKeyDownHandler = null;
+
+    window.togglePauseMenu = function () {
+        const sOverlay = document.getElementById("start-overlay");
+        if (sOverlay && sOverlay.style.display !== "none") return;
+        if (document.getElementById("project-modal-overlay")) return;
+
+        if (window.isPaused) {
+            window.resumeGame();
+        } else {
+            window.pauseGame();
+        }
+    };
+
+    window.pauseGame = function () {
+        if (window.isPaused) return;
+        window.isPaused = true;
+        if (window.k) window.k.debug.paused = true;
+        if (window.SFX) window.SFX.playTroll();
+
+        const overlay = document.createElement("div");
+        overlay.id = "pause-modal-overlay";
+        overlay.style.position = "fixed";
+        overlay.style.top = "0";
+        overlay.style.left = "0";
+        overlay.style.width = "100%";
+        overlay.style.height = "100%";
+        overlay.style.backgroundColor = "rgba(0, 0, 0, 0.85)";
+        overlay.style.display = "flex";
+        overlay.style.flexDirection = "column";
+        overlay.style.justifyContent = "center";
+        overlay.style.alignItems = "center";
+        overlay.style.zIndex = "999999";
+        overlay.style.fontFamily = "'Press Start 2P', monospace";
+        overlay.style.color = "#fff";
+
+        const box = document.createElement("div");
+        box.style.border = "6px double #fff";
+        box.style.padding = "40px";
+        box.style.backgroundColor = "#111";
+        box.style.textAlign = "center";
+        box.style.width = "400px";
+        box.style.boxShadow = "0px 0px 20px rgba(255, 255, 255, 0.25)";
+
+        const title = document.createElement("h2");
+        title.innerText = "GAME PAUSED";
+        title.style.color = "#fce566";
+        title.style.marginBottom = "30px";
+        title.style.fontSize = "1.5rem";
+        box.appendChild(title);
+
+        const optionsList = document.createElement("div");
+        optionsList.style.display = "flex";
+        optionsList.style.flexDirection = "column";
+        optionsList.style.gap = "15px";
+        box.appendChild(optionsList);
+
+        const menuOptions = [
+            { name: "RESUME", action: () => window.resumeGame() },
+            { name: "RESTART LEVEL", action: () => { window.resumeGame(); window.go(window.CURRENT_SCENE || "intro"); } }
+        ];
+
+        if (window.CURRENT_SCENE && window.CURRENT_SCENE !== "intro") {
+            menuOptions.push({ name: "BACK TO INTRO", action: () => { window.resumeGame(); window.go("intro"); } });
+        }
+
+        let selectedIndex = 0;
+        const optionElements = [];
+
+        menuOptions.forEach((opt, idx) => {
+            const btn = document.createElement("div");
+            btn.style.padding = "12px 20px";
+            btn.style.fontSize = "0.9rem";
+            btn.style.cursor = "pointer";
+            btn.style.transition = "all 0.1s";
+            btn.style.userSelect = "none";
+            btn.innerText = opt.name.toUpperCase();
+
+            optionsList.appendChild(btn);
+            optionElements.push(btn);
+
+            btn.addEventListener("click", () => {
+                opt.action();
+            });
+
+            btn.addEventListener("mouseenter", () => {
+                highlightOption(idx);
+            });
+        });
+
+        overlay.appendChild(box);
+        document.body.appendChild(overlay);
+        window.pauseMenuOverlay = overlay;
+
+        function highlightOption(idx) {
+            if (selectedIndex !== idx && window.SFX) {
+                window.SFX.playJump();
+            }
+            selectedIndex = idx;
+            optionElements.forEach((el, i) => {
+                if (i === idx) {
+                    el.style.backgroundColor = "#fff";
+                    el.style.color = "#000";
+                    el.innerText = "> " + menuOptions[i].name.toUpperCase() + " <";
+                } else {
+                    el.style.backgroundColor = "transparent";
+                    el.style.color = "#fff";
+                    el.innerText = menuOptions[i].name.toUpperCase();
+                }
+            });
+        }
+
+        function handleKeyDown(e) {
+            if (e.key === "ArrowDown" || e.key === "s") {
+                highlightOption((selectedIndex + 1) % menuOptions.length);
+                e.preventDefault();
+            } else if (e.key === "ArrowUp" || e.key === "w") {
+                highlightOption((selectedIndex - 1 + menuOptions.length) % menuOptions.length);
+                e.preventDefault();
+            } else if (e.key === "Enter" || e.key === "Spacebar" || e.key === " ") {
+                menuOptions[selectedIndex].action();
+                e.preventDefault();
+            } else if (e.key === "Escape") {
+                window.resumeGame();
+                e.preventDefault();
+            }
+        }
+
+        document.addEventListener("keydown", handleKeyDown);
+        window.pauseMenuKeyDownHandler = handleKeyDown;
+
+        highlightOption(0);
+    };
+
+    window.resumeGame = function () {
+        if (!window.isPaused) return;
+        window.isPaused = false;
+
+        if (window.pauseMenuOverlay) {
+            document.body.removeChild(window.pauseMenuOverlay);
+            window.pauseMenuOverlay = null;
+        }
+
+        if (window.pauseMenuKeyDownHandler) {
+            document.removeEventListener("keydown", window.pauseMenuKeyDownHandler);
+            window.pauseMenuKeyDownHandler = null;
+        }
+
+        if (window.k) window.k.debug.paused = false;
+        if (window.SFX) window.SFX.playCoin();
+    };
+
+    // Register Escape key listener globally
+    window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            if (e.defaultPrevented) return;
+            window.togglePauseMenu();
+        }
+    });
+
+    // Create and inject Pause Button
+    const pauseBtn = document.createElement("div");
+    pauseBtn.id = "pause-btn";
+    pauseBtn.innerText = "|| PAUSE";
+    pauseBtn.style.position = "fixed";
+    pauseBtn.style.top = "20px";
+    pauseBtn.style.left = "20px";
+    pauseBtn.style.zIndex = "150";
+    pauseBtn.style.fontFamily = "'Press Start 2P', monospace";
+    pauseBtn.style.fontSize = "12px";
+    pauseBtn.style.color = "#fff";
+    pauseBtn.style.backgroundColor = "#000";
+    pauseBtn.style.border = "4px double #fff";
+    pauseBtn.style.padding = "8px 12px";
+    pauseBtn.style.cursor = "pointer";
+    pauseBtn.style.userSelect = "none";
+    pauseBtn.style.display = "none";
+
+    pauseBtn.addEventListener("mouseenter", () => {
+        pauseBtn.style.backgroundColor = "#fff";
+        pauseBtn.style.color = "#000";
+        if (window.SFX) window.SFX.playJump();
+    });
+    pauseBtn.addEventListener("mouseleave", () => {
+        pauseBtn.style.backgroundColor = "#000";
+        pauseBtn.style.color = "#fff";
+    });
+    pauseBtn.addEventListener("click", (e) => {
+        window.togglePauseMenu();
+        e.stopPropagation();
+    });
+
+    document.body.appendChild(pauseBtn);
 
     // --- STARTUP (Moved from index.html) ---
     // Create empty scene to wait for user interaction
