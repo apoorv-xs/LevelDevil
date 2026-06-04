@@ -47,6 +47,31 @@ function createPlayer(x, y) {
         skin
     ]);
 
+    // Eyes
+    const leftEye = head.add([
+        rect(2, 2),
+        pos(-3, -7),
+        color(255, 255, 255),
+        anchor("center"),
+        z(1)
+    ]);
+    const rightEye = head.add([
+        rect(2, 2),
+        pos(3, -7),
+        color(255, 255, 255),
+        anchor("center"),
+        z(1)
+    ]);
+    // Blink loop
+    loop(2.5, () => {
+        leftEye.hidden = true;
+        rightEye.hidden = true;
+        wait(0.12, () => {
+            leftEye.hidden = false;
+            rightEye.hidden = false;
+        });
+    });
+
     // Arms
     const lArm = guy.add([
         rect(6, 16),
@@ -76,6 +101,7 @@ function createPlayer(x, y) {
     ]);
 
     // --- UPDATE LOOP ---
+    guy.facingLeft = false;
     guy.onUpdate(() => {
         // 1. Movement & Input
         let isMoving = false;
@@ -87,22 +113,26 @@ function createPlayer(x, y) {
         if (isKeyDown("left") && guy.pos.x > 10) {
             guy.move(-SPEED, 0);
             isMoving = true;
+            guy.facingLeft = true;
         }
         // Limit right movement: use custom levelWidth if set, otherwise default to screen width
         const rightLimit = guy.levelWidth || (width() - 10);
         if (isKeyDown("right") && guy.pos.x < rightLimit) {
             guy.move(SPEED, 0);
             isMoving = true;
+            guy.facingLeft = false;
         }
 
         if (isKeyPressed("space") && guy.isGrounded()) {
             guy.jump(JUMP);
+            if (window.SFX) window.SFX.playJump();
             // STRETCH: Tall and Thin
             guy.scale = vec2(0.8, 1.2);
             tween(guy.scale, vec2(1, 1), 0.2, (val) => guy.scale = val, easings.easeOutQuad);
         }
         if (isKeyPressed("up") && guy.isGrounded()) {
             guy.jump(JUMP);
+            if (window.SFX) window.SFX.playJump();
             // STRETCH: Tall and Thin
             guy.scale = vec2(0.8, 1.2);
             tween(guy.scale, vec2(1, 1), 0.2, (val) => guy.scale = val, easings.easeOutQuad);
@@ -144,6 +174,10 @@ function createPlayer(x, y) {
             shadow.scale = vec2(1, 1);
             shadow.opacity = 0.3;
         }
+
+        // 4. Directional Flipping
+        const currentScaleX = Math.abs(guy.scale.x);
+        guy.scale.x = guy.facingLeft ? -currentScaleX : currentScaleX;
     });
 
     // --- SQUASH AND STRETCH EVENTS ---

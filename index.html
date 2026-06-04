@@ -122,21 +122,28 @@
             div.style.color = "white";
             div.style.padding = "20px";
             div.style.zIndex = "999999";
-            div.style.fontSize = "20px";
+            div.style.fontSize = "16px";
             div.style.fontFamily = "monospace";
-            div.innerText = "ERROR: " + msg + "\nLine: " + lineNo + "\nCol: " + columnNo;
+            div.style.whiteSpace = "pre-wrap";
+            
+            let displayMsg = "ERROR: " + msg + "\nLine: " + lineNo + "\nCol: " + columnNo;
+            if (error && error.stack) {
+                displayMsg += "\n\nSTACK TRACE:\n" + error.stack;
+            }
+            div.innerText = displayMsg;
             document.body.appendChild(div);
             return false;
         };
     </script>
 
-    <script src="init.js?v=4"></script>
-    <script src="player.js?v=4"></script>
-    <script src="traps.js?v=4"></script>
-    <script src="level_intro.js?v=4"></script>
-    <script src="level_about.js?v=4"></script>
-    <script src="level_projects.js?v=4"></script>
-    <script src="level_contact.js?v=4"></script>
+    <script src="sfx.js?v=6"></script>
+    <script src="init.js?v=6"></script>
+    <script src="player.js?v=6"></script>
+    <script src="traps.js?v=6"></script>
+    <script src="level_intro.js?v=6"></script>
+    <script src="level_about.js?v=6"></script>
+    <script src="level_projects.js?v=6"></script>
+    <script src="level_contact.js?v=6"></script>
 
 </body>
 

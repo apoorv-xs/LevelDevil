@@ -28,11 +28,18 @@ scene("contact", () => {
     const safeFloorHeight = floorHeight + 60;
     const safeGroundY = height() - safeFloorHeight;
 
+    let worldWidth = 3500;
+
 
 
 
     // --- CLOUDS ---
     window.addGlobalClouds();
+
+    // --- PARALLAX BACKGROUND ---
+    if (window.addParallaxBackground) {
+        window.addParallaxBackground(worldWidth, safeFloorHeight);
+    }
 
     // --- RECRUITER MODE UI ---
     if (window.addRecruiterUI) window.addRecruiterUI();
@@ -450,7 +457,7 @@ scene("contact", () => {
 
     // Final Flat Area & Buffer
     const finishX = backEnd + 700;
-    const worldWidth = finishX + 900;
+    worldWidth = finishX + 900;
 
     add([
         rect(5000, safeFloorHeight + 800),
@@ -535,11 +542,11 @@ scene("contact", () => {
 
             const dist = guy.pos.dist(prof.pos);
             if (dist < 150) {
-                bubble.opacity = lerp(bubble.opacity, 1, 0.1);
-                label.opacity = lerp(label.opacity, 1, 0.1);
+                bubble.opacity = lerp(bubble.opacity ?? 0, 1, 0.1);
+                label.opacity = lerp(label.opacity ?? 0, 1, 0.1);
             } else {
-                bubble.opacity = lerp(bubble.opacity, 0, 0.1);
-                label.opacity = lerp(label.opacity, 0, 0.1);
+                bubble.opacity = lerp(bubble.opacity ?? 0, 0, 0.1);
+                label.opacity = lerp(label.opacity ?? 0, 0, 0.1);
             }
         });
     }
@@ -807,6 +814,7 @@ scene("contact", () => {
             window.DEATH_COUNT++;
         }
 
+        if (window.SFX) window.SFX.playDeath();
         addKaboom(guy.pos);
         shake(20);
         destroy(guy);
@@ -833,6 +841,7 @@ scene("contact", () => {
     });
 
     function enterPipe(pipe) {
+        if (window.SFX) window.SFX.playPort();
         playerFrozen = true;
         // Keep static to prevent physics interference during animation
         guy.use(body({ isStatic: true }));
@@ -854,6 +863,7 @@ scene("contact", () => {
                     window.open(pipe.url, '_blank');
                     playerFrozen = false;
                     // Pop out
+                    if (window.SFX) window.SFX.playPort();
                     // Reset Z after jump
                     tween(guy.pos.y, pipe.pos.y - 120, 0.5, (v) => guy.pos.y = v, easings.easeOutBack)
                         .onEnd(() => {

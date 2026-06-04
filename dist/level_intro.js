@@ -30,6 +30,11 @@ scene("intro", () => {
     // --- ANIMATED CLOUDS ---
     window.addGlobalClouds();
 
+    // --- PARALLAX BACKGROUND ---
+    if (window.addParallaxBackground) {
+        window.addParallaxBackground(width(), floorHeight);
+    }
+
     // --- RECRUITER MODE UI ---
     if (window.addRecruiterUI) window.addRecruiterUI();
 
@@ -141,11 +146,11 @@ scene("intro", () => {
             if (!guy.exists()) return;
             const dist = guy.pos.dist(prof.pos);
             if (dist < 200) {
-                bubble.opacity = lerp(bubble.opacity, 1, dt() * 10);
-                label.opacity = lerp(label.opacity, 1, dt() * 10);
+                bubble.opacity = lerp(bubble.opacity ?? 0, 1, dt() * 10);
+                label.opacity = lerp(label.opacity ?? 0, 1, dt() * 10);
             } else {
-                bubble.opacity = lerp(bubble.opacity, 0, dt() * 10);
-                label.opacity = lerp(label.opacity, 0, dt() * 10);
+                bubble.opacity = lerp(bubble.opacity ?? 0, 0, dt() * 10);
+                label.opacity = lerp(label.opacity ?? 0, 0, dt() * 10);
             }
         });
     }
@@ -166,7 +171,7 @@ scene("intro", () => {
             anchor("bot"),
             z(5),
             "gate",
-            { gateName: gNames[i] }
+            { gateName: gNames[i], trollTriggered: false }
         ]);
 
         // Gate Label
@@ -220,13 +225,41 @@ scene("intro", () => {
                 activeGate = g;
             }
 
+            // Troll Logic: Runaway gate when player gets close (< 180px)
+            if (g.gateName === "About Me" && !g.trollTriggered) {
+                const dist = guy.pos.dist(g.pos);
+                if (dist < 180) {
+                    g.trollTriggered = true;
+                    // Play Troll SFX
+                    if (window.SFX) window.SFX.playTroll();
+
+                    // Slide the gate 120px to the right
+                    tween(g.pos.x, g.pos.x + 120, 0.4, (val) => g.pos.x = val, easings.easeOutElastic);
+
+                    // Show Floating Text "NOPE!"
+                    const nopeText = add([
+                        text("NOPE!", { size: 14, font: "'Press Start 2P'" }),
+                        pos(g.pos.x, g.pos.y - 120),
+                        anchor("center"),
+                        color(255, 0, 0),
+                        opacity(1),
+                        z(30)
+                    ]);
+
+                    // Make the text float up and fade
+                    tween(nopeText.pos.y, nopeText.pos.y - 40, 0.8, (val) => nopeText.pos.y = val, easings.easeOutQuad);
+                    tween(1, 0, 0.8, (val) => nopeText.opacity = val, easings.easeInQuad)
+                        .onEnd(() => destroy(nopeText));
+                }
+            }
+
             // Manage Hint Visibility
             const hint = g.children.find(c => c.isHint);
             if (hint) {
                 if (guy.isColliding(g)) {
-                    hint.opacity = lerp(hint.opacity, 1, dt() * 10);
+                    hint.opacity = lerp(hint.opacity ?? 0, 1, dt() * 10);
                 } else {
-                    hint.opacity = lerp(hint.opacity, 0, dt() * 10);
+                    hint.opacity = lerp(hint.opacity ?? 0, 0, dt() * 10);
                 }
             }
         }

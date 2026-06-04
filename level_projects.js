@@ -42,6 +42,11 @@ scene("projects", () => {
         "floor"
     ]);
 
+    // --- PARALLAX BACKGROUND ---
+    if (window.addParallaxBackground) {
+        window.addParallaxBackground(worldWidth, floorHeight);
+    }
+
     // --- CLOUDS ---
     function addWideClouds() {
         const cloudCount = 50;
@@ -231,6 +236,7 @@ scene("projects", () => {
         ];
 
         const plate = pad.add(plateConfig);
+        plate.basePad = pad;
 
         // RECRUITER MODE LOGIC for PADS (Delayed)
         plate.onUpdate(() => {
@@ -458,12 +464,15 @@ scene("projects", () => {
         },
         {
             id: "ecom",
-            title: "Ecommerce",
+            title: "The Find",
             type: "earth",
             doorColor: rgb(102, 51, 153),
             icon: "cart",
-            desc: "Shop everything.",
-            link: "https://www.figma.com/proto/o0Wrqa5hwpm1owt6Bdi03b/The-FIND?node-id=0-1&t=1SWjUK1wz2e0ZZlc-1"
+            desc: "Ecommerce Project",
+            links: [
+                { name: "Figma Prototype", url: "https://www.figma.com/proto/o0Wrqa5hwpm1owt6Bdi03b/The-FIND?node-id=0-1&t=1SWjUK1wz2e0ZZlc-1" },
+                { name: "GitHub Repository", url: "https://github.com/apoorv-xs/TheFind-ecommerce" }
+            ]
         },
         // NEW PROJECT
         {
@@ -510,9 +519,35 @@ scene("projects", () => {
 
     // 1. Ground Pads
     createJumpPad(400, groundY);
-    createJumpPad(800, groundY);
+    const trollPad = createJumpPad(800, groundY);
     createJumpPad(1200, groundY);
     createJumpPad(1600, groundY);
+
+    let padTrollTriggered = false;
+    onUpdate(() => {
+        if (window.isRecruiterActive()) return; // Disable in recruiter mode
+
+        if (!padTrollTriggered && guy.exists() && !guy.isGrounded() && guy.pos.x > 680 && guy.pos.x < 780 && guy.pos.y < groundY - 50) {
+            padTrollTriggered = true;
+            if (window.SFX) window.SFX.playTroll();
+
+            // Show "WHOOPS!" text
+            const textWhoops = add([
+                text("WHOOPS!", { size: 12, font: "'Press Start 2P'" }),
+                pos(trollPad.basePad.pos.x, trollPad.basePad.pos.y - 60),
+                anchor("center"),
+                color(255, 0, 0),
+                opacity(1),
+                z(30)
+            ]);
+            tween(textWhoops.pos.y, textWhoops.pos.y - 45, 0.8, (v) => textWhoops.pos.y = v, easings.easeOutQuad);
+            tween(1, 0, 0.8, (v) => textWhoops.opacity = v, easings.easeInQuad)
+                .onEnd(() => destroy(textWhoops));
+
+            // Slide pad to the right by 60px
+            tween(trollPad.basePad.pos.x, trollPad.basePad.pos.x + 60, 0.25, (val) => trollPad.basePad.pos.x = val, easings.easeOutQuad);
+        }
+    });
 
     // 2. Islands Sequence
 
@@ -624,6 +659,7 @@ scene("projects", () => {
 
     // --- CAMERA ---
     onUpdate(() => {
+        if (!guy.exists()) return;
         let camX = guy.pos.x;
         if (camX < 0) camX = 0;
         else if (camX < width() / 2) camX = width() / 2;
@@ -643,13 +679,25 @@ scene("projects", () => {
 
     // --- INTERACTIONS ---
     guy.onCollideUpdate("project_door", (d) => {
+        const hasMultiple = d.projectData.links && d.projectData.links.length > 0;
         infoText.text = d.projectData.title.toUpperCase() + "\n[ENTER] TO VIEW";
-        // Also make doors responsive
+
         if (isKeyPressed("enter")) {
-            // Simple open, no effects
-            setTimeout(() => {
-                window.open(d.projectData.link, "_blank");
-            }, 50);
+            if (hasMultiple) {
+                // Freeze player and show overlay
+                guy.paused = true;
+                if (guy.body) guy.body.isStatic = true;
+
+                window.showProjectLinksOverlay(d.projectData, () => {
+                    guy.paused = false;
+                    if (guy.body) guy.body.isStatic = false;
+                });
+            } else {
+                // Simple open, no effects
+                setTimeout(() => {
+                    window.open(d.projectData.link, "_blank");
+                }, 50);
+            }
         }
     });
 
@@ -674,6 +722,7 @@ scene("projects", () => {
         // If we are more than 2px away from target (below it), assume safe
         if (l.pos.y > l.targetY + 2) return;
 
+        if (window.SFX) window.SFX.playDeath();
         shake(10);
         addKaboom(guy.pos); // Explosion
         go("projects"); // Instant restart

@@ -102,6 +102,7 @@ try {
 
     // --- TRANSITION ANIMATION ---
     window.runDevilTransition = function (nextSceneName, onBiteClose) {
+        if (window.SFX) window.SFX.playPort();
         const skinColor = rgb(...hexToRgb(C_DEVIL_SKIN));
         const eyeColor = rgb(...hexToRgb(C_DEVIL_EYES));
 
@@ -254,6 +255,56 @@ try {
         addCloud(width() * 0.8, height() * 0.2, 25);
     };
 
+    window.addParallaxBackground = function (worldWidth, floorHeight) {
+        const skyH = height() - floorHeight;
+
+        // Parallax layers (far and near)
+        const farHills = add([
+            pos(0, skyH),
+            z(0.2), // Behind details, but in front of sky rect (z=0)
+            "parallax_far"
+        ]);
+
+        const nearHills = add([
+            pos(0, skyH),
+            z(0.3),
+            "parallax_near"
+        ]);
+
+        const farHillColor = rgb(215, 165, 75); // Lighter desaturated orange-brown
+        const nearHillColor = rgb(195, 135, 45); // Closer to floor color
+
+        const segmentW = 400;
+        const totalSegments = Math.ceil(worldWidth / segmentW) + 5;
+
+        for (let i = -2; i < totalSegments; i++) {
+            // Far hill
+            farHills.add([
+                rect(segmentW + 100, 240),
+                pos(i * segmentW, 0),
+                anchor("botleft"),
+                color(farHillColor),
+                opacity(0.35)
+            ]);
+
+            // Near hill
+            nearHills.add([
+                rect(segmentW, 140),
+                pos(i * segmentW + segmentW * 0.5, 0),
+                anchor("botleft"),
+                color(nearHillColor),
+                opacity(0.45)
+            ]);
+        }
+
+        // Update positions relative to camera
+        onUpdate(() => {
+            const cx = camPos().x;
+            farHills.pos.x = cx * 0.7 - cx;
+            nearHills.pos.x = cx * 0.5 - cx;
+        });
+    };
+
     // --- RECRUITER MODE (Global Invincibility) ---
     window.RECRUITER_MODE = false;
     window.SCENE_START_TIME = 0;
@@ -348,6 +399,7 @@ try {
     if (startOverlay && gameContainer) {
         // Handle Click on HTML Overlay
         startOverlay.addEventListener('click', () => {
+            if (window.SFX) window.SFX.init();
             gameContainer.style.pointerEvents = "all";
             const canvas = document.getElementById("game-canvas");
             if (canvas) canvas.focus();
@@ -372,9 +424,151 @@ try {
 
     window.addEventListener("focus", () => {
         document.title = originalTitle;
-        // Resume game
-        if (window.k) window.k.debug.paused = false;
+        // Resume game only if project links overlay is NOT open
+        const overlayActive = document.getElementById("project-modal-overlay") !== null;
+        if (window.k && !overlayActive) window.k.debug.paused = false;
     });
+
+    window.showProjectLinksOverlay = function (projectData, callbackOnClose) {
+        if (window.SFX) window.SFX.playCoin();
+
+        // Pause the game loop
+        if (window.k) window.k.debug.paused = true;
+
+        // Create overlay container
+        const overlay = document.createElement("div");
+        overlay.id = "project-modal-overlay";
+        overlay.style.position = "fixed";
+        overlay.style.top = "0";
+        overlay.style.left = "0";
+        overlay.style.width = "100%";
+        overlay.style.height = "100%";
+        overlay.style.backgroundColor = "rgba(0, 0, 0, 0.85)";
+        overlay.style.display = "flex";
+        overlay.style.flexDirection = "column";
+        overlay.style.justifyContent = "center";
+        overlay.style.alignItems = "center";
+        overlay.style.zIndex = "999999";
+        overlay.style.fontFamily = "'Press Start 2P', monospace";
+        overlay.style.color = "#fff";
+
+        // Create content box
+        const box = document.createElement("div");
+        box.style.border = "6px double #fff";
+        box.style.padding = "40px";
+        box.style.backgroundColor = "#111";
+        box.style.textAlign = "center";
+        box.style.maxWidth = "550px";
+        box.style.boxShadow = "0px 0px 20px rgba(255, 255, 255, 0.25)";
+
+        // Title
+        const title = document.createElement("h2");
+        title.innerText = projectData.title.toUpperCase();
+        title.style.color = "#fce566";
+        title.style.marginBottom = "30px";
+        title.style.fontSize = "1.5rem";
+        title.style.lineHeight = "2rem";
+        box.appendChild(title);
+
+        // Options list
+        const optionsList = document.createElement("div");
+        optionsList.style.display = "flex";
+        optionsList.style.flexDirection = "column";
+        optionsList.style.gap = "15px";
+        box.appendChild(optionsList);
+
+        const links = projectData.links;
+        const menuOptions = [...links, { name: "BACK TO GAME", isBack: true }];
+
+        let selectedIndex = 0;
+        const optionElements = [];
+
+        menuOptions.forEach((opt, idx) => {
+            const btn = document.createElement("div");
+            btn.style.padding = "12px 20px";
+            btn.style.fontSize = "0.9rem";
+            btn.style.cursor = "pointer";
+            btn.style.transition = "all 0.1s";
+            btn.style.userSelect = "none";
+            btn.innerText = opt.name.toUpperCase();
+
+            optionsList.appendChild(btn);
+            optionElements.push(btn);
+
+            // Click / Hover logic
+            btn.addEventListener("click", () => {
+                selectOption(idx);
+            });
+
+            btn.addEventListener("mouseenter", () => {
+                highlightOption(idx);
+            });
+        });
+
+        overlay.appendChild(box);
+        document.body.appendChild(overlay);
+
+        function highlightOption(idx) {
+            if (selectedIndex !== idx && window.SFX) {
+                window.SFX.playJump();
+            }
+            selectedIndex = idx;
+            optionElements.forEach((el, i) => {
+                if (i === idx) {
+                    el.style.backgroundColor = "#fff";
+                    el.style.color = "#000";
+                    el.innerText = "> " + menuOptions[i].name.toUpperCase() + " <";
+                } else {
+                    el.style.backgroundColor = "transparent";
+                    el.style.color = "#fff";
+                    el.innerText = menuOptions[i].name.toUpperCase();
+                }
+            });
+        }
+
+        function selectOption(idx) {
+            const opt = menuOptions[idx];
+            closeModal();
+
+            if (!opt.isBack) {
+                if (window.SFX) window.SFX.playCoin();
+                setTimeout(() => {
+                    window.open(opt.url, "_blank");
+                }, 100);
+            } else {
+                if (window.SFX) window.SFX.playTroll();
+            }
+        }
+
+        function closeModal() {
+            document.body.removeChild(overlay);
+            document.removeEventListener("keydown", handleKeyDown);
+            if (window.k) window.k.debug.paused = false;
+            if (callbackOnClose) callbackOnClose();
+        }
+
+        // Initialize highlights
+        highlightOption(0);
+
+        // Keyboard controls
+        function handleKeyDown(e) {
+            if (e.key === "ArrowDown" || e.key === "s") {
+                highlightOption((selectedIndex + 1) % menuOptions.length);
+                e.preventDefault();
+            } else if (e.key === "ArrowUp" || e.key === "w") {
+                highlightOption((selectedIndex - 1 + menuOptions.length) % menuOptions.length);
+                e.preventDefault();
+            } else if (e.key === "Enter" || e.key === "Spacebar" || e.key === " ") {
+                selectOption(selectedIndex);
+                e.preventDefault();
+            } else if (e.key === "Escape") {
+                selectOption(menuOptions.length - 1); // Select back
+                e.preventDefault();
+            }
+        }
+
+        document.addEventListener("keydown", handleKeyDown);
+    };
 
     // --- STARTUP (Moved from index.html) ---
     // Create empty scene to wait for user interaction

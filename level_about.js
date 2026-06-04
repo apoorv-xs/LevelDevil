@@ -14,6 +14,11 @@ scene("about", () => {
     // Floor - SPLIT for Pit
     const floorHeight = height() * 0.2;
 
+    // --- PARALLAX BACKGROUND ---
+    if (window.addParallaxBackground) {
+        window.addParallaxBackground(width() * 4, floorHeight);
+    }
+
     const LEFT_MARGIN_CALC = (width() * 0.05) + 150;
     const startX_CALC = LEFT_MARGIN_CALC + 460 + 350;
     const startX = startX_CALC; // Alias for compatibility
@@ -265,6 +270,7 @@ scene("about", () => {
     // Collision with Danger
     guy.onCollide("danger", () => {
         if (window.RECRUITER_MODE) return; // Immune
+        if (window.SFX) window.SFX.playDeath();
         shake(20);
         wait(0.2, () => {
             go("about");
@@ -273,14 +279,13 @@ scene("about", () => {
 
     // Collision with Void
     guy.onCollide("void", () => {
-        if (window.RECRUITER_MODE) return; // Immune (Should you survive void? Maybe wrap around? For now, just don't die means stuck falling? No, void usually is death plane. Let's keep immunity but maybe bounce up? Or just don't reset. If you fall forever, that's a bug. Okay, let's allow void death OR bounce back up. Invincibility usually implies not restarting level. Let's make void bounce you up.)
-
         if (window.RECRUITER_MODE) {
             guy.pos.y = height() - floorHeight - 100; // Teleport back up
             guy.vel.y = 0;
             return;
         }
 
+        if (window.SFX) window.SFX.playDeath();
         shake(20);
         wait(0.5, () => {
             go("about");
@@ -521,16 +526,75 @@ scene("about", () => {
     chestHint.hidden = true;
 
     let chestOpened = false;
+    let chestTrollTriggered = false;
 
     // Interaction with Chest
     onUpdate(() => {
         if (chestOpened) return;
 
         const d = guy.pos.dist(chestBody.pos);
+
+        // Troll Logic: Chest jumps away
+        if (!chestTrollTriggered && d < 120) {
+            chestTrollTriggered = true;
+            // Play Troll SFX
+            if (window.SFX) window.SFX.playTroll();
+
+            // Show "TOO SLOW!" text
+            const textTooSlow = add([
+                text("TOO SLOW!", { size: 12, font: "'Press Start 2P'" }),
+                pos(chestBody.pos.x, chestBody.pos.y - 120),
+                anchor("center"),
+                color(255, 0, 0),
+                opacity(1),
+                z(30)
+            ]);
+            tween(textTooSlow.pos.y, textTooSlow.pos.y - 45, 0.8, (v) => textTooSlow.pos.y = v, easings.easeOutQuad);
+            tween(1, 0, 0.8, (v) => textTooSlow.opacity = v, easings.easeInQuad)
+                .onEnd(() => destroy(textTooSlow));
+
+            // Leap to the right: move chestBody, chestLid, resumePaper, and chestHint by +120px.
+            const jumpTime = 0.5;
+            const targetX = chestBody.pos.x + 120;
+            const peakY = chestBody.pos.y - 80;
+            const groundYVal = chestBody.pos.y;
+
+            // Tween X for all chest components
+            tween(chestBody.pos.x, targetX, jumpTime, (val) => chestBody.pos.x = val, easings.easeInOutQuad);
+            tween(chestLid.pos.x, targetX, jumpTime, (val) => chestLid.pos.x = val, easings.easeInOutQuad);
+            tween(resumePaper.pos.x, targetX, jumpTime, (val) => resumePaper.pos.x = val, easings.easeInOutQuad);
+            tween(chestHint.pos.x, targetX, jumpTime, (val) => chestHint.pos.x = val, easings.easeInOutQuad);
+
+            // Tween Y to create arch (sine wave for jump)
+            let timeElapsed = 0;
+            const anim = onUpdate(() => {
+                timeElapsed += dt();
+                const ratio = Math.min(timeElapsed / jumpTime, 1);
+                const arch = Math.sin(ratio * Math.PI);
+                const currentY = groundYVal - (arch * 80);
+
+                chestBody.pos.y = currentY;
+                chestLid.pos.y = currentY - 40;
+                resumePaper.pos.y = currentY - 20;
+                chestHint.pos.y = currentY - 80;
+
+                if (ratio >= 1) {
+                    anim.cancel();
+                    // Reset positions firmly at target
+                    chestBody.pos.y = groundYVal;
+                    chestLid.pos.y = groundYVal - 40;
+                    resumePaper.pos.y = groundYVal - 20;
+                    chestHint.pos.y = groundYVal - 80;
+                }
+            });
+            return;
+        }
+
         if (d < 80) {
             chestHint.hidden = false;
             if (isKeyPressed("enter")) {
                 chestOpened = true;
+                if (window.SFX) window.SFX.playCoin();
                 chestHint.text = "DOWNLOADING...";
                 shake(5);
                 tween(chestLid.pos.y, chestLid.pos.y - 20, 0.5, (val) => chestLid.pos.y = val, easings.easeOutBounce);
@@ -693,6 +757,7 @@ scene("about", () => {
     const maxCamX = chestX;
 
     onUpdate(() => {
+        if (!guy.exists()) return;
         let targetCamX = guy.pos.x;
         if (targetCamX < defaultCamX) targetCamX = defaultCamX;
         if (targetCamX > maxCamX) targetCamX = maxCamX;
