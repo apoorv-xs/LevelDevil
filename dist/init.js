@@ -5,8 +5,8 @@ try {
     const CANVAS_WIDTH = window.innerWidth;
     const CANVAS_HEIGHT = window.innerHeight;
 
-    const C_DEVIL_SKIN = "#5A1C12";
-    const C_DEVIL_EYES = "#D05A3A";
+    const C_DEVIL_SKIN = "#060610"; // Deep void black
+    const C_DEVIL_EYES = "#00F0FF"; // Neon cyan
 
     console.log("INT: Config set", CANVAS_WIDTH, CANVAS_HEIGHT);
 
@@ -106,9 +106,11 @@ try {
 
     // Global references to jaws for cross-scene control
     window.g_TransitionJaws = { top: null, bot: null };
+    window.g_IsTransitioning = false;
 
     // --- TRANSITION ANIMATION ---
     window.runDevilTransition = function (nextSceneName, onBiteClose) {
+        window.g_IsTransitioning = true;
         if (window.SFX) window.SFX.playPort();
         const skinColor = rgb(...hexToRgb(C_DEVIL_SKIN));
         const eyeColor = rgb(...hexToRgb(C_DEVIL_EYES));
@@ -349,6 +351,147 @@ try {
                 }
             });
         }
+    };
+
+    // --- VECTOR PLATFORM HELPER (Silhouettes with Neon Tops) ---
+    window.addVectorPlatform = function (x, y, w, h, neonColor = rgb(0, 240, 255), tags = []) {
+        const isStatic = !tags.includes("moving");
+        const block = add([
+            pos(x, y),
+            rect(w, h),
+            color(6, 6, 12), // High-contrast Vector silhouette deep dark core
+            area(),
+            body({ isStatic: isStatic }),
+            z(1),
+            ...tags
+        ]);
+
+        // Glowing neon top border line
+        block.add([
+            rect(w, 4),
+            pos(0, 0),
+            color(neonColor),
+            z(1.1)
+        ]);
+
+        // Auto-register as fluid ground segment (color 0-255 → 0-1)
+        if (window.fluidGroundSegments) {
+            window.fluidGroundSegments.push({
+                x: x,
+                w: w,
+                y: y,
+                h: h,
+                color: [
+                    (neonColor.r || 0) / 255,
+                    (neonColor.g || 0) / 255,
+                    (neonColor.b || 0) / 255
+                ]
+            });
+        }
+
+        return block;
+    };
+
+    // --- PERSPECTIVE GRID FLOOR (Ahead-of-its-time 3D Grid) ---
+    window.addPerspectiveGrid = function () {
+        return add([
+            z(0.4), // Behind platforms (z=1) but in front of WebGL background
+            fixed(),
+            "perspective_grid",
+            {
+                draw() {
+                    const horizonY = height() * 0.5; // Vanishing horizon height
+                    const floorY = height();
+                    const vanishingX = width() / 2;
+                    const numVLines = 30;
+
+                    // Camera relative scroll offset
+                    const cx = (window.k && k.camPos) ? k.camPos().x : 0;
+                    const cameraOffset = (cx * 0.3) % (width() / numVLines);
+
+                    // 1. Draw vertical converging lines
+                    for (let i = -numVLines; i <= numVLines * 2; i++) {
+                        const startX = (i * (width() / numVLines)) - cameraOffset;
+                        k.drawLine({
+                            p1: vec2(startX, floorY),
+                            p2: vec2(vanishingX, horizonY),
+                            color: rgb(0, 240, 255),
+                            opacity: 0.12,
+                            width: 1.5
+                        });
+                    }
+
+                    // 2. Draw horizontal lines with exponential spacing for 3D depth
+                    const numHLines = 12;
+                    for (let i = 0; i < numHLines; i++) {
+                        const progress = i / numHLines;
+                        const y = lerp(horizonY, floorY, Math.pow(progress, 2.5));
+                        k.drawLine({
+                            p1: vec2(0, y),
+                            p2: vec2(width(), y),
+                            color: rgb(0, 240, 255),
+                            opacity: progress * 0.3,
+                            width: 1.0 + progress * 1.5
+                        });
+                    }
+                }
+            }
+        ]);
+    };
+
+    // --- DYNAMIC FLUID WARNING ALERT SYSTEM ---
+    window.showFluidWarning = function (msg) {
+        if (window.SFX && window.SFX.playTroll) {
+            window.SFX.playTroll(); // Troll buzzer sound
+        }
+
+        const banner = add([
+            pos(width() / 2, height() * 0.22),
+            anchor("center"),
+            rect(width() * 0.7, 50, { radius: 6 }),
+            color(6, 6, 12),
+            outline(3, rgb(255, 0, 127)),
+            opacity(0.9),
+            z(999),
+            fixed()
+        ]);
+
+        const textObj = banner.add([
+            text(msg, {
+                size: 11,
+                font: "'Press Start 2P'",
+                align: "center",
+                width: width() * 0.65
+            }),
+            anchor("center"),
+            pos(0, 0),
+            color(255, 0, 127),
+            fixed()
+        ]);
+
+        // Pop Animation
+        tween(0, 1, 0.4, (val) => {
+            banner.pos.y = (height() * 0.16) + val * (height() * 0.06);
+        }, easings.easeOutBack);
+
+        // Neon blink effect
+        let blinkTimer = 0;
+        banner.onUpdate(() => {
+            blinkTimer += dt() * 8;
+            const blinkCol = (Math.floor(blinkTimer) % 2 === 0) ? rgb(255, 255, 255) : rgb(255, 0, 127);
+            textObj.color = blinkCol;
+            banner.outline.color = blinkCol;
+        });
+
+        // Auto destroy
+        wait(3.2, () => {
+            tween(1, 0, 0.4, (val) => {
+                banner.opacity = val;
+                textObj.opacity = val;
+            }).onEnd(() => {
+                destroy(banner);
+            });
+        });
     };
 
     // --- RECRUITER MODE (Global Invincibility) ---

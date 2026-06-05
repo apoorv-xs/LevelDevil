@@ -339,6 +339,8 @@ scene("about", () => {
     // Collision with Danger
     guy.onCollide("danger", () => {
         if (window.RECRUITER_MODE) return; // Immune
+        if (guy.isDead) return;
+        guy.isDead = true;
         if (window.SFX) window.SFX.playDeath();
         shake(20);
         wait(0.2, () => {
@@ -346,19 +348,22 @@ scene("about", () => {
         });
     });
 
-    // Collision with Void
-    guy.onCollide("void", () => {
-        if (window.RECRUITER_MODE) {
-            guy.pos.y = groundY - 100;
-            guy.vel.y = 0;
-            return;
+    // --- VOID DEATH CHECK ---
+    guy.onUpdate(() => {
+        if (guy.isDead) return;
+        if (guy.pos.y > groundY + 180) {
+            if (window.RECRUITER_MODE) {
+                guy.pos.y = groundY - 100;
+                guy.vel.y = 0;
+                return;
+            }
+            guy.isDead = true;
+            if (window.SFX) window.SFX.playDeath();
+            shake(20);
+            wait(0.2, () => {
+                go("about");
+            });
         }
-
-        if (window.SFX) window.SFX.playDeath();
-        shake(20);
-        wait(0.5, () => {
-            go("about");
-        });
     });
 
     // --- CRATES (Skills) ---
@@ -746,6 +751,8 @@ scene("about", () => {
         // Start at the END (gatesStartX_CALC)
         createLightningCloud(gatesStartX_CALC, height() * 0.15, guy, height() - floorHeight, () => {
             if (window.RECRUITER_MODE) return;
+            if (guy.isDead) return;
+            guy.isDead = true;
             go("about");
         });
     }
@@ -796,21 +803,33 @@ scene("about", () => {
         }
     });
 
-    const topJaw = window.g_TransitionJaws.top;
-    const botJaw = window.g_TransitionJaws.bot;
-    const halfH = height() / 2;
+    // --- TRANSITION ENTRY ---
+    if (window.g_IsTransitioning) {
+        window.g_IsTransitioning = false;
+        const topJaw = window.g_TransitionJaws.top;
+        const botJaw = window.g_TransitionJaws.bot;
+        const halfH = height() / 2;
 
-    if (topJaw && botJaw) {
-        wait(0.2, () => {
-            tween(topJaw.pos.y, -halfH - 200, 0.5, (val) => topJaw.pos.y = val, easings.easeInQuad);
-            tween(botJaw.pos.y, height() + 200, 0.5, (val) => botJaw.pos.y = val, easings.easeInQuad)
-                .onEnd(() => {
-                    destroy(topJaw);
-                    destroy(botJaw);
-                    window.g_TransitionJaws.top = null;
-                    window.g_TransitionJaws.bot = null;
-                });
-        });
+        if (topJaw && botJaw) {
+            wait(0.2, () => {
+                tween(topJaw.pos.y, -halfH - 200, 0.5, (val) => topJaw.pos.y = val, easings.easeInQuad);
+                tween(botJaw.pos.y, height() + 200, 0.5, (val) => botJaw.pos.y = val, easings.easeInQuad)
+                    .onEnd(() => {
+                        destroy(topJaw);
+                        destroy(botJaw);
+                        window.g_TransitionJaws.top = null;
+                        window.g_TransitionJaws.bot = null;
+                    });
+            });
+        }
+    } else {
+        // Immediate cleanup of jaws on manual restart or death
+        if (window.g_TransitionJaws) {
+            if (window.g_TransitionJaws.top) destroy(window.g_TransitionJaws.top);
+            if (window.g_TransitionJaws.bot) destroy(window.g_TransitionJaws.bot);
+            window.g_TransitionJaws.top = null;
+            window.g_TransitionJaws.bot = null;
+        }
     }
 });
 

@@ -106,9 +106,11 @@ try {
 
     // Global references to jaws for cross-scene control
     window.g_TransitionJaws = { top: null, bot: null };
+    window.g_IsTransitioning = false;
 
     // --- TRANSITION ANIMATION ---
     window.runDevilTransition = function (nextSceneName, onBiteClose) {
+        window.g_IsTransitioning = true;
         if (window.SFX) window.SFX.playPort();
         const skinColor = rgb(...hexToRgb(C_DEVIL_SKIN));
         const eyeColor = rgb(...hexToRgb(C_DEVIL_EYES));

@@ -17,26 +17,28 @@ function createPlayer(x, y) {
         "guy"
     ]);
 
-    // --- VISUALS ---
+    // --- VISUALS (Fluid World Style: dark silhouette + neon outline) ---
 
     // Shadow
     const shadow = guy.add([
         rect(16, 6),
         anchor("center"),
         pos(0, 0),
-        color(0, 0, 0),
-        opacity(0.3),
-        z(-1) // Behind/Below player
+        color(0, 200, 255),
+        opacity(0.15),
+        z(-1)
     ]);
 
-    const skin = color(220, 220, 230); // Cybernetic silver
+    const C_BODY = color(8, 8, 16); // Dark void body
+    const C_OUTLINE = rgb(0, 220, 255); // Neon cyan edge
 
-    // Body
+    // Body (torso)
     const torso = guy.add([
         rect(16, 20),
         pos(0, -14),
         anchor("bot"),
-        skin
+        C_BODY,
+        outline(1.5, C_OUTLINE)
     ]);
 
     // Head
@@ -44,47 +46,52 @@ function createPlayer(x, y) {
         rect(12, 12),
         pos(0, -34),
         anchor("bot"),
-        skin
+        C_BODY,
+        outline(1.5, C_OUTLINE)
     ]);
 
-    // Cyber Visor
+    // Cyber Visor (brighter, wider)
     const visor = head.add([
-        rect(10, 2),
+        rect(10, 3),
         pos(0, -7),
-        color(0, 240, 255),
+        color(0, 255, 255),
         anchor("center"),
         z(2)
     ]);
     visor.onUpdate(() => {
-        visor.opacity = map(Math.sin(time() * 8), -1, 1, 0.6, 1.0);
+        visor.opacity = map(Math.sin(time() * 8), -1, 1, 0.7, 1.0);
     });
 
     // Arms
     const lArm = guy.add([
-        rect(6, 16),
+        rect(5, 16),
         pos(-6, -30),
         anchor("top"),
-        skin
+        C_BODY,
+        outline(1, C_OUTLINE)
     ]);
     const rArm = guy.add([
-        rect(6, 16),
+        rect(5, 16),
         pos(6, -30),
         anchor("top"),
-        skin
+        C_BODY,
+        outline(1, C_OUTLINE)
     ]);
 
     // Legs
     const lLeg = guy.add([
-        rect(6, 18),
+        rect(5, 18),
         pos(-4, -18),
         anchor("top"),
-        skin
+        C_BODY,
+        outline(1, C_OUTLINE)
     ]);
     const rLeg = guy.add([
-        rect(6, 18),
+        rect(5, 18),
         pos(4, -18),
         anchor("top"),
-        skin
+        C_BODY,
+        outline(1, C_OUTLINE)
     ]);
 
     // --- UPDATE LOOP ---
@@ -97,6 +104,7 @@ function createPlayer(x, y) {
         if (!document.hasFocus()) return;
 
         // Note: isKeyDown/isKeyPressed are global Kaboom functions
+        // Note: isKeyDown/isKeyPressed are global Kaboom functions
         if (isKeyDown("left") && guy.pos.x > 10) {
             guy.move(-SPEED, 0);
             isMoving = true;
@@ -108,6 +116,61 @@ function createPlayer(x, y) {
             guy.move(SPEED, 0);
             isMoving = true;
             guy.facingLeft = false;
+        }
+
+        // --- FLUID PHYSICS INTERACTION (CPU SIDE FORCE FIELD) ---
+        const px = guy.pos.x - (camPos().x - width() / 2);
+        const py = guy.pos.y - (camPos().y - height() / 2);
+
+        // 1. Process Wind Emitters
+        if (window.fluidEmitters) {
+            window.fluidEmitters.forEach(e => {
+                if (e.type === "column") {
+                    // Vertical wind column
+                    if (Math.abs(px - e.x) < e.radius && py <= e.y) {
+                        // Anti-gravity updraft
+                        guy.move(e.dx * e.force, e.dy * e.force);
+                    }
+                } else {
+                    // Circular wind force
+                    const dx = px - e.x;
+                    const dy = py - e.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < e.radius) {
+                        guy.move(e.dx * e.force, e.dy * e.force);
+                    }
+                }
+            });
+        }
+
+        // 2. Process Vortex Suction Pulls
+        if (window.fluidVortexes) {
+            window.fluidVortexes.forEach(v => {
+                const dx = v.x - px;
+                const dy = v.y - py;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < v.radius) {
+                    const pullFactor = (1.0 - (dist / v.radius)) * v.force;
+                    guy.move((dx / dist) * pullFactor, (dy / dist) * pullFactor);
+                }
+            });
+        }
+
+        // 3. Trigger Fluid Dye Trail splats on GPU
+        if (window.triggerFluidSplat) {
+            const lastScreen = guy.lastScreenPos || { x: px, y: py };
+            const sdx = (px - lastScreen.x) / width();
+            const sdy = (py - lastScreen.y) / height();
+            guy.lastScreenPos = { x: px, y: py };
+
+            const speedSq = sdx * sdx + sdy * sdy;
+            if (speedSq > 0.000001) {
+                const ux = px / width();
+                const uy = py / height();
+                // Alternating cyan and pink trail colors from flux
+                const col = (time() % 1.5 > 0.75) ? [0.0, 0.9, 1.0] : [1.0, 0.0, 0.5];
+                window.triggerFluidSplat(ux, 1.0 - uy, sdx, sdy, col, 0.0015);
+            }
         }
 
         // Digital particle dust trail when running
@@ -136,6 +199,10 @@ function createPlayer(x, y) {
         if (isKeyPressed("space") && guy.isGrounded()) {
             guy.jump(JUMP);
             if (window.SFX) window.SFX.playJump();
+            // Splat downward burst in fluid
+            if (window.triggerFluidSplat) {
+                window.triggerFluidSplat(px / width(), 1.0 - (py / height()), 0, 0.25, [1.0, 0.0, 0.5], 0.0035);
+            }
             // STRETCH: Tall and Thin
             guy.scale = vec2(0.8, 1.2);
             tween(guy.scale, vec2(1, 1), 0.2, (val) => guy.scale = val, easings.easeOutQuad);
@@ -143,6 +210,10 @@ function createPlayer(x, y) {
         if (isKeyPressed("up") && guy.isGrounded()) {
             guy.jump(JUMP);
             if (window.SFX) window.SFX.playJump();
+            // Splat downward burst in fluid
+            if (window.triggerFluidSplat) {
+                window.triggerFluidSplat(px / width(), 1.0 - (py / height()), 0, 0.25, [1.0, 0.0, 0.5], 0.0035);
+            }
             // STRETCH: Tall and Thin
             guy.scale = vec2(0.8, 1.2);
             tween(guy.scale, vec2(1, 1), 0.2, (val) => guy.scale = val, easings.easeOutQuad);

@@ -176,12 +176,14 @@ scene("contact", () => {
 
     // --- VOID DEATH LOGIC ---
     guy.onUpdate(() => {
+        if (guy.isDead) return;
         if (guy.pos.y > safeGroundY + 180) {
             if (window.isRecruiterActive()) {
                 guy.pos.y = safeGroundY - 200;
                 guy.vel.y = 0;
                 return;
             }
+            guy.isDead = true;
             if (window.SFX && window.SFX.playDeath) window.SFX.playDeath();
             window.DEATH_COUNT = (window.DEATH_COUNT || 0) + 1;
             go("contact");
@@ -193,6 +195,8 @@ scene("contact", () => {
 
     guy.onCollide("danger", () => {
         if (window.isRecruiterActive()) return;
+        if (guy.isDead) return;
+        guy.isDead = true;
         if (typeof window.DEATH_COUNT !== "undefined") {
             window.DEATH_COUNT++;
         }
@@ -539,22 +543,33 @@ scene("contact", () => {
     });
 
     // --- TRANSITION ENTRY ---
-    const topJaw = window.g_TransitionJaws ? window.g_TransitionJaws.top : null;
-    const botJaw = window.g_TransitionJaws ? window.g_TransitionJaws.bot : null;
-    const halfH = height() / 2;
-    if (topJaw && botJaw) {
-        wait(0.2, () => {
-            tween(topJaw.pos.y, -halfH - 200, 0.5, (val) => topJaw.pos.y = val, easings.easeInQuad);
-            tween(botJaw.pos.y, height() + 300, 0.5, (val) => botJaw.pos.y = val, easings.easeInQuad)
-                .onEnd(() => {
-                    destroy(topJaw);
-                    destroy(botJaw);
-                    if (window.g_TransitionJaws) {
-                        window.g_TransitionJaws.top = null;
-                        window.g_TransitionJaws.bot = null;
-                    }
-                });
-        });
+    if (window.g_IsTransitioning) {
+        window.g_IsTransitioning = false;
+        const topJaw = window.g_TransitionJaws ? window.g_TransitionJaws.top : null;
+        const botJaw = window.g_TransitionJaws ? window.g_TransitionJaws.bot : null;
+        const halfH = height() / 2;
+        if (topJaw && botJaw) {
+            wait(0.2, () => {
+                tween(topJaw.pos.y, -halfH - 200, 0.5, (val) => topJaw.pos.y = val, easings.easeInQuad);
+                tween(botJaw.pos.y, height() + 300, 0.5, (val) => botJaw.pos.y = val, easings.easeInQuad)
+                    .onEnd(() => {
+                        destroy(topJaw);
+                        destroy(botJaw);
+                        if (window.g_TransitionJaws) {
+                            window.g_TransitionJaws.top = null;
+                            window.g_TransitionJaws.bot = null;
+                        }
+                    });
+            });
+        }
+    } else {
+        // Immediate cleanup of jaws on manual restart or death
+        if (window.g_TransitionJaws) {
+            if (window.g_TransitionJaws.top) destroy(window.g_TransitionJaws.top);
+            if (window.g_TransitionJaws.bot) destroy(window.g_TransitionJaws.bot);
+            window.g_TransitionJaws.top = null;
+            window.g_TransitionJaws.bot = null;
+        }
     }
 
 });

@@ -86,9 +86,22 @@ scene("intro", () => {
     if (window.createLightningCloud) {
         createLightningCloud(width() * 0.5, height() * 0.12, guy, groundY, () => {
             if (window.RECRUITER_MODE) return;
+            if (guy.isDead) return;
+            guy.isDead = true;
             go("intro");
         });
     }
+
+    // --- VOID DEATH CHECK ---
+    guy.onUpdate(() => {
+        if (guy.isDead) return;
+        if (guy.pos.y > groundY + 180) {
+            if (window.RECRUITER_MODE) return;
+            guy.isDead = true;
+            if (window.SFX && window.SFX.playDeath) window.SFX.playDeath();
+            go("intro");
+        }
+    });
 
     // --- NPC (Helper for Intro) ---
     function createProfessor(x, y, defaultMsg) {
@@ -267,24 +280,35 @@ scene("intro", () => {
     });
 
     // --- TRANSITION: OPEN JAWS ---
-    const topJaw = window.g_TransitionJaws ? window.g_TransitionJaws.top : null;
-    const botJaw = window.g_TransitionJaws ? window.g_TransitionJaws.bot : null;
-    const halfH = height() / 2;
+    if (window.g_IsTransitioning) {
+        window.g_IsTransitioning = false;
+        const topJaw = window.g_TransitionJaws ? window.g_TransitionJaws.top : null;
+        const botJaw = window.g_TransitionJaws ? window.g_TransitionJaws.bot : null;
+        const halfH = height() / 2;
 
-    if (topJaw && botJaw) {
-        wait(0.5, () => {
-            tween(topJaw.pos.y, -halfH - 200, 1.0, (val) => topJaw.pos.y = val, easings.easeOutExpo);
-            tween(botJaw.pos.y, height() + 200, 1.0, (val) => botJaw.pos.y = val, easings.easeOutExpo)
-                .onEnd(() => {
-                    destroy(topJaw);
-                    destroy(botJaw);
-                    // Clear global refs
-                    if (window.g_TransitionJaws) {
-                        window.g_TransitionJaws.top = null;
-                        window.g_TransitionJaws.bot = null;
-                    }
-                });
-        });
+        if (topJaw && botJaw) {
+            wait(0.5, () => {
+                tween(topJaw.pos.y, -halfH - 200, 1.0, (val) => topJaw.pos.y = val, easings.easeOutExpo);
+                tween(botJaw.pos.y, height() + 200, 1.0, (val) => botJaw.pos.y = val, easings.easeOutExpo)
+                    .onEnd(() => {
+                        destroy(topJaw);
+                        destroy(botJaw);
+                        // Clear global refs
+                        if (window.g_TransitionJaws) {
+                            window.g_TransitionJaws.top = null;
+                            window.g_TransitionJaws.bot = null;
+                        }
+                    });
+            });
+        }
+    } else {
+        // Immediate cleanup of jaws on manual restart or death
+        if (window.g_TransitionJaws) {
+            if (window.g_TransitionJaws.top) destroy(window.g_TransitionJaws.top);
+            if (window.g_TransitionJaws.bot) destroy(window.g_TransitionJaws.bot);
+            window.g_TransitionJaws.top = null;
+            window.g_TransitionJaws.bot = null;
+        }
     }
 
 });

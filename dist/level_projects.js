@@ -6,15 +6,7 @@ scene("projects", () => {
     let islandsMoving = false;
     let spikesTriggered = false;
 
-    // Background (Opaque color to match intro, extended bounds)
-    const C_BG = color(10, 10, 25); // Dark Cyber Night
-
-    add([
-        rect(width() * 20, height() * 10), // Extremely wide bg
-        C_BG,
-        pos(-width() * 5, -height() * 5),
-        z(0)
-    ]);
+    // Let the background WebGL fluid canvas show through — NO opaque background rect!
 
     // Palette
     const C_FLOOR = rgb(24, 24, 38); // Dark indigo-slate
@@ -25,59 +17,54 @@ scene("projects", () => {
     // Using Global Recruiter UI
     if (window.addRecruiterUI) window.addRecruiterUI();
 
-    // Floor Base
+    // Clear fluid forces
+    if (window.clearFluidEmitters) window.clearFluidEmitters();
+    if (window.clearFluidVortexes) window.clearFluidVortexes();
+    if (window.clearFluidGround) window.clearFluidGround();
+
+    // Floor Base Coordinates
     const floorHeight = height() * 0.2;
     const groundY = height() - floorHeight;
-    // Hardcoded huge width to prevent "invisible wall" camera limits
     const worldWidth = 10000;
 
-    // Ground
-    add([
-        rect(worldWidth, floorHeight),
-        pos(0, groundY),
-        color(C_FLOOR),
-        z(1),
-        area(),
-        body({ isStatic: true }),
-        "floor"
-    ]);
+    // --- VECTOR SILHOUETTE SPLIT PLATFORMS ---
+    // 1. Start Platform (0 to 350)
+    window.addVectorPlatform(0, groundY, 350, floorHeight, rgb(0, 240, 255), ["floor"]);
 
-    // Neon floor strip
-    add([
-        rect(worldWidth, 4),
-        pos(0, groundY),
-        color(0, 240, 255), // Cyan neon glow strip
-        z(1.1)
-    ]);
+    // 2. Middle Platform (1200 to 1480)
+    window.addVectorPlatform(1200, groundY, 280, floorHeight, rgb(0, 240, 255), ["floor"]);
 
-    // --- PARALLAX BACKGROUND ---
-    if (window.addParallaxBackground) {
-        window.addParallaxBackground(worldWidth, floorHeight);
+    // 3. End Platform (2550 to 10000)
+    window.addVectorPlatform(2550, groundY, 7450, floorHeight, rgb(0, 240, 255), ["floor"]);
+
+    // --- PERSPECTIVE GRID FLOOR ---
+    if (window.addPerspectiveGrid) {
+        window.addPerspectiveGrid();
     }
 
-    // --- TWINKLING STARS ---
-    if (window.addCyberStars) {
-        window.addCyberStars(worldWidth);
+    // --- INITIAL FLUID EMITTER (WEST DRAFT WIND CURRENT) ---
+    if (window.addFluidEmitter) {
+        // Horizontal draft pushing right to assist jumping across Gap 1
+        window.addFluidEmitter("projects_flow", 150, groundY - 140, 1, 0, [0.0, 0.9, 1.0], 230, 150);
+        const em = window.fluidEmitters.find(e => e.id === "projects_flow");
+        if (em) em.type = "circle";
     }
 
     // --- CLOUDS ---
     function addWideClouds() {
-        const cloudCount = 50;
-        const cloudLimit = 4000; // Limit to playable area approx
+        const cloudCount = 24;
+        const cloudLimit = 3500;
         for (let i = 0; i < cloudCount; i++) {
             const x = rand(0, cloudLimit);
-            // Spawn high up: groundY - 400 is roughly above the first jump pads.
-            // groundY - 2000 is very high.
-            // This leaves the ground floor clear.
-            const y = rand(groundY - 2000, groundY - 400);
-            const speed = rand(5, 40);
-            const scaleFactor = rand(0.5, 1.5);
+            const y = rand(groundY - 1200, groundY - 300);
+            const speed = rand(8, 25);
+            const scaleFactor = rand(0.6, 1.2);
 
             const cloud = add([
                 pos(x, y),
                 rect(60 * scaleFactor, 20 * scaleFactor),
                 color(255, 255, 255),
-                opacity(rand(0.3, 0.7)),
+                opacity(rand(0.2, 0.5)),
                 z(0.5),
                 "cloud"
             ]);
@@ -87,212 +74,45 @@ scene("projects", () => {
             cloud.onUpdate(() => {
                 cloud.move(-speed, 0);
                 if (cloud.pos.x < -200) {
-                    cloud.pos.x = cloudLimit; // Recycle closer
-                    cloud.pos.y = rand(groundY - 2000, groundY - 400);
+                    cloud.pos.x = cloudLimit;
+                    cloud.pos.y = rand(groundY - 1200, groundY - 300);
                 }
             });
         }
     }
     addWideClouds();
 
-
     // --- PLAYER ---
-    // Spawn at 150
     const guy = createPlayer(150, groundY - 100);
     guy.levelWidth = worldWidth;
 
-    // --- RECRUITER MODE PLAYER LOGIC ---
     guy.onUpdate(() => {
-        // RECRUITER VISUALS (Now handles delay internally via isRecruiterActive)
         if (window.updateRecruiterVisuals) window.updateRecruiterVisuals(guy);
     });
 
-
     // --- LIGHTNING TRAP ---
     if (window.createLightningCloud) {
-        createLightningCloud(1000, height() * 0.15, guy, groundY, () => {
-            // IMMUNITY CHECK (Delayed)
+        createLightningCloud(1350, height() * 0.12, guy, groundY, () => {
             if (window.isRecruiterActive()) return;
+            if (guy.isDead) return;
+            guy.isDead = true;
             go("projects");
         });
     }
 
-    // --- VOID CHECK ---
-    // Safety net: if player somehow falls below floor or off map
+    // --- VOID DEATH CHECK ---
     guy.onUpdate(() => {
-        if (guy.pos.y > groundY + 200) {
-            // RECRUITER MODE: Teleport up instead of dying?
-            // Delayed
+        if (guy.isDead) return;
+        if (guy.pos.y > groundY + 180) {
             if (window.isRecruiterActive()) {
                 guy.pos.y = groundY - 200;
+                guy.vel.y = 0;
                 return;
             }
+            guy.isDead = true;
+            if (window.SFX && window.SFX.playDeath) window.SFX.playDeath();
             go("projects");
         }
-    });
-
-    // --- LAVA ---
-    // Function to spawn lava segments between safe zones
-    function spawnLava() {
-        // Colors
-        const C_LAVA_BASE = rgb(180, 20, 20); // Darker Magma
-        const C_LAVA_TOP = rgb(255, 69, 0);   // Hot Orange Surface
-        const C_BUBBLE = rgb(255, 220, 50);   // White Hot
-
-        const padWidth = 40;
-        const zones = [400, 800, 1200, 1600];
-
-        const segments = [];
-        // Start after the FIRST pad
-        let startX = zones[0] + padWidth / 2;
-
-        zones.forEach(zoneX => {
-            const endX = zoneX - padWidth / 2;
-            if (endX > startX) {
-                segments.push({ start: startX, width: endX - startX });
-            }
-            startX = zoneX + padWidth / 2;
-        });
-
-        const LAVA_END_X = 2650;
-        if (startX < LAVA_END_X) {
-            segments.push({ start: startX, width: LAVA_END_X - startX });
-        }
-
-        const h = 40;
-        const targetBotY = groundY - 8 + h;
-        const initialBotY = groundY + h;
-
-        // Create Lava Objects
-        segments.forEach(seg => {
-            const lava = add([
-                rect(seg.width, h),
-                pos(seg.start, initialBotY), // Start buried
-                color(C_LAVA_BASE),
-                anchor("botleft"),
-                area(),
-                z(0.95),
-                "lava",
-                {
-                    targetY: targetBotY,
-                    initialY: initialBotY
-                }
-            ]);
-
-            lava.add([
-                rect(seg.width, 6), // Thicker surface
-                pos(0, -h),
-                color(C_LAVA_TOP),
-                opacity(1)
-            ]);
-
-            // Bubbles System
-            let bubbleTimer = 0;
-            lava.onUpdate(() => {
-                if (Math.abs(lava.pos.y - lava.initialY) < 5) return; // Almost buried
-                bubbleTimer += dt();
-                if (bubbleTimer > rand(0.3, 1.0)) {
-                    bubbleTimer = 0;
-                    const bX = rand(0, seg.width);
-                    const bSize = rand(2, 6);
-                    const bubble = lava.add([
-                        rect(bSize, bSize),
-                        pos(bX, -h + 2),
-                        color(C_BUBBLE),
-                        opacity(1),
-                        anchor("center"),
-                        move(UP, rand(10, 30)),
-                        "bubble"
-                    ]);
-
-                    bubble.onUpdate(() => {
-                        bubble.opacity -= dt();
-                        if (bubble.opacity <= 0) destroy(bubble);
-                    });
-                }
-            });
-        });
-    }
-    spawnLava();
-
-
-    // --- JUMP PADS (Embedded Plate Style) ---
-    function createJumpPad(x, y, parent = null) {
-        // Base
-        const padConfig = [
-            pos(x, y),
-            rect(40, 5),
-            anchor("top"),
-            color(0, 0, 0),
-            z(1.5),
-            "jump_pad_base"
-        ];
-
-        let pad;
-        if (parent) {
-            pad = parent.add(padConfig);
-        } else {
-            pad = add(padConfig);
-        }
-
-        // Plate
-        const plateConfig = [
-            rect(36, 8),
-            pos(0, 0),
-            anchor("bot"),
-            color(200, 50, 50),
-            outline(2, C_OUTLINE),
-            area(),
-            z(1.6),
-            "jump_pad",
-            "spring_top"
-        ];
-
-        const plate = pad.add(plateConfig);
-        plate.basePad = pad;
-
-        // RECRUITER MODE LOGIC for PADS (Delayed)
-        plate.onUpdate(() => {
-            if (window.isRecruiterActive()) {
-                plate.opacity = 0;
-                pad.opacity = 0;
-            } else {
-                plate.opacity = 1;
-                pad.opacity = 1;
-            }
-        });
-
-        return plate;
-    }
-
-    // Logic for Jump Pads
-    guy.onCollide("jump_pad", (plate) => {
-        // IGNORE in Recruiter Mode (Delayed)
-        if (window.isRecruiterActive()) return;
-
-        // ACTIVATE ISLANDS & SPIKES on first touch
-        if (!islandsMoving) {
-            islandsMoving = true;
-
-            // Trigger Lava
-            if (!spikesTriggered) {
-                spikesTriggered = true;
-                // Tween all lava UP
-                get("lava").forEach((l) => {
-                    tween(l.pos.y, l.targetY, 0.4, (v) => l.pos.y = v, easings.easeOutBack);
-                });
-            }
-        }
-
-        if (guy.vel && guy.vel.y < 0) return;
-
-        shake(2);
-        guy.jump(1200);
-
-        tween(plate.pos.y, plate.pos.y + 5, 0.05, (v) => plate.pos.y = v, easings.easeOutQuad)
-            .onEnd(() => {
-                tween(plate.pos.y, plate.pos.y - 5, 0.2, (v) => plate.pos.y = v, easings.easeOutElastic);
-            });
     });
 
     // --- ICONS ---
@@ -556,16 +376,92 @@ scene("projects", () => {
         z(10)
     ]);
 
-    // Visuals for Back Gate (Intro/Retro style)
-    backGate.add([rect(60, 50), pos(0, 0), anchor("bot"), color(C_FLOOR), z(0)]);
-    backGate.add([rect(60, 10), pos(0, -50), anchor("bot"), color(C_FLOOR), z(0)]);
-    backGate.add([rect(50, 6), pos(0, -60), anchor("bot"), color(C_FLOOR), z(0)]);
-    backGate.add([rect(30, 4), pos(0, -66), anchor("bot"), color(C_FLOOR), z(0)]);
-    backGate.add([rect(52, 50), pos(0, 0), anchor("bot"), color(180, 180, 180), z(1)]);
-    backGate.add([rect(52, 10), pos(0, -50), anchor("bot"), color(180, 180, 180), z(1)]);
-    backGate.add([rect(42, 6), pos(0, -60), anchor("bot"), color(180, 180, 180), z(7)]);
-    backGate.add([rect(22, 4), pos(0, -66), anchor("bot"), color(180, 180, 180), z(7)]);
+    // Fluid Portal Style (dark core + cyan glow)
+    backGate.add([rect(60, 70), pos(0, 0), anchor("bot"), color(6, 6, 12), z(0)]);
+    backGate.add([rect(52, 62), pos(0, -4), anchor("bot"), color(0, 240, 255), opacity(0.12), z(0.5)]);
+    backGate.add([rect(64, 5), pos(0, -70), anchor("bot"), color(0, 240, 255), z(1)]);
+    backGate.add([rect(4, 70), pos(-30, 0), anchor("bot"), color(0, 240, 255), z(1)]);
+    backGate.add([rect(4, 70), pos(26, 0), anchor("bot"), color(0, 240, 255), z(1)]);
 
+
+    // --- JUMP PAD BUILDER ---
+    function createJumpPad(x, y, parent = null) {
+        // Base
+        const padConfig = [
+            pos(x, y),
+            rect(40, 5),
+            anchor("top"),
+            color(0, 0, 0),
+            z(1.5),
+            "jump_pad_base"
+        ];
+
+        let pad;
+        if (parent) {
+            pad = parent.add(padConfig);
+        } else {
+            pad = add(padConfig);
+        }
+
+        // Plate
+        const plateConfig = [
+            rect(36, 8),
+            pos(0, 0),
+            anchor("bot"),
+            color(200, 50, 50),
+            outline(2, C_OUTLINE),
+            area(),
+            z(1.6),
+            "jump_pad",
+            "spring_top"
+        ];
+
+        const plate = pad.add(plateConfig);
+        plate.basePad = pad;
+
+        // RECRUITER MODE LOGIC for PADS (Delayed)
+        plate.onUpdate(() => {
+            if (window.isRecruiterActive()) {
+                plate.opacity = 0;
+                pad.opacity = 0;
+            } else {
+                plate.opacity = 1;
+                pad.opacity = 1;
+            }
+        });
+
+        return plate;
+    }
+
+    // Logic for Jump Pads
+    guy.onCollide("jump_pad", (plate) => {
+        // IGNORE in Recruiter Mode (Delayed)
+        if (window.isRecruiterActive()) return;
+
+        // ACTIVATE ISLANDS & SPIKES on first touch
+        if (!islandsMoving) {
+            islandsMoving = true;
+
+            // Trigger Lava
+            if (!spikesTriggered) {
+                spikesTriggered = true;
+                // Tween all lava UP
+                get("lava").forEach((l) => {
+                    tween(l.pos.y, l.targetY, 0.4, (v) => l.pos.y = v, easings.easeOutBack);
+                });
+            }
+        }
+
+        if (guy.vel && guy.vel.y < 0) return;
+
+        shake(2);
+        guy.jump(1200);
+
+        tween(plate.pos.y, plate.pos.y + 5, 0.05, (v) => plate.pos.y = v, easings.easeOutQuad)
+            .onEnd(() => {
+                tween(plate.pos.y, plate.pos.y - 5, 0.2, (v) => plate.pos.y = v, easings.easeOutElastic);
+            });
+    });
 
     // 1. Ground Pads
     createJumpPad(400, groundY);
@@ -606,39 +502,62 @@ scene("projects", () => {
     createJumpPad(60, 0, i1);
 
     // Island 2 (NEW PORTFOLIO): 950
-    // Replaced null with projects[3]
-    const i2 = createIsland(950, groundY - 400, "tech", projects[3], { dist: 150, speed: 1.5 });
+    const i2 = createIsland(950, groundY - 340, "tech", projects[3], { dist: 140, speed: 1.5 });
     createJumpPad(60, 0, i2);
 
     // Island 3 (Radar): 1300
-    // Note: Projects[1] is Radarhire
-    const i3 = createIsland(1300, groundY - 550, projects[1].type, projects[1], { dist: 200, speed: 1.2 });
-    // REMOVED JUMP PAD AS PADS REQUEST
-    // createJumpPad(-60, 0, i3); 
+    const i3 = createIsland(1300, groundY - 480, projects[1].type, projects[1], { dist: 180, speed: 1.2 });
 
     // Island 4 (EMPTY): 1650
-    const i4 = createIsland(1650, groundY - 300, "earth", null, { dist: 100, speed: 2 });
+    const i4 = createIsland(1650, groundY - 300, "earth", null, { dist: 90, speed: 2 });
     createJumpPad(60, 0, i4);
 
     // Island 5 (Ecom): 2000
-    // Note: Projects[2] is Ecom
-    const i5 = createIsland(2000, groundY - 500, projects[2].type, projects[2]);
+    const i5 = createIsland(2000, groundY - 440, projects[2].type, projects[2]);
     createJumpPad(-60, 0, i5);
 
     // Island 6 (EMPTY): 2350
-    const i6 = createIsland(2350, groundY - 350, "tech", null, { dist: 120, speed: 1.8 });
+    const i6 = createIsland(2350, groundY - 320, "tech", null, { dist: 110, speed: 1.8 });
     createJumpPad(60, 0, i6);
 
     // Island 7 (FINAL): 2700
     const i7 = createIsland(2700, groundY - 250, "earth", null);
 
-    // REMOVE TOP BORDER for i7: Add cover rect
+    // BORDER cover rect (Vector Silhouette style)
     i7.add([
         rect(152, 6),
         pos(-76, -3),
-        color(rgb(176, 113, 29)),
+        color(6, 6, 12),
         z(2.1)
     ]);
+
+    // --- ATMOSPHERIC FLOW REVERSAL TRAP LOGIC ---
+    let projectsFlowShifted = false;
+    guy.onUpdate(() => {
+        if (!projectsFlowShifted && guy.pos.x > 900) {
+            projectsFlowShifted = true;
+            window.showFluidWarning("WARNING: WIND TUNNEL FLOW REVERSAL!");
+            wait(0.75, () => {
+                if (window.updateFluidEmitter) {
+                    // Emitter shifts to blow backwards (westward) and downwards
+                    window.updateFluidEmitter("projects_flow", 2600, groundY - 180, -1, 0.25);
+                    const em = window.fluidEmitters.find(e => e.id === "projects_flow");
+                    if (em) {
+                        em.force = 320;
+                        em.color = [1.0, 0.0, 0.5]; // Red/Pink
+                    }
+                    if (window.SFX && window.SFX.playTroll) window.SFX.playTroll();
+
+                    // Adjust platform target coordinates to change the path layout
+                    i2.initialX = 950 - 150;
+                    i3.initialX = 1300 + 140;
+                    i4.initialX = 1650 - 160;
+                    i5.initialX = 2000 + 120;
+                    i6.initialX = 2350 - 140;
+                }
+            });
+        }
+    });
 
     // CONTACT GATE - Ported from Intro Level
     // Placed on Platform (2700, groundY - 250) -> Attached to i7
@@ -675,17 +594,12 @@ scene("projects", () => {
         }
     });
 
-    // --- LAYER 1: THE BORDER (C_FLOOR) - PIXELATED ---
-    contactGate.add([rect(60, 50), pos(0, 0), anchor("bot"), color(C_FLOOR), z(6)]);
-    contactGate.add([rect(60, 10), pos(0, -50), anchor("bot"), color(C_FLOOR), z(6)]);
-    contactGate.add([rect(50, 6), pos(0, -60), anchor("bot"), color(C_FLOOR), z(6)]);
-    contactGate.add([rect(30, 4), pos(0, -66), anchor("bot"), color(C_FLOOR), z(6)]);
-
-    // --- LAYER 2: THE DOOR (GREY) - PIXELATED ---
-    contactGate.add([rect(52, 50), pos(0, 0), anchor("bot"), color(180, 180, 180), z(7)]);
-    contactGate.add([rect(52, 10), pos(0, -50), anchor("bot"), color(180, 180, 180), z(7)]);
-    contactGate.add([rect(42, 6), pos(0, -60), anchor("bot"), color(180, 180, 180), z(7)]);
-    contactGate.add([rect(22, 4), pos(0, -66), anchor("bot"), color(180, 180, 180), z(7)]);
+    // Fluid Portal Style (dark core + pink glow)
+    contactGate.add([rect(60, 70), pos(0, 0), anchor("bot"), color(6, 6, 12), z(6)]);
+    contactGate.add([rect(52, 62), pos(0, -4), anchor("bot"), color(255, 0, 127), opacity(0.12), z(6.5)]);
+    contactGate.add([rect(64, 5), pos(0, -70), anchor("bot"), color(255, 0, 127), z(7)]);
+    contactGate.add([rect(4, 70), pos(-30, 0), anchor("bot"), color(255, 0, 127), z(7)]);
+    contactGate.add([rect(4, 70), pos(26, 0), anchor("bot"), color(255, 0, 127), z(7)]);
 
 
     // --- UI / HUD ---
@@ -763,20 +677,7 @@ scene("projects", () => {
         }
     });
 
-    // Lava Collision (Delayed Immunity Check)
-    guy.onCollide("lava", (l) => {
-        // RECRUITER MODE: Immunity
-        if (window.isRecruiterActive()) return;
 
-        // Updated safety check:
-        // If we are more than 2px away from target (below it), assume safe
-        if (l.pos.y > l.targetY + 2) return;
-
-        if (window.SFX) window.SFX.playDeath();
-        shake(10);
-        addKaboom(guy.pos); // Explosion
-        go("projects"); // Instant restart
-    });
 
     onUpdate(() => {
         if (!guy.isColliding("project_door") && !guy.isColliding("contact_gate") && !guy.isColliding("back_gate")) {
@@ -785,19 +686,30 @@ scene("projects", () => {
     });
 
     // --- TRANSITION ENTRY ---
-    const topJaw = window.g_TransitionJaws.top;
-    const botJaw = window.g_TransitionJaws.bot;
-    const halfH = height() / 2;
-    if (topJaw && botJaw) {
-        wait(0.2, () => {
-            tween(topJaw.pos.y, -halfH - 200, 0.5, (val) => topJaw.pos.y = val, easings.easeInQuad);
-            tween(botJaw.pos.y, height() + 300, 0.5, (val) => botJaw.pos.y = val, easings.easeInQuad)
-                .onEnd(() => {
-                    destroy(topJaw);
-                    destroy(botJaw);
-                    window.g_TransitionJaws.top = null;
-                    window.g_TransitionJaws.bot = null;
-                });
-        });
+    if (window.g_IsTransitioning) {
+        window.g_IsTransitioning = false;
+        const topJaw = window.g_TransitionJaws.top;
+        const botJaw = window.g_TransitionJaws.bot;
+        const halfH = height() / 2;
+        if (topJaw && botJaw) {
+            wait(0.2, () => {
+                tween(topJaw.pos.y, -halfH - 200, 0.5, (val) => topJaw.pos.y = val, easings.easeInQuad);
+                tween(botJaw.pos.y, height() + 300, 0.5, (val) => botJaw.pos.y = val, easings.easeInQuad)
+                    .onEnd(() => {
+                        destroy(topJaw);
+                        destroy(botJaw);
+                        window.g_TransitionJaws.top = null;
+                        window.g_TransitionJaws.bot = null;
+                    });
+            });
+        }
+    } else {
+        // Immediate cleanup of jaws on manual restart or death
+        if (window.g_TransitionJaws) {
+            if (window.g_TransitionJaws.top) destroy(window.g_TransitionJaws.top);
+            if (window.g_TransitionJaws.bot) destroy(window.g_TransitionJaws.bot);
+            window.g_TransitionJaws.top = null;
+            window.g_TransitionJaws.bot = null;
+        }
     }
 });
