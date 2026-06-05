@@ -392,7 +392,7 @@ try {
         return block;
     };
 
-    // --- PERSPECTIVE GRID FLOOR (Ahead-of-its-time 3D Grid) ---
+    // --- PERSPECTIVE GRID FLOOR (Dynamic Fluid Grid) ---
     window.addPerspectiveGrid = function () {
         return add([
             z(0.4), // Behind platforms (z=1) but in front of WebGL background
@@ -403,41 +403,85 @@ try {
                     const horizonY = height() * 0.5; // Vanishing horizon height
                     const floorY = height();
                     const vanishingX = width() / 2;
-                    const numVLines = 30;
+                    const gridColor = rgb(0, 240, 255);
 
-                    // Camera relative scroll offset
+                    // 1. Draw horizontal waving lines with exponential spacing for depth
+                    const numHLines = 12;
+                    const steps = 40;
+                    const stepW = width() / steps;
+
+                    for (let j = 0; j < numHLines; j++) {
+                        const progress = j / numHLines;
+                        const baseY = lerp(horizonY, floorY, Math.pow(progress, 2.5));
+                        
+                        // Scale amplitude/frequency/speed with depth progress
+                        const amplitude = 12 * Math.pow(progress, 2); // Flat at horizon, wavy close up
+                        const frequency = 0.015;
+                        const speed = 2.0 + progress * 2.0;
+                        const opacity = progress * 0.25;
+                        const thickness = 1.0 + progress * 1.5;
+
+                        const pts = [];
+                        for (let i = 0; i <= steps; i++) {
+                            const x = i * stepW;
+                            const phase = (x * frequency) + (time() * speed) + (j * 0.5);
+                            const y = baseY + amplitude * Math.sin(phase);
+                            pts.push(vec2(x, y));
+                        }
+
+                        for (let i = 0; i < steps; i++) {
+                            k.drawLine({
+                                p1: pts[i],
+                                p2: pts[i+1],
+                                color: gridColor,
+                                opacity: opacity,
+                                width: thickness
+                            });
+                        }
+                    }
+
+                    // 2. Draw vertical wavy perspective lines converging to horizon
+                    const numVLines = 24;
+                    const vSteps = 20;
+                    const stepH = (floorY - horizonY) / vSteps;
+
+                    // Camera relative scroll offset to keep it moving with player
                     const cx = (window.k && k.camPos) ? k.camPos().x : 0;
                     const cameraOffset = (cx * 0.3) % (width() / numVLines);
 
-                    // 1. Draw vertical converging lines
-                    for (let i = -numVLines; i <= numVLines * 2; i++) {
-                        const startX = (i * (width() / numVLines)) - cameraOffset;
-                        k.drawLine({
-                            p1: vec2(startX, floorY),
-                            p2: vec2(vanishingX, horizonY),
-                            color: rgb(0, 240, 255),
-                            opacity: 0.12,
-                            width: 1.5
-                        });
-                    }
+                    for (let j = -5; j <= numVLines + 5; j++) {
+                        const baseX = (j * (width() / numVLines)) - cameraOffset;
+                        const pts = [];
 
-                    // 2. Draw horizontal lines with exponential spacing for 3D depth
-                    const numHLines = 12;
-                    for (let i = 0; i < numHLines; i++) {
-                        const progress = i / numHLines;
-                        const y = lerp(horizonY, floorY, Math.pow(progress, 2.5));
-                        k.drawLine({
-                            p1: vec2(0, y),
-                            p2: vec2(width(), y),
-                            color: rgb(0, 240, 255),
-                            opacity: progress * 0.3,
-                            width: 1.0 + progress * 1.5
-                        });
+                        for (let i = 0; i <= vSteps; i++) {
+                            const y = horizonY + (i * stepH);
+                            const progress = (y - horizonY) / (floorY - horizonY);
+                            const targetX = lerp(vanishingX, baseX, progress);
+
+                            // Wave wobble is larger near the screen and zero at vanishing point
+                            const amplitude = 15 * progress;
+                            const phase = (y * 0.01) + (time() * 2.5) + (j * 0.3);
+                            const wobble = amplitude * Math.sin(phase);
+
+                            pts.push(vec2(targetX + wobble, y));
+                        }
+
+                        for (let i = 0; i < vSteps; i++) {
+                            const progress = (pts[i].y - horizonY) / (floorY - horizonY);
+                            k.drawLine({
+                                p1: pts[i],
+                                p2: pts[i+1],
+                                color: gridColor,
+                                opacity: 0.12 * progress,
+                                width: 1.0 + progress * 0.8
+                            });
+                        }
                     }
                 }
             }
         ]);
     };
+
 
     // --- DYNAMIC FLUID WARNING ALERT SYSTEM ---
     window.showFluidWarning = function (msg) {
