@@ -122,16 +122,73 @@ scene("about", () => {
     card.add([rect(cardW - 48, 4), pos(24, 80), color(0, 0, 0)]);
 
     // --- PHOTO / AVATAR (Left) ---
-    // 100x100 Pixel Avatar Placeholder
+    // 100x100 Pixel Avatar Hologram
     const avX = 24;
     const avY = 100;
-    card.add([rect(100, 100), pos(avX, avY), color(200, 200, 200)]);
-    card.add([rect(100, 100), pos(avX, avY), outline(4, color(0, 0, 0))]);
-    // Pixel Face (Simple)
-    card.add([rect(60, 60), pos(avX + 20, avY + 20), color(255, 200, 150)]); // Face
-    card.add([rect(10, 10), pos(avX + 35, avY + 40), color(0, 0, 0)]); // Left Eye
-    card.add([rect(10, 10), pos(avX + 65, avY + 40), color(0, 0, 0)]); // Right Eye
-    card.add([rect(40, 10), pos(avX + 30, avY + 70), color(0, 0, 0)]); // Mouth
+    
+    // Dark void backdrop
+    card.add([
+        rect(100, 100),
+        pos(avX, avY),
+        color(8, 8, 20), // Dark cyber navy
+        outline(3, color(0, 0, 0)),
+        z(5.5)
+    ]);
+
+    // Decorative grid lines inside backdrop
+    for (let i = 1; i < 5; i++) {
+        card.add([rect(1, 100), pos(avX + i * 20, avY), color(0, 240, 255), opacity(0.08), z(5.6)]);
+        card.add([rect(100, 1), pos(avX, avY + i * 20), color(0, 240, 255), opacity(0.08), z(5.6)]);
+    }
+
+    // Spinning Holographic Core Disk
+    const photoDisk = card.add([
+        pos(avX + 50, avY + 50),
+        anchor("center"),
+        rotate(0),
+        z(6)
+    ]);
+
+    // Outer Circle Ring
+    photoDisk.add([
+        rect(50, 50, { radius: 25 }),
+        anchor("center"),
+        color(8, 8, 16),
+        outline(2, rgb(0, 240, 255)),
+        z(1)
+    ]);
+
+    // Spokes
+    photoDisk.add([rect(2, 50), anchor("center"), color(0, 240, 255), opacity(0.4), z(1.5)]);
+    photoDisk.add([rect(50, 2), anchor("center"), color(0, 240, 255), opacity(0.4), z(1.5)]);
+
+    // Pink core diamond
+    photoDisk.add([rect(20, 20), anchor("center"), rotate(45), color(255, 0, 127), z(2)]);
+
+    // Visor (gyro-stabilized, doesn't spin)
+    const photoVisor = card.add([
+        rect(36, 10, { radius: 4 }),
+        pos(avX + 50, avY + 50),
+        anchor("center"),
+        color(8, 8, 16),
+        outline(1.5, rgb(0, 240, 255)),
+        z(7)
+    ]);
+    const photoVisorLight = photoVisor.add([
+        rect(24, 3),
+        anchor("center"),
+        color(0, 240, 255),
+        z(7.5)
+    ]);
+
+    // Animate disk rotation and visor glow
+    photoDisk.onUpdate(() => {
+        photoDisk.angle += dt() * 80;
+    });
+    photoVisorLight.onUpdate(() => {
+        photoVisorLight.opacity = map(Math.sin(time() * 8), -1, 1, 0.6, 1.0);
+    });
+
 
 
     // --- BODY STATS (Right of Avatar) ---
