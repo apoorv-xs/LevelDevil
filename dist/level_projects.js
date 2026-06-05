@@ -581,13 +581,15 @@ scene("projects", () => {
             link: "https://github.com/apoorv-xs/Oversight"
         },
         {
-            id: "radar",
-            title: "Radarhire",
+            id: "anima",
+            title: "Maison Anima",
             type: "tech",
-            doorColor: rgb(0, 191, 255),
-            icon: "radar",
-            desc: "GitHub Project",
-            link: "https://github.com/apoorv-xs/Radarhire"
+            doorColor: rgb(197, 160, 89),
+            icon: "cart",
+            desc: "Luxury E-Commerce & Monogram Studio",
+            links: [
+                { name: "GitHub Repository", url: "https://github.com/apoorv-xs/Maison-Anima" }
+            ]
         },
         {
             id: "ecom",
