@@ -3,25 +3,25 @@ function createPlayer(x, y) {
     const SPEED = 200;
     const JUMP = 550;
 
-    // PLAYER OBJECT
+    // PLAYER OBJECT (Hitbox)
     const guy = add([
         pos(x, y),
-        rect(20, 40),
+        rect(24, 24), // Sized for the rolling disk
         area(),
         body(),
         anchor("bot"),
-        rotate(0), // Added for spin transition
-        scale(1),  // Added for suck transition
-        opacity(0), // Hitbox is invisible
+        rotate(0), // For transitions
+        scale(1),  // For transitions
+        opacity(0), // Hitbox remains invisible, visuals draw inside/around it
         z(20),
         "guy"
     ]);
 
-    // --- VISUALS (Fluid World Style: dark silhouette + neon outline) ---
+    // --- VISUALS (Gyro-Cyber-Disk) ---
 
-    // Shadow
+    // Shadow (cyan glow underneath)
     const shadow = guy.add([
-        rect(16, 6),
+        rect(20, 6, { radius: 3 }),
         anchor("center"),
         pos(0, 0),
         color(0, 200, 255),
@@ -29,88 +29,89 @@ function createPlayer(x, y) {
         z(-1)
     ]);
 
-    const C_BODY = color(8, 8, 16); // Dark void body
-    const C_OUTLINE = rgb(0, 220, 255); // Neon cyan edge
+    const C_BODY = color(8, 8, 16); // Dark core
+    const C_OUTLINE = rgb(0, 220, 255); // Neon cyan outline
 
-    // Body (torso)
-    const torso = guy.add([
-        rect(16, 20),
-        pos(0, -14),
-        anchor("bot"),
-        C_BODY,
-        outline(1.5, C_OUTLINE)
-    ]);
-
-    // Head
-    const head = guy.add([
-        rect(12, 12),
-        pos(0, -34),
-        anchor("bot"),
-        C_BODY,
-        outline(1.5, C_OUTLINE)
-    ]);
-
-    // Cyber Visor (brighter, wider)
-    const visor = head.add([
-        rect(10, 3),
-        pos(0, -7),
-        color(0, 255, 255),
+    // 1. ROLLING INNER DISK (Handles rotation when moving)
+    const diskContainer = guy.add([
+        pos(0, -12), // Center of the 24px high player
         anchor("center"),
+        rotate(0),
+        z(1)
+    ]);
+
+    // Outer Circle Ring
+    diskContainer.add([
+        rect(24, 24, { radius: 12 }),
+        anchor("center"),
+        C_BODY,
+        outline(2, C_OUTLINE),
+        z(1)
+    ]);
+
+    // Inner Neon Grid Spokes (rotating visual cue)
+    diskContainer.add([
+        rect(2, 24),
+        anchor("center"),
+        color(0, 240, 255),
+        opacity(0.4),
+        z(1.5)
+    ]);
+    diskContainer.add([
+        rect(24, 2),
+        anchor("center"),
+        color(0, 240, 255),
+        opacity(0.4),
+        z(1.5)
+    ]);
+
+    // Pulsing Core Core (Center magenta diamond)
+    const core = diskContainer.add([
+        rect(10, 10, { radius: 1 }),
+        anchor("center"),
+        rotate(45),
+        color(255, 0, 127),
         z(2)
     ]);
-    visor.onUpdate(() => {
-        visor.opacity = map(Math.sin(time() * 8), -1, 1, 0.7, 1.0);
+    core.onUpdate(() => {
+        core.opacity = map(Math.sin(time() * 10), -1, 1, 0.4, 1.0);
     });
 
-    // Arms
-    const lArm = guy.add([
-        rect(5, 16),
-        pos(-6, -30),
-        anchor("top"),
+    // 2. GYRO-STABILIZED VISOR (Direct child of guy, stays horizontal)
+    const visor = guy.add([
+        rect(18, 6, { radius: 3 }),
+        pos(0, -12), // Stays at center height
+        anchor("center"),
         C_BODY,
-        outline(1, C_OUTLINE)
+        outline(1.5, C_OUTLINE),
+        z(3)
     ]);
-    const rArm = guy.add([
-        rect(5, 16),
-        pos(6, -30),
-        anchor("top"),
-        C_BODY,
-        outline(1, C_OUTLINE)
+    const visorLight = visor.add([
+        rect(12, 2),
+        anchor("center"),
+        color(0, 240, 255),
+        z(3.5)
     ]);
-
-    // Legs
-    const lLeg = guy.add([
-        rect(5, 18),
-        pos(-4, -18),
-        anchor("top"),
-        C_BODY,
-        outline(1, C_OUTLINE)
-    ]);
-    const rLeg = guy.add([
-        rect(5, 18),
-        pos(4, -18),
-        anchor("top"),
-        C_BODY,
-        outline(1, C_OUTLINE)
-    ]);
+    visorLight.onUpdate(() => {
+        visorLight.opacity = map(Math.sin(time() * 8), -1, 1, 0.6, 1.0);
+    });
 
     // --- UPDATE LOOP ---
     guy.facingLeft = false;
+    let lastTrailPos = vec2(x, y);
+
     guy.onUpdate(() => {
-        // 1. Movement & Input
         let isMoving = false;
 
-        // Safety: Prevent sticky keys running when window loses focus
+        // Safety check: key listener when tab active
         if (!document.hasFocus()) return;
 
-        // Note: isKeyDown/isKeyPressed are global Kaboom functions
-        // Note: isKeyDown/isKeyPressed are global Kaboom functions
+        // Horizontal movement
         if (isKeyDown("left") && guy.pos.x > 10) {
             guy.move(-SPEED, 0);
             isMoving = true;
             guy.facingLeft = true;
         }
-        // Limit right movement: use custom levelWidth if set, otherwise default to screen width
         const rightLimit = guy.levelWidth || (width() - 10);
         if (isKeyDown("right") && guy.pos.x < rightLimit) {
             guy.move(SPEED, 0);
@@ -118,21 +119,55 @@ function createPlayer(x, y) {
             guy.facingLeft = false;
         }
 
-        // --- FLUID PHYSICS INTERACTION (CPU SIDE FORCE FIELD) ---
+        // --- DISK ROLL ROTATION ---
+        if (isMoving) {
+            const rollDirection = guy.facingLeft ? -1 : 1;
+            diskContainer.angle += rollDirection * dt() * 600;
+        } else {
+            // Idle breathing scale bobbing
+            diskContainer.scale = vec2(1 + Math.sin(time() * 4) * 0.03);
+        }
+
+        // --- SOLID NEON TRAIL PLATFORMS ---
+        if (guy.pos.dist(lastTrailPos) > 20) {
+            // Determine active level color
+            const C_TRAIL = (time() % 1.5 > 0.75) ? rgb(0, 240, 255) : rgb(255, 0, 127);
+            const currentPos = vec2(lastTrailPos.x, lastTrailPos.y);
+
+            // Spawn thin solid trail platform behind the player
+            const trailSeg = add([
+                rect(12, 4, { radius: 2 }),
+                pos(currentPos.x, currentPos.y),
+                anchor("bot"),
+                color(C_TRAIL),
+                area(),
+                body({ isStatic: true }),
+                z(12),
+                opacity(0.8),
+                "trail_platform"
+            ]);
+
+            // Shrink and fade the trail segment
+            tween(0.8, 0, 1.2, (val) => {
+                trailSeg.opacity = val;
+            }, easings.easeInQuad).onEnd(() => {
+                destroy(trailSeg);
+            });
+
+            lastTrailPos = guy.pos;
+        }
+
+        // --- FLUID PHYSICS INTERACTION ---
         const px = guy.pos.x - (camPos().x - width() / 2);
         const py = guy.pos.y - (camPos().y - height() / 2);
 
-        // 1. Process Wind Emitters
         if (window.fluidEmitters) {
             window.fluidEmitters.forEach(e => {
                 if (e.type === "column") {
-                    // Vertical wind column
                     if (Math.abs(px - e.x) < e.radius && py <= e.y) {
-                        // Anti-gravity updraft
                         guy.move(e.dx * e.force, e.dy * e.force);
                     }
                 } else {
-                    // Circular wind force
                     const dx = px - e.x;
                     const dy = py - e.y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
@@ -143,7 +178,6 @@ function createPlayer(x, y) {
             });
         }
 
-        // 2. Process Vortex Suction Pulls
         if (window.fluidVortexes) {
             window.fluidVortexes.forEach(v => {
                 const dx = v.x - px;
@@ -156,7 +190,6 @@ function createPlayer(x, y) {
             });
         }
 
-        // 3. Trigger Fluid Dye Trail splats on GPU
         if (window.triggerFluidSplat) {
             const lastScreen = guy.lastScreenPos || { x: px, y: py };
             const sdx = (px - lastScreen.x) / width();
@@ -167,16 +200,15 @@ function createPlayer(x, y) {
             if (speedSq > 0.000001) {
                 const ux = px / width();
                 const uy = py / height();
-                // Alternating cyan and pink trail colors from flux
                 const col = (time() % 1.5 > 0.75) ? [0.0, 0.9, 1.0] : [1.0, 0.0, 0.5];
                 window.triggerFluidSplat(ux, 1.0 - uy, sdx, sdy, col, 0.0015);
             }
         }
 
-        // Digital particle dust trail when running
+        // Particle trail
         if (isMoving && rand() > 0.6) {
             const particleX = guy.pos.x + rand(-6, 6);
-            const particleY = guy.pos.y - rand(5, 25);
+            const particleY = guy.pos.y - rand(2, 10);
             const trailColor = (rand() > 0.5) ? rgb(0, 240, 255) : rgb(255, 0, 127);
             const pSize = rand(2, 4);
             const trail = add([
@@ -196,21 +228,10 @@ function createPlayer(x, y) {
             });
         }
 
-        if (isKeyPressed("space") && guy.isGrounded()) {
+        // Jump Controls
+        if ((isKeyPressed("space") || isKeyPressed("up")) && guy.isGrounded()) {
             guy.jump(JUMP);
             if (window.SFX) window.SFX.playJump();
-            // Splat downward burst in fluid
-            if (window.triggerFluidSplat) {
-                window.triggerFluidSplat(px / width(), 1.0 - (py / height()), 0, 0.25, [1.0, 0.0, 0.5], 0.0035);
-            }
-            // STRETCH: Tall and Thin
-            guy.scale = vec2(0.8, 1.2);
-            tween(guy.scale, vec2(1, 1), 0.2, (val) => guy.scale = val, easings.easeOutQuad);
-        }
-        if (isKeyPressed("up") && guy.isGrounded()) {
-            guy.jump(JUMP);
-            if (window.SFX) window.SFX.playJump();
-            // Splat downward burst in fluid
             if (window.triggerFluidSplat) {
                 window.triggerFluidSplat(px / width(), 1.0 - (py / height()), 0, 0.25, [1.0, 0.0, 0.5], 0.0035);
             }
@@ -219,55 +240,25 @@ function createPlayer(x, y) {
             tween(guy.scale, vec2(1, 1), 0.2, (val) => guy.scale = val, easings.easeOutQuad);
         }
 
-        // 2. Animation
-        if (!guy.isGrounded() && !guy.isOnRamp) {
-            // Jump Pose
-            lLeg.angle = 45;
-            rLeg.angle = -45;
-            // Arms Up Sideways ("Cheer" Pose)
-            lArm.angle = 135;
-            rArm.angle = -135;
-        } else if (isMoving) {
-            // Run Cycle (Sine Wave)
-            const t = time() * 15;
-            lLeg.angle = Math.sin(t) * 45;
-            rLeg.angle = Math.sin(t + Math.PI) * 45;
-            lArm.angle = Math.sin(t + Math.PI) * 45;
-            rArm.angle = Math.sin(t) * 45;
-        } else {
-            // Idle (Subtle Breathing)
-            lLeg.angle = 0;
-            rLeg.angle = 0;
-            lArm.angle = Math.sin(time() * 2) * 5;
-            rArm.angle = -Math.sin(time() * 2) * 5;
-            head.pos.y = -34 + Math.sin(time() * 5) * 1; // Bobbing head
-        }
-
-        // 3. Shadow Logic (Dynamic sizing based on height)
+        // Shadow scale in air
         if (!guy.isGrounded()) {
-            // Shrink when in air
-            const heightOffset = Math.min(Math.abs(guy.pos.y), 100) / 100; // Rough estimation if needed, or just simpler
-            // Just hardcode shrink for jump state for simplicity as we don't strictly track floor distance easily everywhere
             shadow.scale = vec2(0.6, 0.6);
             shadow.opacity = 0.15;
         } else {
-            // Shadow reset on ground
             shadow.scale = vec2(1, 1);
             shadow.opacity = 0.3;
         }
 
-        // 4. Directional Flipping
+        // Directional visual flipping
         const currentScaleX = Math.abs(guy.scale.x);
         guy.scale.x = guy.facingLeft ? -currentScaleX : currentScaleX;
     });
 
-    // --- SQUASH AND STRETCH EVENTS ---
-    // Land (Squash)
+    // Landing Squash
     guy.onGround(() => {
-        // SQUASH: Short and Wide
         guy.scale = vec2(1.2, 0.8);
         tween(guy.scale, vec2(1, 1), 0.2, (val) => guy.scale = val, easings.easeOutElastic);
-        shake(1); // Tiny thud feeling
+        shake(1);
     });
 
     return guy;
