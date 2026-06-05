@@ -877,7 +877,7 @@ scene("contact", () => {
 
 
     // --- CAMERA TRACKING ---
-    const centerY = height() / 2;
+    const centerY = height() / 2 - 40;
     onUpdate(() => {
         if (!guy.exists()) return;
         let camX = guy.pos.x;
@@ -925,6 +925,7 @@ scene("contact", () => {
                         window.g_TransitionJaws.top = null;
                         window.g_TransitionJaws.bot = null;
                     }
+                    if (window.showUIButtons) window.showUIButtons();
                 });
         });
     }

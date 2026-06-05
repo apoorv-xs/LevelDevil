@@ -107,9 +107,36 @@ try {
     // Global references to jaws for cross-scene control
     window.g_TransitionJaws = { top: null, bot: null };
 
+    window.showUIButtons = function () {
+        const pBtn = document.getElementById('pause-btn');
+        if (pBtn) pBtn.style.display = 'block';
+        const aBtn = document.getElementById('audio-btn');
+        if (aBtn) aBtn.style.display = 'block';
+        
+        // Also show the recruiter toggle if there is one in the scene
+        const recToggle = get("recruiter_toggle")[0];
+        if (recToggle) {
+            recToggle.hidden = false;
+        }
+    };
+
+    window.hideUIButtons = function () {
+        const pBtn = document.getElementById('pause-btn');
+        if (pBtn) pBtn.style.display = 'none';
+        const aBtn = document.getElementById('audio-btn');
+        if (aBtn) aBtn.style.display = 'none';
+        
+        // Also hide the recruiter toggle if there is one in the scene
+        const recToggle = get("recruiter_toggle")[0];
+        if (recToggle) {
+            recToggle.hidden = true;
+        }
+    };
+
     // --- TRANSITION ANIMATION ---
     window.runDevilTransition = function (nextSceneName, onBiteClose) {
         if (window.SFX) window.SFX.playPort();
+        if (window.hideUIButtons) window.hideUIButtons();
         const skinColor = rgb(...hexToRgb(C_DEVIL_SKIN));
         const eyeColor = rgb(...hexToRgb(C_DEVIL_EYES));
 
@@ -338,6 +365,11 @@ try {
             "recruiter_toggle"
         ]);
 
+        // Hide if transition is running
+        if (window.g_TransitionJaws && window.g_TransitionJaws.top !== null) {
+            toggleBtn.hidden = true;
+        }
+
         const label = toggleBtn.add([
             text("RECRUITER MODE: OFF", { size: 12, font: "'Press Start 2P'", width: 260, align: "center" }),
             anchor("center"),
@@ -406,15 +438,16 @@ try {
     if (startOverlay && gameContainer) {
         // Handle Click on HTML Overlay
         startOverlay.addEventListener('click', () => {
-            if (window.SFX) window.SFX.init();
+            if (window.SFX) {
+                window.SFX.init();
+                window.SFX.startBGM();
+            }
             gameContainer.style.pointerEvents = "all";
             const canvas = document.getElementById("game-canvas");
             if (canvas) canvas.focus();
 
             window.runDevilTransition("intro", () => {
                 startOverlay.style.display = 'none';
-                const pBtn = document.getElementById('pause-btn');
-                if (pBtn) pBtn.style.display = 'block';
             });
         });
     } else {
@@ -460,6 +493,7 @@ try {
         overlay.style.zIndex = "999999";
         overlay.style.fontFamily = "'Press Start 2P', monospace";
         overlay.style.color = "#fff";
+        overlay.style.pointerEvents = "all"; // Ensure overlay captures all pointer events
 
         // Create content box
         const box = document.createElement("div");
@@ -505,8 +539,10 @@ try {
             optionElements.push(btn);
 
             // Click / Hover logic
-            btn.addEventListener("click", () => {
+            btn.addEventListener("click", (e) => {
                 selectOption(idx);
+                e.stopPropagation();
+                e.preventDefault();
             });
 
             btn.addEventListener("mouseenter", () => {
@@ -549,9 +585,21 @@ try {
             }
         }
 
+        let closed = false;
         function closeModal() {
-            document.body.removeChild(overlay);
+            if (closed) return;
+            closed = true;
+            if (overlay.parentNode === document.body) {
+                document.body.removeChild(overlay);
+            }
             document.removeEventListener("keydown", handleKeyDown);
+            
+            // Set cooldown flag to prevent immediate re-trigger on Enter keypress
+            window.modalJustClosed = true;
+            setTimeout(() => {
+                window.modalJustClosed = false;
+            }, 150);
+
             if (window.k) window.k.debug.paused = false;
             if (callbackOnClose) callbackOnClose();
         }
@@ -639,9 +687,21 @@ try {
         optionsList.style.gap = "15px";
         box.appendChild(optionsList);
 
+        const isCurrentlyMuted = window.SFX ? window.SFX.isMuted : false;
         const menuOptions = [
             { name: "RESUME", action: () => window.resumeGame() },
-            { name: "RESTART LEVEL", action: () => { window.resumeGame(); window.go(window.CURRENT_SCENE || "intro"); } }
+            { name: "RESTART LEVEL", action: () => { window.resumeGame(); window.go(window.CURRENT_SCENE || "intro"); } },
+            {
+                name: isCurrentlyMuted ? "UNMUTE AUDIO" : "MUTE AUDIO",
+                action: () => {
+                    if (window.SFX) {
+                        const isMuted = window.SFX.toggleMute();
+                        const aBtn = document.getElementById('audio-btn');
+                        if (aBtn) aBtn.innerText = isMuted ? "🔇 AUDIO: OFF" : "🔊 AUDIO: ON";
+                        window.resumeGame();
+                    }
+                }
+            }
         ];
 
         if (window.CURRENT_SCENE && window.CURRENT_SCENE !== "intro") {
@@ -653,6 +713,9 @@ try {
 
         menuOptions.forEach((opt, idx) => {
             const btn = document.createElement("div");
+            if (opt.name.includes("MUTE") || opt.name.includes("UNMUTE")) {
+                btn.id = "menu-opt-mute";
+            }
             btn.style.padding = "12px 20px";
             btn.style.fontSize = "0.9rem";
             btn.style.cursor = "pointer";
@@ -734,11 +797,21 @@ try {
         if (window.SFX) window.SFX.playCoin();
     };
 
-    // Register Escape key listener globally
+    // Register global keydown listener
     window.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
             if (e.defaultPrevented) return;
             window.togglePauseMenu();
+        } else if (e.key === "m" || e.key === "M") {
+            if (window.SFX) {
+                const isMuted = window.SFX.toggleMute();
+                const aBtn = document.getElementById('audio-btn');
+                if (aBtn) aBtn.innerText = isMuted ? "🔇 AUDIO: OFF" : "🔊 AUDIO: ON";
+                const muteMenuOpt = document.getElementById("menu-opt-mute");
+                if (muteMenuOpt) {
+                    muteMenuOpt.innerText = isMuted ? "UNMUTE AUDIO" : "MUTE AUDIO";
+                }
+            }
         }
     });
 
@@ -775,6 +848,47 @@ try {
     });
 
     document.body.appendChild(pauseBtn);
+
+    // Create and inject Audio Toggle Button
+    const audioBtn = document.createElement("div");
+    audioBtn.id = "audio-btn";
+    audioBtn.innerText = "🔊 AUDIO: ON";
+    audioBtn.style.position = "fixed";
+    audioBtn.style.top = "20px";
+    audioBtn.style.left = "160px";
+    audioBtn.style.zIndex = "150";
+    audioBtn.style.fontFamily = "'Press Start 2P', monospace";
+    audioBtn.style.fontSize = "12px";
+    audioBtn.style.color = "#fff";
+    audioBtn.style.backgroundColor = "#000";
+    audioBtn.style.border = "4px double #fff";
+    audioBtn.style.padding = "8px 12px";
+    audioBtn.style.cursor = "pointer";
+    audioBtn.style.userSelect = "none";
+    audioBtn.style.display = "none";
+
+    audioBtn.addEventListener("mouseenter", () => {
+        audioBtn.style.backgroundColor = "#fff";
+        audioBtn.style.color = "#000";
+        if (window.SFX) window.SFX.playJump();
+    });
+    audioBtn.addEventListener("mouseleave", () => {
+        audioBtn.style.backgroundColor = "#000";
+        audioBtn.style.color = "#fff";
+    });
+    audioBtn.addEventListener("click", (e) => {
+        if (window.SFX) {
+            const isMuted = window.SFX.toggleMute();
+            audioBtn.innerText = isMuted ? "🔇 AUDIO: OFF" : "🔊 AUDIO: ON";
+            const muteMenuOpt = document.getElementById("menu-opt-mute");
+            if (muteMenuOpt) {
+                muteMenuOpt.innerText = isMuted ? "UNMUTE AUDIO" : "MUTE AUDIO";
+            }
+        }
+        e.stopPropagation();
+    });
+
+    document.body.appendChild(audioBtn);
 
     // --- STARTUP (Moved from index.html) ---
     // Create empty scene to wait for user interaction

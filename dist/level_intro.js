@@ -65,7 +65,7 @@ scene("intro", () => {
 
     // TEXT: Instruction
     add([
-        text("[ Use ARROWS to Move. Trust nothing. ]", { size: 10, font: "'Press Start 2P'" }),
+        text("[ Use ARROWS to Move. M to Mute. Trust nothing. ]", { size: 9, font: "'Press Start 2P'" }),
         pos(width() * 0.1, height() * 0.2 + 80),
         color(C_TEXT),
         opacity(0.7), // Slightly dimmer
@@ -289,6 +289,7 @@ scene("intro", () => {
                         window.g_TransitionJaws.top = null;
                         window.g_TransitionJaws.bot = null;
                     }
+                    if (window.showUIButtons) window.showUIButtons();
                 });
         });
     }

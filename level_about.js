@@ -766,7 +766,7 @@ scene("about", () => {
         const lerpSpeed = 4 * dt();
 
         if (Math.abs(currCamX - targetCamX) > 1) {
-            camPos(lerp(currCamX, targetCamX, lerpSpeed), height() / 2);
+            camPos(lerp(currCamX, targetCamX, lerpSpeed), height() / 2 - 40);
         }
     });
 
@@ -783,6 +783,7 @@ scene("about", () => {
                     destroy(botJaw);
                     window.g_TransitionJaws.top = null;
                     window.g_TransitionJaws.bot = null;
+                    if (window.showUIButtons) window.showUIButtons();
                 });
         });
     }

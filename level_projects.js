@@ -331,6 +331,21 @@ scene("projects", () => {
         obj.add([rect(12, 2), pos(0, 0), anchor("left"), color(green), rotate(-30)]);
         obj.add([rect(4, 4), pos(6, -6), anchor("center"), color(blipColor)]);
     }
+    function drawFlux(obj) {
+        const cyan = rgb(0, 255, 255);
+        const blue = rgb(0, 128, 255);
+        const white = rgb(255, 255, 255);
+        // Base container
+        obj.add([rect(28, 28), pos(0, 0), anchor("center"), color(50, 50, 50), outline(2, C_OUTLINE)]);
+        // Wave blocks representing fluid dynamics
+        obj.add([rect(24, 8), pos(0, 4), anchor("center"), color(blue)]);
+        obj.add([rect(24, 6), pos(0, -2), anchor("center"), color(cyan)]);
+        obj.add([rect(24, 4), pos(0, -7), anchor("center"), color(white)]);
+    }
+
+    // --- DOOR REGISTRY ---
+    // Store all door references here so we don't rely on Kaboom's get() for child objects
+    const doorRegistry = [];
 
     // --- MOVING ISLAND BUILDER ---
     function createIsland(x, y, type, project = null, moveConfig = null) {
@@ -441,7 +456,7 @@ scene("projects", () => {
             z(1),
             area(),
             "project_door",
-            { projectData: project }
+            { projectData: project, isCollidingThisFrame: false }
         ]);
         door.add([rect(doorW - 12, doorH - 12), pos(0, 0), anchor("center"), color(0, 0, 0), opacity(0.1)]);
         door.add([rect(6, 6), pos(doorW / 2 - 10, -doorH / 2), anchor("center"), color(255, 235, 59), outline(2, C_OUTLINE)]);
@@ -458,12 +473,98 @@ scene("projects", () => {
         else if (project.icon === "globe") drawGlobe(icon);
         else if (project.icon === "eye") drawEye(icon);
         else if (project.icon === "radar") drawRadar(icon);
+        else if (project.icon === "flux") drawFlux(icon);
 
         let iconTime = 0;
         icon.onUpdate(() => {
             iconTime += dt() * 3;
             icon.pos.y = iconBaseY + Math.sin(iconTime) * 6;
         });
+
+        // Floating Tooltip HUD (Start hidden)
+        const tooltip = island.add([
+            rect(180, 75),
+            pos(0, -doorH - 120),
+            anchor("center"),
+            color(30, 30, 30),
+            outline(3, C_OUTLINE),
+            opacity(0),
+            z(10),
+            "project_tooltip",
+            {
+                targetOpacity: 0,
+                targetY: -doorH - 110
+            }
+        ]);
+
+        // Add small pointing triangle/tail at the bottom of the card
+        tooltip.add([
+            rect(12, 12),
+            pos(0, 37.5),
+            anchor("center"),
+            rotate(45),
+            color(30, 30, 30),
+            outline(3, C_OUTLINE),
+            z(-1)
+        ]);
+
+        // Add a clean visual cover rect to hide the tail's outline overlap inside the box
+        tooltip.add([
+            rect(20, 8),
+            pos(0, 33),
+            anchor("center"),
+            color(30, 30, 30),
+            z(1)
+        ]);
+
+        // Tooltip Content - Title
+        tooltip.add([
+            text(project.title.toUpperCase(), { size: 9, font: "'Press Start 2P'", width: 160, align: "center" }),
+            pos(0, -20),
+            anchor("center"),
+            color(255, 229, 102), // Gold text
+            opacity(0),
+            "tooltip_text"
+        ]);
+
+        // Tooltip Content - Description
+        tooltip.add([
+            text(project.desc || "", { size: 6, font: "'Press Start 2P'", width: 160, align: "center" }),
+            pos(0, 3),
+            anchor("center"),
+            color(255, 255, 255),
+            opacity(0),
+            "tooltip_text"
+        ]);
+
+        // Tooltip Content - Action
+        tooltip.add([
+            text("[ENTER] TO VIEW", { size: 7, font: "'Press Start 2P'" }),
+            pos(0, 22),
+            anchor("center"),
+            color(0, 255, 255), // Cyan action
+            opacity(0),
+            "tooltip_text"
+        ]);
+
+        // Smooth transition animation
+        tooltip.onUpdate(() => {
+            tooltip.opacity = lerp(tooltip.opacity, tooltip.targetOpacity, dt() * 8);
+            tooltip.pos.y = lerp(tooltip.pos.y, tooltip.targetY, dt() * 8);
+
+            // Sync children opacities
+            tooltip.children.forEach(child => {
+                child.opacity = tooltip.opacity;
+            });
+        });
+
+        // Store reference to tooltip on the door object
+        door.tooltip = tooltip;
+        // Store parent island reference for world position calculation
+        door.parentIsland = island;
+
+        // Register in our plain JS array (bypasses Kaboom's get() which may not find child objects)
+        doorRegistry.push({ door, island, tooltip, projectData: project });
 
         return island;
     }
@@ -512,6 +613,15 @@ scene("projects", () => {
                 { name: "Live Website", url: "https://red-meadow-01ad20b00.2.azurestaticapps.net/" },
                 { name: "GitHub Repository", url: "https://github.com/apoorv-xs/Portfolio" }
             ]
+        },
+        {
+            id: "flux",
+            title: "Flux",
+            type: "tech",
+            doorColor: rgb(255, 0, 128), // Bright neon pink/magenta
+            icon: "flux",
+            desc: "WebGL Spatial Fluid Dynamics Sandbox & Exporter",
+            link: "https://github.com/apoorv-xs/Flux"
         }
     ];
 
@@ -523,7 +633,8 @@ scene("projects", () => {
         area({ shape: new Rect(vec2(0, -40), 60, 80) }),
         anchor("bot"),
         z(1),
-        "back_gate"
+        "back_gate",
+        { isCollidingThisFrame: false }
     ]);
 
     // Label
@@ -544,6 +655,7 @@ scene("projects", () => {
     backGate.add([rect(52, 10), pos(0, -50), anchor("bot"), color(180, 180, 180), z(1)]);
     backGate.add([rect(42, 6), pos(0, -60), anchor("bot"), color(180, 180, 180), z(7)]);
     backGate.add([rect(22, 4), pos(0, -66), anchor("bot"), color(180, 180, 180), z(7)]);
+
 
 
     // 1. Ground Pads
@@ -584,9 +696,8 @@ scene("projects", () => {
     const i1 = createIsland(600, groundY - 200, projects[0].type, projects[0]);
     createJumpPad(60, 0, i1);
 
-    // Island 2 (NEW PORTFOLIO): 950
-    // Replaced null with projects[3]
-    const i2 = createIsland(950, groundY - 400, "tech", projects[3], { dist: 150, speed: 1.5 });
+    // Island 2 (Flux): 950
+    const i2 = createIsland(950, groundY - 400, "tech", projects[4], { dist: 150, speed: 1.5 });
     createJumpPad(60, 0, i2);
 
     // Island 3 (Radar): 1300
@@ -595,8 +706,8 @@ scene("projects", () => {
     // REMOVED JUMP PAD AS PADS REQUEST
     // createJumpPad(-60, 0, i3); 
 
-    // Island 4 (EMPTY): 1650
-    const i4 = createIsland(1650, groundY - 300, "earth", null, { dist: 100, speed: 2 });
+    // Island 4 (Live Portfolio): 1650
+    const i4 = createIsland(1650, groundY - 300, "tech", projects[3], { dist: 100, speed: 2 });
     createJumpPad(60, 0, i4);
 
     // Island 5 (Ecom): 2000
@@ -628,7 +739,7 @@ scene("projects", () => {
         anchor("bot"),
         z(5),
         "gate", // Using generic 'gate' tag like intro, or specific if needed
-        { gateName: "Contact Me" }
+        { gateName: "Contact Me", isCollidingThisFrame: false }
     ]);
 
     // Gate Label
@@ -667,6 +778,7 @@ scene("projects", () => {
     contactGate.add([rect(22, 4), pos(0, -66), anchor("bot"), color(180, 180, 180), z(7)]);
 
 
+
     // --- UI / HUD ---
     add([
         text("PROJECTS", { size: 30, font: "'Press Start 2P'" }),
@@ -674,15 +786,6 @@ scene("projects", () => {
         anchor("center"),
         fixed(),
         color(C_TEXT),
-        z(100)
-    ]);
-
-    const infoText = add([
-        text("", { size: 14, font: "'Press Start 2P'", align: "center", width: 600 }),
-        pos(width() / 2, height() - 80),
-        anchor("center"),
-        fixed(),
-        color(0, 0, 0),
         z(100)
     ]);
 
@@ -696,47 +799,81 @@ scene("projects", () => {
         // Limit camera right:
         if (camX > worldWidth - width() / 2) camX = worldWidth - width() / 2;
 
-        let camY = height() / 2;
-        if (guy.pos.y < groundY - 200) {
-            camY = guy.pos.y + 100;
+        // Camera Y: follow the player upward more aggressively
+        let camY = height() / 2 - 40;
+        if (guy.pos.y < groundY - 100) {
+            // Center the camera closer to the player so upper islands are visible
+            camY = guy.pos.y + 10;
         }
-        if (camY > height() / 2) camY = height() / 2;
+        if (camY > height() / 2 - 40) camY = height() / 2 - 40;
 
         camPos(lerp(camPos().x, camX, 3 * dt()), lerp(camPos().y, camY, 3 * dt()));
     });
 
+    // --- INTERACTIONS & TOOLTIPS ---
+    // Combined proximity check + tooltip update for project doors
+    // Uses doorRegistry array (plain JS) instead of Kaboom's get() which may miss child objects
+    onUpdate(() => {
+        if (!guy.exists()) return;
+        const gx = guy.pos.x;
+        const gy = guy.pos.y;
 
-    // --- INTERACTIONS ---
-    guy.onCollideUpdate("project_door", (d) => {
-        const hasMultiple = d.projectData.links && d.projectData.links.length > 0;
-        infoText.text = d.projectData.title.toUpperCase() + "\n[ENTER] TO VIEW";
 
-        if (isKeyPressed("enter")) {
-            if (hasMultiple) {
-                // Freeze player and show overlay
-                guy.paused = true;
-                if (guy.body) guy.body.isStatic = true;
+        doorRegistry.forEach(entry => {
+            const { door: d, island, tooltip, projectData } = entry;
 
-                window.showProjectLinksOverlay(d.projectData, () => {
-                    guy.paused = false;
-                    if (guy.body) guy.body.isStatic = false;
-                });
+            // Compute door world position from parent island position + door local offset
+            const doorWX = island.pos.x + d.pos.x;
+            const doorWY = island.pos.y + d.pos.y;
+
+            const doorW = 45;
+            const doorH = 70;
+
+            // Door anchor is "bot" so doorWY is at bottom of door
+            // Player stands on island base, so player Y is near doorWY
+            // Check a generous bounding box around the door
+            const dx = Math.abs(gx - doorWX);
+            const dy = Math.abs(gy - doorWY);
+
+            // Player needs to be within ~50px horizontal and ~80px vertical of door bottom
+            const isNear = dx < 50 && dy < 80;
+
+            // Update tooltip in the SAME frame as proximity detection
+            if (isNear) {
+                d.isCollidingThisFrame = true;
+                if (tooltip) {
+                    tooltip.targetOpacity = 1;
+                    tooltip.targetY = -doorH - 130;
+                }
+
+                if (isKeyPressed("enter") && !window.modalJustClosed) {
+                    const hasMultiple = projectData.links && projectData.links.length > 0;
+                    if (hasMultiple) {
+                        guy.paused = true;
+                        if (guy.body) guy.body.isStatic = true;
+
+                        window.showProjectLinksOverlay(projectData, () => {
+                            guy.paused = false;
+                            if (guy.body) guy.body.isStatic = false;
+                        });
+                    } else {
+                        setTimeout(() => {
+                            window.open(projectData.link, "_blank");
+                        }, 50);
+                    }
+                }
             } else {
-                // Simple open, no effects
-                setTimeout(() => {
-                    window.open(d.projectData.link, "_blank");
-                }, 50);
+                d.isCollidingThisFrame = false;
+                if (tooltip) {
+                    tooltip.targetOpacity = 0;
+                    tooltip.targetY = -doorH - 110;
+                }
             }
-        }
+        });
+
     });
 
-    guy.onCollideUpdate("contact_gate", () => {
-        // Standard collider logic (fallback)
-        infoText.text = "CONTACT ME\n[ENTER]";
-    });
-
-    guy.onCollideUpdate("back_gate", () => {
-        infoText.text = "BACK TO INTRO\n[ENTER]";
+    guy.onCollideUpdate("back_gate", (bg) => {
         if (isKeyPressed("up") || isKeyPressed("enter")) {
             window.enterGate(guy, backGate, "intro");
         }
@@ -757,12 +894,6 @@ scene("projects", () => {
         go("projects"); // Instant restart
     });
 
-    onUpdate(() => {
-        if (!guy.isColliding("project_door") && !guy.isColliding("contact_gate") && !guy.isColliding("back_gate")) {
-            infoText.text = "";
-        }
-    });
-
     // --- TRANSITION ENTRY ---
     const topJaw = window.g_TransitionJaws.top;
     const botJaw = window.g_TransitionJaws.bot;
@@ -776,6 +907,7 @@ scene("projects", () => {
                     destroy(botJaw);
                     window.g_TransitionJaws.top = null;
                     window.g_TransitionJaws.bot = null;
+                    if (window.showUIButtons) window.showUIButtons();
                 });
         });
     }
