@@ -151,6 +151,7 @@ function createPlayer(x, y) {
                 pos(currentPos.x, currentPos.y - 4),
                 anchor("center"),
                 color(C_TRAIL),
+                scale(1), // Adds scale tracking component
                 opacity(0.85),
                 z(11) // Behind the player, in front of background
             ]);
@@ -166,24 +167,25 @@ function createPlayer(x, y) {
 
             // Jelly wobble script: squash & stretch
             const phaseOffset = rand(0, Math.PI * 2);
+            let scaleMult = 1.0;
             visualBlob.onUpdate(() => {
                 const t = time() * 12 + phaseOffset;
                 visualBlob.scale = vec2(
                     1.0 + Math.sin(t) * 0.22,
                     1.0 - Math.sin(t) * 0.22
-                );
+                ).scale(scaleMult);
             });
 
             // 3. Fading and shrinking lifetime
-            tween(0.85, 0, 1.2, (val) => {
-                visualBlob.opacity = val;
+            tween(1.0, 0, 1.2, (val) => {
+                visualBlob.opacity = val * 0.85;
                 innerCore.opacity = val * 0.8;
-                // Gradually shrink the droplet visually
-                visualBlob.scale = visualBlob.scale.scale(val / 0.85);
+                scaleMult = val; // Smoothly shrink the droplet visually
             }, easings.easeInQuad).onEnd(() => {
                 destroy(trailSeg);
                 destroy(visualBlob);
             });
+
 
             // 4. Dripping Liquid Drops
             const numDrops = randi(1, 3);
