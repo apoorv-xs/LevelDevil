@@ -113,6 +113,7 @@ scene("intro", () => {
             outline(2, rgb(0, 240, 255)),
             z(15),
             area(),
+            body({ isStatic: true }), // Solid anchor against the wind push
             "professor"
         ]);
 

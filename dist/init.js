@@ -2,6 +2,7 @@ console.log("INT: init.js loaded");
 
 try {
     // --- CONFIGURATION ---
+    window.JETPACK_MODE = true; // Enables horizontal wind force & jetpack physics
     const CANVAS_WIDTH = window.innerWidth;
     const CANVAS_HEIGHT = window.innerHeight;
 
@@ -442,6 +443,36 @@ try {
             fixed(),
             "perspective_grid",
             {
+                loopId: null,
+                add() {
+                    if (window.JETPACK_MODE) {
+                        // Spawn horizontal fluid wind streams
+                        this.loopId = loop(0.12, () => {
+                            const guy = get("guy")[0];
+                            if (!guy || !guy.exists()) return;
+
+                            const wLine = add([
+                                rect(rand(35, 75), 1),
+                                pos(camPos().x - width() / 2 - 100, rand(50, height() - 150)),
+                                color(0, 240, 255),
+                                opacity(rand(0.08, 0.22)),
+                                z(0.35),
+                                "wind_stream"
+                            ]);
+                            wLine.onUpdate(() => {
+                                wLine.pos.x += dt() * 650; // Drift rapidly to the right
+                                if (wLine.pos.x > camPos().x + width() / 2 + 100) {
+                                    destroy(wLine);
+                                }
+                            });
+                        });
+                    }
+                },
+                destroy() {
+                    if (this.loopId) {
+                        this.loopId.cancel();
+                    }
+                },
                 draw() {
                     const horizonY = height() * 0.5; // Vanishing horizon height
                     const floorY = height();
@@ -524,6 +555,7 @@ try {
             }
         ]);
     };
+
 
 
     // --- DYNAMIC FLUID WARNING ALERT SYSTEM ---

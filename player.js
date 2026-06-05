@@ -106,7 +106,13 @@ function createPlayer(x, y) {
         // Safety check: key listener when tab active
         if (!document.hasFocus()) return;
 
-        // Horizontal movement
+        // Horizontal movement & wind force
+        if (window.JETPACK_MODE) {
+            // Constant wind push to the right
+            guy.move(185, 0);
+            isMoving = true;
+        }
+
         if (isKeyDown("left") && guy.pos.x > 10) {
             guy.move(-SPEED, 0);
             isMoving = true;
@@ -291,16 +297,57 @@ function createPlayer(x, y) {
             });
         }
 
-        // Jump Controls
-        if ((isKeyPressed("space") || isKeyPressed("up")) && guy.isGrounded()) {
-            guy.jump(JUMP);
-            if (window.SFX) window.SFX.playJump();
-            if (window.triggerFluidSplat) {
-                window.triggerFluidSplat(px / width(), 1.0 - (py / height()), 0, 0.25, [1.0, 0.0, 0.5], 0.0035);
+        // Controls: Jetpack (Thrust upward) vs Jump
+        if (window.JETPACK_MODE) {
+            if (isKeyDown("space") || isKeyDown("up")) {
+                // Smooth upward vertical thrust overriding gravity
+                guy.vel.y = lerp(guy.vel.y, -300, dt() * 8);
+
+                // Play sound effect periodically (every 0.15s)
+                if (!guy.lastJetpackSoundTime || time() - guy.lastJetpackSoundTime > 0.15) {
+                    guy.lastJetpackSoundTime = time();
+                    if (window.SFX && window.SFX.playJump) window.SFX.playJump();
+                }
+
+                // Spawn jetpack flame particles shooting downwards
+                if (rand() > 0.4) {
+                    // GPU Fluid Dye splat downwards
+                    if (window.triggerFluidSplat && rand() > 0.7) {
+                        window.triggerFluidSplat(px / width(), 1.0 - (py / height()), 0, 0.2, [1.0, 0.0, 0.5], 0.002);
+                    }
+
+                    const pSize = rand(3, 5);
+                    const spark = add([
+                        rect(pSize, pSize, { radius: pSize / 2 }),
+                        pos(guy.pos.x + rand(-6, 6), guy.pos.y - 4),
+                        anchor("center"),
+                        color(rand() > 0.5 ? rgb(0, 240, 255) : rgb(255, 0, 127)),
+                        opacity(0.85),
+                        z(18),
+                        "jetpack_spark"
+                    ]);
+                    const velY = rand(150, 250);
+                    const velX = rand(-40, 40);
+                    spark.onUpdate(() => {
+                        spark.pos.y += dt() * velY;
+                        spark.pos.x += dt() * velX;
+                        spark.opacity -= dt() * 1.5;
+                        if (spark.opacity <= 0) destroy(spark);
+                    });
+                }
             }
-            // STRETCH: Tall and Thin
-            guy.scale = vec2(0.8, 1.2);
-            tween(guy.scale, vec2(1, 1), 0.2, (val) => guy.scale = val, easings.easeOutQuad);
+        } else {
+            // Standard Jump controls
+            if ((isKeyPressed("space") || isKeyPressed("up")) && guy.isGrounded()) {
+                guy.jump(JUMP);
+                if (window.SFX) window.SFX.playJump();
+                if (window.triggerFluidSplat) {
+                    window.triggerFluidSplat(px / width(), 1.0 - (py / height()), 0, 0.25, [1.0, 0.0, 0.5], 0.0035);
+                }
+                // STRETCH: Tall and Thin
+                guy.scale = vec2(0.8, 1.2);
+                tween(guy.scale, vec2(1, 1), 0.2, (val) => guy.scale = val, easings.easeOutQuad);
+            }
         }
 
         // Shadow scale in air
