@@ -50,37 +50,7 @@ scene("projects", () => {
         if (em) em.type = "circle";
     }
 
-    // --- CLOUDS ---
-    function addWideClouds() {
-        const cloudCount = 24;
-        const cloudLimit = 3500;
-        for (let i = 0; i < cloudCount; i++) {
-            const x = rand(0, cloudLimit);
-            const y = rand(groundY - 1200, groundY - 300);
-            const speed = rand(8, 25);
-            const scaleFactor = rand(0.6, 1.2);
-
-            const cloud = add([
-                pos(x, y),
-                rect(60 * scaleFactor, 20 * scaleFactor),
-                color(255, 255, 255),
-                opacity(rand(0.2, 0.5)),
-                z(0.5),
-                "cloud"
-            ]);
-            cloud.add([rect(30 * scaleFactor, 20 * scaleFactor), pos(15 * scaleFactor, -15 * scaleFactor), color(255, 255, 255)]);
-            cloud.add([rect(20 * scaleFactor, 10 * scaleFactor), pos(40 * scaleFactor, 5 * scaleFactor), color(255, 255, 255)]);
-
-            cloud.onUpdate(() => {
-                cloud.move(-speed, 0);
-                if (cloud.pos.x < -200) {
-                    cloud.pos.x = cloudLimit;
-                    cloud.pos.y = rand(groundY - 1200, groundY - 300);
-                }
-            });
-        }
-    }
-    addWideClouds();
+    // Cloud removal - allowed fluid nebula background to dominate
 
     // --- PLAYER ---
     const guy = createPlayer(150, groundY - 100);
@@ -201,6 +171,23 @@ scene("projects", () => {
                 island.pos.x = lerp(island.pos.x, island.initialX, dt() * 3);
 
             } else if (moveConfig && islandsMoving) {
+    function createIsland(x, y, type, project, moveConfig = null) {
+        const islandH = 40;
+        const island = add([
+            pos(x, y),
+            z(2),
+            "island"
+        ]);
+
+        // Active float animation
+        let islandTime = rand(0, 100);
+        island.onUpdate(() => {
+            islandTime += dt();
+            // Slow hover movement if moving
+            const oldX = island.pos.x;
+            const oldY = island.pos.y;
+
+            if (islandsMoving && moveConfig) {
                 // NORMAL MODE: Move in pattern
                 activeTime += dt();
                 const t = activeTime * moveConfig.speed;
@@ -217,7 +204,7 @@ scene("projects", () => {
 
             } else {
                 // Static islands return to start
-                island.pos.y = lerp(island.pos.y, island.initialY, dt() * 5);
+                island.pos.y = lerp(island.pos.y, island.initialY + Math.sin(islandTime * 2) * 2, dt() * 5);
                 island.pos.x = lerp(island.pos.x, island.initialX, dt() * 5);
             }
 
@@ -236,16 +223,13 @@ scene("projects", () => {
 
 
         const islandW = 160;
-        let baseColor = C_FLOOR;
-        if (type === "tech") baseColor = C_TECH_BASE;
 
-        // Base - ATTACH TO ISLAND CONTAINER
-        // Note: we can skip adding 'pos' to child if we want it at 0,0, but here we offset it.
+        // Base - Holographic Cyber Dock
         const base = island.add([
             rect(islandW, islandH),
             pos(-islandW / 2, 0),
-            color(baseColor),
-            outline(4, C_OUTLINE),
+            color(8, 8, 16), // Dark void core
+            outline(2, rgb(255, 0, 127)), // Glowing neon border
             area(),
             body({ isStatic: true }),
             "wall"
@@ -253,39 +237,49 @@ scene("projects", () => {
 
         island.baseObj = base;
 
-        // Neon platform line strip (top edge)
+        // Pulsing inner colored core
         island.add([
-            rect(islandW, 3),
-            pos(-islandW / 2, 0),
-            color(255, 0, 127), // Neon magenta line strip
-            z(2.1)
+            rect(islandW - 6, islandH - 6),
+            pos(-islandW / 2 + 3, 3),
+            color(255, 0, 127),
+            opacity(0.06),
+            z(2.05)
         ]);
 
-        // Decos
-        island.add([rect(15, 15), pos(-islandW / 4, islandH), color(baseColor), outline(4, C_OUTLINE), z(-1)]);
-        island.add([rect(20, 8), pos(10, islandH), color(baseColor), outline(4, C_OUTLINE), z(-1)]);
-        island.add([rect(10, 20), pos(islandW / 3, islandH), color(baseColor), outline(4, C_OUTLINE), z(-1)]);
+        // Accent neon support bars
+        island.add([rect(2, 20), pos(-islandW / 3, islandH), color(255, 0, 127), opacity(0.4), z(1.5)]);
+        island.add([rect(2, 20), pos(islandW / 3, islandH), color(255, 0, 127), opacity(0.4), z(1.5)]);
 
         // IF NO PROJECT, JUST RETURN PLATFORM
         if (!project) return island;
 
-        // Door
+        // Glowing Portal Archway
         const doorColor = project.doorColor;
         const doorH = 70;
-        const doorW = 45;
+        const doorW = 48;
         const door = island.add([
-            rect(doorW, doorH),
             pos(0, 0),
             anchor("bot", "center"),
-            color(doorColor),
-            outline(4, C_OUTLINE),
             z(1),
-            area(),
+            area({ shape: new Rect(vec2(-doorW / 2, -doorH), doorW, doorH) }),
             "project_door",
             { projectData: project }
         ]);
-        door.add([rect(doorW - 12, doorH - 12), pos(0, 0), anchor("center"), color(0, 0, 0), opacity(0.1)]);
-        door.add([rect(6, 6), pos(doorW / 2 - 10, -doorH / 2), anchor("center"), color(255, 235, 59), outline(2, C_OUTLINE)]);
+
+        // Portal background (dark void core)
+        door.add([rect(doorW, doorH), pos(0, 0), anchor("bot"), color(6, 6, 12), z(0.5)]);
+        
+        // Pulsing colored core glow
+        const phase = project.title.charCodeAt(0) * 0.1;
+        const core = door.add([rect(doorW - 8, doorH - 8), pos(0, -4), anchor("bot"), color(doorColor), opacity(0.12), z(0.6)]);
+        core.onUpdate(() => {
+            core.opacity = 0.06 + 0.06 * Math.sin(time() * 3 + phase);
+        });
+
+        // Frame lines (glowing borders)
+        door.add([rect(4, doorH), pos(-doorW / 2, 0), anchor("botleft"), color(doorColor), z(0.7)]);
+        door.add([rect(4, doorH), pos(doorW / 2 - 4, 0), anchor("botleft"), color(doorColor), z(0.7)]);
+        door.add([rect(doorW + 8, 4), pos(0, -doorH), anchor("bot"), color(doorColor), z(0.7)]);
 
         // Icon
         const iconBaseY = -doorH - 40;
@@ -384,14 +378,15 @@ scene("projects", () => {
     backGate.add([rect(4, 70), pos(26, 0), anchor("bot"), color(0, 240, 255), z(1)]);
 
 
-    // --- JUMP PAD BUILDER ---
+    // --- JUMP PAD BUILDER (Quantum Launcher) ---
     function createJumpPad(x, y, parent = null) {
         // Base
         const padConfig = [
             pos(x, y),
-            rect(40, 5),
+            rect(40, 4),
             anchor("top"),
-            color(0, 0, 0),
+            color(8, 8, 16),
+            outline(1.5, rgb(0, 240, 255)), // Cyan neon border
             z(1.5),
             "jump_pad_base"
         ];
@@ -405,11 +400,11 @@ scene("projects", () => {
 
         // Plate
         const plateConfig = [
-            rect(36, 8),
-            pos(0, 0),
+            rect(36, 6),
+            pos(0, -2),
             anchor("bot"),
-            color(200, 50, 50),
-            outline(2, C_OUTLINE),
+            color(255, 0, 127), // Glowing pink core
+            outline(1.5, rgb(255, 255, 255)), // Glowing white outline
             area(),
             z(1.6),
             "jump_pad",
@@ -456,6 +451,22 @@ scene("projects", () => {
 
         shake(2);
         guy.jump(1200);
+
+        // Spawn vertical neon splash particles
+        for (let i = 0; i < 8; i++) {
+            const pX = plate.worldPos().x + rand(-15, 15);
+            const pY = plate.worldPos().y - 5;
+            const pSize = rand(2, 5);
+            const p = add([
+                pos(pX, pY),
+                rect(pSize, pSize),
+                color(255, 0, 127),
+                opacity(0.8),
+                z(18),
+                move(rand(240, 300), rand(80, 200)),
+                lifespan(0.5, { fade: 0.5 })
+            ]);
+        }
 
         tween(plate.pos.y, plate.pos.y + 5, 0.05, (v) => plate.pos.y = v, easings.easeOutQuad)
             .onEnd(() => {
@@ -612,14 +623,45 @@ scene("projects", () => {
         z(100)
     ]);
 
-    const infoText = add([
-        text("", { size: 14, font: "'Press Start 2P'", align: "center", width: 600 }),
-        pos(width() / 2, height() - 80),
+    // --- HUD PANEL (Sliding Holographic HUD Card) ---
+    const hudPanel = add([
+        rect(550, 75),
+        pos(width() / 2, height() + 100), // Offscreen bottom
         anchor("center"),
+        color(8, 8, 20), // Dark cyber navy background
+        outline(2, rgb(0, 240, 255)), // Glowing cyan neon border
         fixed(),
-        color(0, 0, 0),
-        z(100)
+        z(90),
+        opacity(0)
     ]);
+    hudPanel.add([rect(540, 2), pos(0, -32), anchor("center"), color(0, 240, 255)]);
+    hudPanel.add([rect(2, 65), pos(-270, 0), anchor("center"), color(0, 240, 255)]);
+    hudPanel.add([rect(2, 65), pos(270, 0), anchor("center"), color(0, 240, 255)]);
+
+    const infoText = hudPanel.add([
+        text("", { size: 10, font: "'Press Start 2P'", align: "center", width: 500 }),
+        pos(0, 5),
+        anchor("center"),
+        color(255, 255, 255),
+        z(91)
+    ]);
+
+    let hudActive = false;
+    onUpdate(() => {
+        if (infoText.text !== "") {
+            if (!hudActive) {
+                hudActive = true;
+                tween(hudPanel.pos.y, height() - 65, 0.3, (val) => hudPanel.pos.y = val, easings.easeOutQuad);
+                tween(hudPanel.opacity, 0.9, 0.3, (val) => hudPanel.opacity = val, easings.easeOutQuad);
+            }
+        } else {
+            if (hudActive) {
+                hudActive = false;
+                tween(hudPanel.pos.y, height() + 100, 0.3, (val) => hudPanel.pos.y = val, easings.easeOutQuad);
+                tween(hudPanel.opacity, 0, 0.3, (val) => hudPanel.opacity = val, easings.easeOutQuad);
+            }
+        }
+    });
 
     // --- CAMERA ---
     onUpdate(() => {

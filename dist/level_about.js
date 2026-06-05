@@ -51,34 +51,6 @@ scene("about", () => {
 
 
 
-    // --- CLOUDS (FIXED) ---
-    function addFixedCloud(x, y, speed) {
-        const cloud = add([
-            pos(x, y),
-            rect(60, 20),
-            color(255, 255, 255),
-            opacity(0.8),
-            z(2),
-            fixed(), // HUD COMPONENT
-            "cloud"
-        ]);
-        cloud.add([rect(30, 20), pos(15, -15), color(255, 255, 255), fixed()]);
-        cloud.add([rect(20, 10), pos(40, 5), color(255, 255, 255), fixed()]);
-
-        // Manual Loop for fixed elements
-        const screenW = width();
-        cloud.onUpdate(() => {
-            cloud.move(-speed, 0);
-            if (cloud.pos.x < -100) {
-                cloud.pos.x = screenW + 100;
-            }
-        });
-    }
-
-    addFixedCloud(width() * 0.2, height() * 0.15, 20);
-    addFixedCloud(width() * 0.5, height() * 0.1, 15);
-    addFixedCloud(width() * 0.8, height() * 0.2, 25);
-
     // --- RECRUITER MODE UI ---
     if (window.addRecruiterUI) window.addRecruiterUI();
 
@@ -418,106 +390,116 @@ scene("about", () => {
         const cx = startX + (idx * gap);
         const cy = height() - floorHeight;
 
-        // Crate Body
+        // Crate Body -> Holographic Skill Terminal
         const crate = add([
             pos(cx, cy),
             rect(crateSize, crateSize),
             anchor("bot"),
-            color(51, 51, 51), // Dark Grey #333333
-            outline(4, color(0, 0, 0)), // Pitch Black Border
+            color(8, 8, 16), // Dark void core
+            outline(2, skill.color), // Neon border
             area(),
             body({ isStatic: true }),
             z(5),
             "crate"
         ]);
 
-        // Crate Detail
+        // Pulsing inner colored core
         crate.add([
-            rect(crateSize - 12, crateSize - 12),
+            rect(crateSize - 10, crateSize - 10),
             anchor("center"),
             pos(0, -crateSize / 2),
-            color(80, 80, 80),
+            color(skill.color),
+            opacity(0.08),
             z(6)
         ]);
+
+        // Cyber accents (vertical neon side bars)
         crate.add([
-            rect(crateSize - 20, crateSize - 20),
+            rect(2, crateSize - 20),
             anchor("center"),
-            pos(0, -crateSize / 2),
-            color(51, 51, 51),
-            z(6)
+            pos(-crateSize / 2 + 5, -crateSize / 2),
+            color(skill.color),
+            z(6.5)
+        ]);
+        crate.add([
+            rect(2, crateSize - 20),
+            anchor("center"),
+            pos(crateSize / 2 - 5, -crateSize / 2),
+            color(skill.color),
+            z(6.5)
         ]);
 
         // Label
         crate.add([
-            text(skill.label, { size: 16, font: "'Press Start 2P'", align: "center" }),
+            text(skill.label, { size: 12, font: "'Press Start 2P'", align: "center" }),
             anchor("center"),
             pos(0, -crateSize / 2),
-            color(skill.color),
+            color(255, 255, 255), // High-contrast white label
             z(7)
         ]);
 
-        // --- TOOLTIP ---
+        // --- TOOLTIP (Holographic Panel) ---
         const tooltipW = 400;
         const tooltipH = 280;
         const tip = crate.add([
             rect(tooltipW, tooltipH),
             anchor("bot"),
             pos(0, -crateSize - 30), // Float higher
-            color(255, 255, 255),
-            outline(4, color(0, 0, 0)),
+            color(8, 8, 20), // Dark cyber navy background
+            outline(2, skill.color), // Glowing neon outline matching the skill
             z(100)
         ]);
         tip.hidden = true;
 
         // Tooltip Content logic
         tip.add([
-            text(skill.details.item, { size: 14, font: "'Press Start 2P'", width: tooltipW - 30, align: "center" }),
+            text(skill.details.item, { size: 12, font: "'Press Start 2P'", width: tooltipW - 30, align: "center" }),
             pos(0, -tooltipH + 25),
             anchor("top"),
-            color(0, 0, 0)
+            color(255, 255, 255) // White text
         ]);
 
         tip.add([
-            text(skill.details.mastery, { size: 12, font: "'Press Start 2P'", width: tooltipW - 30, align: "center" }),
+            text(skill.details.mastery, { size: 10, font: "'Press Start 2P'", width: tooltipW - 30, align: "center" }),
             pos(0, -tooltipH + 60),
             anchor("top"),
-            color(100, 100, 100)
+            color(0, 240, 255) // Neon Cyan
         ]);
 
         tip.add([
-            text("EQUIPPED:", { size: 12, font: "'Press Start 2P'" }),
-            pos(-tooltipW / 2 + 20, -tooltipH + 100),
-            color(150, 60, 60)
+            text("EQUIPPED:", { size: 10, font: "'Press Start 2P'" }),
+            pos(-tooltipW / 2 + 20, -tooltipH + 95),
+            color(255, 0, 127) // Neon Pink
         ]);
 
         tip.add([
-            text("> " + skill.details.equipped[0], { size: 10, font: "'Press Start 2P'" }),
-            pos(-tooltipW / 2 + 30, -tooltipH + 125),
-            color(44, 44, 44)
+            text("> " + skill.details.equipped[0], { size: 8, font: "'Press Start 2P'" }),
+            pos(-tooltipW / 2 + 30, -tooltipH + 120),
+            color(220, 220, 240)
         ]);
         tip.add([
-            text("> " + skill.details.equipped[1], { size: 10, font: "'Press Start 2P'" }),
-            pos(-tooltipW / 2 + 30, -tooltipH + 145),
-            color(44, 44, 44)
+            text("> " + skill.details.equipped[1], { size: 8, font: "'Press Start 2P'" }),
+            pos(-tooltipW / 2 + 30, -tooltipH + 140),
+            color(220, 220, 240)
         ]);
         tip.add([
-            text("> " + skill.details.equipped[2], { size: 10, font: "'Press Start 2P'" }),
-            pos(-tooltipW / 2 + 30, -tooltipH + 165),
-            color(44, 44, 44)
+            text("> " + skill.details.equipped[2], { size: 8, font: "'Press Start 2P'" }),
+            pos(-tooltipW / 2 + 30, -tooltipH + 160),
+            color(220, 220, 240)
         ]);
 
         tip.add([
-            text(skill.details.specialName, { size: 11, font: "'Press Start 2P'", width: tooltipW - 30, align: "center" }),
-            pos(0, -tooltipH + 210), // Pushed down
+            text(skill.details.specialName, { size: 9, font: "'Press Start 2P'", width: tooltipW - 30, align: "center" }),
+            pos(0, -tooltipH + 200),
             anchor("top"),
-            color(0, 150, 0)
+            color(0, 255, 128) // Neon Green
         ]);
 
         tip.add([
-            text(skill.details.specialDesc, { size: 10, font: "'Press Start 2P'", width: tooltipW - 30, align: "center" }),
-            pos(0, -tooltipH + 235),
+            text(skill.details.specialDesc, { size: 8, font: "'Press Start 2P'", width: tooltipW - 30, align: "center" }),
+            pos(0, -tooltipH + 225),
             anchor("top"),
-            color(80, 80, 80)
+            color(160, 160, 180)
         ]);
 
         allCrates.push({ crate, tip });
@@ -549,54 +531,57 @@ scene("about", () => {
     const cratesCenterX = startX + (gap * 1.5);
     const gatesStartX = gatesStartX_CALC;
 
-    // --- TREASURE CHEST ---
+    // --- TREASURE CHEST (Cyber Data Vault) ---
     const resumePaper = add([
         rect(30, 40),
         pos(chestX, height() - floorHeight - 20),
         anchor("bot"),
-        color(255, 255, 255), // White paper
-        outline(2, color(0, 0, 0)),
+        color(8, 8, 16), // Dark void data card
+        outline(2, rgb(0, 240, 255)), // Glowing cyan border
         z(4), // Behind chest initially
         "resume_paper"
     ]);
-    resumePaper.add([rect(20, 2), pos(0, -30), anchor("center"), color(200, 200, 200)]);
-    resumePaper.add([rect(20, 2), pos(0, -25), anchor("center"), color(200, 200, 200)]);
-    resumePaper.add([rect(20, 2), pos(0, -20), anchor("center"), color(200, 200, 200)]);
+    resumePaper.add([rect(20, 2), pos(0, -30), anchor("center"), color(0, 240, 255)]); // Glowing cyan lines
+    resumePaper.add([rect(20, 2), pos(0, -25), anchor("center"), color(0, 240, 255)]);
+    resumePaper.add([rect(20, 2), pos(0, -20), anchor("center"), color(0, 240, 255)]);
 
 
     const chestBody = add([
         rect(50, 40),
         pos(chestX, height() - floorHeight),
         anchor("bot"),
-        color(192, 57, 43), // Deep Red / Maroon
-        outline(4, color(0, 0, 0)), // Thick Black Outline
+        color(8, 8, 16), // Dark void base
+        outline(2.5, rgb(0, 240, 255)), // Glowing cyan neon outline
         area(),
         z(5),
         "chest"
     ]);
-    chestBody.add([rect(50, 6), pos(0, -17), anchor("center"), color(241, 196, 15), z(6)]);
-    chestBody.add([rect(12, 12), pos(0, -5), anchor("center"), color(241, 196, 15), outline(2, color(0, 0, 0)), z(7)]);
-    chestBody.add([rect(4, 6), pos(0, -5), anchor("center"), color(0, 0, 0), z(8)]); // Keyhole
+    // Pulsing core details
+    chestBody.add([rect(50, 3), pos(0, -17), anchor("center"), color(0, 240, 255), z(6)]);
+    chestBody.add([rect(12, 12), pos(0, -5), anchor("center"), color(255, 0, 127), outline(1.5, rgb(255, 255, 255)), z(7)]);
 
     const chestLid = add([
         rect(50, 15),
         pos(chestX, height() - floorHeight - 40),
         anchor("bot"),
-        color(192, 57, 43), // Deep Red
-        outline(4, color(0, 0, 0)),
+        color(8, 8, 16),
+        outline(2.5, rgb(0, 240, 255)),
         rotate(0),
         z(6)
     ]);
-    chestLid.add([rect(40, 8), pos(0, -15), anchor("bot"), color(192, 57, 43), outline(4, color(0, 0, 0)), z(6)]);
-    chestLid.add([rect(54, 4), pos(0, -2), anchor("bot"), color(241, 196, 15), z(7)]);
+    chestLid.add([rect(40, 8), pos(0, -15), anchor("bot"), color(12, 12, 24), outline(2, rgb(0, 240, 255)), z(6)]);
+    chestLid.add([rect(54, 3), pos(0, -2), anchor("bot"), color(255, 0, 127), z(7)]);
 
     const chestHint = add([
         text("PRESS ENTER", { size: 10, font: "'Press Start 2P'" }),
         pos(chestX, height() - floorHeight - 80),
         anchor("bot"),
-        color(255, 255, 255),
+        color(0, 240, 255), // Cyan neon prompt
         z(10)
     ]);
+    chestHint.onUpdate(() => {
+        chestHint.opacity = map(Math.sin(time() * 6), -1, 1, 0.4, 1.0);
+    });
     chestHint.hidden = true;
 
     let chestOpened = false;

@@ -217,47 +217,36 @@ scene("contact", () => {
             rect(30, 50),
             pos(x, y),
             anchor("bot"),
-            color(100, 80, 200),
-            outline(4, color(0, 0, 0)),
+            color(6, 6, 12),
+            outline(2, rgb(0, 240, 255)),
             z(15),
             area(),
             "professor"
         ]);
 
-        // Parts
-        prof.add([rect(20, 20), pos(0, -50), anchor("bot"), color(255, 200, 150)]);
-        prof.add([rect(24, 8), pos(0, -66), anchor("bot"), color(150, 150, 150)]);
-        prof.add([rect(20, 10), pos(0, -35), anchor("bot"), color(150, 150, 150)]);
-        prof.add([rect(6, 4), pos(-5, -55), anchor("center"), color(0, 0, 0)]);
-        prof.add([rect(6, 4), pos(5, -55), anchor("center"), color(0, 0, 0)]);
+        // Neon-styled NPC parts
+        prof.add([rect(20, 20), pos(0, -50), anchor("bot"), color(6, 6, 12), outline(2, rgb(0, 240, 255))]);
+        prof.add([rect(24, 8), pos(0, -66), anchor("bot"), color(0, 200, 220)]);
+        prof.add([rect(20, 10), pos(0, -35), anchor("bot"), color(6, 6, 12)]);
+        // Visor eyes (neon)
+        prof.add([rect(16, 3), pos(0, -55), anchor("center"), color(0, 240, 255)]);
 
-        // Speech Bubble
+        // Speech bubble (dark + neon border)
         const bubble = add([
-            rect(250, 60),
-            pos(x, y - 90),
+            rect(250, 50, { radius: 4 }),
+            pos(x, y - 85),
             anchor("bot"),
-            color(255, 255, 255),
-            outline(4, color(0, 0, 0)),
+            color(6, 6, 12),
+            outline(2, rgb(0, 240, 255)),
             z(20),
             opacity(0)
         ]);
 
-        // Triangle tail
-        bubble.add([
-            rect(20, 20),
-            pos(0, 10),
-            anchor("center"),
-            rotate(45),
-            color(255, 255, 255),
-            outline(4, color(0, 0, 0)),
-            z(20)
-        ]);
-
         const label = bubble.add([
-            text(defaultMsg, { size: 9, font: "'Press Start 2P'", align: "center", width: 230 }),
-            pos(0, -30),
+            text(defaultMsg, { size: 8, font: "'Press Start 2P'", align: "center", width: 230 }),
+            pos(0, -25),
             anchor("center"),
-            color(0, 0, 0),
+            color(0, 240, 255),
             opacity(0),
             z(21)
         ]);
@@ -265,15 +254,14 @@ scene("contact", () => {
         prof.onUpdate(() => {
             if (!guy || !guy.exists()) return;
             label.text = defaultMsg;
-            prof.opacity = 1;
 
             const dist = guy.pos.dist(prof.pos);
             if (dist < 150) {
-                bubble.opacity = lerp(bubble.opacity ?? 0, 1, 0.1);
-                label.opacity = lerp(label.opacity ?? 0, 1, 0.1);
+                bubble.opacity = lerp(bubble.opacity ?? 0, 0.9, dt() * 10);
+                label.opacity = lerp(label.opacity ?? 0, 1, dt() * 10);
             } else {
-                bubble.opacity = lerp(bubble.opacity ?? 0, 0, 0.1);
-                label.opacity = lerp(label.opacity ?? 0, 0, 0.1);
+                bubble.opacity = lerp(bubble.opacity ?? 0, 0, dt() * 10);
+                label.opacity = lerp(label.opacity ?? 0, 0, dt() * 10);
             }
         });
     }
@@ -286,27 +274,27 @@ scene("contact", () => {
         const lipH = 20;
         const lipOverhang = 4;
 
-        // Pipe Column
+        // Pipe Column (Cyber Pod Body)
         const pipeBody = add([
             rect(pipeW, pipeH),
             pos(x - pipeW / 2, safeGroundY - pipeH),
-            color(colorBase),
-            outline(4, color(0, 0, 0)),
+            color(8, 8, 16), // Dark void core
+            outline(2.5, colorHighlight), // Glowing border matching the target link color
             area(),
             body({ isStatic: true }),
             z(2),
             "pipe_body"
         ]);
 
-        // Pipe Lip (Top Platform)
+        // Pipe Lip (Warp Platform)
         const lipW = pipeW + (lipOverhang * 2);
         const lipY = safeGroundY - pipeH - lipH;
 
         const pipeLip = add([
             rect(lipW, lipH),
             pos(x - lipW / 2, lipY),
-            color(colorBase),
-            outline(4, color(0, 0, 0)),
+            color(8, 8, 16),
+            outline(2.5, colorHighlight),
             area(),
             body({ isStatic: true }),
             z(3),
@@ -314,29 +302,38 @@ scene("contact", () => {
             { url: url, entered: false, isLip: true, parentX: x, parentY: safeGroundY }
         ]);
 
-        // Body Shine
+        // Glowing neon core panels inside column
         add([
-            rect(6, pipeH - 4),
-            pos(x - pipeW / 2 + 10, safeGroundY - pipeH + 2),
+            rect(4, pipeH - 6),
+            pos(x - pipeW / 2 + 6, safeGroundY - pipeH + 3),
             color(colorHighlight),
-            z(2)
+            opacity(0.8),
+            z(2.5)
+        ]);
+        add([
+            rect(4, pipeH - 6),
+            pos(x + pipeW / 2 - 10, safeGroundY - pipeH + 3),
+            color(colorHighlight),
+            opacity(0.8),
+            z(2.5)
         ]);
 
-        // Lip Shine
+        // Lip accent core
         add([
-            rect(6, lipH - 4),
-            pos(x - lipW / 2 + 10, lipY + 2),
+            rect(lipW - 8, lipH - 6),
+            pos(x - lipW / 2 + 4, lipY + 3),
             color(colorHighlight),
-            z(3)
+            opacity(0.12),
+            z(3.1)
         ]);
 
-        // Label
+        // Label (Glowing text color)
         add([
-            text(label, { size: 10, font: "'Press Start 2P'", width: pipeW + 100, align: "center" }),
-            pos(x, lipY - 15),
+            text(label, { size: 9, font: "'Press Start 2P'", width: pipeW + 120, align: "center" }),
+            pos(x, lipY - 20),
             anchor("center"),
-            color(50, 50, 50),
-            z(2)
+            color(colorHighlight), // Text glows in the link's signature color
+            z(10)
         ]);
 
         return pipeLip;
@@ -364,36 +361,36 @@ scene("contact", () => {
     const btnX = pipeStartX + pipeGap * 3.5;
     const btnY = safeGroundY;
 
-    // --- EXTRAVAGANT DEATH TOLL ---
+    // --- EXTRAVAGANT DEATH TOLL (Holographic Cyber Tombstone) ---
     const deathX = btnX;
     const deathY = btnY - 150;
+    const boneC = rgb(230, 230, 230);
 
-    // 1. Backing Plate (Tombstone style)
+    // 1. Backing Plate (Cyber Grid style)
     add([
         rect(140, 70),
         pos(deathX, deathY),
         anchor("center"),
-        color(20, 20, 20),
-        outline(4, color(100, 100, 100)),
+        color(8, 8, 16), // Dark void
+        outline(2, rgb(255, 0, 127)), // Glowing magenta border
         z(2)
     ]);
 
     // 2. Skull Icon (Pixel Art)
     const skullX = deathX - 40;
     const skullY = deathY;
-    const boneC = rgb(230, 230, 230);
 
     add([rect(24, 20), pos(skullX, skullY - 5), anchor("center"), color(boneC), z(3)]);
     add([rect(16, 10), pos(skullX, skullY + 8), anchor("center"), color(boneC), z(3)]);
-    add([rect(6, 6), pos(skullX - 5, skullY - 5), anchor("center"), color(0, 0, 0), z(4)]);
-    add([rect(6, 6), pos(skullX + 5, skullY - 5), anchor("center"), color(0, 0, 0), z(4)]);
+    add([rect(6, 6), pos(skullX - 5, skullY - 5), anchor("center"), color(8, 8, 16), z(4)]);
+    add([rect(6, 6), pos(skullX + 5, skullY - 5), anchor("center"), color(8, 8, 16), z(4)]);
 
     // 3. Text Label
     add([
         text("DEATHS", { size: 10, font: "'Press Start 2P'", align: "left" }),
         pos(deathX - 10, deathY - 15),
         anchor("left"),
-        color(150, 150, 150),
+        color(255, 0, 127), // Neon magenta
         z(3)
     ]);
 
@@ -402,7 +399,7 @@ scene("contact", () => {
         text((window.DEATH_COUNT || 0).toString(), { size: 28, font: "'Press Start 2P'", align: "left" }),
         pos(deathX - 10, deathY + 10),
         anchor("left"),
-        color(220, 40, 40),
+        color(255, 50, 50), // Pulsing neon red
         z(3)
     ]);
 
@@ -411,8 +408,8 @@ scene("contact", () => {
         rect(80, 20),
         pos(btnX, btnY),
         anchor("bot"),
-        color(80, 80, 80),
-        outline(4, color(0, 0, 0)),
+        color(8, 8, 16),
+        outline(2, rgb(0, 240, 255)), // Cyan neon border
         area(),
         body({ isStatic: true }),
         z(2),
@@ -424,8 +421,8 @@ scene("contact", () => {
         rect(60, 15),
         pos(btnX, btnY - 20),
         anchor("bot"),
-        color(231, 76, 60),
-        outline(4, color(0, 0, 0)),
+        color(231, 76, 60), // Red button
+        outline(2, rgb(255, 255, 255)), // White neon outline
         area(),
         z(1.5),
         "restart_btn"
@@ -433,7 +430,7 @@ scene("contact", () => {
 
     // Button Shine
     const btnShine = btnTop.add([
-        rect(50, 4),
+        rect(50, 3),
         pos(0, -10),
         anchor("bot"),
         color(255, 120, 100),
@@ -442,10 +439,10 @@ scene("contact", () => {
 
     // Label
     add([
-        text("SYSTEM RESTART", { size: 10, font: "'Press Start 2P'", width: 200, align: "center" }),
-        pos(btnX, btnY - 50),
+        text("SYSTEM RESTART", { size: 8, font: "'Press Start 2P'", width: 200, align: "center" }),
+        pos(btnX, btnY - 45),
         anchor("bot"),
-        color(80, 80, 80),
+        color(0, 240, 255), // Cyan neon prompt
         z(1)
     ]);
 
