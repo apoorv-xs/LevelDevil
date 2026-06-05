@@ -366,13 +366,56 @@ try {
             ...tags
         ]);
 
-        // Glowing neon top border line
+        // Glowing, flowing neon fluid top border
         block.add([
-            rect(w, 4),
-            pos(0, 0),
-            color(neonColor),
-            z(1.1)
+            z(1.1),
+            {
+                draw() {
+                    const steps = Math.ceil(w / 12);
+                    const stepW = w / steps;
+                    const pts = [];
+                    const amp = 3.5; // Wave height
+                    const freq = 0.05; // Wave wavelength frequency
+                    const spd = 6.0; // Flow speed
+
+                    // 1. Draw main neon wave
+                    for (let i = 0; i <= steps; i++) {
+                        const wx = i * stepW;
+                        const phase = (wx * freq) + (time() * spd);
+                        const wy = amp * Math.sin(phase) - 1.5;
+                        pts.push(vec2(wx, wy));
+                    }
+                    for (let i = 0; i < steps; i++) {
+                        k.drawLine({
+                            p1: pts[i],
+                            p2: pts[i+1],
+                            color: neonColor,
+                            width: 3.0,
+                            opacity: 0.85
+                        });
+                    }
+
+                    // 2. Draw secondary overlapping hot-white core wave
+                    const pts2 = [];
+                    for (let i = 0; i <= steps; i++) {
+                        const wx = i * stepW;
+                        const phase = (wx * freq * 0.8) + (time() * spd * 1.2) + Math.PI;
+                        const wy = (amp * 0.6) * Math.sin(phase) - 1.0;
+                        pts2.push(vec2(wx, wy));
+                    }
+                    for (let i = 0; i < steps; i++) {
+                        k.drawLine({
+                            p1: pts2[i],
+                            p2: pts2[i+1],
+                            color: rgb(255, 255, 255),
+                            width: 1.2,
+                            opacity: 0.5
+                        });
+                    }
+                }
+            }
         ]);
+
 
         // Auto-register as fluid ground segment (color 0-255 → 0-1)
         if (window.fluidGroundSegments) {
