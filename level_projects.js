@@ -137,10 +137,13 @@ scene("projects", () => {
 
     // --- MOVING ISLAND BUILDER ---
     function createIsland(x, y, type, project = null, moveConfig = null) {
+        const islandH = 40;
+        const islandW = 160;
 
         const island = add([
             pos(x, y),
             z(2),
+            "island",
             {
                 initialX: x,
                 initialY: y,
@@ -149,45 +152,23 @@ scene("projects", () => {
             }
         ]);
 
-        // Island Height - used for landing target
-        const islandH = 30;
-
-        // MOVEMENT LOGIC
+        // Active float animation
+        let islandTime = rand(0, 100);
         let activeTime = 0;
+
         island.onUpdate(() => {
+            islandTime += dt();
             // 1. Capture OLD position
             const oldX = island.pos.x;
             const oldY = island.pos.y;
 
             // 2. Determine Movement
-            // RECRUITER MODE: DESCEND TO GROUND (Delayed)
             if (window.isRecruiterActive()) {
+                // RECRUITER MODE: DESCEND TO GROUND (Delayed)
                 const targetY = groundY - islandH;
-
-                // Lerp Y
                 island.pos.y = lerp(island.pos.y, targetY, dt() * 3);
-
-                // Lerp X back to initial (center)
                 island.pos.x = lerp(island.pos.x, island.initialX, dt() * 3);
-
-            } else if (moveConfig && islandsMoving) {
-    function createIsland(x, y, type, project, moveConfig = null) {
-        const islandH = 40;
-        const island = add([
-            pos(x, y),
-            z(2),
-            "island"
-        ]);
-
-        // Active float animation
-        let islandTime = rand(0, 100);
-        island.onUpdate(() => {
-            islandTime += dt();
-            // Slow hover movement if moving
-            const oldX = island.pos.x;
-            const oldY = island.pos.y;
-
-            if (islandsMoving && moveConfig) {
+            } else if (islandsMoving && moveConfig) {
                 // NORMAL MODE: Move in pattern
                 activeTime += dt();
                 const t = activeTime * moveConfig.speed;
@@ -201,7 +182,6 @@ scene("projects", () => {
                     island.pos.x = targetX;
                     island.pos.y = island.initialY;
                 }
-
             } else {
                 // Static islands return to start
                 island.pos.y = lerp(island.pos.y, island.initialY + Math.sin(islandTime * 2) * 2, dt() * 5);
@@ -210,19 +190,14 @@ scene("projects", () => {
 
             // 3. Calculate DELTA from actual moves
             const dx = island.pos.x - oldX;
-            const dy = island.pos.y - oldY; // Optional if vertical moving needs stickiness too
+            const dy = island.pos.y - oldY;
 
             // 4. APPLY TO PLAYER (Using Standard Kaboom 'curPlatform')
-            // This decouples "Stickiness" from "Movement Logic"
-            // If player is standing on this island's base, move him.
             if (guy.exists() && guy.isGrounded() && guy.curPlatform() === island.baseObj) {
                 guy.pos.x += dx;
                 guy.pos.y += dy;
             }
         });
-
-
-        const islandW = 160;
 
         // Base - Holographic Cyber Dock
         const base = island.add([
@@ -302,6 +277,7 @@ scene("projects", () => {
 
         return island;
     }
+
 
     // --- DATA ---
     const projects = [
