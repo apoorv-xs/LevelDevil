@@ -5,8 +5,8 @@ try {
     const CANVAS_WIDTH = window.innerWidth;
     const CANVAS_HEIGHT = window.innerHeight;
 
-    const C_DEVIL_SKIN = "#5A1C12";
-    const C_DEVIL_EYES = "#D05A3A";
+    const C_DEVIL_SKIN = "#060610"; // Deep void black
+    const C_DEVIL_EYES = "#00F0FF"; // Neon cyan
 
     console.log("INT: Config set", CANVAS_WIDTH, CANVAS_HEIGHT);
 

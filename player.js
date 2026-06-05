@@ -17,26 +17,28 @@ function createPlayer(x, y) {
         "guy"
     ]);
 
-    // --- VISUALS ---
+    // --- VISUALS (Fluid World Style: dark silhouette + neon outline) ---
 
     // Shadow
     const shadow = guy.add([
         rect(16, 6),
         anchor("center"),
         pos(0, 0),
-        color(0, 0, 0),
-        opacity(0.3),
-        z(-1) // Behind/Below player
+        color(0, 200, 255),
+        opacity(0.15),
+        z(-1)
     ]);
 
-    const skin = color(220, 220, 230); // Cybernetic silver
+    const C_BODY = color(8, 8, 16); // Dark void body
+    const C_OUTLINE = rgb(0, 220, 255); // Neon cyan edge
 
-    // Body
+    // Body (torso)
     const torso = guy.add([
         rect(16, 20),
         pos(0, -14),
         anchor("bot"),
-        skin
+        C_BODY,
+        outline(1.5, C_OUTLINE)
     ]);
 
     // Head
@@ -44,47 +46,52 @@ function createPlayer(x, y) {
         rect(12, 12),
         pos(0, -34),
         anchor("bot"),
-        skin
+        C_BODY,
+        outline(1.5, C_OUTLINE)
     ]);
 
-    // Cyber Visor
+    // Cyber Visor (brighter, wider)
     const visor = head.add([
-        rect(10, 2),
+        rect(10, 3),
         pos(0, -7),
-        color(0, 240, 255),
+        color(0, 255, 255),
         anchor("center"),
         z(2)
     ]);
     visor.onUpdate(() => {
-        visor.opacity = map(Math.sin(time() * 8), -1, 1, 0.6, 1.0);
+        visor.opacity = map(Math.sin(time() * 8), -1, 1, 0.7, 1.0);
     });
 
     // Arms
     const lArm = guy.add([
-        rect(6, 16),
+        rect(5, 16),
         pos(-6, -30),
         anchor("top"),
-        skin
+        C_BODY,
+        outline(1, C_OUTLINE)
     ]);
     const rArm = guy.add([
-        rect(6, 16),
+        rect(5, 16),
         pos(6, -30),
         anchor("top"),
-        skin
+        C_BODY,
+        outline(1, C_OUTLINE)
     ]);
 
     // Legs
     const lLeg = guy.add([
-        rect(6, 18),
+        rect(5, 18),
         pos(-4, -18),
         anchor("top"),
-        skin
+        C_BODY,
+        outline(1, C_OUTLINE)
     ]);
     const rLeg = guy.add([
-        rect(6, 18),
+        rect(5, 18),
         pos(4, -18),
         anchor("top"),
-        skin
+        C_BODY,
+        outline(1, C_OUTLINE)
     ]);
 
     // --- UPDATE LOOP ---
