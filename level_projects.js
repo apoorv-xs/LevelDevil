@@ -372,15 +372,12 @@ scene("projects", () => {
         z(10)
     ]);
 
-    // Visuals for Back Gate (Intro/Retro style)
-    backGate.add([rect(60, 50), pos(0, 0), anchor("bot"), color(C_FLOOR), z(0)]);
-    backGate.add([rect(60, 10), pos(0, -50), anchor("bot"), color(C_FLOOR), z(0)]);
-    backGate.add([rect(50, 6), pos(0, -60), anchor("bot"), color(C_FLOOR), z(0)]);
-    backGate.add([rect(30, 4), pos(0, -66), anchor("bot"), color(C_FLOOR), z(0)]);
-    backGate.add([rect(52, 50), pos(0, 0), anchor("bot"), color(180, 180, 180), z(1)]);
-    backGate.add([rect(52, 10), pos(0, -50), anchor("bot"), color(180, 180, 180), z(1)]);
-    backGate.add([rect(42, 6), pos(0, -60), anchor("bot"), color(180, 180, 180), z(7)]);
-    backGate.add([rect(22, 4), pos(0, -66), anchor("bot"), color(180, 180, 180), z(7)]);
+    // Fluid Portal Style (dark core + cyan glow)
+    backGate.add([rect(60, 70), pos(0, 0), anchor("bot"), color(6, 6, 12), z(0)]);
+    backGate.add([rect(52, 62), pos(0, -4), anchor("bot"), color(0, 240, 255), opacity(0.12), z(0.5)]);
+    backGate.add([rect(64, 5), pos(0, -70), anchor("bot"), color(0, 240, 255), z(1)]);
+    backGate.add([rect(4, 70), pos(-30, 0), anchor("bot"), color(0, 240, 255), z(1)]);
+    backGate.add([rect(4, 70), pos(26, 0), anchor("bot"), color(0, 240, 255), z(1)]);
 
 
     // --- JUMP PAD BUILDER ---
@@ -593,17 +590,12 @@ scene("projects", () => {
         }
     });
 
-    // --- LAYER 1: THE BORDER (C_FLOOR) - PIXELATED ---
-    contactGate.add([rect(60, 50), pos(0, 0), anchor("bot"), color(C_FLOOR), z(6)]);
-    contactGate.add([rect(60, 10), pos(0, -50), anchor("bot"), color(C_FLOOR), z(6)]);
-    contactGate.add([rect(50, 6), pos(0, -60), anchor("bot"), color(C_FLOOR), z(6)]);
-    contactGate.add([rect(30, 4), pos(0, -66), anchor("bot"), color(C_FLOOR), z(6)]);
-
-    // --- LAYER 2: THE DOOR (GREY) - PIXELATED ---
-    contactGate.add([rect(52, 50), pos(0, 0), anchor("bot"), color(180, 180, 180), z(7)]);
-    contactGate.add([rect(52, 10), pos(0, -50), anchor("bot"), color(180, 180, 180), z(7)]);
-    contactGate.add([rect(42, 6), pos(0, -60), anchor("bot"), color(180, 180, 180), z(7)]);
-    contactGate.add([rect(22, 4), pos(0, -66), anchor("bot"), color(180, 180, 180), z(7)]);
+    // Fluid Portal Style (dark core + pink glow)
+    contactGate.add([rect(60, 70), pos(0, 0), anchor("bot"), color(6, 6, 12), z(6)]);
+    contactGate.add([rect(52, 62), pos(0, -4), anchor("bot"), color(255, 0, 127), opacity(0.12), z(6.5)]);
+    contactGate.add([rect(64, 5), pos(0, -70), anchor("bot"), color(255, 0, 127), z(7)]);
+    contactGate.add([rect(4, 70), pos(-30, 0), anchor("bot"), color(255, 0, 127), z(7)]);
+    contactGate.add([rect(4, 70), pos(26, 0), anchor("bot"), color(255, 0, 127), z(7)]);
 
 
     // --- UI / HUD ---

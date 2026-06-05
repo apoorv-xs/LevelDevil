@@ -828,18 +828,15 @@ function createRetroGate(x, label, tag, gateColor) {
         text(label, { size: 10, font: "'Press Start 2P'" }),
         pos(0, -90),
         anchor("bot"),
-        color(44, 44, 44),
+        color(0, 240, 255),
         z(10)
     ]);
-    const borderC = rgb(176, 113, 29);
-    gate.add([rect(60, 50), pos(0, 0), anchor("bot"), color(borderC), z(6)]);
-    gate.add([rect(60, 10), pos(0, -50), anchor("bot"), color(borderC), z(6)]);
-    gate.add([rect(50, 6), pos(0, -60), anchor("bot"), color(borderC), z(6)]);
-    gate.add([rect(30, 4), pos(0, -66), anchor("bot"), color(borderC), z(6)]);
-    gate.add([rect(52, 50), pos(0, 0), anchor("bot"), color(180, 180, 180), z(7)]);
-    gate.add([rect(52, 10), pos(0, -50), anchor("bot"), color(180, 180, 180), z(7)]);
-    gate.add([rect(42, 6), pos(0, -60), anchor("bot"), color(180, 180, 180), z(7)]);
-    gate.add([rect(22, 4), pos(0, -66), anchor("bot"), color(180, 180, 180), z(7)]);
+    // Fluid Portal Style (dark core + cyan glow)
+    gate.add([rect(60, 70), pos(0, 0), anchor("bot"), color(6, 6, 12), z(6)]);
+    gate.add([rect(52, 62), pos(0, -4), anchor("bot"), color(0, 240, 255), opacity(0.12), z(6.5)]);
+    gate.add([rect(64, 5), pos(0, -70), anchor("bot"), color(0, 240, 255), z(7)]);
+    gate.add([rect(4, 70), pos(-30, 0), anchor("bot"), color(0, 240, 255), z(7)]);
+    gate.add([rect(4, 70), pos(26, 0), anchor("bot"), color(0, 240, 255), z(7)]);
     return gate;
 }
 

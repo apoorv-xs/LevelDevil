@@ -48,15 +48,12 @@ scene("contact", () => {
         "back_gate"
     ]);
 
-    const C_GATE_BASE = rgb(6, 6, 12);
-    backGate.add([rect(60, 50), pos(0, 0), anchor("bot"), color(C_GATE_BASE), z(6)]);
-    backGate.add([rect(60, 10), pos(0, -50), anchor("bot"), color(C_GATE_BASE), z(6)]);
-    backGate.add([rect(50, 6), pos(0, -60), anchor("bot"), color(C_GATE_BASE), z(6)]);
-    backGate.add([rect(30, 4), pos(0, -66), anchor("bot"), color(C_GATE_BASE), z(6)]);
-    backGate.add([rect(52, 50), pos(0, 0), anchor("bot"), color(180, 180, 180), z(7)]);
-    backGate.add([rect(52, 10), pos(0, -50), anchor("bot"), color(180, 180, 180), z(7)]);
-    backGate.add([rect(42, 6), pos(0, -60), anchor("bot"), color(180, 180, 180), z(7)]);
-    backGate.add([rect(22, 4), pos(0, -66), anchor("bot"), color(180, 180, 180), z(7)]);
+    // Fluid Portal Style (dark core + cyan neon glow)
+    backGate.add([rect(60, 70), pos(0, 0), anchor("bot"), color(6, 6, 12), z(6)]);
+    backGate.add([rect(52, 62), pos(0, -4), anchor("bot"), color(0, 240, 255), opacity(0.12), z(6.5)]);
+    backGate.add([rect(64, 5), pos(0, -70), anchor("bot"), color(0, 240, 255), z(7)]);
+    backGate.add([rect(4, 70), pos(-30, 0), anchor("bot"), color(0, 240, 255), z(7)]);
+    backGate.add([rect(4, 70), pos(26, 0), anchor("bot"), color(0, 240, 255), z(7)]);
 
     backGate.add([
         text("BACK", { size: 10, font: "'Press Start 2P'", align: "center" }),
