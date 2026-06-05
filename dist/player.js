@@ -128,34 +128,95 @@ function createPlayer(x, y) {
             diskContainer.scale = vec2(1 + Math.sin(time() * 4) * 0.03);
         }
 
-        // --- SOLID NEON TRAIL PLATFORMS ---
+        // --- SOLID NEON TRAIL PLATFORMS (Organic Fluid Droplets) ---
         if (guy.pos.dist(lastTrailPos) > 20) {
-            // Determine active level color
             const C_TRAIL = (time() % 1.5 > 0.75) ? rgb(0, 240, 255) : rgb(255, 0, 127);
             const currentPos = vec2(lastTrailPos.x, lastTrailPos.y);
 
-            // Spawn thin solid trail platform behind the player
+            // 1. Solid Hitbox (Flat & thin for perfect gameplay collisions, invisible)
             const trailSeg = add([
-                rect(12, 4, { radius: 2 }),
+                rect(12, 5),
                 pos(currentPos.x, currentPos.y),
                 anchor("bot"),
-                color(C_TRAIL),
+                opacity(0), // Hitbox is invisible
                 area(),
                 body({ isStatic: true }),
                 z(12),
-                opacity(0.8),
                 "trail_platform"
             ]);
 
-            // Shrink and fade the trail segment
-            tween(0.8, 0, 1.2, (val) => {
-                trailSeg.opacity = val;
+            // 2. Liquid Wobbly Visual Blob (Pulsing, jelly-like droplet)
+            const visualBlob = add([
+                rect(14, 14, { radius: 7 }), // Perfect circle
+                pos(currentPos.x, currentPos.y - 4),
+                anchor("center"),
+                color(C_TRAIL),
+                opacity(0.85),
+                z(11) // Behind the player, in front of background
+            ]);
+
+            // Inner high-density fluid core
+            const innerCore = visualBlob.add([
+                rect(6, 6, { radius: 3 }),
+                anchor("center"),
+                color(255, 255, 255),
+                opacity(0.8),
+                z(1)
+            ]);
+
+            // Jelly wobble script: squash & stretch
+            const phaseOffset = rand(0, Math.PI * 2);
+            visualBlob.onUpdate(() => {
+                const t = time() * 12 + phaseOffset;
+                visualBlob.scale = vec2(
+                    1.0 + Math.sin(t) * 0.22,
+                    1.0 - Math.sin(t) * 0.22
+                );
+            });
+
+            // 3. Fading and shrinking lifetime
+            tween(0.85, 0, 1.2, (val) => {
+                visualBlob.opacity = val;
+                innerCore.opacity = val * 0.8;
+                // Gradually shrink the droplet visually
+                visualBlob.scale = visualBlob.scale.scale(val / 0.85);
             }, easings.easeInQuad).onEnd(() => {
                 destroy(trailSeg);
+                destroy(visualBlob);
             });
+
+            // 4. Dripping Liquid Drops
+            const numDrops = randi(1, 3);
+            for (let i = 0; i < numDrops; i++) {
+                const dropColor = C_TRAIL;
+                const dropSize = rand(2, 4);
+                const drop = add([
+                    rect(dropSize, dropSize, { radius: dropSize / 2 }),
+                    pos(currentPos.x + rand(-6, 6), currentPos.y - 6),
+                    anchor("center"),
+                    color(dropColor),
+                    opacity(0.85),
+                    z(10),
+                    "dripping_drop"
+                ]);
+
+                const dropSpeedY = rand(40, 70);
+                const driftSpeedX = rand(-15, 15);
+                const dropWobbleFreq = rand(8, 14);
+
+                drop.onUpdate(() => {
+                    drop.pos.y += dt() * dropSpeedY;
+                    drop.pos.x += Math.sin(time() * dropWobbleFreq) * dt() * driftSpeedX;
+                    drop.opacity -= dt() * 0.9;
+                    if (drop.opacity <= 0) {
+                        destroy(drop);
+                    }
+                });
+            }
 
             lastTrailPos = guy.pos;
         }
+
 
         // --- FLUID PHYSICS INTERACTION ---
         const px = guy.pos.x - (camPos().x - width() / 2);
