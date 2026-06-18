@@ -759,6 +759,7 @@ scene("projects", () => {
 
     // LOGIC: Check for Player Entry (Exact Intro Code Pattern)
     contactGate.onUpdate(() => {
+        if (!guy.exists()) return;
         if (guy.isColliding(contactGate)) {
             // Intro uses isKeyPressed. 
             if (isKeyPressed("up") || isKeyPressed("enter")) {

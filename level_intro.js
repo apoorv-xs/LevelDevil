@@ -216,6 +216,7 @@ scene("intro", () => {
 
     // GATE INTERACTION LOGIC
     onUpdate(() => {
+        if (!guy.exists()) return;
         const gates = get("gate");
         let activeGate = null;
 
