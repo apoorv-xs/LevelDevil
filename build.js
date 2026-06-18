@@ -1,5 +1,9 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const srcDir = __dirname;
 const distDir = path.join(__dirname, 'dist');
@@ -23,7 +27,6 @@ files.forEach(file => {
     if (stats.isFile()) {
         const ext = path.extname(file).toLowerCase();
         if (validExtensions.includes(ext)) {
-            // Avoid copying build.js itself or config files if not needed, but copying everything is fine for dist
             if (file === 'vite.config.js') return;
 
             const destPath = path.join(distDir, file);
