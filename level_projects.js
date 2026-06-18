@@ -625,7 +625,10 @@ scene("projects", () => {
             doorColor: rgb(255, 0, 128), // Bright neon pink/magenta
             icon: "flux",
             desc: "WebGL Spatial Fluid Dynamics Sandbox & Exporter",
-            link: "https://github.com/apoorv-xs/Flux"
+            links: [
+                { name: "Live Site", url: "https://flux-fluid-studio.vercel.app/" },
+                { name: "GitHub Repository", url: "https://github.com/apoorv-xs/Flux" }
+            ]
         }
     ];
 
