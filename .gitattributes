@@ -1,0 +1,19 @@
+# Set default behavior to automatic text/binary detection and LF line endings
+* text=auto eol=lf
+
+# Explicitly declare text files that should always be LF on check-in
+*.js text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.md text eol=lf
+
+# Denote binary files (so git won't try to change line endings or merge them as text)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.mp3 binary
+*.wav binary
