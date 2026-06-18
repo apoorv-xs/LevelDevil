@@ -1,10 +1,13 @@
 scene("about", () => {
+    // Set initial camera position to prevent jump
+    camPos(width() / 2, height() / 2 - 40);
+
     // --- SETUP ---
-    // Background Color (Matches Intro) - EXTENDED for Scroll
+    // Background Color - Large coverage to prevent black gaps
     add([
-        rect(width() * 4, height()),
+        rect(width() * 8, height() * 2),
         color(233, 180, 90), // #E9B45A
-        pos(0, 0),
+        pos(-width(), -height() * 0.5),
         z(0)
     ]);
 
