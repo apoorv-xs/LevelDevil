@@ -290,52 +290,64 @@ try {
     };
 
     window.addParallaxBackground = function (worldWidth, floorHeight) {
-        const skyH = height() - floorHeight;
+        // Parallax layers - use FIXED (screen-space) so they are completely
+        // immune to camera Y jitter/shake and always render at the correct
+        // screen position. We manually compute screen X each frame to create
+        // the parallax scrolling effect.
+        const screenFloorY = height() - floorHeight; // screen Y of floor top
 
-        // Parallax layers (far and near)
-        const farHills = add([
-            pos(0, skyH),
-            z(0.2), // Behind details, but in front of sky rect (z=0)
-            "parallax_far"
-        ]);
+        const farHillColor = rgb(215, 165, 75);   // Lighter desaturated orange-brown
+        const nearHillColor = rgb(195, 135, 45);  // Closer to floor color
 
-        const nearHills = add([
-            pos(0, skyH),
-            z(0.3),
-            "parallax_near"
-        ]);
-
-        const farHillColor = rgb(215, 165, 75); // Lighter desaturated orange-brown
-        const nearHillColor = rgb(195, 135, 45); // Closer to floor color
-
+        // We need enough segments to cover the screen width plus overflow
+        // on both sides. A fixed set of repeating segments is sufficient.
         const segmentW = 400;
-        const totalSegments = Math.ceil(worldWidth / segmentW) + 5;
+        const segmentCount = Math.ceil(width() / segmentW) + 6; // Extra for overflow
 
-        for (let i = -2; i < totalSegments; i++) {
-            // Far hill
-            farHills.add([
+        const farHills = [];
+        const nearHills = [];
+
+        for (let i = 0; i < segmentCount; i++) {
+            farHills.push(add([
                 rect(segmentW + 100, 240),
-                pos(i * segmentW, 0),
+                pos(i * segmentW, screenFloorY),
                 anchor("botleft"),
                 color(farHillColor),
-                opacity(0.35)
-            ]);
+                opacity(0.35),
+                fixed(),   // Screen-space: immune to camera
+                z(1)
+            ]));
 
-            // Near hill
-            nearHills.add([
+            nearHills.push(add([
                 rect(segmentW, 140),
-                pos(i * segmentW + segmentW * 0.5, 0),
+                pos(i * segmentW, screenFloorY),
                 anchor("botleft"),
                 color(nearHillColor),
-                opacity(0.45)
-            ]);
+                opacity(0.45),
+                fixed(),   // Screen-space: immune to camera
+                z(2)
+            ]));
         }
 
-        // Update positions relative to camera
+        // Each frame, compute screen X from camera world X using parallax ratios.
+        // Because the segments are fixed-size, we tile them with modulo arithmetic
+        // so they seamlessly repeat across the world.
         onUpdate(() => {
             const cx = camPos().x;
-            farHills.pos.x = cx * 0.7;
-            nearHills.pos.x = cx * 0.5;
+
+            // Far hills scroll at 30% of camera speed (visually distant)
+            const farOffset = (cx * 0.3) % segmentW;
+            for (let i = 0; i < farHills.length; i++) {
+                farHills[i].pos.x = (i * segmentW) - farOffset - segmentW;
+                farHills[i].pos.y = screenFloorY;
+            }
+
+            // Near hills scroll at 50% of camera speed
+            const nearOffset = (cx * 0.5) % segmentW;
+            for (let i = 0; i < nearHills.length; i++) {
+                nearHills[i].pos.x = (i * segmentW) - nearOffset - segmentW;
+                nearHills[i].pos.y = screenFloorY;
+            }
         });
     };
 

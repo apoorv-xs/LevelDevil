@@ -2,13 +2,19 @@ scene("about", () => {
     // Set initial camera position to prevent jump
     camPos(width() / 2, height() / 2 - 40);
 
+    // Ensure gravity is set correctly for this level
+    setGravity(1600);
+
     // --- SETUP ---
-    // Background Color - Large coverage to prevent black gaps
+    // Background Color - FIXED (screen-space) so it ALWAYS covers the full viewport
+    // regardless of any camera shake, position, or jitter. This prevents the black
+    // bar / background-sinking bug entirely.
     add([
-        rect(width() * 8, height() * 2),
+        rect(width(), height()),
         color(233, 180, 90), // #E9B45A
-        pos(-width(), -height() * 0.5),
-        z(0)
+        pos(0, 0),
+        fixed(),             // KEY: drawn in screen-space, immune to camera
+        z(-1)                // below everything else
     ]);
 
     const C_FLOOR = rgb(176, 113, 29); // #B0711D
@@ -731,10 +737,6 @@ scene("about", () => {
             go("about");
         });
     }
-
-    // --- OBSTACLES ---
-    createSpikes(LEFT_MARGIN + 350, height() - floorHeight, 3, C_FLOOR);
-
 
     // --- EXIT GATES ---
     const gateBack = createRetroGate(LEFT_MARGIN - 80, "BACK", "gate_back");
