@@ -334,8 +334,8 @@ try {
         // Update positions relative to camera
         onUpdate(() => {
             const cx = camPos().x;
-            farHills.pos.x = cx * 0.7 - cx;
-            nearHills.pos.x = cx * 0.5 - cx;
+            farHills.pos.x = cx * 0.7;
+            nearHills.pos.x = cx * 0.5;
         });
     };
 

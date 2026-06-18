@@ -257,6 +257,7 @@ scene("about", () => {
     const spikeTriggerX = LEFT_MARGIN + 350 + 160;
 
     onUpdate(() => {
+        if (!guy.exists()) return;
         if (!spikeTrapTriggered && guy.pos.x > spikeTriggerX) {
             spikeTrapTriggered = true;
             movingSpikes.forEach(s => {
@@ -272,6 +273,7 @@ scene("about", () => {
         if (window.RECRUITER_MODE) return; // Immune
         if (window.SFX) window.SFX.playDeath();
         shake(20);
+        destroy(guy);
         wait(0.2, () => {
             go("about");
         });
@@ -287,6 +289,7 @@ scene("about", () => {
 
         if (window.SFX) window.SFX.playDeath();
         shake(20);
+        destroy(guy);
         wait(0.5, () => {
             go("about");
         });
@@ -451,6 +454,7 @@ scene("about", () => {
 
     // Global Update to ensure only ONE tooltip is visible (closest one)
     onUpdate(() => {
+        if (!guy.exists()) return;
         let activeCrate = null;
         let minDist = Infinity;
 
@@ -530,6 +534,7 @@ scene("about", () => {
 
     // Interaction with Chest
     onUpdate(() => {
+        if (!guy.exists()) return;
         if (chestOpened) return;
 
         const d = guy.pos.dist(chestBody.pos);
@@ -701,6 +706,7 @@ scene("about", () => {
     });
 
     hint.onUpdate(() => {
+        if (!guy.exists()) return;
         const distToCrates = Math.abs(guy.pos.x - cratesCenterX);
         if (distToCrates < 300) {
             hint.hidden = true;
@@ -754,7 +760,7 @@ scene("about", () => {
 
     // --- CAMERA LOGIC ---
     const defaultCamX = width() / 2;
-    const maxCamX = chestX;
+    const maxCamX = (width() * 4) - (width() / 2);
 
     onUpdate(() => {
         if (!guy.exists()) return;
@@ -770,8 +776,8 @@ scene("about", () => {
         }
     });
 
-    const topJaw = window.g_TransitionJaws.top;
-    const botJaw = window.g_TransitionJaws.bot;
+    const topJaw = window.g_TransitionJaws ? window.g_TransitionJaws.top : null;
+    const botJaw = window.g_TransitionJaws ? window.g_TransitionJaws.bot : null;
     const halfH = height() / 2;
 
     if (topJaw && botJaw) {

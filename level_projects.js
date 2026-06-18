@@ -898,8 +898,8 @@ scene("projects", () => {
     });
 
     // --- TRANSITION ENTRY ---
-    const topJaw = window.g_TransitionJaws.top;
-    const botJaw = window.g_TransitionJaws.bot;
+    const topJaw = window.g_TransitionJaws ? window.g_TransitionJaws.top : null;
+    const botJaw = window.g_TransitionJaws ? window.g_TransitionJaws.bot : null;
     const halfH = height() / 2;
     if (topJaw && botJaw) {
         wait(0.2, () => {
