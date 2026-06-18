@@ -588,6 +588,7 @@ scene("projects", () => {
             icon: "cart",
             desc: "Luxury E-Commerce & Monogram Studio",
             links: [
+                { name: "Live Site", url: "https://maison-anima.vercel.app/" },
                 { name: "Figma Design", url: "https://www.figma.com/design/p5gmhipXjFntIcYVWCOlmI/Maison-Anima?node-id=0-1&t=5cEifPTibB71UB1T-1" },
                 { name: "GitHub Repository", url: "https://github.com/apoorv-xs/Maison-Anima" }
             ]
