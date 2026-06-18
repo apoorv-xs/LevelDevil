@@ -774,9 +774,7 @@ scene("about", () => {
         const currCamX = camPos().x;
         const lerpSpeed = 4 * dt();
 
-        if (Math.abs(currCamX - targetCamX) > 1) {
-            camPos(lerp(currCamX, targetCamX, lerpSpeed), height() / 2 - 40);
-        }
+        camPos(lerp(currCamX, targetCamX, lerpSpeed), height() / 2 - 40);
     });
 
     const topJaw = window.g_TransitionJaws ? window.g_TransitionJaws.top : null;
