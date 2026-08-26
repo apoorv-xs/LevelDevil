@@ -632,15 +632,10 @@ try {
 
     window.addEventListener("blur", () => {
         document.title = "💀 Don't give up yet!";
-        // Pause game to prevent physics explosions from large dt
-        if (window.k) window.k.debug.paused = true;
     });
 
     window.addEventListener("focus", () => {
         document.title = originalTitle;
-        // Resume game only if project links overlay is NOT open
-        const overlayActive = document.getElementById("project-modal-overlay") !== null;
-        if (window.k && !overlayActive) window.k.debug.paused = false;
     });
 
     window.showProjectLinksOverlay = function (projectData, callbackOnClose) {

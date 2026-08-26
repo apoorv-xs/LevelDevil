@@ -756,6 +756,13 @@ scene("contact", () => {
 
 
 
+    // --- 3D BABYLON PRESENTATION LAYER ---
+    if (window.Engine3D && window.Engine3D.scene) {
+        if (window.Player3D) window.Player3D.create(window.Engine3D.scene);
+        if (window.MotionGraphicsBG) window.MotionGraphicsBG.create(window.Engine3D.scene);
+        if (window.LevelContact3D) window.LevelContact3D.build(window.Engine3D.scene);
+    }
+
     // --- PLAYER ---
     const guy = createPlayer(100, safeGroundY - 100);
     // FIX INVISIBLE WALL
@@ -880,6 +887,9 @@ scene("contact", () => {
     // --- CAMERA TRACKING ---
     const centerY = height() / 2 - 40;
     onUpdate(() => {
+        if (window.LevelContact3D && window.Engine3D && window.Engine3D.scene) {
+            window.LevelContact3D.update(window.Engine3D.scene, guy);
+        }
         if (window.adjustCameraZoom) window.adjustCameraZoom();
         if (!guy.exists()) return;
         let camX = guy.pos.x;

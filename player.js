@@ -11,7 +11,7 @@ function createPlayer(x, y) {
         body(),
         anchor("bot"),
         rotate(0), // Added for spin transition
-        scale(1),  // Added for suck transition
+        scale(1), // Added for suck transition
         opacity(0), // Hitbox is invisible
         z(20),
         "guy"
@@ -106,9 +106,6 @@ function createPlayer(x, y) {
         // 1. Movement & Input
         let isMoving = false;
 
-        // Safety: Prevent sticky keys running when window loses focus
-        if (!document.hasFocus()) return;
-
         // Note: isKeyDown/isKeyPressed are global Kaboom functions
         if (isKeyDown("left") && guy.pos.x > 10) {
             guy.move(-SPEED, 0);
@@ -123,19 +120,9 @@ function createPlayer(x, y) {
             guy.facingLeft = false;
         }
 
-        if (isKeyPressed("space") && guy.isGrounded()) {
+        if ((isKeyPressed("space") || isKeyPressed("up") || isKeyDown("space") || isKeyDown("up")) && guy.isGrounded()) {
             guy.jump(JUMP);
             if (window.SFX) window.SFX.playJump();
-            // STRETCH: Tall and Thin
-            guy.scale = vec2(0.8, 1.2);
-            tween(guy.scale, vec2(1, 1), 0.2, (val) => guy.scale = val, easings.easeOutQuad);
-        }
-        if (isKeyPressed("up") && guy.isGrounded()) {
-            guy.jump(JUMP);
-            if (window.SFX) window.SFX.playJump();
-            // STRETCH: Tall and Thin
-            guy.scale = vec2(0.8, 1.2);
-            tween(guy.scale, vec2(1, 1), 0.2, (val) => guy.scale = val, easings.easeOutQuad);
         }
 
         // 2. Animation
@@ -175,18 +162,22 @@ function createPlayer(x, y) {
             shadow.opacity = 0.3;
         }
 
-        // 4. Directional Flipping
-        const currentScaleX = Math.abs(guy.scale.x);
-        guy.scale.x = guy.facingLeft ? -currentScaleX : currentScaleX;
     });
 
     // --- SQUASH AND STRETCH EVENTS ---
-    // Land (Squash)
+    // Floor collision resolution lock
+    guy.onBeforePhysicsResolve((col) => {
+        if (col.target.is("floor")) {
+            const floorTop = col.target.pos.y;
+            col.displacement = vec2(0, floorTop - guy.pos.y);
+        }
+    });
+
+    // Land
     guy.onGround(() => {
-        // SQUASH: Short and Wide
-        guy.scale = vec2(1.2, 0.8);
-        tween(guy.scale, vec2(1, 1), 0.2, (val) => guy.scale = val, easings.easeOutElastic);
-        shake(1); // Tiny thud feeling
+        if (window.MotionGraphicsBG && window.Engine3D) {
+            window.MotionGraphicsBG.triggerShockwave(window.Engine3D.to3DX(guy.pos.x), window.Engine3D.to3DY(guy.pos.y), 1.0);
+        }
     });
 
     return guy;

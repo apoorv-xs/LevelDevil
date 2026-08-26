@@ -11,12 +11,11 @@ scene("intro", () => {
     const C_FLOOR = rgb(176, 113, 29); // #B0711D
     const C_TEXT = rgb(44, 44, 44); // #2C2C2C
 
-    // BLUE FLOOR (Bottom ~35% of screen) - NOW DARKER ORANGE/BROWN
-    // NOTE: height() varies on resize, but fine for static scene
-    const floorHeight = height() * 0.35;
+    // BLUE FLOOR
+    const floorHeight = height() * 0.2;
     add([
         rect(width() * 4, floorHeight + height() * 2),
-        pos(-width() * 1.5, height() - floorHeight),
+        pos(0, height() - floorHeight),
         color(C_FLOOR),
         z(1),
         area(),
@@ -30,17 +29,24 @@ scene("intro", () => {
     // --- ANIMATED CLOUDS ---
     window.addGlobalClouds();
 
-    // --- PARALLAX BACKGROUND ---
-    if (window.addParallaxBackground) {
-        window.addParallaxBackground(width(), floorHeight);
-    }
+    // --- PARALLAX BACKGROUND (Handled in 3D by Babylon.js MotionGraphicsBG) ---
+    // if (window.addParallaxBackground) {
+    //     window.addParallaxBackground(width(), floorHeight);
+    // }
 
     // --- RECRUITER MODE UI ---
     if (window.addRecruiterUI) window.addRecruiterUI();
 
+    // --- 3D BABYLON PRESENTATION LAYER ---
+    if (window.Engine3D && window.Engine3D.scene) {
+        if (window.Player3D) window.Player3D.create(window.Engine3D.scene);
+        if (window.MotionGraphicsBG) window.MotionGraphicsBG.create(window.Engine3D.scene);
+        if (window.LevelIntro3D) window.LevelIntro3D.build(window.Engine3D.scene);
+    }
+
     // PLAYER CHARACTER
     setGravity(1600);
-    const guy = createPlayer(width() * 0.1, height() - floorHeight - 100);
+    const guy = createPlayer(200, height() - floorHeight);
 
     // --- RECRUITER VISUALS ---
     guy.onUpdate(() => {
@@ -167,7 +173,6 @@ scene("intro", () => {
         const gate = add([
             pos(gx, gy),
             area({ shape: new Rect(vec2(0, -40), 60, 80) }),
-            body({ isStatic: true }),
             anchor("bot"),
             z(5),
             "gate",
@@ -217,6 +222,13 @@ scene("intro", () => {
     // GATE INTERACTION LOGIC
     onUpdate(() => {
         if (window.adjustCameraZoom) window.adjustCameraZoom();
+        if (window.Player3D) window.Player3D.syncWith2D(guy);
+        if (window.MotionGraphicsBG && window.Engine3D) {
+            window.MotionGraphicsBG.update(window.Engine3D.scene, window.Engine3D.camera, guy);
+        }
+        if (window.LevelIntro3D && window.Engine3D) {
+            window.LevelIntro3D.update(window.Engine3D.scene, guy);
+        }
         if (!guy.exists()) return;
         const gates = get("gate");
         let activeGate = null;

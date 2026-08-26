@@ -250,6 +250,13 @@ scene("about", () => {
     ]);
 
 
+    // --- 3D BABYLON PRESENTATION LAYER ---
+    if (window.Engine3D && window.Engine3D.scene) {
+        if (window.Player3D) window.Player3D.create(window.Engine3D.scene);
+        if (window.MotionGraphicsBG) window.MotionGraphicsBG.create(window.Engine3D.scene);
+        if (window.LevelAbout3D) window.LevelAbout3D.build(window.Engine3D.scene);
+    }
+
     // --- PLAYER SPAWN ---
     const guy = createPlayer(100, height() - floorHeight - 100);
 
@@ -267,6 +274,9 @@ scene("about", () => {
     const spikeTriggerX = LEFT_MARGIN + 350 + 160;
 
     onUpdate(() => {
+        if (window.LevelAbout3D && window.Engine3D && window.Engine3D.scene) {
+            window.LevelAbout3D.update(window.Engine3D.scene, guy);
+        }
         if (!guy.exists()) return;
         if (!spikeTrapTriggered && guy.pos.x > spikeTriggerX) {
             spikeTrapTriggered = true;

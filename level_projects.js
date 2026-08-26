@@ -83,6 +83,13 @@ scene("projects", () => {
     addWideClouds();
 
 
+    // --- 3D BABYLON PRESENTATION LAYER ---
+    if (window.Engine3D && window.Engine3D.scene) {
+        if (window.Player3D) window.Player3D.create(window.Engine3D.scene);
+        if (window.MotionGraphicsBG) window.MotionGraphicsBG.create(window.Engine3D.scene);
+        if (window.LevelProjects3D) window.LevelProjects3D.build(window.Engine3D.scene);
+    }
+
     // --- PLAYER ---
     // Spawn at 150
     const guy = createPlayer(150, groundY - 100);
@@ -90,6 +97,9 @@ scene("projects", () => {
 
     // --- RECRUITER MODE PLAYER LOGIC ---
     guy.onUpdate(() => {
+        if (window.LevelProjects3D && window.Engine3D && window.Engine3D.scene) {
+            window.LevelProjects3D.update(window.Engine3D.scene, guy);
+        }
         // RECRUITER VISUALS (Now handles delay internally via isRecruiterActive)
         if (window.updateRecruiterVisuals) window.updateRecruiterVisuals(guy);
     });

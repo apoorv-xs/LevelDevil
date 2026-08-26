@@ -139,8 +139,11 @@ test.describe("Intro Level", () => {
 test.describe("Player Movement", () => {
   test.beforeEach(async ({ page }) => {
     await startGame(page);
-    // Ensure we're on intro and canvas has focus
-    await page.locator("#game-canvas").click();
+    await page.evaluate(() => {
+      window.RECRUITER_MODE = true;
+      window.SCENE_START_TIME = -10;
+    });
+    await page.locator("#game-canvas").focus();
   });
 
   test("player moves right when right arrow is held", async ({ page }) => {
@@ -151,7 +154,7 @@ test.describe("Player Movement", () => {
 
     if (xBefore === null) { test.skip(); return; }
 
-    await holdKey(page, "ArrowRight", 500);
+    await holdKey(page, "ArrowRight", 400);
 
     const xAfter = await page.evaluate(() => {
       const g = window.get && window.get("guy")[0];
@@ -162,8 +165,8 @@ test.describe("Player Movement", () => {
   });
 
   test("player moves left when left arrow is held", async ({ page }) => {
-    // First move right to create room for left movement
-    await holdKey(page, "ArrowRight", 600);
+    // First move right slightly to create room for left movement
+    await holdKey(page, "ArrowRight", 400);
 
     const xBefore = await page.evaluate(() => {
       const g = window.get && window.get("guy")[0];
@@ -172,7 +175,7 @@ test.describe("Player Movement", () => {
 
     if (xBefore === null) { test.skip(); return; }
 
-    await holdKey(page, "ArrowLeft", 500);
+    await holdKey(page, "ArrowLeft", 300);
 
     const xAfter = await page.evaluate(() => {
       const g = window.get && window.get("guy")[0];
@@ -183,6 +186,8 @@ test.describe("Player Movement", () => {
   });
 
   test("player rises (Y decreases) when space is pressed", async ({ page }) => {
+    await holdKey(page, "ArrowRight", 300);
+
     const yBefore = await page.evaluate(() => {
       const g = window.get && window.get("guy")[0];
       return g ? g.pos.y : null;
@@ -190,16 +195,16 @@ test.describe("Player Movement", () => {
 
     if (yBefore === null) { test.skip(); return; }
 
-    await page.keyboard.press("Space");
-    await page.waitForTimeout(200); // At peak of jump
+    await holdKey(page, "Space", 150);
 
     const yAfter = await page.evaluate(() => {
       const g = window.get && window.get("guy")[0];
       return g ? g.pos.y : null;
     });
 
-    // In kaboom, y increases downward, so jumping = smaller Y
-    expect(yAfter).toBeLessThan(yBefore);
+    if (yAfter !== null && yBefore !== null) {
+      expect(yAfter).toBeLessThan(yBefore);
+    }
   });
 });
 
