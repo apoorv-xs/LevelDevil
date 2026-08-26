@@ -33,7 +33,7 @@ scene("projects", () => {
 
     // Ground
     add([
-        rect(worldWidth, floorHeight),
+        rect(worldWidth, floorHeight + height() * 2),
         pos(0, groundY),
         color(C_FLOOR),
         z(1),
@@ -572,6 +572,15 @@ scene("projects", () => {
     // --- DATA ---
     const projects = [
         {
+            id: "eravex",
+            title: "Eravex",
+            type: "tech",
+            doorColor: rgb(0, 229, 255),
+            icon: "radar",
+            desc: "Interactive 3D Narrative Museum of the History of the Web",
+            link: "https://eravex.vercel.app/"
+        },
+        {
             id: "oversight",
             title: "Oversight",
             type: "tech",
@@ -667,15 +676,15 @@ scene("projects", () => {
 
     // 1. Ground Pads
     createJumpPad(400, groundY);
-    const trollPad = createJumpPad(800, groundY);
-    createJumpPad(1200, groundY);
-    createJumpPad(1600, groundY);
+    const trollPad = createJumpPad(1150, groundY);
+    createJumpPad(1550, groundY);
+    createJumpPad(1950, groundY);
 
     let padTrollTriggered = false;
     onUpdate(() => {
         if (window.isRecruiterActive()) return; // Disable in recruiter mode
 
-        if (!padTrollTriggered && guy.exists() && !guy.isGrounded() && guy.pos.x > 680 && guy.pos.x < 780 && guy.pos.y < groundY - 50) {
+        if (!padTrollTriggered && guy.exists() && !guy.isGrounded() && guy.pos.x > 1030 && guy.pos.x < 1130 && guy.pos.y < groundY - 50) {
             padTrollTriggered = true;
             if (window.SFX) window.SFX.playTroll();
 
@@ -699,38 +708,38 @@ scene("projects", () => {
 
     // 2. Islands Sequence
 
-    // Island 1 (Pet): 600
+    // Island 1 (Eravex): 600
     const i1 = createIsland(600, groundY - 200, projects[0].type, projects[0]);
     createJumpPad(60, 0, i1);
 
-    // Island 2 (Flux): 950
-    const i2 = createIsland(950, groundY - 400, "tech", projects[4], { dist: 150, speed: 1.5 });
+    // Island 2 (Oversight): 950
+    const i2 = createIsland(950, groundY - 400, projects[1].type, projects[1]);
     createJumpPad(60, 0, i2);
 
-    // Island 3 (Radar): 1300
-    // Note: Projects[1] is Radarhire
-    const i3 = createIsland(1300, groundY - 550, projects[1].type, projects[1], { dist: 200, speed: 1.2 });
-    // REMOVED JUMP PAD AS PADS REQUEST
-    // createJumpPad(-60, 0, i3); 
+    // Island 3 (Flux): 1300
+    const i3 = createIsland(1300, groundY - 550, projects[5].type, projects[5], { dist: 150, speed: 1.5 });
+    createJumpPad(60, 0, i3);
 
-    // Island 4 (Live Portfolio): 1650
-    const i4 = createIsland(1650, groundY - 300, "tech", projects[3], { dist: 100, speed: 2 });
-    createJumpPad(60, 0, i4);
+    // Island 4 (Maison Anima): 1650
+    const i4 = createIsland(1650, groundY - 300, projects[2].type, projects[2], { dist: 200, speed: 1.2 });
 
-    // Island 5 (Ecom): 2000
-    // Note: Projects[2] is Ecom
-    const i5 = createIsland(2000, groundY - 500, projects[2].type, projects[2]);
-    createJumpPad(-60, 0, i5);
+    // Island 5 (Live Portfolio): 2000
+    const i5 = createIsland(2000, groundY - 500, projects[4].type, projects[4], { dist: 100, speed: 2 });
+    createJumpPad(60, 0, i5);
 
-    // Island 6 (EMPTY): 2350
-    const i6 = createIsland(2350, groundY - 350, "tech", null, { dist: 120, speed: 1.8 });
-    createJumpPad(60, 0, i6);
+    // Island 6 (Ecom/The Find): 2350
+    const i6 = createIsland(2350, groundY - 350, projects[3].type, projects[3]);
+    createJumpPad(-60, 0, i6);
 
-    // Island 7 (FINAL): 2700
-    const i7 = createIsland(2700, groundY - 250, "earth", null);
+    // Island 7 (EMPTY): 2700
+    const i7 = createIsland(2700, groundY - 350, "tech", null, { dist: 120, speed: 1.8 });
+    createJumpPad(60, 0, i7);
 
-    // REMOVE TOP BORDER for i7: Add cover rect
-    i7.add([
+    // Island 8 (FINAL): 3050
+    const i8 = createIsland(3050, groundY - 250, "earth", null);
+
+    // REMOVE TOP BORDER for i8: Add cover rect
+    i8.add([
         rect(152, 6),
         pos(-76, -3),
         color(rgb(176, 113, 29)),
@@ -738,10 +747,10 @@ scene("projects", () => {
     ]);
 
     // CONTACT GATE - Ported from Intro Level
-    // Placed on Platform (2700, groundY - 250) -> Attached to i7
-    // UPDATED: Now added as child of i7
-    const contactGate = i7.add([
-        pos(0, 0), // Relative to i7
+    // Placed on Platform (3050, groundY - 250) -> Attached to i8
+    // UPDATED: Now added as child of i8
+    const contactGate = i8.add([
+        pos(0, 0), // Relative to i8
         area({ shape: new Rect(vec2(0, -40), 60, 80) }),
         anchor("bot"),
         z(5),
@@ -787,10 +796,11 @@ scene("projects", () => {
 
 
 
-    // --- UI / HUD ---
+    // --- HEADER ---
+    const isMobileHeader = width() < 600;
     add([
-        text("PROJECTS", { size: 30, font: "'Press Start 2P'" }),
-        pos(width() / 2, 50),
+        text("PROJECTS", { size: isMobileHeader ? 18 : 30, font: "'Press Start 2P'" }),
+        pos(width() / 2, isMobileHeader ? 100 : 50),
         anchor("center"),
         fixed(),
         color(C_TEXT),
@@ -799,6 +809,7 @@ scene("projects", () => {
 
     // --- CAMERA ---
     onUpdate(() => {
+        if (window.adjustCameraZoom) window.adjustCameraZoom();
         if (!guy.exists()) return;
         let camX = guy.pos.x;
         if (camX < 0) camX = 0;

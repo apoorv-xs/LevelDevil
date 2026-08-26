@@ -1,9 +1,9 @@
 scene("intro", () => {
-    // OPAQUE BACKGROUND (#E9B45A)
+    // OPAQUE BACKGROUND (#E9B45A) - Extended for zoom
     add([
-        rect(width(), height()),
+        rect(width() * 4, height() * 4),
         color(233, 180, 90), // #E9B45A
-        pos(0, 0),
+        pos(-width() * 1.5, -height() * 1.5),
         z(0)
     ]);
 
@@ -15,8 +15,8 @@ scene("intro", () => {
     // NOTE: height() varies on resize, but fine for static scene
     const floorHeight = height() * 0.35;
     add([
-        rect(width(), floorHeight),
-        pos(0, height() - floorHeight),
+        rect(width() * 4, floorHeight + height() * 2),
+        pos(-width() * 1.5, height() - floorHeight),
         color(C_FLOOR),
         z(1),
         area(),
@@ -216,6 +216,7 @@ scene("intro", () => {
 
     // GATE INTERACTION LOGIC
     onUpdate(() => {
+        if (window.adjustCameraZoom) window.adjustCameraZoom();
         if (!guy.exists()) return;
         const gates = get("gate");
         let activeGate = null;

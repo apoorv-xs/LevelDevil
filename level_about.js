@@ -42,7 +42,7 @@ scene("about", () => {
 
     // Floor 1: Start to Pit
     add([
-        rect(pitX, floorHeight),
+        rect(pitX, floorHeight + height() * 2),
         pos(0, height() - floorHeight),
         color(C_FLOOR),
         z(1), // LAYER 1
@@ -53,7 +53,7 @@ scene("about", () => {
 
     // Floor 2: Pit End to Infinity (Width * 4)
     add([
-        rect((width() * 4) - (pitX + pitWidth), floorHeight),
+        rect((width() * 4) - (pitX + pitWidth), floorHeight + height() * 2),
         pos(pitX + pitWidth, height() - floorHeight),
         color(C_FLOOR),
         z(1), // LAYER 1
@@ -97,9 +97,10 @@ scene("about", () => {
     if (window.addRecruiterUI) window.addRecruiterUI();
 
     // --- CONTENT ---
+    const isMobileHeader = width() < 600;
     add([
-        text("ABOUT ME", { size: 40, font: "'Press Start 2P'" }),
-        pos(width() / 2, height() * 0.15),
+        text("ABOUT ME", { size: isMobileHeader ? 18 : 40, font: "'Press Start 2P'" }),
+        pos(width() / 2, isMobileHeader ? 100 : height() * 0.15),
         anchor("center"),
         color(C_TEXT),
         z(10),
@@ -768,6 +769,7 @@ scene("about", () => {
     const maxCamX = (width() * 4) - (width() / 2);
 
     onUpdate(() => {
+        if (window.adjustCameraZoom) window.adjustCameraZoom();
         if (!guy.exists()) return;
         let targetCamX = guy.pos.x;
         if (targetCamX < defaultCamX) targetCamX = defaultCamX;

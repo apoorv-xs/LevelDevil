@@ -45,13 +45,14 @@ scene("contact", () => {
     if (window.addRecruiterUI) window.addRecruiterUI();
 
     // --- CONTENT (Fixed UI) ---
+    const isMobileHeader = width() < 600;
     add([
-        text("CONTACT ME", { size: 40, font: "'Press Start 2P'" }),
-        pos(width() / 2, height() * 0.2),
+        text("CONTACT ME", { size: isMobileHeader ? 18 : 40, font: "'Press Start 2P'" }),
+        pos(width() / 2, isMobileHeader ? 100 : height() * 0.2),
         anchor("center"),
+        fixed(),
         color(C_TEXT),
-        z(10),
-        fixed() // Stay on screen
+        z(10)
     ]);
 
     // --- FLOOR LOGIC ---
@@ -65,7 +66,7 @@ scene("contact", () => {
 
     // 1. Safe Zone (Start)
     add([
-        rect(safeStartWidth, safeFloorHeight),
+        rect(safeStartWidth, safeFloorHeight + height() * 2),
         pos(0, safeGroundY),
         color(C_FLOOR),
         z(1),
@@ -282,7 +283,7 @@ scene("contact", () => {
     // DOWNSCALED from 400
     const flatBaseWidth = 150;
     add([
-        rect(flatBaseWidth, safeFloorHeight),
+        rect(flatBaseWidth, safeFloorHeight + height() * 2),
         pos(endSafeX, safeGroundY),
         color(C_FLOOR),
         area(),
@@ -879,6 +880,7 @@ scene("contact", () => {
     // --- CAMERA TRACKING ---
     const centerY = height() / 2 - 40;
     onUpdate(() => {
+        if (window.adjustCameraZoom) window.adjustCameraZoom();
         if (!guy.exists()) return;
         let camX = guy.pos.x;
         const minCam = width() / 2;

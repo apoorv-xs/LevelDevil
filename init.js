@@ -64,8 +64,59 @@ try {
     window.onUpdate = k.onUpdate;
     window.onDraw = k.onDraw;
     window.onCollide = k.onCollide;
-    window.isKeyPressed = k.isKeyPressed;
-    window.isKeyDown = k.isKeyDown;
+
+    // --- MOBILE INPUT STATES & OVERRIDES ---
+    window.mobileInputs = {
+        left: false,
+        right: false,
+        up: false,
+        down: false,
+        enter: false
+    };
+
+    const originalIsKeyPressed = k.isKeyPressed;
+    window.isKeyPressed = function (key) {
+        if (originalIsKeyPressed(key)) return true;
+        if (key === "space" || key === "up") {
+            if (window.mobileInputs.up) {
+                window.mobileInputs.up = false; // consume press
+                return true;
+            }
+        }
+        if (key === "down" || key === "s") {
+            if (window.mobileInputs.down) {
+                window.mobileInputs.down = false; // consume press
+                return true;
+            }
+        }
+        if (key === "enter") {
+            if (window.mobileInputs.enter) {
+                window.mobileInputs.enter = false; // consume press
+                return true;
+            }
+            // For mobile context interaction
+            if (window.mobileInputs.up) {
+                window.mobileInputs.up = false;
+                return true;
+            }
+            if (window.mobileInputs.down) {
+                window.mobileInputs.down = false;
+                return true;
+            }
+        }
+        return false;
+    };
+
+    const originalIsKeyDown = k.isKeyDown;
+    window.isKeyDown = function (key) {
+        if (originalIsKeyDown(key)) return true;
+        if (key === "left" && window.mobileInputs.left) return true;
+        if (key === "right" && window.mobileInputs.right) return true;
+        if ((key === "up" || key === "space") && window.mobileInputs.up) return true;
+        if ((key === "down" || key === "s") && window.mobileInputs.down) return true;
+        return false;
+    };
+
     window.destroy = k.destroy;
     window.drawRect = k.drawRect;
     window.drawCircle = k.drawCircle;
@@ -82,6 +133,112 @@ try {
     window.RIGHT = k.RIGHT;
 
     console.log("INT: Kaboom initialized");
+
+    // --- MOBILE CONTROLS INJECTION ---
+    const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (isMobile) {
+        console.log("INT: Mobile device detected. Injecting virtual controls.");
+        
+        // CSS Style
+        const style = document.createElement("style");
+        style.innerHTML = `
+            #mobile-controls {
+                position: fixed;
+                bottom: 30px;
+                left: 20px;
+                right: 20px;
+                height: 80px;
+                z-index: 999999;
+                display: flex;
+                justify-content: space-between;
+                pointer-events: none;
+                user-select: none;
+                -webkit-user-select: none;
+            }
+            .control-group {
+                display: flex;
+                gap: 15px;
+                pointer-events: auto;
+            }
+            .mobile-btn {
+                width: 60px;
+                height: 60px;
+                background-color: rgba(0, 0, 0, 0.65);
+                color: #fff;
+                border: 4px double #fff;
+                border-radius: 8px;
+                font-family: 'Press Start 2P', monospace;
+                font-size: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                outline: none;
+                -webkit-tap-highlight-color: transparent;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            }
+            .mobile-btn:active {
+                background-color: #fff;
+                color: #000;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // HTML Overlay
+        const overlay = document.createElement("div");
+        overlay.id = "mobile-controls";
+        overlay.innerHTML = `
+            <div class="control-group">
+                <button class="mobile-btn" id="btn-left">◀</button>
+                <button class="mobile-btn" id="btn-right">▶</button>
+            </div>
+            <div class="control-group">
+                <button class="mobile-btn" id="btn-down">▼</button>
+                <button class="mobile-btn" id="btn-up">▲</button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        // Bind Touch Events
+        const btnLeft = document.getElementById("btn-left");
+        const btnRight = document.getElementById("btn-right");
+        const btnUp = document.getElementById("btn-up");
+        const btnDown = document.getElementById("btn-down");
+
+        const bindTouch = (btn, keyProp) => {
+            btn.addEventListener("touchstart", (e) => {
+                e.preventDefault();
+                window.mobileInputs[keyProp] = true;
+            }, { passive: false });
+
+            btn.addEventListener("touchend", (e) => {
+                e.preventDefault();
+                window.mobileInputs[keyProp] = false;
+            }, { passive: false });
+
+            btn.addEventListener("touchcancel", (e) => {
+                e.preventDefault();
+                window.mobileInputs[keyProp] = false;
+            }, { passive: false });
+        };
+
+        bindTouch(btnLeft, "left");
+        bindTouch(btnRight, "right");
+        bindTouch(btnUp, "up");
+        bindTouch(btnDown, "down");
+    }
+
+    // --- CAMERA MOBILE VIEWPORT AUTO-ZOOM ---
+    window.adjustCameraZoom = function () {
+        const isMobileScreen = width() < 600;
+        if (isMobileScreen) {
+            // Set zoom factor so effective width is at least 800px
+            const zoomFactor = Math.min(1.0, width() / 800);
+            camScale(zoomFactor);
+        } else {
+            camScale(1.0);
+        }
+    };
 
     // --- OVERRIDE addKaboom for Z-INDEX ---
     // Ensure explosions are always on top
@@ -290,19 +447,15 @@ try {
     };
 
     window.addParallaxBackground = function (worldWidth, floorHeight) {
-        // Parallax layers - use FIXED (screen-space) so they are completely
-        // immune to camera Y jitter/shake and always render at the correct
-        // screen position. We manually compute screen X each frame to create
-        // the parallax scrolling effect.
-        const screenFloorY = height() - floorHeight; // screen Y of floor top
+        // Parallax layers in world space (so they scale with camera zoom)
+        const screenFloorY = height() - floorHeight; // Y position of floor top
 
         const farHillColor = rgb(215, 165, 75);   // Lighter desaturated orange-brown
         const nearHillColor = rgb(195, 135, 45);  // Closer to floor color
 
-        // We need enough segments to cover the screen width plus overflow
-        // on both sides. A fixed set of repeating segments is sufficient.
         const segmentW = 400;
-        const segmentCount = Math.ceil(width() / segmentW) + 6; // Extra for overflow
+        // On mobile, because we zoom out, we need more segments to cover the wider visible field
+        const segmentCount = Math.ceil(width() / segmentW) + 12;
 
         const farHills = [];
         const nearHills = [];
@@ -314,7 +467,6 @@ try {
                 anchor("botleft"),
                 color(farHillColor),
                 opacity(0.35),
-                fixed(),   // Screen-space: immune to camera
                 z(1)
             ]));
 
@@ -324,28 +476,24 @@ try {
                 anchor("botleft"),
                 color(nearHillColor),
                 opacity(0.45),
-                fixed(),   // Screen-space: immune to camera
                 z(2)
             ]));
         }
 
-        // Each frame, compute screen X from camera world X using parallax ratios.
-        // Because the segments are fixed-size, we tile them with modulo arithmetic
-        // so they seamlessly repeat across the world.
         onUpdate(() => {
             const cx = camPos().x;
 
             // Far hills scroll at 30% of camera speed (visually distant)
             const farOffset = (cx * 0.3) % segmentW;
             for (let i = 0; i < farHills.length; i++) {
-                farHills[i].pos.x = (i * segmentW) - farOffset - segmentW;
+                farHills[i].pos.x = cx - (width() * 1.5) + (i * segmentW) - farOffset;
                 farHills[i].pos.y = screenFloorY;
             }
 
             // Near hills scroll at 50% of camera speed
             const nearOffset = (cx * 0.5) % segmentW;
             for (let i = 0; i < nearHills.length; i++) {
-                nearHills[i].pos.x = (i * segmentW) - nearOffset - segmentW;
+                nearHills[i].pos.x = cx - (width() * 1.5) + (i * segmentW) - nearOffset;
                 nearHills[i].pos.y = screenFloorY;
             }
         });
@@ -365,10 +513,14 @@ try {
     };
 
     window.addRecruiterUI = function () {
-        // Toggle Button (Top Right) - WIDER for longer text
+        const isMobileScreen = width() < 600;
+        const btnW = isMobileScreen ? 170 : 260;
+        const btnH = isMobileScreen ? 30 : 40;
+        
+        // Toggle Button (Top Right)
         const toggleBtn = add([
-            pos(width() - 280, 20), // Moved left slightly
-            rect(260, 40),
+            pos(isMobileScreen ? width() - 180 : width() - 280, isMobileScreen ? 10 : 20),
+            rect(btnW, btnH),
             color(0, 0, 0),
             outline(4, rgb(255, 255, 255)),
             area(),
@@ -382,10 +534,19 @@ try {
             toggleBtn.hidden = true;
         }
 
+        const labelText = window.RECRUITER_MODE 
+            ? (isMobileScreen ? "RECRUITER: ON" : "RECRUITER MODE: ON")
+            : (isMobileScreen ? "RECRUITER: OFF" : "RECRUITER MODE: OFF");
+
         const label = toggleBtn.add([
-            text("RECRUITER MODE: OFF", { size: 12, font: "'Press Start 2P'", width: 260, align: "center" }),
+            text(labelText, { 
+                size: isMobileScreen ? 8 : 12, 
+                font: "'Press Start 2P'", 
+                width: btnW, 
+                align: "center" 
+            }),
             anchor("center"),
-            pos(130, 20),
+            pos(btnW / 2, btnH / 2),
             color(255, 255, 255),
             fixed() // Explicit fixed to prevent drift
         ]);
@@ -396,17 +557,16 @@ try {
 
             if (window.RECRUITER_MODE) {
                 toggleBtn.color = rgb(50, 200, 50); // Green
-                label.text = "RECRUITER MODE: ON";
+                label.text = isMobileScreen ? "RECRUITER: ON" : "RECRUITER MODE: ON";
             } else {
                 toggleBtn.color = rgb(0, 0, 0); // Black
-                label.text = "RECRUITER MODE: OFF";
+                label.text = isMobileScreen ? "RECRUITER: OFF" : "RECRUITER MODE: OFF";
             }
         });
 
         // Initialize State (Persist visual state if scene reloads)
         if (window.RECRUITER_MODE) {
             toggleBtn.color = rgb(50, 200, 50);
-            label.text = "RECRUITER MODE: ON";
         }
     };
 
@@ -831,18 +991,6 @@ try {
     const pauseBtn = document.createElement("div");
     pauseBtn.id = "pause-btn";
     pauseBtn.innerText = "|| PAUSE";
-    pauseBtn.style.position = "fixed";
-    pauseBtn.style.top = "20px";
-    pauseBtn.style.left = "20px";
-    pauseBtn.style.zIndex = "150";
-    pauseBtn.style.fontFamily = "'Press Start 2P', monospace";
-    pauseBtn.style.fontSize = "12px";
-    pauseBtn.style.color = "#fff";
-    pauseBtn.style.backgroundColor = "#000";
-    pauseBtn.style.border = "4px double #fff";
-    pauseBtn.style.padding = "8px 12px";
-    pauseBtn.style.cursor = "pointer";
-    pauseBtn.style.userSelect = "none";
     pauseBtn.style.display = "none";
 
     pauseBtn.addEventListener("mouseenter", () => {
@@ -865,18 +1013,6 @@ try {
     const audioBtn = document.createElement("div");
     audioBtn.id = "audio-btn";
     audioBtn.innerText = "🔊 AUDIO: ON";
-    audioBtn.style.position = "fixed";
-    audioBtn.style.top = "20px";
-    audioBtn.style.left = "160px";
-    audioBtn.style.zIndex = "150";
-    audioBtn.style.fontFamily = "'Press Start 2P', monospace";
-    audioBtn.style.fontSize = "12px";
-    audioBtn.style.color = "#fff";
-    audioBtn.style.backgroundColor = "#000";
-    audioBtn.style.border = "4px double #fff";
-    audioBtn.style.padding = "8px 12px";
-    audioBtn.style.cursor = "pointer";
-    audioBtn.style.userSelect = "none";
     audioBtn.style.display = "none";
 
     audioBtn.addEventListener("mouseenter", () => {

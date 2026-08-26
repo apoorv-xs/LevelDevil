@@ -95,6 +95,63 @@
             height: 100%;
             background: transparent;
         }
+
+        /* --- HUD & MODAL RESPONSIVE STYLING --- */
+        #pause-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 150;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            color: #fff;
+            background-color: #000;
+            border: 4px double #fff;
+            padding: 8px 12px;
+            cursor: pointer;
+            user-select: none;
+            display: none;
+        }
+
+        #audio-btn {
+            position: fixed;
+            top: 60px;
+            left: 20px;
+            z-index: 150;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            color: #fff;
+            background-color: #000;
+            border: 4px double #fff;
+            padding: 8px 12px;
+            cursor: pointer;
+            user-select: none;
+            display: none;
+        }
+
+        #pause-modal-overlay > div {
+            width: min(400px, 85%) !important;
+        }
+
+        #project-modal-overlay > div {
+            width: min(550px, 85%) !important;
+        }
+
+        @media (max-width: 600px) {
+            #pause-btn {
+                top: 10px;
+                left: 10px;
+                font-size: 10px;
+                padding: 6px 10px;
+            }
+            #audio-btn {
+                top: 45px;
+                left: 10px;
+                right: auto;
+                font-size: 10px;
+                padding: 6px 10px;
+            }
+        }
     </style>
 </head>
 
@@ -136,14 +193,14 @@
         };
     </script>
 
-    <script src="sfx.js?v=11"></script>
-    <script src="init.js?v=11"></script>
-    <script src="player.js?v=11"></script>
-    <script src="traps.js?v=11"></script>
-    <script src="level_intro.js?v=11"></script>
-    <script src="level_about.js?v=11"></script>
-    <script src="level_projects.js?v=11"></script>
-    <script src="level_contact.js?v=11"></script>
+    <script src="sfx.js?v=14"></script>
+    <script src="init.js?v=14"></script>
+    <script src="player.js?v=14"></script>
+    <script src="traps.js?v=14"></script>
+    <script src="level_intro.js?v=14"></script>
+    <script src="level_about.js?v=14"></script>
+    <script src="level_projects.js?v=14"></script>
+    <script src="level_contact.js?v=14"></script>
 
 </body>
 
