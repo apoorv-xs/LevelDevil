@@ -1,71 +1,65 @@
-/**
- * LevelIntro3D - Babylon.js 2.5D Presentation Layer for Intro Level (Remastered)
- * 
- * Features:
- * 1. PBR Terracotta & Obsidian Stoneware Platform with Glowing Runic Inlays.
- * 2. 3D Monolith Gate Portals with Swirling Particle Vortex Fields.
- * 3. Animated "About Me" Runaway Gate Troll (Tiptoe Legs & Dual Rocket Thrusters).
- * 4. Volumetric Grumpy Stormcloud with Internal Pulsing Plasma & Lightning Arcs.
- */
-
+// level_intro_3d.js - Complete 2.5D Intro Level Remaster
 (function () {
     "use strict";
 
     const LevelIntro3D = {
         scene: null,
         groundMesh: null,
-        runes: [],
         gates: [],
         aboutGate3D: null,
-        leftThruster: null,
-        rightThruster: null,
-        thrusterFireMat: null,
-        trollOriginPos: null,
+        aboutGateLegL: null,
+        aboutGateLegR: null,
+        aboutGateEyeL: null,
+        aboutGateEyeR: null,
         isTrollVaulting: false,
         trollVaultProgress: 0,
+        trollOriginPos: null,
+        professor3D: null,
         cloudMesh: null,
+        cloudEyebrows: null,
         cloudLight: null,
-        lightningMesh: null,
+        backdropMeshes: [],
         isLoaded: false,
 
-        build: function (scene) {
+        build(scene) {
             if (!scene || !window.Engine3D) return;
             this.scene = scene;
             this.cleanup();
 
             const Engine3D = window.Engine3D;
-            const screenW = typeof width === "function" ? width() : 1280;
-            const screenH = typeof height === "function" ? height() : 720;
-            const floorH = screenH * 0.2;
+            const screenW = (typeof width === "function") ? width() : window.innerWidth;
+            const screenH = (typeof height === "function") ? height() : window.innerHeight;
+            const floorH = (typeof height === "function") ? height() * 0.2 : 144;
             const floorTop2D = screenH - floorH;
             const floorTop3D = Engine3D.to3DY(floorTop2D);
 
-            // 1. MATERIAL PALETTES (Tactile Nostalgic Level Devil PBR)
-            const terracottaMat = new BABYLON.PBRMaterial("mat_terracotta_intro", scene);
-            terracottaMat.albedoColor = new BABYLON.Color3(0.69, 0.44, 0.11); // #B0711D
-            terracottaMat.metallic = 0.25;
-            terracottaMat.roughness = 0.45;
+            // 1. MATERIAL PALETTES
+            // Terracotta Platform PBR
+            const terracottaMat = new BABYLON.PBRMaterial("introTerracottaMat", scene);
+            terracottaMat.albedoColor = new BABYLON.Color3(0.69, 0.44, 0.12); // Rich #B0711D
+            terracottaMat.metallic = 0.15;
+            terracottaMat.roughness = 0.7;
 
-            const obsidianMat = new BABYLON.PBRMaterial("mat_obsidian_intro", scene);
-            obsidianMat.albedoColor = new BABYLON.Color3(0.12, 0.11, 0.15); // Deep Charcoal Obsidian
-            obsidianMat.metallic = 0.9;
-            obsidianMat.roughness = 0.2;
+            // Obsidian Gate Frames
+            const obsidianMat = new BABYLON.PBRMaterial("introObsidianMat", scene);
+            obsidianMat.albedoColor = new BABYLON.Color3(0.12, 0.12, 0.16);
+            obsidianMat.metallic = 0.85;
+            obsidianMat.roughness = 0.25;
 
-            const runeMat = new BABYLON.PBRMaterial("mat_rune_intro", scene);
-            runeMat.albedoColor = new BABYLON.Color3(0.1, 0.9, 1.0);
-            runeMat.emissiveColor = new BABYLON.Color3(0.05, 0.6, 0.9);
-            runeMat.metallic = 0.3;
-            runeMat.roughness = 0.1;
+            // Paper Craft Material for Background
+            const paperMat = new BABYLON.PBRMaterial("introPaperMat", scene);
+            paperMat.albedoColor = new BABYLON.Color3(0.98, 0.95, 0.9);
+            paperMat.metallic = 0.05;
+            paperMat.roughness = 0.9;
 
-            const goldMat = new BABYLON.PBRMaterial("mat_gold_intro", scene);
-            goldMat.albedoColor = new BABYLON.Color3(0.95, 0.75, 0.2);
-            goldMat.emissiveColor = new BABYLON.Color3(0.3, 0.2, 0.05);
-            goldMat.metallic = 0.95;
-            goldMat.roughness = 0.15;
+            // Glowing Neon Circuit Inlays
+            const neonCyanMat = new BABYLON.StandardMaterial("introNeonCyan", scene);
+            neonCyanMat.diffuseColor = new BABYLON.Color3(0, 0.9, 1.0);
+            neonCyanMat.emissiveColor = new BABYLON.Color3(0.1, 0.8, 1.0);
 
-            // 2. TACTILE STONEWARE GROUND PLATFORM
+            // 2. TACTILE TERRACOTTA GROUND PLATFORM
             const groundW3D = screenW * 4 * Engine3D.SCALE;
-            this.groundMesh = BABYLON.MeshBuilder.CreateBox("introGround3D", {
+            this.groundMesh = BABYLON.MeshBuilder.CreateBox("ground3D", {
                 width: groundW3D,
                 height: 15,
                 depth: 8
@@ -74,211 +68,315 @@
             this.groundMesh.material = terracottaMat;
             this.groundMesh.receiveShadows = true;
 
-            // Decorative Top Edge Bevel & Circuit Runes
-            const topBevel = BABYLON.MeshBuilder.CreateBox("groundBevel", {
+            // Glowing Runic Floor Inlay Line
+            const circuitLine = BABYLON.MeshBuilder.CreateBox("floorCircuitLine", {
                 width: groundW3D,
-                height: 0.4,
-                depth: 8.2
+                height: 0.1,
+                depth: 0.4
             }, scene);
-            topBevel.position = new BABYLON.Vector3(0, floorTop3D - 0.2, 0);
-            topBevel.material = obsidianMat;
-            topBevel.receiveShadows = true;
-            this.groundMesh.addChild(topBevel);
+            circuitLine.position = new BABYLON.Vector3(0, floorTop3D + 0.05, 0);
+            circuitLine.material = neonCyanMat;
+            this.backdropMeshes.push(circuitLine);
 
-            // Glowing Circuit Inlay Strips
-            this.runes = [];
-            for (let r = -6; r <= 6; r++) {
-                const rune = BABYLON.MeshBuilder.CreateBox("runeStrip_" + r, {
-                    width: 1.6,
-                    height: 0.1,
-                    depth: 4.0
-                }, scene);
-                rune.position = new BABYLON.Vector3(r * 5.0, floorTop3D + 0.02, 0);
-                rune.material = runeMat;
-                this.runes.push(rune);
+            // 3. FLOATING PAPERCUT PARALLAX BACKDROP ($Z = 25..50$)
+            // Floating Calipers & Draft Tools
+            const draftToolMat = new BABYLON.PBRMaterial("draftToolMat", scene);
+            draftToolMat.albedoColor = new BABYLON.Color3(0.95, 0.85, 0.5);
+            draftToolMat.metallic = 0.5;
+            draftToolMat.roughness = 0.3;
+
+            for (let i = 0; i < 4; i++) {
+                const tool = BABYLON.MeshBuilder.CreateTorus(`draftTool_${i}`, { diameter: 3.0 + i * 0.8, thickness: 0.2, tessellation: 32 }, scene);
+                tool.position = new BABYLON.Vector3(-15 + i * 10, floorTop3D + 6 + (i % 2) * 3, 25);
+                tool.rotation.x = Math.PI / 4;
+                tool.rotation.y = i * 0.5;
+                tool.material = draftToolMat;
+                this.backdropMeshes.push(tool);
             }
 
-            // 3. 3D MONOLITH GATE PORTALS
+            // Floating Paper Clouds ($Z = 35$)
+            for (let i = 0; i < 5; i++) {
+                const pCloud = BABYLON.MeshBuilder.CreateSphere(`pCloud_${i}`, { diameterX: 5.5, diameterY: 2.0, diameterZ: 1.5 }, scene);
+                pCloud.position = new BABYLON.Vector3(-20 + i * 12, floorTop3D + 10 + (i % 2) * 2.5, 35);
+                pCloud.material = paperMat;
+                this.backdropMeshes.push(pCloud);
+            }
+
+            // 4. THE 3 GATEWAY PORTALS
             const gateNames = ["About Me", "Projects", "Contact Me"];
-            const startX = screenW * 0.55;
-            const gap = 220;
+            const gateColors = [
+                new BABYLON.Color3(1.0, 0.75, 0.2), // Gold (About)
+                new BABYLON.Color3(0.1, 0.85, 1.0), // Cyan (Projects)
+                new BABYLON.Color3(0.2, 0.95, 0.4)  // Emerald (Contact)
+            ];
 
-            this.gates = [];
+            const startX = screenW * 0.45;
+            const spacing = 180;
+
             for (let i = 0; i < 3; i++) {
-                const gx2D = startX + (i * gap);
-                const pos3D = Engine3D.to3DVec(gx2D, floorTop2D, 0);
+                const gateX2D = startX + i * spacing;
+                const gateY2D = floorTop2D;
+                const pos3D = Engine3D.to3DVec(gateX2D, gateY2D, 0);
 
-                const gateRoot = new BABYLON.TransformNode("introGateRoot_" + i, scene);
+                const gateRoot = new BABYLON.TransformNode(`gateRoot_${i}`, scene);
                 gateRoot.position = pos3D;
 
-                // Left & Right Monolith Columns
-                const pL = BABYLON.MeshBuilder.CreateBox("gatePL_" + i, { width: 0.6, height: 5.5, depth: 0.8 }, scene);
-                pL.position = new BABYLON.Vector3(-1.6, 2.75, 0);
-                pL.material = obsidianMat;
-                pL.parent = gateRoot;
-                Engine3D.addShadowCaster(pL);
+                // Left Pillar
+                const lPillar = BABYLON.MeshBuilder.CreateBox(`lPillar_${i}`, { width: 0.5, height: 4.5, depth: 0.6 }, scene);
+                lPillar.position = new BABYLON.Vector3(-1.4, 2.25, 0);
+                lPillar.material = obsidianMat;
+                lPillar.parent = gateRoot;
+                Engine3D.addShadowCaster(lPillar);
 
-                const pR = BABYLON.MeshBuilder.CreateBox("gatePR_" + i, { width: 0.6, height: 5.5, depth: 0.8 }, scene);
-                pR.position = new BABYLON.Vector3(1.6, 2.75, 0);
-                pR.material = obsidianMat;
-                pR.parent = gateRoot;
-                Engine3D.addShadowCaster(pR);
+                // Right Pillar
+                const rPillar = BABYLON.MeshBuilder.CreateBox(`rPillar_${i}`, { width: 0.5, height: 4.5, depth: 0.6 }, scene);
+                rPillar.position = new BABYLON.Vector3(1.4, 2.25, 0);
+                rPillar.parent = gateRoot;
+                rPillar.material = obsidianMat;
+                Engine3D.addShadowCaster(rPillar);
 
-                // Top Header Arch with Gold Inlay
-                const topArch = BABYLON.MeshBuilder.CreateBox("gateTopArch_" + i, { width: 3.8, height: 0.8, depth: 0.9 }, scene);
-                topArch.position = new BABYLON.Vector3(0, 5.8, 0);
-                topArch.material = obsidianMat;
+                // Arch Top
+                const topArch = BABYLON.MeshBuilder.CreateBox(`topArch_${i}`, { width: 3.3, height: 0.7, depth: 0.7 }, scene);
+                topArch.position = new BABYLON.Vector3(0, 4.6, 0);
                 topArch.parent = gateRoot;
+                topArch.material = obsidianMat;
                 Engine3D.addShadowCaster(topArch);
 
-                const goldTrim = BABYLON.MeshBuilder.CreateBox("gateGoldTrim_" + i, { width: 3.2, height: 0.2, depth: 0.95 }, scene);
-                goldTrim.position = new BABYLON.Vector3(0, 5.4, 0);
-                goldTrim.material = goldMat;
-                goldTrim.parent = gateRoot;
-
-                // Swirling Particle Vortex Core
-                const vortexColors = [
-                    new BABYLON.Color3(0.1, 0.8, 1.0),  // Cyan (About)
-                    new BABYLON.Color3(0.95, 0.7, 0.1), // Gold (Projects)
-                    new BABYLON.Color3(0.1, 0.95, 0.4)  // Emerald (Contact)
-                ];
-
-                const vortexMat = new BABYLON.PBRMaterial("introVortexMat_" + i, scene);
-                vortexMat.albedoColor = vortexColors[i];
-                vortexMat.emissiveColor = vortexColors[i].scale(0.85);
-                vortexMat.alpha = 0.7;
-                vortexMat.metallic = 0.2;
-
-                const vortexPlane = BABYLON.MeshBuilder.CreatePlane("vortexCore_" + i, { width: 2.6, height: 5.0 }, scene);
-                vortexPlane.position = new BABYLON.Vector3(0, 2.5, 0);
-                vortexPlane.material = vortexMat;
+                // Swirling Portal Vortex
+                const vortexPlane = BABYLON.MeshBuilder.CreatePlane(`vortex_${i}`, { width: 2.3, height: 4.2 }, scene);
+                vortexPlane.position = new BABYLON.Vector3(0, 2.2, 0);
                 vortexPlane.parent = gateRoot;
+
+                const vortexMat = new BABYLON.StandardMaterial(`vortexMat_${i}`, scene);
+                vortexMat.diffuseColor = gateColors[i];
+                vortexMat.emissiveColor = gateColors[i].scale(0.8);
+                vortexMat.alpha = 0.75;
+                vortexPlane.material = vortexMat;
+
+                // Floating Gate Icon Widget
+                let iconMesh;
+                if (i === 0) {
+                    // ID Badge
+                    iconMesh = BABYLON.MeshBuilder.CreateBox(`gateIcon_${i}`, { width: 0.9, height: 1.2, depth: 0.1 }, scene);
+                } else if (i === 1) {
+                    // Spinning Geometric Cube
+                    iconMesh = BABYLON.MeshBuilder.CreateBox(`gateIcon_${i}`, { size: 0.7 }, scene);
+                } else {
+                    // Paper Envelope
+                    iconMesh = BABYLON.MeshBuilder.CreateBox(`gateIcon_${i}`, { width: 1.1, height: 0.7, depth: 0.1 }, scene);
+                }
+                iconMesh.position = new BABYLON.Vector3(0, 5.4, 0);
+                iconMesh.parent = gateRoot;
+                iconMesh.material = vortexMat;
 
                 this.gates.push({
                     name: gateNames[i],
                     root: gateRoot,
                     vortex: vortexPlane,
-                    vortexMat: vortexMat
+                    vortexMat: vortexMat,
+                    icon: iconMesh
                 });
 
-                // Attach Rocket Thrusters to "About Me" Troll Gate
+                // Attach Tiptoe Legs & Googly Eyes to the "About Me" Troll Gate (i = 0)
                 if (i === 0) {
                     this.aboutGate3D = gateRoot;
                     this.trollOriginPos = gateRoot.position.clone();
 
-                    const thrusterMat = new BABYLON.PBRMaterial("thrusterMat", scene);
-                    thrusterMat.albedoColor = new BABYLON.Color3(0.2, 0.2, 0.25);
-                    thrusterMat.metallic = 0.95;
+                    // Mechanical Legs
+                    const legMat = new BABYLON.PBRMaterial("trollLegMat", scene);
+                    legMat.albedoColor = new BABYLON.Color3(0.2, 0.2, 0.25);
+                    legMat.metallic = 0.8;
 
-                    this.thrusterFireMat = new BABYLON.StandardMaterial("thrusterFireMat", scene);
-                    this.thrusterFireMat.emissiveColor = new BABYLON.Color3(1.0, 0.5, 0.05);
+                    this.aboutGateLegL = BABYLON.MeshBuilder.CreateBox("aboutLegL", { width: 0.3, height: 0.8, depth: 0.3 }, scene);
+                    this.aboutGateLegL.position = new BABYLON.Vector3(-0.9, 0, 0);
+                    this.aboutGateLegL.parent = gateRoot;
+                    this.aboutGateLegL.material = legMat;
 
-                    // Left Thruster
-                    this.leftThruster = BABYLON.MeshBuilder.CreateCylinder("lThruster", { diameter: 0.4, height: 1.2 }, scene);
-                    this.leftThruster.position = new BABYLON.Vector3(-2.0, 3.0, 0);
-                    this.leftThruster.rotation.z = Math.PI;
-                    this.leftThruster.material = thrusterMat;
-                    this.leftThruster.parent = gateRoot;
+                    this.aboutGateLegR = BABYLON.MeshBuilder.CreateBox("aboutLegR", { width: 0.3, height: 0.8, depth: 0.3 }, scene);
+                    this.aboutGateLegR.position = new BABYLON.Vector3(0.9, 0, 0);
+                    this.aboutGateLegR.parent = gateRoot;
+                    this.aboutGateLegR.material = legMat;
 
-                    const lFlame = BABYLON.MeshBuilder.CreateCylinder("lFlame", { diameterTop: 0.35, diameterBottom: 0, height: 0.8 }, scene);
-                    lFlame.position.y = 0.9;
-                    lFlame.material = this.thrusterFireMat;
-                    lFlame.parent = this.leftThruster;
-                    lFlame.setEnabled(false);
-                    this.leftThruster.flame = lFlame;
+                    // Googly Eyes on Top of the Door
+                    const eyeMat = new BABYLON.StandardMaterial("trollEyeMat", scene);
+                    eyeMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
+                    eyeMat.emissiveColor = new BABYLON.Color3(0.9, 0.9, 0.9);
 
-                    // Right Thruster
-                    this.rightThruster = BABYLON.MeshBuilder.CreateCylinder("rThruster", { diameter: 0.4, height: 1.2 }, scene);
-                    this.rightThruster.position = new BABYLON.Vector3(2.0, 3.0, 0);
-                    this.rightThruster.rotation.z = Math.PI;
-                    this.rightThruster.material = thrusterMat;
-                    this.rightThruster.parent = gateRoot;
+                    this.aboutGateEyeL = BABYLON.MeshBuilder.CreateSphere("aboutEyeL", { diameter: 0.45 }, scene);
+                    this.aboutGateEyeL.position = new BABYLON.Vector3(-0.5, 5.2, 0.35);
+                    this.aboutGateEyeL.parent = gateRoot;
+                    this.aboutGateEyeL.material = eyeMat;
 
-                    const rFlame = BABYLON.MeshBuilder.CreateCylinder("rFlame", { diameterTop: 0.35, diameterBottom: 0, height: 0.8 }, scene);
-                    rFlame.position.y = 0.9;
-                    rFlame.material = this.thrusterFireMat;
-                    rFlame.parent = this.rightThruster;
-                    rFlame.setEnabled(false);
-                    this.rightThruster.flame = rFlame;
+                    this.aboutGateEyeR = BABYLON.MeshBuilder.CreateSphere("aboutEyeR", { diameter: 0.45 }, scene);
+                    this.aboutGateEyeR.position = new BABYLON.Vector3(0.5, 5.2, 0.35);
+                    this.aboutGateEyeR.parent = gateRoot;
+                    this.aboutGateEyeR.material = eyeMat;
                 }
             }
 
-            // 4. VOLUMETRIC 3D STORMCLOUD
-            const cloudMat = new BABYLON.StandardMaterial("introStormCloudMat", scene);
-            cloudMat.diffuseColor = new BABYLON.Color3(0.2, 0.22, 0.28); // Stormy dark grey
-            cloudMat.emissiveColor = new BABYLON.Color3(0.05, 0.05, 0.08);
+            // 5. 3D PROFESSOR NPC (The Quirky Guide)
+            const profX2D = startX - 180;
+            const profPos3D = Engine3D.to3DVec(profX2D, floorTop2D, 0);
 
-            this.cloudMesh = BABYLON.MeshBuilder.CreateSphere("introStormCloud3D", { diameterX: 4.8, diameterY: 1.8, diameterZ: 2.4 }, scene);
-            this.cloudMesh.position = new BABYLON.Vector3(0, floorTop3D + 12, 0);
+            const profRoot = new BABYLON.TransformNode("profRoot3D", scene);
+            profRoot.position = profPos3D;
+
+            const profMat = new BABYLON.PBRMaterial("profBodyMat", scene);
+            profMat.albedoColor = new BABYLON.Color3(0.4, 0.2, 0.5); // Scholar Purple
+            profMat.roughness = 0.6;
+
+            const profBody = BABYLON.MeshBuilder.CreateCylinder("profBody", { diameterTop: 0.8, diameterBottom: 1.1, height: 1.4 }, scene);
+            profBody.position.y = 0.7;
+            profBody.parent = profRoot;
+            profBody.material = profMat;
+
+            const profHead = BABYLON.MeshBuilder.CreateSphere("profHead", { diameter: 0.85 }, scene);
+            profHead.position.y = 1.7;
+            profHead.parent = profRoot;
+            profHead.material = profMat;
+
+            // Round Spectacles
+            const glassMat = new BABYLON.StandardMaterial("profGlassMat", scene);
+            glassMat.diffuseColor = new BABYLON.Color3(1.0, 0.85, 0.2); // Gold frame
+            const glasses = BABYLON.MeshBuilder.CreateTorus("profGlasses", { diameter: 0.4, thickness: 0.05 }, scene);
+            glasses.position = new BABYLON.Vector3(0, 1.75, 0.4);
+            glasses.rotation.x = Math.PI / 2;
+            glasses.parent = profRoot;
+            glasses.material = glassMat;
+
+            this.professor3D = profRoot;
+            this.backdropMeshes.push(profBody, profHead, glasses);
+
+            // 6. GRUMPY 3D THUNDERCLOUD & LIGHTNING TRAP
+            const cloudMat = new BABYLON.StandardMaterial("stormCloudMat", scene);
+            cloudMat.diffuseColor = new BABYLON.Color3(0.35, 0.35, 0.42);
+            cloudMat.emissiveColor = new BABYLON.Color3(0.08, 0.08, 0.12);
+
+            this.cloudMesh = BABYLON.MeshBuilder.CreateSphere("stormCloud3D", { diameterX: 4.8, diameterY: 1.8, diameterZ: 2.2 }, scene);
+            this.cloudMesh.position = new BABYLON.Vector3(0, floorTop3D + 8.5, 0);
             this.cloudMesh.material = cloudMat;
             Engine3D.addShadowCaster(this.cloudMesh);
 
-            this.cloudLight = new BABYLON.PointLight("introCloudInternalLight", new BABYLON.Vector3(0, floorTop3D + 12, -0.5), scene);
+            // Angry Eyebrows
+            const browMat = new BABYLON.StandardMaterial("browMat", scene);
+            browMat.diffuseColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+            this.cloudEyebrows = BABYLON.MeshBuilder.CreateBox("cloudBrows", { width: 1.2, height: 0.2, depth: 0.3 }, scene);
+            this.cloudEyebrows.position = new BABYLON.Vector3(0, floorTop3D + 9.1, 1.0);
+            this.cloudEyebrows.rotation.z = 0.15;
+            this.cloudEyebrows.material = browMat;
+
+            this.cloudLight = new BABYLON.PointLight("cloudInternalLight", new BABYLON.Vector3(0, floorTop3D + 8.5, -0.5), scene);
             this.cloudLight.intensity = 0;
             this.cloudLight.diffuse = new BABYLON.Color3(1.0, 0.85, 0.2);
 
             this.isLoaded = true;
-            console.log("3D Intro Level Environment & Monoliths Constructed (Remastered).");
+            console.log("3D Intro Level Remaster Environment & Animations Constructed.");
         },
 
-        update: function (scene, guy) {
-            if (!this.isLoaded || !scene) return;
+        update(scene, guy) {
+            if (!this.isLoaded) return;
 
-            const t = performance.now() * 0.001;
+            const t = (typeof time === "function") ? time() : performance.now() * 0.001;
 
-            // 1. Swirling Portal Vortex Energy
+            // 1. Swirl Gate Icons & Vortexes
             for (let i = 0; i < this.gates.length; i++) {
                 const g = this.gates[i];
-                if (g.vortexMat) {
-                    g.vortexMat.alpha = 0.6 + Math.sin(t * 4.0 + i * 2.0) * 0.15;
+                g.vortexMat.alpha = 0.65 + Math.sin(t * 5 + i * 2) * 0.15;
+                if (g.icon) {
+                    g.icon.rotation.y += 0.02;
+                    g.icon.position.y = 5.4 + Math.sin(t * 3 + i) * 0.1;
                 }
             }
 
-            // 2. Synchronize "About Me" Troll Gate with Kaboom 2D Gate
-            if (this.aboutGate3D && typeof get === "function") {
-                const gates2D = get("gate");
-                const about2D = gates2D.find(g => g.gateName === "About Me");
-                if (about2D && about2D.pos) {
-                    const targetX = Engine3D.to3DX(about2D.pos.x);
-                    const targetY = Engine3D.to3DY(about2D.pos.y);
-
-                    this.aboutGate3D.position.x = BABYLON.Scalar.Lerp(this.aboutGate3D.position.x, targetX, 0.2);
-                    this.aboutGate3D.position.y = BABYLON.Scalar.Lerp(this.aboutGate3D.position.y, targetY, 0.2);
-
-                    // If vaulted into the air, ignite rocket thrusters!
-                    const isAirborne = (targetY - Engine3D.to3DY(window.innerHeight - window.innerHeight * 0.2)) > 1.0;
-                    if (this.leftThruster && this.leftThruster.flame) this.leftThruster.flame.setEnabled(isAirborne);
-                    if (this.rightThruster && this.rightThruster.flame) this.rightThruster.flame.setEnabled(isAirborne);
-                }
+            // 2. Professor subtle idle wobble
+            if (this.professor3D) {
+                this.professor3D.rotation.y = Math.sin(t * 1.5) * 0.15;
             }
 
-            // 3. Lightning Cloud Patrol Tracking
-            if (this.cloudMesh && typeof get === "function") {
-                const clouds2D = get("lightning_cloud");
-                if (clouds2D && clouds2D.length > 0) {
-                    const c2D = clouds2D[0];
-                    this.cloudMesh.position.x = Engine3D.to3DX(c2D.pos.x);
-                    this.cloudMesh.position.y = Engine3D.to3DY(c2D.pos.y);
-                    if (this.cloudLight) {
-                        this.cloudLight.position.x = this.cloudMesh.position.x;
-                        this.cloudLight.position.y = this.cloudMesh.position.y;
-                        this.cloudLight.intensity = (c2D.state === "charge" || c2D.state === "strike") ? 3.0 : 0.0;
+            // 3. Synchronize "About Me" Rocket Troll Gate with 2D Troll State
+            const is2DTrollActive = (typeof get === "function" && get("gate").some(g => g.gateName === "About Me" && g.trollTriggered));
+
+            if (is2DTrollActive && !this.isTrollVaulting && this.trollVaultProgress < 1.0) {
+                this.isTrollVaulting = true;
+            }
+
+            if (this.isTrollVaulting && this.aboutGate3D) {
+                this.trollVaultProgress = Math.min(1.0, this.trollVaultProgress + 0.02);
+                const p = this.trollVaultProgress;
+
+                // Tiptoe Leg Flutter
+                if (this.aboutGateLegL && this.aboutGateLegR) {
+                    this.aboutGateLegL.rotation.x = Math.sin(t * 25) * 0.8;
+                    this.aboutGateLegR.rotation.x = -Math.sin(t * 25) * 0.8;
+                }
+
+                // Parabolic 3D vault arc: shifts to the right, rises up in Y, and recedes into Z depth
+                const vaultX = this.trollOriginPos.x + p * 16.0;
+                const vaultY = this.trollOriginPos.y + Math.sin(p * Math.PI) * 9.0;
+                const vaultZ = this.trollOriginPos.z + Math.sin(p * Math.PI) * 5.0;
+
+                this.aboutGate3D.position.x = vaultX;
+                this.aboutGate3D.position.y = vaultY;
+                this.aboutGate3D.position.z = vaultZ;
+                this.aboutGate3D.rotation.z = -p * Math.PI * 0.5;
+            }
+
+            // 4. Synchronize Stormcloud position with 2D Trap Cloud
+            if (typeof get === "function") {
+                const trap2D = get("trap_cloud")[0];
+                if (trap2D && this.cloudMesh) {
+                    const cPos3D = Engine3D.to3DVec(trap2D.pos.x + 40, trap2D.pos.y + 13, 0);
+                    this.cloudMesh.position.x = cPos3D.x;
+                    this.cloudMesh.position.y = cPos3D.y;
+                    if (this.cloudEyebrows) {
+                        this.cloudEyebrows.position.x = cPos3D.x;
+                        this.cloudEyebrows.position.y = cPos3D.y + 0.6;
+                    }
+                    this.cloudLight.position.x = cPos3D.x;
+                    this.cloudLight.position.y = cPos3D.y;
+
+                    // Flashing charge glow
+                    if (trap2D.state === "charge") {
+                        this.cloudLight.intensity = (Math.sin(t * 25) > 0) ? 3.0 : 0.3;
+                        this.cloudLight.diffuse = new BABYLON.Color3(1.0, 0.2, 0.2); // Flashing red
+                    } else {
+                        this.cloudLight.intensity = 0;
                     }
                 }
             }
         },
 
-        cleanup: function () {
-            if (this.groundMesh) this.groundMesh.dispose();
-            this.runes.forEach(r => r.dispose());
-            this.runes = [];
-            this.gates.forEach(g => {
+        cleanup() {
+            if (this.groundMesh) {
+                this.groundMesh.dispose();
+                this.groundMesh = null;
+            }
+            for (let g of this.gates) {
                 if (g.root) g.root.dispose();
-            });
+            }
             this.gates = [];
-            if (this.cloudMesh) this.cloudMesh.dispose();
-            if (this.cloudLight) this.cloudLight.dispose();
-            if (this.lightningMesh) this.lightningMesh.dispose();
+            this.backdropMeshes.forEach(m => {
+                if (m) m.dispose();
+            });
+            this.backdropMeshes = [];
+            if (this.cloudMesh) {
+                this.cloudMesh.dispose();
+                this.cloudMesh = null;
+            }
+            if (this.cloudEyebrows) {
+                this.cloudEyebrows.dispose();
+                this.cloudEyebrows = null;
+            }
+            if (this.cloudLight) {
+                this.cloudLight.dispose();
+                this.cloudLight = null;
+            }
+            if (this.professor3D) {
+                this.professor3D.dispose();
+                this.professor3D = null;
+            }
+            this.isTrollVaulting = false;
+            this.trollVaultProgress = 0;
             this.isLoaded = false;
         }
     };

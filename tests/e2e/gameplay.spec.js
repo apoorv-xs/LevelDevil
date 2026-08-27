@@ -389,8 +389,10 @@ test.describe("Death & Respawn (Level Devil Core Loop)", () => {
     });
 
     // Scene should reload (go("about") is called after death)
-    // Wait for player to respawn
-    await page.waitForTimeout(1500);
+    // Wait for player to respawn deterministically
+    await page.waitForFunction(() => {
+      return window.get ? window.get("guy").length > 0 : false;
+    }, { timeout: 5000 });
 
     const existsAfter = await page.evaluate(() => {
       return window.get ? window.get("guy").length > 0 : false;

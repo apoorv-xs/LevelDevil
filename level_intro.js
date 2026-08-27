@@ -1,15 +1,22 @@
 scene("intro", () => {
+    // 2D Background (Transparent to expose Babylon 3D Layer)
+    add([
+        rect(width() * 4, height() * 4),
+        pos(-width() * 1.5, -height() * 1.5),
+        opacity(0),
+        z(0)
+    ]);
+
     // Colors
     const C_FLOOR = rgb(176, 113, 29); // #B0711D
     const C_TEXT = rgb(44, 44, 44); // #2C2C2C
 
-    // BLUE FLOOR (Invisible Physics Collider - 3D Mesh renders in Babylon)
+    // 2D PHYSICS FLOOR (Transparent collider over 3D PBR Terracotta platform)
     const floorHeight = height() * 0.2;
     add([
         rect(width() * 4, floorHeight + height() * 2),
         pos(0, height() - floorHeight),
-        color(C_FLOOR),
-        opacity(0), // Pure physics collider
+        opacity(0),
         z(1),
         area(),
         body({ isStatic: true }),
@@ -185,6 +192,12 @@ scene("intro", () => {
             color(C_TEXT),
             z(10)
         ]);
+
+        // VISUALS: 3D Monolith Portals render underneath, 2D rects are transparent colliders
+        gate.add([rect(60, 50), pos(0, 0), anchor("bot"), opacity(0), z(6)]);
+        gate.add([rect(60, 10), pos(0, -50), anchor("bot"), opacity(0), z(6)]);
+        gate.add([rect(50, 6), pos(0, -60), anchor("bot"), opacity(0), z(6)]);
+        gate.add([rect(30, 4), pos(0, -66), anchor("bot"), opacity(0), z(6)]);
 
         // Interaction Hint
         gate.add([

@@ -31,8 +31,8 @@
 
             // 2. Create Main Scene
             this.scene = new BABYLON.Scene(this.engine);
-            // Iconic Level Devil Warm Amber Horizon
-            this.scene.clearColor = new BABYLON.Color4(0.914, 0.706, 0.353, 1.0); // #E9B45A
+            // Warm retro Amber/Gold atmosphere
+            this.scene.clearColor = new BABYLON.Color4(0.91, 0.71, 0.35, 1.0);
 
             // 3. Setup Camera (2.5D Viewport)
             this.camera = new BABYLON.UniversalCamera("camera3D", new BABYLON.Vector3(0, 0, -25), this.scene);
@@ -41,15 +41,16 @@
             this.camera.fov = 0.85; // ~50 degrees FOV for cinematic depth
 
             // 4. Setup Lighting
-            // Ambient Soft Fill Light (Warm Sunlight Bounce)
+            // Ambient Warm Fill Light
             this.ambientLight = new BABYLON.HemisphericLight("ambientLight", new BABYLON.Vector3(0, 1, -0.5), this.scene);
-            this.ambientLight.intensity = 0.65;
-            this.ambientLight.groundColor = new BABYLON.Color3(0.4, 0.25, 0.1);
+            this.ambientLight.intensity = 0.85;
+            this.ambientLight.diffuse = new BABYLON.Color3(1.0, 0.92, 0.8);
+            this.ambientLight.groundColor = new BABYLON.Color3(0.65, 0.45, 0.2);
 
             // Directional Sun Light (Casting Soft Shadows on Z-Plane)
-            this.sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(0.5, -1, 1.2), this.scene);
+            this.sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(0.4, -1, 0.8), this.scene);
             this.sunLight.position = new BABYLON.Vector3(-10, 20, -15);
-            this.sunLight.intensity = 1.8;
+            this.sunLight.intensity = 1.4;
 
             // Shadow Generator (Cascaded Soft Filtered Shadows)
             this.shadowGenerator = new BABYLON.ShadowGenerator(1024, this.sunLight);
