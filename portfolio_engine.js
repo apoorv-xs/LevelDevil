@@ -21,12 +21,12 @@ let controlMode = "ambient"; // 'ambient' or 'manual'
 const player = add([
     pos(window.innerWidth / 2, 0),
     rect(20, 40),
+    color(0, 0, 0, 0), // Fully transparent color instead of opacity(0) so children remain visible
     area(),
     body(),
     anchor("bot"),
     rotate(0), 
     scale(1),  
-    opacity(0), // Hitbox is invisible
     z(20),
     "player"
 ]);
