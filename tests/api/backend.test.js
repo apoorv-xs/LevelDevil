@@ -34,7 +34,10 @@ describe("managed API", () => {
 
   it("returns role-specific workspace data", async () => {
     const result = await workspace(req({}, "mock:owner:owner"), context);
-    expect(JSON.parse(result.body).data).toMatchObject({ role: "owner", applications: [] });
+    expect(JSON.parse(result.body).data).toMatchObject({
+      user: { uid: "owner", email: "owner@mock.local", displayName: "owner", role: "owner" },
+      data: { applications: [] },
+    });
   });
 
   it("rejects mock bearer tokens when the test-only flag is disabled", async () => {

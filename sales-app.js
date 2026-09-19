@@ -43,10 +43,17 @@ async function loadWorkspace() {
   try {
     const payload = await request("/workspace");
     const workspacePayload = payload.data || payload;
+    const user = workspacePayload.user || payload.user || {};
+    const records = workspacePayload.data || workspacePayload;
+    const identity = user.displayName || user.email || user.uid || "authenticated user";
+    const role = user.role || workspacePayload.role || "authorized user";
     authPlaceholder.hidden = true;
     workspace.hidden = false;
-    workspaceRole.textContent = `Signed in as ${workspacePayload.role}`;
-    workspaceData.textContent = JSON.stringify(workspacePayload, null, 2);
+    workspaceRole.textContent = `Signed in as ${identity} (${role})`;
+    const recordEntries = Object.entries(records).filter(([, value]) => Array.isArray(value));
+    workspaceData.textContent = recordEntries.length && recordEntries.some(([, value]) => value.length)
+      ? JSON.stringify(records, null, 2)
+      : "No workspace records yet.";
     setStatus("Workspace loaded.");
   } catch (error) {
     authPlaceholder.hidden = false;

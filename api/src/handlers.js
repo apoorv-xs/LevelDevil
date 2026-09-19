@@ -10,10 +10,18 @@ export const redeem = async (req) => { const user = await guard(req, ["sales_rep
 export const salesLeads = async (req) => { const user = await guard(req, ["sales_rep"]); return ok(service.listAssignedLeads(user.uid)); };
 export const workspace = async (req) => {
   const user = await guard(req, ["owner", "sales_rep"]);
-  const data = user.role === "owner"
+  const records = user.role === "owner"
     ? { applications: service.listApplications() }
     : { leads: service.listAssignedLeads(user.uid) };
-  return ok({ role: user.role, ...data });
+  return ok({
+    user: {
+      uid: user.uid,
+      email: user.email || "",
+      displayName: user.displayName || user.email || user.uid,
+      role: user.role,
+    },
+    data: records,
+  });
 };
 export const ownerLeadAssignment = async (req) => { const user = await guard(req, ["owner"]); const body = validate(parseBody(req), { leadId: { required: true, type: "string" }, salesRepId: { required: true, type: "string" } }); return ok(service.assignLead(body.leadId, body.salesRepId, user.uid), 201); };
 export const ownerLead = async (req) => { const user = await guard(req, ["owner"]); const body = validate(parseBody(req), { name: { required: true, type: "string" }, email: { type: "string" }, source: { type: "string" } }); return ok(service.createLead(body, user.uid), 201); };

@@ -63,14 +63,18 @@ test.describe("Sales shell acquisition UX", () => {
       await route.fulfill({
         status: 200,
         contentType: "application/json",
-        body: JSON.stringify({ data: { role: "owner", applications: [] } }),
+        body: JSON.stringify({ data: {
+          user: { uid: "owner-1", email: "owner@example.com", displayName: "Apoorv", role: "owner" },
+          data: { applications: [] },
+        } }),
       });
     });
     await page.goto("/sales", { waitUntil: "networkidle" });
     await page.getByRole("button", { name: "Sign in to workspace" }).click();
     await expect(page.locator("#workspace")).toBeVisible();
     await expect(page.locator("#auth-placeholder")).toBeHidden();
-    await expect(page.locator("#workspace-role")).toHaveText("Signed in as owner");
+    await expect(page.locator("#workspace-role")).toHaveText("Signed in as Apoorv (owner)");
+    await expect(page.locator("#workspace-data")).toHaveText("No workspace records yet.");
   });
 
   test("resumes a redirect session and surfaces popup cancellation", async ({ page }) => {
@@ -84,11 +88,14 @@ test.describe("Sales shell acquisition UX", () => {
       await route.fulfill({
         status: 200,
         contentType: "application/json",
-        body: JSON.stringify({ data: { role: "sales_rep", leads: [] } }),
+        body: JSON.stringify({ data: {
+          user: { uid: "rep-1", email: "rep@example.com", displayName: "Sales Rep", role: "sales_rep" },
+          data: { leads: [] },
+        } }),
       });
     });
     await page.goto("/sales", { waitUntil: "networkidle" });
-    await expect(page.locator("#workspace-role")).toHaveText("Signed in as sales_rep");
+    await expect(page.locator("#workspace-role")).toHaveText("Signed in as Sales Rep (sales_rep)");
     const cancelPage = await page.context().newPage();
     await cancelPage.addInitScript(() => {
       window.SALES_PLATFORM_AUTH = {

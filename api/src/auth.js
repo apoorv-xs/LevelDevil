@@ -11,9 +11,14 @@ export async function authenticate(req) {
     }
     const [uid, role = "owner"] = token.slice(5).split(":");
     if (!uid) throw unauthorized("Invalid token");
-    return { uid, role, email: `${uid}@mock.local` };
+    return { uid, role, email: `${uid}@mock.local`, displayName: uid };
   }
-  return verifyFirebaseToken(token);
+  const user = await verifyFirebaseToken(token);
+  return {
+    ...user,
+    role: user.role || user.claims?.role || user.customClaims?.role,
+    displayName: user.displayName || user.name || user.email,
+  };
 }
 export function requireRole(...roles) {
   return (user) => { if (!roles.includes(user.role)) throw forbidden(); return user; };

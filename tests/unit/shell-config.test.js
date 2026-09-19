@@ -47,6 +47,8 @@ describe("Unified application shell", () => {
     expect(app).toContain('submitPublicForm(event, "/inquiry"');
     expect(app).toContain('submitPublicForm(event, "/application"');
     expect(app).toContain("payload.error?.message");
+    expect(app).toContain("No workspace records yet.");
+    expect(app).toContain("displayName");
   });
 
   it("normalizes Firebase user credentials for workspace sign-in", () => {
