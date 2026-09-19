@@ -20,11 +20,8 @@ let controlMode = "idle"; // 'idle', 'ambient' or 'manual'
 // --- THE PLAYER (Procedural Graphics) ---
 const player = add([
     pos(window.innerWidth / 2, 0),
-    rect(20, 40),
-    opacity(0), // Hitbox is invisible
-    area(),
+    area({ shape: new Rect(vec2(-10, -40), 20, 40) }), // Invisible hitbox, origin at bottom-center
     body(),
-    anchor("bot"),
     rotate(0), 
     scale(1),  
     z(20),
