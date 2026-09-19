@@ -15,6 +15,17 @@ test.describe("Sales shell acquisition UX", () => {
     }
   });
 
+  test("keeps navigation out of the form content while scrolling", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto("/sales", { waitUntil: "networkidle" });
+    const nav = page.locator(".site-nav");
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await expect(nav).toHaveCSS("position", "absolute");
+    const navBox = await nav.boundingBox();
+    const formBox = await page.locator("#application-form").boundingBox();
+    expect(navBox.y + navBox.height).toBeLessThanOrEqual(formBox.y);
+  });
+
   test("keeps keyboard focus order on navigation and action rail", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/sales", { waitUntil: "networkidle" });
