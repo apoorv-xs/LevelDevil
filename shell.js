@@ -29,7 +29,6 @@ function loadScript(src) {
 
 async function loadPortfolio() {
   for (const script of portfolioScripts) await loadScript(script);
-  window.go("intro");
   window.showUIButtons?.();
 }
 

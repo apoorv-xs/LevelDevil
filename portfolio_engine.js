@@ -14,22 +14,46 @@ const GRAVITY = 1600;
 
 setGravity(GRAVITY);
 
-// Assets (Using placeholders or simple rects since we don't have the original sprites handy)
-// Ideally you load your actual sprites here.
-loadSprite("devil", "favicon.png"); // using favicon temporarily as a sprite
-
 // State
 let controlMode = "ambient"; // 'ambient' or 'manual'
 
-// The Player
+// --- THE PLAYER (Procedural Graphics) ---
 const player = add([
-    rect(32, 32),
-    color(208, 90, 58), // Devil Red
     pos(window.innerWidth / 2, 0),
+    rect(20, 40),
     area(),
     body(),
+    anchor("bot"),
+    rotate(0), 
+    scale(1),  
+    opacity(0), // Hitbox is invisible
+    z(20),
     "player"
 ]);
+
+const shadow = player.add([ rect(16, 6), anchor("center"), pos(0, 0), color(0, 0, 0), opacity(0.3), z(-1) ]);
+const skin = color(44, 44, 44);
+const torso = player.add([ rect(16, 20), pos(0, -14), anchor("bot"), skin ]);
+const head = player.add([ rect(12, 12), pos(0, -34), anchor("bot"), skin ]);
+const leftEye = head.add([ rect(2, 2), pos(-3, -7), color(255, 255, 255), anchor("center"), z(1) ]);
+const rightEye = head.add([ rect(2, 2), pos(3, -7), color(255, 255, 255), anchor("center"), z(1) ]);
+loop(2.5, () => {
+    leftEye.hidden = true; rightEye.hidden = true;
+    wait(0.12, () => { leftEye.hidden = false; rightEye.hidden = false; });
+});
+const lArm = player.add([ rect(6, 16), pos(-6, -30), anchor("top"), skin ]);
+const rArm = player.add([ rect(6, 16), pos(6, -30), anchor("top"), skin ]);
+const lLeg = player.add([ rect(6, 18), pos(-4, -18), anchor("top"), skin ]);
+const rLeg = player.add([ rect(6, 18), pos(4, -18), anchor("top"), skin ]);
+
+player.facingLeft = false;
+
+// Squash and Stretch on land
+player.onGround(() => {
+    player.scale = vec2(1.2, 0.8);
+    tween(player.scale, vec2(1, 1), 0.2, (val) => player.scale = val, easings.easeOutElastic);
+});
+
 
 // Track DOM elements and their Kaboom bodies
 const domBodies = new Map();
@@ -45,8 +69,10 @@ function syncDOM() {
         const absY = rectPos.top + scrollY;
         const absX = rectPos.left;
         
+        // Offset for top-left anchor vs DOM bounding client rect
+        // Kaboom rect anchor is top-left by default.
+        
         if (!domBodies.has(el)) {
-            // Create new body
             const trapType = el.getAttribute("data-trap");
             
             const kBody = add([
@@ -54,13 +80,12 @@ function syncDOM() {
                 pos(absX, absY),
                 area(),
                 body({ isStatic: true }),
-                opacity(0), // Invisible, purely for collision
+                opacity(0), // Invisible
                 "platform",
                 { trap: trapType, domElement: el }
             ]);
             domBodies.set(el, kBody);
         } else {
-            // Update existing body
             const kBody = domBodies.get(el);
             kBody.pos.x = absX;
             kBody.pos.y = absY;
@@ -79,7 +104,6 @@ const resizeObserver = new ResizeObserver(() => {
 document.querySelectorAll('[data-kaboom-body="true"]').forEach(el => {
     resizeObserver.observe(el);
 });
-// Also observe body for overall layout shifts
 resizeObserver.observe(document.body);
 
 
@@ -88,7 +112,7 @@ onUpdate(() => {
     // Lock camera to viewport scroll
     camPos(window.innerWidth / 2, window.scrollY + window.innerHeight / 2);
     
-    // Respawn if player falls out of viewport bounds (too far down or stuck above)
+    // Respawn if player falls out of viewport bounds
     const viewTop = window.scrollY;
     const viewBottom = window.scrollY + window.innerHeight;
     
@@ -102,7 +126,6 @@ onUpdate(() => {
 
 // --- HYBRID CONTROLS ---
 
-// Switch to manual mode on key press
 onKeyDown(() => {
     if (controlMode !== "manual") {
         controlMode = "manual";
@@ -110,86 +133,119 @@ onKeyDown(() => {
     }
 });
 
+function jump() {
+    if(player.isGrounded()) {
+        player.jump(JUMP_FORCE);
+        player.scale = vec2(0.8, 1.2);
+        tween(player.scale, vec2(1, 1), 0.2, (val) => player.scale = val, easings.easeOutQuad);
+    }
+}
+
+let isMovingThisFrame = false;
+
 // Manual Controls
 onKeyDown("left", () => {
-    if(controlMode === "manual") player.move(-SPEED, 0);
+    if(controlMode === "manual") { player.move(-SPEED, 0); player.facingLeft = true; isMovingThisFrame = true; }
 });
 onKeyDown("a", () => {
-    if(controlMode === "manual") player.move(-SPEED, 0);
+    if(controlMode === "manual") { player.move(-SPEED, 0); player.facingLeft = true; isMovingThisFrame = true; }
 });
 onKeyDown("right", () => {
-    if(controlMode === "manual") player.move(SPEED, 0);
+    if(controlMode === "manual") { player.move(SPEED, 0); player.facingLeft = false; isMovingThisFrame = true; }
 });
 onKeyDown("d", () => {
-    if(controlMode === "manual") player.move(SPEED, 0);
+    if(controlMode === "manual") { player.move(SPEED, 0); player.facingLeft = false; isMovingThisFrame = true; }
 });
-onKeyPress("space", () => {
-    if(controlMode === "manual" && player.isGrounded()) player.jump(JUMP_FORCE);
-});
-onKeyPress("w", () => {
-    if(controlMode === "manual" && player.isGrounded()) player.jump(JUMP_FORCE);
-});
-onKeyPress("up", () => {
-    if(controlMode === "manual" && player.isGrounded()) player.jump(JUMP_FORCE);
-});
+onKeyPress("space", () => { if(controlMode === "manual") jump(); });
+onKeyPress("w", () => { if(controlMode === "manual") jump(); });
+onKeyPress("up", () => { if(controlMode === "manual") jump(); });
 
 // Ambient Controls (Follow Cursor)
 onUpdate(() => {
     if (controlMode === "ambient") {
-        // Find cursor in world space
         const mPos = toWorld(mousePos());
         
-        // Move towards cursor X
         if (Math.abs(player.pos.x - mPos.x) > 20) {
             const dir = Math.sign(mPos.x - player.pos.x);
             player.move(dir * SPEED * 0.8, 0);
+            player.facingLeft = dir < 0;
+            isMovingThisFrame = true;
         }
         
-        // Auto jump logic: If stuck against a wall or approaching a gap, jump!
         if (player.isGrounded() && mPos.y < player.pos.y - 100) {
-            // Cursor is significantly above us, try jumping
-            if (chance(0.02)) player.jump(JUMP_FORCE);
+            if (chance(0.02)) jump();
         }
     }
+
+    // -- ANIMATION UPDATES --
+    if (!player.isGrounded()) {
+        // Jump Pose
+        lLeg.angle = 45;
+        rLeg.angle = -45;
+        lArm.angle = 135;
+        rArm.angle = -135;
+    } else if (isMovingThisFrame) {
+        // Run Cycle
+        const t = time() * 15;
+        lLeg.angle = Math.sin(t) * 45;
+        rLeg.angle = Math.sin(t + Math.PI) * 45;
+        lArm.angle = Math.sin(t + Math.PI) * 45;
+        rArm.angle = Math.sin(t) * 45;
+    } else {
+        // Idle
+        lLeg.angle = 0;
+        rLeg.angle = 0;
+        lArm.angle = Math.sin(time() * 2) * 5;
+        rArm.angle = -Math.sin(time() * 2) * 5;
+        head.pos.y = -34 + Math.sin(time() * 5) * 1;
+    }
+
+    // Shadow
+    if (!player.isGrounded()) {
+        shadow.scale = vec2(0.6, 0.6);
+        shadow.opacity = 0.15;
+    } else {
+        shadow.scale = vec2(1, 1);
+        shadow.opacity = 0.3;
+    }
+
+    // Direction flip
+    const currentScaleX = Math.abs(player.scale.x);
+    player.scale.x = player.facingLeft ? -currentScaleX : currentScaleX;
+    
+    isMovingThisFrame = false; // reset for next frame
 });
 
 // --- MOBILE CONTROLS ---
 document.getElementById("btn-left").addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    controlMode = "manual";
-    player.move(-SPEED, 0);
+    e.preventDefault(); controlMode = "manual";
+    player.move(-SPEED, 0); player.facingLeft = true;
 });
 document.getElementById("btn-right").addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    controlMode = "manual";
-    player.move(SPEED, 0);
+    e.preventDefault(); controlMode = "manual";
+    player.move(SPEED, 0); player.facingLeft = false;
 });
 document.getElementById("btn-jump").addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    controlMode = "manual";
-    if (player.isGrounded()) player.jump(JUMP_FORCE);
+    e.preventDefault(); controlMode = "manual";
+    jump();
 });
-
 
 // --- TRAPS ---
 player.onCollide("platform", (plat) => {
     if (plat.trap === "drop") {
-        // Shake the DOM element to warn
         plat.domElement.style.transition = "transform 0.1s";
         plat.domElement.style.transform = "translateX(5px)";
         setTimeout(() => plat.domElement.style.transform = "translateX(-5px)", 50);
         setTimeout(() => plat.domElement.style.transform = "translateX(0)", 100);
         
-        // Drop after 0.5s
         setTimeout(() => {
-            plat.isStatic = false; // falls via gravity
+            plat.isStatic = false; 
             plat.domElement.style.transition = "transform 1s ease-in";
-            plat.domElement.style.transform = "translateY(1000px)"; // Visual drop
+            plat.domElement.style.transform = "translateY(1000px)"; 
         }, 500);
     }
     
     if (plat.trap === "spikes") {
-        // Spawn spikes
         const spikes = add([
             rect(plat.width, 10),
             color(255, 0, 0),
@@ -197,12 +253,11 @@ player.onCollide("platform", (plat) => {
             area(),
             "spike"
         ]);
-        plat.domElement.style.borderTop = "5px solid red"; // Visual indicator
+        plat.domElement.style.borderTop = "5px solid var(--danger)"; 
     }
 });
 
 player.onCollide("spike", () => {
-    // Death
     shake(10);
     player.pos = vec2(window.innerWidth / 2, window.scrollY + 50);
     player.vel.y = 0;

@@ -8,86 +8,84 @@
     <title>Apoorv A S | Portfolio</title>
     
     <link rel="icon" type="image/png" href="favicon.png">
+    
+    <!-- Use the existing styles from the unified sales shell -->
     <link rel="stylesheet" href="shell.css">
+    <link rel="stylesheet" href="sales.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Courier+Prime&display=swap');
-
-        :root {
-            --devil-red: #D05A3A;
-            --devil-dark: #5A1C12;
-            --bg-color: #0d0d0d;
-            --text-color: #fce566;
-            --text-muted: #aaaaaa;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Courier Prime', monospace;
-            overflow-x: hidden;
-            /* Allow vertical scrolling */
-        }
-
-        /* Standard Portfolio Sections */
-        section {
-            min-height: 100vh;
-            padding: 100px 20px;
-            max-width: 800px;
+        /* Portfolio Specific Layouts on top of sales.css */
+        
+        main.portfolio-shell {
+            max-width: 900px;
             margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
         }
 
-        h1, h2, h3 {
-            font-family: 'Press Start 2P', monospace;
-            color: var(--devil-red);
-            text-shadow: 3px 3px var(--devil-dark);
+        .hero-section {
+            padding: 15vh 0 10vh 0;
+            border-bottom: 2px dashed rgba(23, 18, 15, 0.2);
+        }
+
+        .hero-section h1 {
+            font-family: "Press Start 2P", monospace;
+            font-size: 4rem;
+            color: var(--ink);
+            text-transform: uppercase;
+            text-shadow: 4px 4px var(--white), 6px 6px var(--ink);
+            margin: 0 0 1rem 0;
+        }
+
+        .hero-section p.subtitle {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 2px;
             margin-bottom: 2rem;
-            line-height: 1.5;
         }
 
-        h1 { font-size: 3rem; }
-        h2 { font-size: 2rem; }
-
-        p {
-            font-size: 1.2rem;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-            color: #fff;
+        .portfolio-card {
+            background: var(--white);
+            border: 4px solid var(--ink);
+            box-shadow: 8px 8px 0 var(--ink);
+            padding: 2rem;
+            margin-bottom: 3rem;
+            position: relative;
         }
 
-        /* Project Cards */
+        .portfolio-card h2 {
+            font-family: "Press Start 2P", monospace;
+            font-size: 1.5rem;
+            margin-top: 0;
+            color: var(--ink);
+        }
+        
         .projects-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 2rem;
+            margin-top: 2rem;
         }
 
-        .project-card {
-            background-color: #1a1a1a;
-            border: 4px solid var(--devil-dark);
-            padding: 2rem;
+        .project-item {
+            background: var(--amber-light);
+            border: 4px solid var(--ink);
+            padding: 1.5rem;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.1s, box-shadow 0.1s;
         }
 
-        .project-card:hover {
-            border-color: var(--devil-red);
-            transform: translateY(-5px);
+        .project-item:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: 6px 6px 0 var(--purple);
         }
 
-        .project-card h3 {
-            margin-top: 0;
-            font-size: 1.2rem;
-            color: var(--text-color);
-        }
-
-        .project-card p {
+        .project-item h3 {
+            font-family: "Press Start 2P", monospace;
             font-size: 1rem;
-            margin-bottom: 0;
+            margin-top: 0;
         }
 
         /* --- CANVAS OVERLAY --- */
@@ -121,73 +119,80 @@
         }
 
         .btn-dir {
-            background: rgba(208, 90, 58, 0.5);
-            border: 2px solid var(--text-color);
-            color: #fff;
+            background: var(--purple);
+            border: 4px solid var(--ink);
+            color: var(--white);
             padding: 15px 20px;
             font-family: 'Press Start 2P';
-            border-radius: 8px;
             user-select: none;
             touch-action: manipulation;
+            box-shadow: 4px 4px 0 var(--ink);
+        }
+
+        .btn-dir:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 var(--ink);
         }
 
         @media (max-width: 768px) {
             #mobile-controls {
                 display: flex;
             }
-            h1 { font-size: 2rem; }
-            h2 { font-size: 1.5rem; }
+            .hero-section h1 { font-size: 2.5rem; }
+            .projects-grid { grid-template-columns: 1fr; }
         }
-
     </style>
 </head>
 
 <body>
-    <nav class="site-nav" aria-label="Primary navigation" style="position: fixed; z-index: 150; top: 0; width: 100%; background: #000; padding: 15px; border-bottom: 2px solid var(--devil-dark);">
-        <a href="/" aria-current="page" style="color: var(--text-color); margin-right: 20px; text-decoration: none; font-family: 'Press Start 2P'; font-size: 0.8rem;">Portfolio</a>
-        <a href="sales.html" style="color: #aaa; text-decoration: none; font-family: 'Press Start 2P'; font-size: 0.8rem;">Sales</a>
-    </nav>
+    <!-- Topbar like sales.html -->
+    <header class="topbar">
+        <a href="/" class="brand" style="z-index: 150;">APOORV</a>
+        <nav class="site-nav" aria-label="Primary navigation" style="z-index: 150;">
+            <a href="/" aria-current="page">Portfolio</a>
+            <a href="sales.html">Sales</a>
+        </nav>
+    </header>
 
-    <!-- CONTENT -->
-    <main>
-        <!-- Hero Section -->
-        <section id="hero">
-            <h1 data-kaboom-body="true" data-trap="false">Apoorv A S</h1>
-            <p data-kaboom-body="true" data-trap="false">Creative Technologist.</p>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">(Use WASD to take control of the character. Scroll down to explore.)</p>
+    <main class="portfolio-shell">
+        <section class="hero-section">
+            <h1 data-kaboom-body="true" data-trap="false">APOORV A S</h1>
+            <p class="subtitle" data-kaboom-body="true" data-trap="false">Creative Technologist</p>
+            <p style="color: var(--ink);">(Use WASD to take control of the character. Scroll down to explore.)</p>
         </section>
 
-        <!-- About Section -->
-        <section id="about">
-            <h2 data-kaboom-body="true" data-trap="false">About Me</h2>
-            <p data-kaboom-body="true" data-trap="false">I build high-performance WebGL, WebGPU, and interactive 3D experiences. Obsessed with 60 FPS, branchless GLSL, and unconventional UI.</p>
-            <p data-kaboom-body="true" data-trap="false">Currently merging technical art with aggressive sales acquisition systems.</p>
+        <section class="portfolio-card" data-kaboom-body="true" data-trap="false" style="margin-top: 2rem;">
+            <h2>ABOUT</h2>
+            <p>I build high-performance WebGL, WebGPU, and interactive 3D experiences. Obsessed with 60 FPS, branchless GLSL, and unconventional UI.</p>
+            <p>Currently merging technical art with aggressive sales acquisition systems.</p>
         </section>
 
-        <!-- Projects Section -->
-        <section id="projects">
-            <h2 data-kaboom-body="true" data-trap="false">Projects</h2>
+        <section class="portfolio-card" style="background: transparent; border: none; box-shadow: none; padding: 0;">
+            <h2 data-kaboom-body="true" data-trap="false">PROJECTS</h2>
             <div class="projects-grid">
-                <div class="project-card" data-kaboom-body="true" data-trap="drop" onclick="window.open('https://flux-fluid-studio.vercel.app/', '_blank')">
-                    <h3>Flux Fluid Studio</h3>
+                <div class="project-item" data-kaboom-body="true" data-trap="drop" onclick="window.open('https://flux-fluid-studio.vercel.app/', '_blank')">
+                    <h3>FLUX FLUID</h3>
                     <p>WebGL Spatial Fluid Dynamics Sandbox & Exporter</p>
                 </div>
-                <div class="project-card" data-kaboom-body="true" data-trap="spikes" onclick="window.open('https://github.com/apoorv-xs/Oversight', '_blank')">
-                    <h3>Oversight</h3>
+                <div class="project-item" data-kaboom-body="true" data-trap="drop" onclick="window.open('https://github.com/apoorv-xs/Oversight', '_blank')">
+                    <h3>OVERSIGHT</h3>
                     <p>Adaptive Network Threat Detection Engine</p>
                 </div>
-                <div class="project-card" data-kaboom-body="true" data-trap="drop" onclick="window.open('sales.html', '_self')">
-                    <h3>SprintDial</h3>
+                <div class="project-item" data-kaboom-body="true" data-trap="spikes" onclick="window.open('sales.html', '_self')">
+                    <h3>SPRINTDIAL</h3>
                     <p>High-Velocity Outbound Console & Lead Manager</p>
+                </div>
+                <div class="project-item" data-kaboom-body="true" data-trap="drop" onclick="window.open('https://maison-anima.vercel.app/', '_blank')">
+                    <h3>MAISON ANIMA</h3>
+                    <p>Luxury E-Commerce & Monogram Studio</p>
                 </div>
             </div>
         </section>
 
-        <!-- Contact Section -->
-        <section id="contact" style="min-height: 50vh; text-align: center;">
-            <h2 data-kaboom-body="true" data-trap="false">Let's Talk</h2>
-            <p data-kaboom-body="true" data-trap="false">Ready to build something impossible?</p>
-            <a href="mailto:contact@example.com" data-kaboom-body="true" data-trap="false" style="display: inline-block; background: var(--devil-red); color: #fff; padding: 15px 30px; font-family: 'Press Start 2P'; text-decoration: none; margin-top: 20px;">Email Me</a>
+        <section class="portfolio-card" data-kaboom-body="true" data-trap="false">
+            <h2>LET'S TALK</h2>
+            <p>Ready to build something impossible?</p>
+            <a href="mailto:contact@example.com" class="action-btn" style="display: inline-block; background: var(--purple); color: var(--white); border: 4px solid var(--ink); padding: 15px 30px; font-family: 'Press Start 2P'; text-decoration: none; margin-top: 20px; box-shadow: 4px 4px 0 var(--ink);">Email Me</a>
         </section>
     </main>
 
