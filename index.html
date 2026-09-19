@@ -4,71 +4,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Social Media Meta Tags -->
-    <meta property="og:title" content="Level Devil Portfolio">
-    <meta property="og:description" content="Play my interactive portfolio game inspired by Level Devil.">
-    <meta property="og:image" content="thumbnail.png">
-    <meta property="og:url" content="https://level-devil-portfolio.com">
-    <!-- Replace with actual URL if known, otherwise relative might verify poorly on some platforms but works for now -->
-    <meta property="og:type" content="website">
-
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Level Devil Portfolio">
-    <meta name="twitter:description" content="Play my interactive portfolio game inspired by Level Devil.">
-    <meta name="twitter:image" content="thumbnail.png">
-    <title>Level Devil Portfolio</title>
+    <meta name="description" content="Apoorv A S — Creative Technologist">
+    <title>Apoorv A S | Portfolio</title>
+    
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="shell.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Courier+Prime&display=swap');
 
+        :root {
+            --devil-red: #D05A3A;
+            --devil-dark: #5A1C12;
+            --bg-color: #0d0d0d;
+            --text-color: #fce566;
+            --text-muted: #aaaaaa;
+        }
+
         body {
             margin: 0;
             padding: 0;
-            background-color: #000000;
-            height: 100vh;
-            overflow: hidden;
-            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Courier Prime', monospace;
+            overflow-x: hidden;
+            /* Allow vertical scrolling */
         }
 
-        h1 {
-            color: #fce566;
-            font-family: 'Press Start 2P', monospace;
-            font-size: 4rem;
-            margin-bottom: 20px;
-            text-shadow: 4px 4px #000;
-            text-align: center;
+        /* Standard Portfolio Sections */
+        section {
+            min-height: 100vh;
+            padding: 100px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
+
+        h1, h2, h3 {
+            font-family: 'Press Start 2P', monospace;
+            color: var(--devil-red);
+            text-shadow: 3px 3px var(--devil-dark);
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        h1 { font-size: 3rem; }
+        h2 { font-size: 2rem; }
 
         p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
             color: #fff;
-            font-family: 'Courier Prime', monospace;
-            font-size: 1.5rem;
-            animation: blink 1s infinite;
         }
 
-        @keyframes blink {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0;
-            }
+        /* Project Cards */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
         }
 
-        /* --- CANVAS (Transition & Game) --- */
+        .project-card {
+            background-color: #1a1a1a;
+            border: 4px solid var(--devil-dark);
+            padding: 2rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .project-card:hover {
+            border-color: var(--devil-red);
+            transform: translateY(-5px);
+        }
+
+        .project-card h3 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+
+        .project-card p {
+            font-size: 1rem;
+            margin-bottom: 0;
+        }
+
+        /* --- CANVAS OVERLAY --- */
         #game-container {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             z-index: 100;
-            pointer-events: all;
+            pointer-events: none; /* Let clicks pass through to DOM */
         }
 
         canvas {
@@ -77,49 +107,104 @@
             height: 100%;
             background: transparent;
         }
+
+        /* Mobile Controls */
+        #mobile-controls {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 200;
+            justify-content: space-between;
+            pointer-events: auto; /* Catch clicks */
+        }
+
+        .btn-dir {
+            background: rgba(208, 90, 58, 0.5);
+            border: 2px solid var(--text-color);
+            color: #fff;
+            padding: 15px 20px;
+            font-family: 'Press Start 2P';
+            border-radius: 8px;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        @media (max-width: 768px) {
+            #mobile-controls {
+                display: flex;
+            }
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.5rem; }
+        }
+
     </style>
 </head>
 
 <body>
-    <nav class="site-nav" aria-label="Primary navigation">
-        <a href="/" aria-current="page">Portfolio</a>
-        <a href="sales.html">Sales</a>
+    <nav class="site-nav" aria-label="Primary navigation" style="position: fixed; z-index: 150; top: 0; width: 100%; background: #000; padding: 15px; border-bottom: 2px solid var(--devil-dark);">
+        <a href="/" aria-current="page" style="color: var(--text-color); margin-right: 20px; text-decoration: none; font-family: 'Press Start 2P'; font-size: 0.8rem;">Portfolio</a>
+        <a href="sales.html" style="color: #aaa; text-decoration: none; font-family: 'Press Start 2P'; font-size: 0.8rem;">Sales</a>
     </nav>
+
+    <!-- CONTENT -->
+    <main>
+        <!-- Hero Section -->
+        <section id="hero">
+            <h1 data-kaboom-body="true" data-trap="false">Apoorv A S</h1>
+            <p data-kaboom-body="true" data-trap="false">Creative Technologist.</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">(Use WASD to take control of the character. Scroll down to explore.)</p>
+        </section>
+
+        <!-- About Section -->
+        <section id="about">
+            <h2 data-kaboom-body="true" data-trap="false">About Me</h2>
+            <p data-kaboom-body="true" data-trap="false">I build high-performance WebGL, WebGPU, and interactive 3D experiences. Obsessed with 60 FPS, branchless GLSL, and unconventional UI.</p>
+            <p data-kaboom-body="true" data-trap="false">Currently merging technical art with aggressive sales acquisition systems.</p>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects">
+            <h2 data-kaboom-body="true" data-trap="false">Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card" data-kaboom-body="true" data-trap="drop" onclick="window.open('https://flux-fluid-studio.vercel.app/', '_blank')">
+                    <h3>Flux Fluid Studio</h3>
+                    <p>WebGL Spatial Fluid Dynamics Sandbox & Exporter</p>
+                </div>
+                <div class="project-card" data-kaboom-body="true" data-trap="spikes" onclick="window.open('https://github.com/apoorv-xs/Oversight', '_blank')">
+                    <h3>Oversight</h3>
+                    <p>Adaptive Network Threat Detection Engine</p>
+                </div>
+                <div class="project-card" data-kaboom-body="true" data-trap="drop" onclick="window.open('sales.html', '_self')">
+                    <h3>SprintDial</h3>
+                    <p>High-Velocity Outbound Console & Lead Manager</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" style="min-height: 50vh; text-align: center;">
+            <h2 data-kaboom-body="true" data-trap="false">Let's Talk</h2>
+            <p data-kaboom-body="true" data-trap="false">Ready to build something impossible?</p>
+            <a href="mailto:contact@example.com" data-kaboom-body="true" data-trap="false" style="display: inline-block; background: var(--devil-red); color: #fff; padding: 15px 30px; font-family: 'Press Start 2P'; text-decoration: none; margin-top: 20px;">Email Me</a>
+        </section>
+    </main>
 
     <!-- KABOOM CONTAINER -->
     <div id="game-container">
         <canvas id="game-canvas"></canvas>
     </div>
 
-    <!-- DEBUG ERROR HANDLER: gated behind ?debug=1, never leaks internals to visitors -->
-    <script>
-        window.onerror = function (msg, url, lineNo, columnNo, error) {
-            if (!/[?&]debug=1/.test(location.search)) return false;
-            const div = document.createElement("div");
-            div.style.position = "fixed";
-            div.style.top = "0";
-            div.style.left = "0";
-            div.style.width = "100%";
-            div.style.backgroundColor = "red";
-            div.style.color = "white";
-            div.style.padding = "20px";
-            div.style.zIndex = "999999";
-            div.style.fontSize = "16px";
-            div.style.fontFamily = "monospace";
-            div.style.whiteSpace = "pre-wrap";
-            
-            let displayMsg = "ERROR: " + msg + "\nLine: " + lineNo + "\nCol: " + columnNo;
-            if (error && error.stack) {
-                displayMsg += "\n\nSTACK TRACE:\n" + error.stack;
-            }
-            div.innerText = displayMsg;
-            document.body.appendChild(div);
-            return false;
-        };
-    </script>
+    <!-- MOBILE CONTROLS -->
+    <div id="mobile-controls">
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-dir" id="btn-left">&lt;</button>
+            <button class="btn-dir" id="btn-right">&gt;</button>
+        </div>
+        <button class="btn-dir" id="btn-jump">^</button>
+    </div>
 
     <script src="shell.js"></script>
-
 </body>
-
 </html>
