@@ -1,6 +1,7 @@
 const portfolioScripts = [
   "kaboom.js?v=2",
-  "portfolio_engine.js?v=4"
+  "player.js?v=12",
+  "portfolio_engine.js?v=5"
 ];
 
 function isSalesRoute(pathname = window.location.pathname) {
