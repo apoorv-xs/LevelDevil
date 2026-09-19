@@ -54,7 +54,7 @@ async function loadSalesRoute() {
   document.body.replaceChildren(...parsed.body.children);
   const module = document.createElement("script");
   module.type = "module";
-  module.src = "/sales-app.js";
+  module.src = `/sales-app.js?v=${Date.now()}`;
   document.body.appendChild(module);
 }
 

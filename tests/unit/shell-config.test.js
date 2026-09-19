@@ -33,11 +33,20 @@ describe("Unified application shell", () => {
     expect(sales).toContain('id="inquiry-form"');
     expect(sales).toContain('id="application-form"');
     expect(sales).toContain('id="sign-in"');
+    expect(sales).toContain('id="auth-placeholder"');
+    expect(sales).toContain('href="/sales"');
     expect(sales).not.toContain("Firebase ID token");
     expect(sales).toContain('aria-label="Sales actions"');
     expect(sales).toContain('href="#inquiry-card"');
     expect(sales).toContain('href="#application-card"');
     expect(sales).toContain('href="#workspace-card"');
+  });
+
+  it("uses deployed API routes and surfaces API error messages", () => {
+    const app = read("sales-app.js");
+    expect(app).toContain('submitPublicForm(event, "/inquiry"');
+    expect(app).toContain('submitPublicForm(event, "/application"');
+    expect(app).toContain("payload.error?.message");
   });
 
   it("uses the canonical retro visual tokens without rounded SaaS cards", () => {

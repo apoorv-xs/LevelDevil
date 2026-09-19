@@ -86,7 +86,8 @@
 }
 
 @media (max-width: 720px) {
-  .site-nav { flex-wrap: wrap; }
+  .site-nav { position: static; max-width: 100%; }
+  .site-nav a { padding: 8px 9px; font-size: 10px; }
   .action-rail { margin-bottom: 22px; }
   .action-rail a { flex: 1 1 100%; text-align: center; }
 }

@@ -34,4 +34,21 @@ test.describe("Sales shell acquisition UX", () => {
     await expect(page.locator("#game-canvas")).toBeVisible();
     await expect(page.locator(".action-rail")).toHaveCount(0);
   });
+
+  test("posts public forms to the deployed function routes", async ({ page }) => {
+    const requests = [];
+    await page.route("**/api/**", async (route) => {
+      requests.push(route.request().url());
+      await route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ data: {} }) });
+    });
+    await page.goto("/sales", { waitUntil: "networkidle" });
+    await page.locator("#inquiry-form input[name=name]").fill("Ada");
+    await page.locator("#inquiry-form input[name=email]").fill("ada@example.com");
+    await page.locator("#inquiry-form textarea[name=message]").fill("Hello");
+    const request = page.waitForRequest("**/api/inquiry");
+    await page.locator("#inquiry-form button[type=submit]").click();
+    await request;
+    await expect(page.locator("#status")).toHaveText("Inquiry received. The owner will follow up.");
+    expect(requests.some((url) => url.endsWith("/api/inquiry"))).toBe(true);
+  });
 });
