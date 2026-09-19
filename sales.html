@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Apoorv Sales Platform</title>
+  <link rel="stylesheet" href="sales.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a href="/" class="brand">APOORV / SALES</a>
+      <a href="/" class="back-link">Back to portfolio</a>
+    </header>
+
+    <section class="hero">
+      <p class="eyebrow">Private operating system</p>
+      <h1>Turn portfolio interest into accountable follow-up.</h1>
+      <p class="lede">Submit an inquiry, apply to represent Apoorv, or sign in to the workspace. Authorization is enforced by the server.</p>
+    </section>
+
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+
+    <section class="grid" aria-label="Sales platform actions">
+      <article class="card" id="inquiry-card">
+        <p class="eyebrow">Public</p>
+        <h2>Project inquiry</h2>
+        <form id="inquiry-form">
+          <label>Name <input name="name" autocomplete="name" required maxlength="120"></label>
+          <label>Email <input name="email" type="email" autocomplete="email" required maxlength="254"></label>
+          <label>What can we build together? <textarea name="message" required maxlength="4000"></textarea></label>
+          <button type="submit">Send inquiry</button>
+        </form>
+      </article>
+
+      <article class="card" id="application-card">
+        <p class="eyebrow">Public</p>
+        <h2>Apply as a sales representative</h2>
+        <form id="application-form">
+          <label>Name <input name="name" autocomplete="name" required maxlength="120"></label>
+          <label>Email <input name="email" type="email" autocomplete="email" required maxlength="254"></label>
+          <label>Why are you a fit? <textarea name="message" required maxlength="4000"></textarea></label>
+          <button type="submit">Submit application</button>
+        </form>
+      </article>
+
+      <article class="card card-wide" id="workspace-card">
+        <p class="eyebrow">Protected</p>
+        <h2>Workspace access</h2>
+        <form id="session-form">
+          <label>Firebase ID token <textarea name="token" required placeholder="Paste a short-lived ID token for this session"></textarea></label>
+          <button type="submit">Open workspace</button>
+        </form>
+        <div id="workspace" hidden>
+          <div class="workspace-head">
+            <p id="workspace-role"></p>
+            <button id="refresh-workspace" type="button" class="secondary">Refresh</button>
+          </div>
+          <pre id="workspace-data" aria-label="Workspace data"></pre>
+        </div>
+      </article>
+    </section>
+  </main>
+  <script src="sales.js" type="module"></script>
+</body>
+</html>

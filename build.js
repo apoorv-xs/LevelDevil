@@ -36,4 +36,11 @@ files.forEach(file => {
     }
 });
 
+// Static Web Apps reads routing and security headers from the deployed output.
+const staticWebAppConfig = path.join(srcDir, 'staticwebapp.config.json');
+if (fs.existsSync(staticWebAppConfig)) {
+    fs.copyFileSync(staticWebAppConfig, path.join(distDir, 'staticwebapp.config.json'));
+    console.log('Copied: staticwebapp.config.json');
+}
+
 console.log("Build Complete. Assets ready in /dist");

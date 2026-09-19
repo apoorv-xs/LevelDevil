@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     // Unit tests only - no browser, no DOM needed
     environment: "node",
-    include: ["tests/unit/**/*.test.js"],
+    include: ["tests/unit/**/*.test.js", "tests/api/**/*.test.js"],
     reporters: ["verbose"],
     // Fail fast on first error to mirror Level Devil "die and retry" loop
     bail: 0,

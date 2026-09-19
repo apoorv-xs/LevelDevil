@@ -1,0 +1,13 @@
+import { parseBody, validate, ok } from "./http.js";
+import { guard } from "./auth.js";
+import * as service from "./services.js";
+import { qualify } from "./ai.js";
+export const publicInquiry = (req) => { const body = validate(parseBody(req), { name: { required: true, type: "string", max: 120 }, email: { required: true, type: "string", max: 254 }, message: { required: true, type: "string", max: 5000 } }); return ok(service.createInquiry(body), 201); };
+export const publicApplication = (req) => { const body = validate(parseBody(req), { name: { required: true, type: "string", max: 120 }, email: { required: true, type: "string", max: 254 }, message: { required: true, type: "string", max: 5000 }, resumeUrl: { type: "string", max: 2048 } }); return ok(service.createApplication(body), 201); };
+export const ownerApplications = async (req) => { await guard(req, ["owner"]); return ok(service.listApplications()); };
+export const ownerInvitation = async (req) => { const user = await guard(req, ["owner"]); return ok(service.createInvitation(validate(parseBody(req), { email: { required: true, type: "string", max: 254 } }), user.uid), 201); };
+export const redeem = async (req) => { const user = await guard(req, ["sales_rep", "owner"]); const body = validate(parseBody(req), { token: { required: true, type: "string" } }); return ok(await service.redeemInvitation(body.token, user.uid)); };
+export const salesLeads = async (req) => { const user = await guard(req, ["sales_rep"]); return ok(service.listAssignedLeads(user.uid)); };
+export const ownerLeadAssignment = async (req) => { const user = await guard(req, ["owner"]); const body = validate(parseBody(req), { leadId: { required: true, type: "string" }, salesRepId: { required: true, type: "string" } }); return ok(service.assignLead(body.leadId, body.salesRepId, user.uid), 201); };
+export const ownerLead = async (req) => { const user = await guard(req, ["owner"]); const body = validate(parseBody(req), { name: { required: true, type: "string" }, email: { type: "string" }, source: { type: "string" } }); return ok(service.createLead(body, user.uid), 201); };
+export const aiQualification = async (req) => { await guard(req, ["owner", "sales_rep"]); return ok(await qualify(parseBody(req))); };

@@ -1,0 +1,19 @@
+﻿{
+    "bindings":  [
+                     {
+                         "direction":  "in",
+                         "name":  "req",
+                         "route":  "invitations/redeem",
+                         "type":  "httpTrigger",
+                         "authLevel":  "anonymous",
+                         "methods":  [
+                                         "post"
+                                     ]
+                     },
+                     {
+                         "name":  "res",
+                         "direction":  "out",
+                         "type":  "http"
+                     }
+                 ]
+}

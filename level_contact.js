@@ -645,6 +645,8 @@ scene("contact", () => {
     // Purple: #8E44AD -> Highlight #AF7AC5
     const cPurp = rgb(142, 68, 173);
     const cPurpHi = rgb(175, 122, 197);
+    const cGold = rgb(180, 145, 35);
+    const cGoldHi = rgb(245, 210, 80);
 
     // 1. LEFT: Blue Pipe (LINKEDIN)
     // PROFESSOR HINT (Left of Pipes)
@@ -657,6 +659,9 @@ scene("contact", () => {
 
     // 3. RIGHT: Purple Pipe (INSTAGRAM - UPDATED LINK)
     const p3 = createPipe(pipeStartX + pipeGap * 2, "INSTAGRAM", "https://www.instagram.com/apoorv.x.s?igsh=amxlOWplaHNnZHJ2", cPurp, cPurpHi);
+
+    // 4. Gold Pipe (PROJECT INQUIRY)
+    const p4 = createPipe(pipeStartX + pipeGap * 3, "INQUIRY", "sales.html", cGold, cGoldHi, 20, 20);
 
     // --- RESTART SYSTEM BUTTON ---
     const btnX = pipeStartX + pipeGap * 3.5;
@@ -826,7 +831,7 @@ scene("contact", () => {
         if (!guy.exists() || playerFrozen) return;
 
         if (guy.isGrounded()) {
-            [p1, p2, p3].forEach(pipe => {
+            [p1, p2, p3, p4].forEach(pipe => {
                 if (pipe.entered) return;
                 // Proximity Check using the stored parentX
                 if (Math.abs(guy.pos.x - pipe.parentX) < 30) {

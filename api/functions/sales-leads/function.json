@@ -1,0 +1,19 @@
+﻿{
+    "bindings":  [
+                     {
+                         "direction":  "in",
+                         "name":  "req",
+                         "route":  "sales/leads",
+                         "type":  "httpTrigger",
+                         "authLevel":  "anonymous",
+                         "methods":  [
+                                         "get"
+                                     ]
+                     },
+                     {
+                         "name":  "res",
+                         "direction":  "out",
+                         "type":  "http"
+                     }
+                 ]
+}

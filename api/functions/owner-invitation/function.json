@@ -1,0 +1,19 @@
+﻿{
+    "bindings":  [
+                     {
+                         "direction":  "in",
+                         "name":  "req",
+                         "route":  "owner/invitations",
+                         "type":  "httpTrigger",
+                         "authLevel":  "anonymous",
+                         "methods":  [
+                                         "post"
+                                     ]
+                     },
+                     {
+                         "name":  "res",
+                         "direction":  "out",
+                         "type":  "http"
+                     }
+                 ]
+}

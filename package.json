@@ -8,6 +8,7 @@
     "build": "node build.js",
     "start": "vite preview",
     "test:unit": "vitest run",
+    "test:api": "vitest run tests/api",
     "test:e2e": "playwright test",
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit:watch": "vitest",
