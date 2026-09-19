@@ -24,6 +24,10 @@ describe("Unified application shell", () => {
     expect(sales).toContain('id="application-form"');
     expect(sales).toContain('id="sign-in"');
     expect(sales).not.toContain("Firebase ID token");
+    expect(sales).toContain('aria-label="Sales actions"');
+    expect(sales).toContain('href="#inquiry-card"');
+    expect(sales).toContain('href="#application-card"');
+    expect(sales).toContain('href="#workspace-card"');
   });
 
   it("uses the canonical retro visual tokens without rounded SaaS cards", () => {

@@ -1,19 +1,16 @@
 const API_BASE = window.SALES_PLATFORM_CONFIG?.apiBase || "/api";
-let idToken = "";
-
-const status = document.getElementById("status");
+const shell = window.APP_SHELL;
 const workspace = document.getElementById("workspace");
 const workspaceData = document.getElementById("workspace-data");
 const workspaceRole = document.getElementById("workspace-role");
 
 function setStatus(message, isError = false) {
-  status.textContent = message;
-  status.classList.toggle("error", isError);
+  shell?.status?.set(message, isError);
 }
 
 async function request(path, options = {}) {
   const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
-  if (idToken) headers.Authorization = `Bearer ${idToken}`;
+  if (shell?.session?.idToken) headers.Authorization = `Bearer ${shell.session.idToken}`;
   const response = await fetch(`${API_BASE}${path}`, { ...options, headers });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(payload.message || "Request failed");
@@ -55,15 +52,9 @@ document.getElementById("application-form").addEventListener("submit", (event) =
   submitPublicForm(event, "/applications", "Application received for owner review.");
 });
 document.getElementById("sign-in").addEventListener("click", async () => {
-  const auth = window.SALES_PLATFORM_AUTH;
-  if (!auth?.signIn) {
-    setStatus("Authenticated entry is not configured in this public build. Contact the owner for workspace access.", true);
-    return;
-  }
   try {
     setStatus("Opening secure sign-in...");
-    const session = await auth.signIn();
-    idToken = await session.getIdToken();
+    await shell.session.signIn();
     await loadWorkspace();
   } catch (error) {
     setStatus(error.message || "Sign-in was cancelled.", true);

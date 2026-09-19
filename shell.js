@@ -57,6 +57,30 @@ async function loadSalesRoute() {
 }
 
 window.APP_SHELL = { isSalesRoute, setActiveNavigation };
+window.APP_SHELL.status = {
+  element: null,
+  set(message, isError = false) {
+    if (!this.element) {
+      this.element = document.getElementById("status") || document.querySelector(".shell-status");
+    }
+    if (!this.element) return;
+    this.element.textContent = message;
+    this.element.classList.toggle("error", isError);
+  }
+};
+window.APP_SHELL.session = {
+  idToken: "",
+  async signIn() {
+    const auth = window.SALES_PLATFORM_AUTH;
+    if (!auth?.signIn) throw new Error("Authenticated entry is not configured in this public build. Contact the owner for workspace access.");
+    const session = await auth.signIn();
+    this.idToken = await session.getIdToken();
+    return this.idToken;
+  },
+  clear() {
+    this.idToken = "";
+  }
+};
 
 setActiveNavigation();
 if (isSalesRoute()) {
