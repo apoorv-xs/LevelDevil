@@ -10,8 +10,11 @@
 <body>
   <main class="shell">
     <header class="topbar">
-      <a href="/" class="brand">APOORV / SALES</a>
-      <a href="/" class="back-link">Back to portfolio</a>
+      <a href="/" class="brand">APOORV</a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="/">Portfolio</a>
+        <a href="sales.html" aria-current="page">Sales</a>
+      </nav>
     </header>
 
     <section class="hero">
@@ -48,10 +51,11 @@
       <article class="card card-wide" id="workspace-card">
         <p class="eyebrow">Protected</p>
         <h2>Workspace access</h2>
-        <form id="session-form">
-          <label>Firebase ID token <textarea name="token" required placeholder="Paste a short-lived ID token for this session"></textarea></label>
-          <button type="submit">Open workspace</button>
-        </form>
+        <div class="auth-placeholder">
+          <p><strong>Authenticated entry</strong></p>
+          <p class="muted">Owner and sales-representative workspaces require Firebase authentication. The public build does not accept pasted tokens or expose a bypass.</p>
+          <button id="sign-in" type="button">Sign in to workspace</button>
+        </div>
         <div id="workspace" hidden>
           <div class="workspace-head">
             <p id="workspace-role"></p>

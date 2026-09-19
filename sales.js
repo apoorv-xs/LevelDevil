@@ -54,9 +54,19 @@ document.getElementById("inquiry-form").addEventListener("submit", (event) => {
 document.getElementById("application-form").addEventListener("submit", (event) => {
   submitPublicForm(event, "/applications", "Application received for owner review.");
 });
-document.getElementById("session-form").addEventListener("submit", (event) => {
-  event.preventDefault();
-  idToken = new FormData(event.currentTarget).get("token").trim();
-  loadWorkspace();
+document.getElementById("sign-in").addEventListener("click", async () => {
+  const auth = window.SALES_PLATFORM_AUTH;
+  if (!auth?.signIn) {
+    setStatus("Authenticated entry is not configured in this public build. Contact the owner for workspace access.", true);
+    return;
+  }
+  try {
+    setStatus("Opening secure sign-in...");
+    const session = await auth.signIn();
+    idToken = await session.getIdToken();
+    await loadWorkspace();
+  } catch (error) {
+    setStatus(error.message || "Sign-in was cancelled.", true);
+  }
 });
 document.getElementById("refresh-workspace").addEventListener("click", loadWorkspace);

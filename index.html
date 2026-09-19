@@ -32,6 +32,36 @@
             font-family: 'Courier New', Courier, monospace;
         }
 
+        .site-nav {
+            position: fixed;
+            top: 20px;
+            right: 24px;
+            z-index: 250;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            padding: 6px;
+            border: 1px solid rgba(252, 229, 102, 0.45);
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.78);
+            font: 12px 'Press Start 2P', monospace;
+        }
+
+        .site-nav a {
+            color: #fff;
+            padding: 10px 12px;
+            border-radius: 999px;
+            text-decoration: none;
+        }
+
+        .site-nav a:hover,
+        .site-nav a:focus-visible,
+        .site-nav a[aria-current="page"] {
+            background: #fce566;
+            color: #000;
+            outline: none;
+        }
+
         /* --- HYBRID START SCREEN (User's "Older Version") --- */
         #start-overlay {
             position: fixed;
@@ -99,6 +129,11 @@
 </head>
 
 <body>
+    <nav class="site-nav" aria-label="Primary navigation">
+        <a href="/" aria-current="page">Portfolio</a>
+        <a href="sales.html">Sales</a>
+    </nav>
+
     <!-- 1. HTML START OVERLAY -->
     <div id="start-overlay">
         <h1>START GAME</h1>
