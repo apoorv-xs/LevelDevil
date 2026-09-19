@@ -6,6 +6,9 @@ export async function authenticate(req) {
   if (!header?.startsWith("Bearer ")) throw unauthorized();
   const token = header.slice(7);
   if (token.startsWith("mock:")) {
+    if (process.env.ALLOW_MOCK_AUTH !== "true" || process.env.NODE_ENV === "production") {
+      throw unauthorized();
+    }
     const [uid, role = "owner"] = token.slice(5).split(":");
     if (!uid) throw unauthorized("Invalid token");
     return { uid, role, email: `${uid}@mock.local` };

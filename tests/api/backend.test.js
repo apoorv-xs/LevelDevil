@@ -1,11 +1,16 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { resetStore, repos } from "../../api/src/store.js";
-import { publicInquiry, ownerInvitation, redeem, aiQualification } from "../../api/src/handlers.js";
+import { publicInquiry, ownerInvitation, redeem, aiQualification, workspace } from "../../api/src/handlers.js";
 
 const req = (body, token) => ({ body, headers: token ? { authorization: `Bearer ${token}` } : {} });
 const context = { error() {} };
 
-beforeEach(() => { resetStore(); process.env.AI_MODE = "mock"; });
+beforeEach(() => {
+  resetStore();
+  process.env.AI_MODE = "mock";
+  process.env.ALLOW_MOCK_AUTH = "true";
+  delete process.env.NODE_ENV;
+});
 
 describe("managed API", () => {
   it("validates and stores a public inquiry", async () => {
@@ -25,5 +30,16 @@ describe("managed API", () => {
   it("supports explicit synthetic AI mode", async () => {
     const result = await aiQualification(req({ message: "Interested" }, "mock:rep:sales_rep"), context);
     expect(JSON.parse(result.body).data.category).toBe("warm");
+  });
+
+  it("returns role-specific workspace data", async () => {
+    const result = await workspace(req({}, "mock:owner:owner"), context);
+    expect(JSON.parse(result.body).data).toMatchObject({ role: "owner", applications: [] });
+  });
+
+  it("rejects mock bearer tokens when the test-only flag is disabled", async () => {
+    delete process.env.ALLOW_MOCK_AUTH;
+    await expect(ownerInvitation(req({ email: "rep@example.com" }, "mock:owner:owner"), context))
+      .rejects.toMatchObject({ status: 401 });
   });
 });

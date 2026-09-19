@@ -21,13 +21,19 @@ async function submitPublicForm(event, path, successMessage) {
   event.preventDefault();
   const form = event.currentTarget;
   const values = Object.fromEntries(new FormData(form));
+  const submit = form.querySelector('button[type="submit"]');
   setStatus("Sending...");
+  form.setAttribute("aria-busy", "true");
+  if (submit) submit.disabled = true;
   try {
     await request(path, { method: "POST", body: JSON.stringify(values) });
     form.reset();
     setStatus(successMessage);
   } catch (error) {
-    setStatus(error.message, true);
+    setStatus(error instanceof Error ? error.message : "Unable to submit the form.", true);
+  } finally {
+    form.removeAttribute("aria-busy");
+    if (submit) submit.disabled = false;
   }
 }
 
@@ -41,7 +47,7 @@ async function loadWorkspace() {
     setStatus("Workspace loaded.");
   } catch (error) {
     workspace.hidden = true;
-    setStatus(error.message, true);
+    setStatus(error instanceof Error ? error.message : "Unable to load the workspace.", true);
   }
 }
 
@@ -57,7 +63,7 @@ document.getElementById("sign-in").addEventListener("click", async () => {
     await shell.session.signIn();
     await loadWorkspace();
   } catch (error) {
-    setStatus(error.message || "Sign-in was cancelled.", true);
+    setStatus(error instanceof Error ? error.message : "Sign-in was cancelled.", true);
   }
 });
 document.getElementById("refresh-workspace").addEventListener("click", loadWorkspace);
