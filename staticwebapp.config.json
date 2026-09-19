@@ -14,6 +14,6 @@
   },
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/api/*", "*.{css,js,png,pdf,svg,ico,json}"]
+    "exclude": ["/api/*", "*.{css,js,png,pdf,svg,ico,json}", "/sales.html"]
   }
 }

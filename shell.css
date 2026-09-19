@@ -1,0 +1,49 @@
+:root {
+  --shell-accent: #fce566;
+  --shell-bg: #101216;
+  --shell-line: rgba(252, 229, 102, .45);
+}
+
+.site-nav {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 250;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 5px;
+  border: 1px solid var(--shell-line);
+  border-radius: 999px;
+  background: rgba(16, 18, 22, .9);
+}
+
+.site-nav a {
+  color: #a8b0bf;
+  border-radius: 999px;
+  padding: 8px 12px;
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.site-nav a:hover,
+.site-nav a:focus-visible,
+.site-nav a[aria-current="page"] {
+  background: var(--shell-accent);
+  color: #171717;
+  outline: none;
+}
+
+.shell-status {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 300;
+  max-width: min(480px, calc(100% - 32px));
+  color: var(--shell-accent);
+  font: 14px/1.4 "Courier New", monospace;
+}
+
+@media (max-width: 720px) {
+  .site-nav { flex-wrap: wrap; }
+}
