@@ -74,10 +74,7 @@ window.APP_SHELL.status = {
 };
 window.APP_SHELL.session = {
   idToken: "",
-  async signIn() {
-    const auth = window.SALES_PLATFORM_AUTH;
-    if (!auth?.signIn) throw new Error("Authenticated entry is not configured in this public build. Contact the owner for workspace access.");
-    const session = await auth.signIn();
+  async setSession(session) {
     if (typeof session === "string") {
       this.idToken = session;
     } else if (typeof session?.getIdToken === "function") {
@@ -88,6 +85,19 @@ window.APP_SHELL.session = {
       throw new Error("Sign-in did not return a valid session.");
     }
     return this.idToken;
+  },
+  async signIn() {
+    const auth = window.SALES_PLATFORM_AUTH;
+    if (!auth?.signIn) throw new Error("Authenticated entry is not configured in this public build. Contact the owner for workspace access.");
+    return this.setSession(await auth.signIn());
+  },
+  async resumeRedirect() {
+    const auth = window.SALES_PLATFORM_AUTH;
+    if (!auth?.resume) return false;
+    const session = await auth.resume();
+    if (!session) return false;
+    await this.setSession(session);
+    return true;
   },
   clear() {
     this.idToken = "";

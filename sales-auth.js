@@ -29,19 +29,33 @@
   }
 
   window.SALES_PLATFORM_AUTH = {
+    async resume() {
+      const auth = await getAuth();
+      const result = await auth.getRedirectResult();
+      return result.user ? result : null;
+    },
     async signIn() {
       const auth = await getAuth();
       const provider = new window.firebase.auth.GoogleAuthProvider();
       try {
-        const redirectResult = await auth.getRedirectResult();
-        if (redirectResult.user) return redirectResult;
         return await auth.signInWithPopup(provider);
       } catch (error) {
-        if (["auth/popup-blocked", "auth/operation-not-supported"].includes(error.code)) {
-          await auth.signInWithRedirect(provider);
-          throw new Error("Redirecting to secure sign-in...");
+        if (["auth/popup-blocked", "auth/operation-not-supported", "auth/web-storage-unsupported"].includes(error.code)) {
+          try {
+            await auth.signInWithRedirect(provider);
+            throw new Error("Redirecting to secure sign-in...");
+          } catch (redirectError) {
+            if (redirectError.message === "Redirecting to secure sign-in...") throw redirectError;
+            throw new Error("Popup sign-in was blocked and redirect sign-in could not start. Check browser permissions and try again.");
+          }
         }
-        throw new Error(error.code === "auth/popup-closed-by-user" ? "Sign-in was cancelled." : "Secure sign-in failed. Please try again.");
+        if (["auth/popup-closed-by-user", "auth/cancelled-popup-request"].includes(error.code)) {
+          throw new Error("Sign-in was cancelled. Select the button to try again.");
+        }
+        if (error.code === "auth/unauthorized-domain") {
+          throw new Error("This site is not enabled for Google sign-in. Contact the owner.");
+        }
+        throw new Error("Secure sign-in failed. Check your Google account and try again.");
       }
     },
   };

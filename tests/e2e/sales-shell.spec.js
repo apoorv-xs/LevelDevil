@@ -72,4 +72,31 @@ test.describe("Sales shell acquisition UX", () => {
     await expect(page.locator("#auth-placeholder")).toBeHidden();
     await expect(page.locator("#workspace-role")).toHaveText("Signed in as owner");
   });
+
+  test("resumes a redirect session and surfaces popup cancellation", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.SALES_PLATFORM_AUTH = {
+        resume: async () => ({ user: { getIdToken: async () => "redirect-token" } }),
+        signIn: async () => { throw new Error("Sign-in was cancelled. Select the button to try again."); },
+      };
+    });
+    await page.route("**/api/workspace", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ data: { role: "sales_rep", leads: [] } }),
+      });
+    });
+    await page.goto("/sales", { waitUntil: "networkidle" });
+    await expect(page.locator("#workspace-role")).toHaveText("Signed in as sales_rep");
+    const cancelPage = await page.context().newPage();
+    await cancelPage.addInitScript(() => {
+      window.SALES_PLATFORM_AUTH = {
+        signIn: async () => { throw new Error("Sign-in was cancelled. Select the button to try again."); },
+      };
+    });
+    await cancelPage.goto("/sales", { waitUntil: "networkidle" });
+    await cancelPage.getByRole("button", { name: "Sign in to workspace" }).click();
+    await expect(cancelPage.locator("#status")).toHaveText("Sign-in was cancelled. Select the button to try again.");
+  });
 });

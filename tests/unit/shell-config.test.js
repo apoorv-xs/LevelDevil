@@ -54,11 +54,13 @@ describe("Unified application shell", () => {
     const auth = read("sales-auth.js");
     const config = read("sales-config.js");
     expect(shell).toContain("session.user.getIdToken");
+    expect(shell).toContain("resumeRedirect");
     expect(shell).toContain('loadScript("/sales-config.js")');
     expect(shell).toContain('loadScript("/sales-auth.js")');
     expect(auth).toContain("signInWithPopup");
     expect(auth).toContain("signInWithRedirect");
     expect(auth).toContain("getRedirectResult");
+    expect(auth).toContain("auth/popup-closed-by-user");
     expect(config).toContain('projectId: "speeddial-9b999"');
     expect(config).not.toContain("measurementId");
   });

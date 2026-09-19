@@ -75,3 +75,9 @@ document.getElementById("sign-in").addEventListener("click", async () => {
   }
 });
 document.getElementById("refresh-workspace").addEventListener("click", loadWorkspace);
+
+if (shell?.session?.resumeRedirect) {
+  shell.session.resumeRedirect()
+    .then((resumed) => { if (resumed) return loadWorkspace(); })
+    .catch((error) => setStatus(error instanceof Error ? error.message : "Unable to resume sign-in.", true));
+}
