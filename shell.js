@@ -52,6 +52,8 @@ async function loadSalesRoute() {
   stylesheet.href = "/sales.css";
   document.head.appendChild(stylesheet);
   document.body.replaceChildren(...parsed.body.children);
+  await loadScript("/sales-config.js");
+  await loadScript("/sales-auth.js");
   const module = document.createElement("script");
   module.type = "module";
   module.src = `/sales-app.js?v=${Date.now()}`;

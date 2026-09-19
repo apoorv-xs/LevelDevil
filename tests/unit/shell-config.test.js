@@ -52,9 +52,15 @@ describe("Unified application shell", () => {
   it("normalizes Firebase user credentials for workspace sign-in", () => {
     const shell = read("shell.js");
     const auth = read("sales-auth.js");
+    const config = read("sales-config.js");
     expect(shell).toContain("session.user.getIdToken");
+    expect(shell).toContain('loadScript("/sales-config.js")');
+    expect(shell).toContain('loadScript("/sales-auth.js")');
     expect(auth).toContain("signInWithPopup");
     expect(auth).toContain("signInWithRedirect");
+    expect(auth).toContain("getRedirectResult");
+    expect(config).toContain('projectId: "speeddial-9b999"');
+    expect(config).not.toContain("measurementId");
   });
 
   it("uses the canonical retro visual tokens without rounded SaaS cards", () => {

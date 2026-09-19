@@ -33,6 +33,8 @@
       const auth = await getAuth();
       const provider = new window.firebase.auth.GoogleAuthProvider();
       try {
+        const redirectResult = await auth.getRedirectResult();
+        if (redirectResult.user) return redirectResult;
         return await auth.signInWithPopup(provider);
       } catch (error) {
         if (["auth/popup-blocked", "auth/operation-not-supported"].includes(error.code)) {
