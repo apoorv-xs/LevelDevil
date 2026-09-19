@@ -25,4 +25,15 @@ describe("Unified application shell", () => {
     expect(sales).toContain('id="sign-in"');
     expect(sales).not.toContain("Firebase ID token");
   });
+
+  it("uses the canonical retro visual tokens without rounded SaaS cards", () => {
+    const salesCss = read("sales.css");
+    const shellCss = read("shell.css");
+    expect(salesCss).toContain("--amber:");
+    expect(salesCss).toContain("--purple:");
+    expect(salesCss).toContain('font-family: "Press Start 2P"');
+    expect(salesCss).toContain("border-radius: 0");
+    expect(salesCss).toContain("box-shadow: 8px 8px 0 var(--purple)");
+    expect(shellCss).toContain("box-shadow: 5px 5px 0 var(--shell-line)");
+  });
 });

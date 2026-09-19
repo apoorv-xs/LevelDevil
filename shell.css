@@ -1,36 +1,43 @@
 :root {
   --shell-accent: #fce566;
-  --shell-bg: #101216;
-  --shell-line: rgba(252, 229, 102, .45);
+  --shell-purple: #6d3bb8;
+  --shell-ink: #17120f;
+  --shell-paper: #fff4c9;
+  --shell-line: #17120f;
 }
 
 .site-nav {
   position: fixed;
-  top: 20px;
-  right: 24px;
+  top: 18px;
+  right: 20px;
   z-index: 250;
   display: flex;
-  gap: 6px;
+  gap: 0;
   align-items: center;
-  padding: 5px;
-  border: 1px solid var(--shell-line);
-  border-radius: 999px;
-  background: rgba(16, 18, 22, .9);
+  padding: 4px;
+  border: 3px solid var(--shell-line);
+  border-radius: 0;
+  background: var(--shell-paper);
+  box-shadow: 5px 5px 0 var(--shell-line);
+  font-family: "Press Start 2P", monospace;
 }
 
 .site-nav a {
-  color: #a8b0bf;
-  border-radius: 999px;
-  padding: 8px 12px;
+  color: var(--shell-ink);
+  border: 2px solid transparent;
+  border-radius: 0;
+  padding: 10px 12px;
   text-decoration: none;
   font-size: 12px;
+  line-height: 1;
 }
 
 .site-nav a:hover,
 .site-nav a:focus-visible,
 .site-nav a[aria-current="page"] {
   background: var(--shell-accent);
-  color: #171717;
+  border-color: var(--shell-ink);
+  color: var(--shell-ink);
   outline: none;
 }
 
@@ -40,7 +47,11 @@
   bottom: 16px;
   z-index: 300;
   max-width: min(480px, calc(100% - 32px));
-  color: var(--shell-accent);
+  border: 3px solid var(--shell-ink);
+  padding: 10px 12px;
+  background: var(--shell-purple);
+  color: #fff;
+  box-shadow: 4px 4px 0 var(--shell-ink);
   font: 14px/1.4 "Courier New", monospace;
 }
 
