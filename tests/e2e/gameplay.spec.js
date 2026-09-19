@@ -4,7 +4,7 @@
  *
  * Level Devil contract tested in-browser:
  *  - Game canvas mounts and starts up
- *  - Clicking the start overlay launches the intro level
+ *  - Portfolio launches directly into the intro level
  *  - Player can move left/right
  *  - Player can jump
  *  - Player respawns after death (Level Devil core loop)
@@ -23,15 +23,10 @@ const START_TIMEOUT = 15000; // ms
 // Helpers
 // ---------------------------------------------------------------------------
 
-/** Click through the start overlay to enter the game */
+/** Load the portfolio and wait for the direct intro startup */
 async function startGame(page) {
   await page.goto(BASE_URL, { waitUntil: "networkidle" });
-  const overlay = page.locator("#start-overlay");
-  await overlay.waitFor({ state: "visible", timeout: START_TIMEOUT });
-  await overlay.click();
-  // Wait for overlay to disappear (devil transition kicks off)
-  await overlay.waitFor({ state: "hidden", timeout: START_TIMEOUT });
-  // Wait a moment for kaboom scene to fully load
+  await expect(page.locator("#start-overlay")).toHaveCount(0);
   await page.waitForTimeout(1500);
 }
 
@@ -61,17 +56,11 @@ test.describe("Startup", () => {
     await expect(canvas).toBeVisible();
   });
 
-  test("start overlay is shown on load", async ({ page }) => {
+  test("portfolio starts directly without a start gate", async ({ page }) => {
     await page.goto(BASE_URL, { waitUntil: "networkidle" });
-    const overlay = page.locator("#start-overlay");
-    await expect(overlay).toBeVisible();
-    await expect(overlay).toContainText("START GAME");
-  });
-
-  test("clicking start overlay hides it", async ({ page }) => {
-    await page.goto(BASE_URL, { waitUntil: "networkidle" });
-    await page.locator("#start-overlay").click();
-    await page.locator("#start-overlay").waitFor({ state: "hidden", timeout: START_TIMEOUT });
+    await expect(page.locator("#start-overlay")).toHaveCount(0);
+    await expect(page.locator("#game-canvas")).toBeVisible();
+    await expect.poll(() => page.evaluate(() => window.CURRENT_SCENE)).toBe("intro");
   });
 
   test("no JavaScript errors on page load", async ({ page }) => {

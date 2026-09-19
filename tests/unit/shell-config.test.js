@@ -11,6 +11,16 @@ describe("Unified application shell", () => {
     expect(index).not.toContain('src="level_projects.js');
   });
 
+  it("starts the portfolio without a visible start gate", () => {
+    const index = read("index.html");
+    const shell = read("shell.js");
+    const init = read("init.js");
+    expect(index).not.toContain("start-overlay");
+    expect(index).not.toContain("START GAME");
+    expect(init).not.toContain("runDevilTransition(\"intro\"");
+    expect(shell).toContain('window.go("intro")');
+  });
+
   it("supports the sales deep-link family", () => {
     const shell = read("shell.js");
     expect(shell).toContain('pathname === "/sales"');

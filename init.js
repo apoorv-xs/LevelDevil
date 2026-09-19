@@ -443,29 +443,6 @@ try {
         }
     };
 
-    // --- INTERACTION LOGIC (RESTORED) ---
-    const startOverlay = document.getElementById('start-overlay');
-    const gameContainer = document.getElementById('game-container');
-
-    if (startOverlay && gameContainer) {
-        // Handle Click on HTML Overlay
-        startOverlay.addEventListener('click', () => {
-            if (window.SFX) {
-                window.SFX.init();
-                window.SFX.startBGM();
-            }
-            gameContainer.style.pointerEvents = "all";
-            const canvas = document.getElementById("game-canvas");
-            if (canvas) canvas.focus();
-
-            window.runDevilTransition("intro", () => {
-                startOverlay.style.display = 'none';
-            });
-        });
-    } else {
-        console.warn("INT: Start overlay or game container not found");
-    }
-
     // --- DYNAMIC TITLE (User Request) ---
     const originalTitle = "⚠️ Warning: High Skill Required";
     document.title = originalTitle;
@@ -902,8 +879,9 @@ try {
 
     document.body.appendChild(audioBtn);
 
-    // --- STARTUP (Moved from index.html) ---
-    // Create empty scene to wait for user interaction
+    // --- STARTUP ---
+    // Keep an empty scene available for transitions, but enter gameplay via shell.js
+    // after all level modules have registered their scenes.
     if (window.scene) {
         console.log("INT: Initializing Empty Scene");
         window.scene("empty", () => { });

@@ -32,24 +32,6 @@
             font-family: 'Courier New', Courier, monospace;
         }
 
-        /* --- HYBRID START SCREEN (User's "Older Version") --- */
-        #start-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 50;
-            cursor: pointer;
-            transition: opacity 0.5s;
-            user-select: none;
-        }
-
         h1 {
             color: #fce566;
             font-family: 'Press Start 2P', monospace;
@@ -86,7 +68,7 @@
             width: 100%;
             height: 100%;
             z-index: 100;
-            pointer-events: none;
+            pointer-events: all;
         }
 
         canvas {
@@ -104,13 +86,7 @@
         <a href="sales.html">Sales</a>
     </nav>
 
-    <!-- 1. HTML START OVERLAY -->
-    <div id="start-overlay">
-        <h1>START GAME</h1>
-        <p>[ CLICK TO START ]</p>
-    </div>
-
-    <!-- 2. KABOOM CONTAINER -->
+    <!-- KABOOM CONTAINER -->
     <div id="game-container">
         <canvas id="game-canvas"></canvas>
     </div>
