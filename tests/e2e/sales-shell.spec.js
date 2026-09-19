@@ -51,4 +51,25 @@ test.describe("Sales shell acquisition UX", () => {
     await expect(page.locator("#status")).toHaveText("Inquiry received. The owner will follow up.");
     expect(requests.some((url) => url.endsWith("/api/inquiry"))).toBe(true);
   });
+
+  test("signs in and loads the protected workspace", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.SALES_PLATFORM_AUTH = {
+        signIn: async () => ({ user: { getIdToken: async () => "test-id-token" } }),
+      };
+    });
+    await page.route("**/api/workspace", async (route) => {
+      expect(route.request().headers().authorization).toBe("Bearer test-id-token");
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ data: { role: "owner", applications: [] } }),
+      });
+    });
+    await page.goto("/sales", { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: "Sign in to workspace" }).click();
+    await expect(page.locator("#workspace")).toBeVisible();
+    await expect(page.locator("#auth-placeholder")).toBeHidden();
+    await expect(page.locator("#workspace-role")).toHaveText("Signed in as owner");
+  });
 });

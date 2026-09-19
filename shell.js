@@ -76,7 +76,15 @@ window.APP_SHELL.session = {
     const auth = window.SALES_PLATFORM_AUTH;
     if (!auth?.signIn) throw new Error("Authenticated entry is not configured in this public build. Contact the owner for workspace access.");
     const session = await auth.signIn();
-    this.idToken = await session.getIdToken();
+    if (typeof session === "string") {
+      this.idToken = session;
+    } else if (typeof session?.getIdToken === "function") {
+      this.idToken = await session.getIdToken();
+    } else if (typeof session?.user?.getIdToken === "function") {
+      this.idToken = await session.user.getIdToken();
+    } else {
+      throw new Error("Sign-in did not return a valid session.");
+    }
     return this.idToken;
   },
   clear() {

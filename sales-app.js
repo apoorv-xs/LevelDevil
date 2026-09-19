@@ -42,10 +42,11 @@ async function loadWorkspace() {
   setStatus("Loading workspace...");
   try {
     const payload = await request("/workspace");
+    const workspacePayload = payload.data || payload;
     authPlaceholder.hidden = true;
     workspace.hidden = false;
-    workspaceRole.textContent = `Signed in as ${payload.role}`;
-    workspaceData.textContent = JSON.stringify(payload, null, 2);
+    workspaceRole.textContent = `Signed in as ${workspacePayload.role}`;
+    workspaceData.textContent = JSON.stringify(workspacePayload, null, 2);
     setStatus("Workspace loaded.");
   } catch (error) {
     authPlaceholder.hidden = false;

@@ -49,6 +49,14 @@ describe("Unified application shell", () => {
     expect(app).toContain("payload.error?.message");
   });
 
+  it("normalizes Firebase user credentials for workspace sign-in", () => {
+    const shell = read("shell.js");
+    const auth = read("sales-auth.js");
+    expect(shell).toContain("session.user.getIdToken");
+    expect(auth).toContain("signInWithPopup");
+    expect(auth).toContain("signInWithRedirect");
+  });
+
   it("uses the canonical retro visual tokens without rounded SaaS cards", () => {
     const salesCss = read("sales.css");
     const shellCss = read("shell.css");
