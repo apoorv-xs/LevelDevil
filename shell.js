@@ -74,6 +74,7 @@ window.APP_SHELL.status = {
 };
 window.APP_SHELL.session = {
   idToken: "",
+  user: null,
   async setSession(session) {
     if (typeof session === "string") {
       this.idToken = session;
@@ -84,6 +85,7 @@ window.APP_SHELL.session = {
     } else {
       throw new Error("Sign-in did not return a valid session.");
     }
+    this.user = session?.user || (typeof session?.getIdToken === "function" ? session : null);
     return this.idToken;
   },
   async signIn() {
@@ -99,8 +101,24 @@ window.APP_SHELL.session = {
     await this.setSession(session);
     return true;
   },
+  async getIdentity() {
+    const user = this.user;
+    if (!user) return {};
+    let role = user.role || user.claims?.role;
+    if (!role && typeof user.getIdTokenResult === "function") {
+      const token = await user.getIdTokenResult();
+      role = token?.claims?.role;
+    }
+    return {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName,
+      role,
+    };
+  },
   clear() {
     this.idToken = "";
+    this.user = null;
   }
 };
 

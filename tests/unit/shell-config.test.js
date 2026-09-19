@@ -48,6 +48,7 @@ describe("Unified application shell", () => {
     expect(app).toContain('submitPublicForm(event, "/application"');
     expect(app).toContain("payload.error?.message");
     expect(app).toContain("No workspace records yet.");
+    expect(app).toContain("No applications yet.");
     expect(app).toContain("displayName");
   });
 
@@ -57,6 +58,7 @@ describe("Unified application shell", () => {
     const config = read("sales-config.js");
     expect(shell).toContain("session.user.getIdToken");
     expect(shell).toContain("resumeRedirect");
+    expect(shell).toContain("getIdTokenResult");
     expect(shell).toContain('loadScript("/sales-config.js")');
     expect(shell).toContain('loadScript("/sales-auth.js")');
     expect(auth).toContain("signInWithPopup");

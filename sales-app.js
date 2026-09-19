@@ -43,7 +43,8 @@ async function loadWorkspace() {
   try {
     const payload = await request("/workspace");
     const workspacePayload = payload.data || payload;
-    const user = workspacePayload.user || payload.user || {};
+    const sessionUser = await shell?.session?.getIdentity?.() || {};
+    const user = { ...sessionUser, ...(payload.user || {}), ...(workspacePayload.user || {}) };
     const records = workspacePayload.data || workspacePayload;
     const identity = user.displayName || user.email || user.uid || "authenticated user";
     const role = user.role || workspacePayload.role || "authorized user";
@@ -53,7 +54,11 @@ async function loadWorkspace() {
     const recordEntries = Object.entries(records).filter(([, value]) => Array.isArray(value));
     workspaceData.textContent = recordEntries.length && recordEntries.some(([, value]) => value.length)
       ? JSON.stringify(records, null, 2)
-      : "No workspace records yet.";
+      : role === "owner"
+        ? "No applications yet. New project inquiries and representative applications will appear here."
+        : role === "sales_rep"
+          ? "No leads assigned yet. Your owner will add leads here when they are ready."
+          : "No workspace records yet.";
     setStatus("Workspace loaded.");
   } catch (error) {
     authPlaceholder.hidden = false;

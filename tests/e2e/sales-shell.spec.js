@@ -74,7 +74,7 @@ test.describe("Sales shell acquisition UX", () => {
     await expect(page.locator("#workspace")).toBeVisible();
     await expect(page.locator("#auth-placeholder")).toBeHidden();
     await expect(page.locator("#workspace-role")).toHaveText("Signed in as Apoorv (owner)");
-    await expect(page.locator("#workspace-data")).toHaveText("No workspace records yet.");
+    await expect(page.locator("#workspace-data")).toHaveText(/No applications yet/);
   });
 
   test("resumes a redirect session and surfaces popup cancellation", async ({ page }) => {
@@ -105,5 +105,32 @@ test.describe("Sales shell acquisition UX", () => {
     await cancelPage.goto("/sales", { waitUntil: "networkidle" });
     await cancelPage.getByRole("button", { name: "Sign in to workspace" }).click();
     await expect(cancelPage.locator("#status")).toHaveText("Sign-in was cancelled. Select the button to try again.");
+  });
+
+  test("uses Firebase identity when the workspace API omits user fields", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.SALES_PLATFORM_AUTH = {
+        signIn: async () => ({
+          user: {
+            uid: "owner-2",
+            email: "owner@example.com",
+            displayName: "Apoorv",
+            getIdToken: async () => "identity-token",
+            getIdTokenResult: async () => ({ claims: { role: "owner" } }),
+          },
+        }),
+      };
+    });
+    await page.route("**/api/workspace", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ data: { applications: [] } }),
+      });
+    });
+    await page.goto("/sales", { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: "Sign in to workspace" }).click();
+    await expect(page.locator("#workspace-role")).toHaveText("Signed in as Apoorv (owner)");
+    await expect(page.locator("#workspace-data")).toHaveText(/No applications yet/);
   });
 });
