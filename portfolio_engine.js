@@ -15,13 +15,13 @@ const GRAVITY = 1600;
 setGravity(GRAVITY);
 
 // State
-let controlMode = "ambient"; // 'ambient' or 'manual'
+let controlMode = "idle"; // 'idle', 'ambient' or 'manual'
 
 // --- THE PLAYER (Procedural Graphics) ---
 const player = add([
     pos(window.innerWidth / 2, 0),
     rect(20, 40),
-    color(0, 0, 0, 0), // Fully transparent color instead of opacity(0) so children remain visible
+    opacity(0), // Hitbox is invisible
     area(),
     body(),
     anchor("bot"),
@@ -125,6 +125,14 @@ onUpdate(() => {
 
 
 // --- HYBRID CONTROLS ---
+
+// Double click to switch to ambient
+window.addEventListener("dblclick", () => {
+    if (controlMode !== "ambient") {
+        controlMode = "ambient";
+        console.log("Switched to Ambient Control");
+    }
+});
 
 onKeyDown(() => {
     if (controlMode !== "manual") {
