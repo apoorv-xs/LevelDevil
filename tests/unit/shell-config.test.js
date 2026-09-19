@@ -61,7 +61,9 @@ describe("Unified application shell", () => {
     expect(auth).toContain("signInWithRedirect");
     expect(auth).toContain("getRedirectResult");
     expect(auth).toContain("auth/popup-closed-by-user");
-    expect(config).toContain('projectId: "speeddial-9b999"');
+    expect(config).toContain('projectId: "apoorv-sales"');
+    expect(config).toContain('authDomain: "apoorv-sales.firebaseapp.com"');
+    expect(config).not.toContain("speeddial-9b999");
     expect(config).not.toContain("measurementId");
   });
 
