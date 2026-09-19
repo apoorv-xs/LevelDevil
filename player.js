@@ -18,87 +18,7 @@ function createPlayer(x, y) {
     ]);
 
     // --- VISUALS ---
-
-    // Shadow
-    const shadow = guy.add([
-        rect(16, 6),
-        anchor("center"),
-        pos(0, 0),
-        color(0, 0, 0),
-        opacity(0.3),
-        z(-1) // Behind/Below player
-    ]);
-
-    const skin = color(44, 44, 44);
-
-    // Body
-    const torso = guy.add([
-        rect(16, 20),
-        pos(0, -14),
-        anchor("bot"),
-        skin
-    ]);
-
-    // Head
-    const head = guy.add([
-        rect(12, 12),
-        pos(0, -34),
-        anchor("bot"),
-        skin
-    ]);
-
-    // Eyes
-    const leftEye = head.add([
-        rect(2, 2),
-        pos(-3, -7),
-        color(255, 255, 255),
-        anchor("center"),
-        z(1)
-    ]);
-    const rightEye = head.add([
-        rect(2, 2),
-        pos(3, -7),
-        color(255, 255, 255),
-        anchor("center"),
-        z(1)
-    ]);
-    // Blink loop
-    loop(2.5, () => {
-        leftEye.hidden = true;
-        rightEye.hidden = true;
-        wait(0.12, () => {
-            leftEye.hidden = false;
-            rightEye.hidden = false;
-        });
-    });
-
-    // Arms
-    const lArm = guy.add([
-        rect(6, 16),
-        pos(-6, -30),
-        anchor("top"),
-        skin
-    ]);
-    const rArm = guy.add([
-        rect(6, 16),
-        pos(6, -30),
-        anchor("top"),
-        skin
-    ]);
-
-    // Legs
-    const lLeg = guy.add([
-        rect(6, 18),
-        pos(-4, -18),
-        anchor("top"),
-        skin
-    ]);
-    const rLeg = guy.add([
-        rect(6, 18),
-        pos(4, -18),
-        anchor("top"),
-        skin
-    ]);
+    // (Omitted: Babylon.js 3D character takes over visuals)
 
         // --- UPDATE LOOP ---
     guy.facingLeft = false;
@@ -132,42 +52,7 @@ function createPlayer(x, y) {
             }
         }
 
-        // 2. Animation
-        if (!guy.isGrounded() && !guy.isOnRamp) {
-            // Jump Pose
-            lLeg.angle = 45;
-            rLeg.angle = -45;
-            // Arms Up Sideways ("Cheer" Pose)
-            lArm.angle = 135;
-            rArm.angle = -135;
-        } else if (isMoving) {
-            // Run Cycle (Sine Wave)
-            const t = time() * 15;
-            lLeg.angle = Math.sin(t) * 45;
-            rLeg.angle = Math.sin(t + Math.PI) * 45;
-            lArm.angle = Math.sin(t + Math.PI) * 45;
-            rArm.angle = Math.sin(t) * 45;
-        } else {
-            // Idle (Subtle Breathing)
-            lLeg.angle = 0;
-            rLeg.angle = 0;
-            lArm.angle = Math.sin(time() * 2) * 5;
-            rArm.angle = -Math.sin(time() * 2) * 5;
-            head.pos.y = -34 + Math.sin(time() * 5) * 1; // Bobbing head
-        }
-
-        // 3. Shadow Logic (Dynamic sizing based on height)
-        if (!guy.isGrounded()) {
-            // Shrink when in air
-            const heightOffset = Math.min(Math.abs(guy.pos.y), 100) / 100; // Rough estimation if needed, or just simpler
-            // Just hardcode shrink for jump state for simplicity as we don't strictly track floor distance easily everywhere
-            shadow.scale = vec2(0.6, 0.6);
-            shadow.opacity = 0.15;
-        } else {
-            // Shadow reset on ground
-            shadow.scale = vec2(1, 1);
-            shadow.opacity = 0.3;
-        }
+        // (Omitted: Babylon.js handles 3D animations)
 
         // 4. Directional Flipping
         const currentScaleX = Math.abs(guy.scale.x);

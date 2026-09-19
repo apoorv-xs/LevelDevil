@@ -89,6 +89,18 @@
         }
 
         /* --- CANVAS OVERLAY --- */
+        #babylon-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 50; /* Above DOM, below Kaboom */
+            pointer-events: none;
+            outline: none;
+            background: transparent;
+        }
+
         #game-container {
             position: fixed;
             top: 0;
@@ -196,6 +208,9 @@
         </section>
     </main>
 
+    <!-- BABYLON.JS 3D CANVAS -->
+    <canvas id="babylon-canvas"></canvas>
+
     <!-- KABOOM CONTAINER -->
     <div id="game-container">
         <canvas id="game-canvas"></canvas>
@@ -210,6 +225,7 @@
         <button class="btn-dir" id="btn-jump">^</button>
     </div>
 
+    <script src="babylon.min.js"></script>
     <script src="shell.js"></script>
 </body>
 </html>

@@ -60,7 +60,15 @@ onLoad(() => {
     document.querySelectorAll('[data-kaboom-body="true"]').forEach(el => { resizeObserver.observe(el); });
     resizeObserver.observe(document.body);
 
+    // --- BABYLON 3D BRIDGE ---
+    if (window.Engine3D) {
+        window.Engine3D.init();
+    }
+    let is3DReady = false;
+
     // --- CAMERA & SCROLL SYNC ---
+    debug.inspect = false; // Turn off hitboxes now that we have 3D!
+    
     onUpdate(() => {
         camPos(window.innerWidth / 2, window.scrollY + window.innerHeight / 2);
         
@@ -71,6 +79,19 @@ onLoad(() => {
             player.pos = vec2(window.innerWidth / 2, viewTop + 50);
             player.vel.y = 0;
             player.vel.x = 0;
+        }
+
+        // Initialize 3D Player if engine is ready
+        if (window.Engine3D && window.Engine3D.isReady && !is3DReady) {
+            if (window.Player3D && window.Engine3D.scene) {
+                window.Player3D.create(window.Engine3D.scene);
+                is3DReady = true;
+            }
+        }
+
+        // Sync 3D Player
+        if (is3DReady) {
+            window.Player3D.syncWith2D(player);
         }
     });
 
