@@ -110,9 +110,10 @@
         <canvas id="game-canvas"></canvas>
     </div>
 
-    <!-- DEBUG: ERROR HANDLER -->
+    <!-- DEBUG ERROR HANDLER: gated behind ?debug=1, never leaks internals to visitors -->
     <script>
         window.onerror = function (msg, url, lineNo, columnNo, error) {
+            if (!/[?&]debug=1/.test(location.search)) return false;
             const div = document.createElement("div");
             div.style.position = "fixed";
             div.style.top = "0";
