@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en" class="dark h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SprintDial — Outbound Calling Workstation</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0A0B0D">
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#F5F5F7',
+              500: '#71717A',
+              600: '#52525B',
+              700: '#3F3F46',
+            },
+            canvas: '#0A0B0D',
+            surface: {
+              sidebar: '#101114',
+              card: '#15161B',
+              elevated: '#1A1B22',
+              input: '#121317',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif],
+            mono: ['"JetBrains Mono"', monospace],
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Bespoke Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+    .custom-scrollbar {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+    }
+
+    /* Timing Badges Required by Automated Test Suite */
+    .badge-optimal {
+      background: rgba(16, 185, 129, 0.1) !important;
+      color: #34D399 !important;
+      border: 1px solid rgba(16, 185, 129, 0.2) !important;
+    }
+    .badge-rush {
+      background: rgba(244, 63, 94, 0.1) !important;
+      color: #FB7185 !important;
+      border: 1px solid rgba(244, 63, 94, 0.2) !important;
+    }
+    .badge-moderate {
+      background: rgba(245, 158, 11, 0.1) !important;
+      color: #FBBF24 !important;
+      border: 1px solid rgba(245, 158, 11, 0.2) !important;
+    }
+
+    /* Studio Subtle Glass Panel */
+    .studio-panel {
+      background: #14151A;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .studio-panel-elevated {
+      background: #1A1B22;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  </style>
+</head>
+<body class="bg-[#0A0B0D] text-neutral-200 h-full flex flex-col font-sans antialiased select-none overflow-x-hidden overflow-y-hidden">
+
+  <!-- TOP APP BAR (50px Sleek Studio Navigation) -->
+  <header class="h-[50px] bg-[#101114] border-b border-white/[0.06] px-2.5 sm:px-5 flex items-center justify-between shrink-0 z-30 overflow-hidden">
+    <!-- Left: Brand & Real-Time Sync Indicator -->
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2.5">
+        <div class="w-6 h-6 rounded-md bg-white/[0.08] border border-white/15 flex items-center justify-center text-white">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="font-extrabold text-xs tracking-wider text-white font-mono uppercase">SprintDial</span>
+          <span class="text-[10px] font-mono text-neutral-400 bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 rounded tracking-wide hidden sm:inline">On Apoorv's Behalf</span>
+        </div>
+      </div>
+
+      <!-- Realtime Workstation Sync Indicator -->
+      <div class="hidden md:flex items-center gap-2 pl-3 border-l border-white/[0.08] text-[11px] font-mono">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-neutral-400">Caller:</span>
+        <span id="userName" class="text-neutral-200 font-semibold">Apoorv</span>
+      </div>
+    </div>
+
+    <!-- Center: Universal 3-Option Navigation & Momentum -->
+    <div class="flex items-center gap-2 sm:gap-4">
+      <!-- Universal Nav (Home / Contact Him / Workspace) -->
+      <nav class="flex items-center gap-1 font-mono text-[11px] bg-black/40 border border-white/[0.08] p-0.5 rounded-lg" aria-label="Primary navigation">
+        <a href="/" class="px-2 sm:px-2.5 py-1 rounded text-neutral-400 hover:text-white hover:bg-white/[0.06] transition">Home</a>
+        <a href="/sales" class="px-2 sm:px-2.5 py-1 rounded text-neutral-400 hover:text-white hover:bg-white/[0.06] transition">Contact Him</a>
+        <a href="/workspace/" class="px-2 sm:px-2.5 py-1 rounded font-bold bg-white text-black shadow-sm" aria-current="page">Workspace</a>
+      </nav>
+
+      <!-- Minimalist Daily Dials Progress -->
+      <div class="hidden xl:flex items-center gap-2.5 bg-black/40 border border-white/[0.06] px-3 py-1 rounded-full">
+        <span class="text-[11px] font-mono text-neutral-400">Momentum:</span>
+        <div class="w-16 sm:w-24 bg-white/10 h-1.5 rounded-full overflow-hidden">
+          <div id="dialProgressBar" class="bg-white h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+        <span id="dialCountText" class="font-mono text-xs font-bold text-white">0 / 20</span>
+      </div>
+    </div>
+
+    <!-- Right: Utility Controls & Admin -->
+    <div class="flex items-center gap-1.5 sm:gap-2">
+      <!-- Shortcuts Hint -->
+      <button onclick="toggleShortcutsModal()" title="Keyboard Shortcuts" class="px-2 py-1 rounded-md text-[11px] font-mono bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] transition hidden sm:inline-flex items-center gap-1">
+        <span>Keys</span>
+      </button>
+
+      <!-- Audio SFX Toggle -->
+      <button id="sfxToggleBtn" onclick="toggleAudioSFX()" title="Toggle Sound Effects" class="p-1.5 rounded-md bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] transition">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+      </button>
+
+      <!-- Owner Admin Trigger -->
+      <button id="adminBtnHeader" onclick="openAdminModal()" class="px-2.5 py-1 rounded-md text-xs font-mono font-medium bg-white/[0.05] hover:bg-white/[0.09] text-neutral-200 border border-white/[0.08] transition flex items-center gap-1.5 shadow-sm">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        <span class="hidden sm:inline">Admin Console</span><span class="sm:hidden">Admin</span>
+      </button>
+
+      <!-- User Chip & Logout -->
+      <div class="flex items-center gap-2 pl-2 border-l border-white/[0.08]">
+        <img id="userImg" src="https://ui-avatars.com/api/?name=Apoorv&background=222328&color=FFFFFF" class="w-6 h-6 rounded-full border border-white/20 object-cover" alt="User">
+        <span id="userEmail" class="text-[11px] font-mono text-neutral-400 hidden xl:inline">apoorv@eravex.studio</span>
+        <button onclick="signOutGoogle()" title="Sign Out" class="p-1 rounded text-xs text-neutral-400 hover:text-rose-400 transition">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MULTI-CALLER COLLISION GUARD BANNER (Hidden unless remote lead lock occurs) -->
+  <div id="lockNotificationBar" class="hidden bg-amber-950/80 border-b border-amber-600/40 px-4 py-1 text-xs text-amber-200 font-mono flex items-center justify-between shrink-0">
+    <span id="liveStatusMsg">Connecting concurrency listener...</span>
+    <span class="text-[10px] text-amber-300/80">Real-Time Collision Guard Active</span>
+  </div>
+
+  <!-- MOBILE-RESPONSIVE VIEW SWITCHER TABS (< 768px) -->
+  <div class="md:hidden bg-[#101114] border-b border-white/[0.06] px-3 py-1.5 flex items-center justify-center shrink-0">
+    <div class="flex rounded-lg bg-black/40 p-0.5 text-xs border border-white/[0.06] w-full font-mono">
+      <button id="mobileTabQueue" onclick="showMobilePane('queue')" class="flex-1 py-1.5 rounded-md font-semibold text-neutral-950 bg-white shadow-sm transition text-center">
+        Queue (<span id="mobileQueueCount">60</span>)
+      </button>
+      <button id="mobileTabCockpit" onclick="showMobilePane('cockpit')" class="flex-1 py-1.5 rounded-md font-medium text-neutral-400 hover:text-white transition text-center">
+        Cockpit
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN WORKSTATION CANVAS (3-Column Desktop Architecture) -->
+  <div class="flex-1 flex flex-col md:flex-row overflow-hidden pb-16 md:pb-0">
+
+    <!-- ================================================================= -->
+    <!-- COLUMN 1: PROSPECT QUEUE (Sidebar: 300px - 320px)                 -->
+    <!-- ================================================================= -->
+    <div id="queuePane" class="w-full md:w-72 lg:w-80 border-r border-white/[0.06] bg-[#101114] flex flex-col shrink-0 overflow-hidden">
+      <!-- Territory Filter Segmented Control -->
+      <div class="p-2.5 border-b border-white/[0.06] flex items-center justify-between gap-2 bg-[#121318]">
+        <div class="flex rounded-lg bg-black/40 p-0.5 text-xs border border-white/[0.06] font-mono">
+          <button onclick="filterCity('All')" class="city-tab active px-2.5 py-1 rounded-md font-semibold text-neutral-950 bg-white shadow-sm transition">All</button>
+          <button onclick="filterCity('Kochi')" class="city-tab px-2.5 py-1 rounded-md font-medium text-neutral-400 hover:text-white transition">Kochi</button>
+          <button onclick="filterCity('Bangalore')" class="city-tab px-2.5 py-1 rounded-md font-medium text-neutral-400 hover:text-white transition">BLR</button>
+          <button onclick="filterCity('Hyderabad')" class="city-tab px-2.5 py-1 rounded-md font-medium text-neutral-400 hover:text-white transition">HYD</button>
+        </div>
+        <span id="leadCountBadge" class="text-[11px] font-mono text-neutral-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]">60 Leads</span>
+      </div>
+
+      <!-- Search Input -->
+      <div class="p-2.5 border-b border-white/[0.06] bg-[#0E0F13]">
+        <div class="relative">
+          <input 
+            type="text" 
+            id="queueSearchInput" 
+            oninput="handleSearch(this.value)" 
+            placeholder="Search doctor, clinic, hub (/ to focus)..." 
+            class="w-full bg-[#15161B] border border-white/[0.08] rounded-lg pl-8 pr-3 py-1.5 text-xs text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-white/30 transition font-sans"
+          />
+          <span class="absolute left-2.5 top-2 text-neutral-500">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <!-- Prospect Queue List Container -->
+      <div id="queueList" class="flex-1 overflow-y-auto divide-y divide-white/[0.03] custom-scrollbar"></div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- COLUMN 2 & 3: COCKPIT CONTAINER (Teleprompter + Dossier)           -->
+    <!-- ================================================================= -->
+    <div id="cockpitPane" class="flex-1 hidden md:flex flex-col xl:flex-row overflow-hidden bg-[#0A0B0D]">
+
+      <!-- =============================================================== -->
+      <!-- COLUMN 2 (CENTER): LIVE CALL ENGINE & TELEPROMPTER HUD          -->
+      <!-- =============================================================== -->
+      <div id="callConsolePane" class="flex-1 flex flex-col overflow-y-auto p-2.5 sm:p-5 lg:p-6 space-y-3.5 custom-scrollbar max-w-full overflow-x-hidden">
+
+        <!-- SUB-TAB SWITCHER FOR MOBILE/TABLET (< 1280px) -->
+        <div class="xl:hidden flex rounded-lg bg-black/40 p-0.5 border border-white/[0.06] text-xs font-mono shrink-0">
+          <button id="cockpitSubTabCall" onclick="switchCockpitSubTab('call')" class="flex-1 py-1.5 rounded-md font-semibold text-neutral-950 bg-white shadow-sm transition text-center">
+            Live Script & Call
+          </button>
+          <button id="cockpitSubTabDossier" onclick="switchCockpitSubTab('dossier')" class="flex-1 py-1.5 rounded-md font-medium text-neutral-400 hover:text-white transition text-center">
+            Audit Dossier
+          </button>
+        </div>
+
+        <!-- 1. ACTIVE PROSPECT HERO HEADER (Untruncated, Studio Layout) -->
+        <div class="studio-panel rounded-xl p-3 sm:p-5 relative overflow-hidden shrink-0 max-w-full">
+          <div id="lockedBadge" class="hidden absolute top-0 right-0 bg-rose-600 text-white font-extrabold text-[10px] uppercase px-3 py-1 rounded-bl-lg font-mono tracking-wider animate-pulse shadow-lg">
+            IN CALL BY ANOTHER CALLER
+          </div>
+
+          <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-3 sm:gap-4">
+            <!-- Full Lead Information -->
+            <div class="space-y-2 min-w-0 flex-1">
+              <div>
+                <h1 id="activeName" class="text-lg sm:text-2xl font-extrabold text-white tracking-tight leading-snug break-words">Select a Prospect</h1>
+                <p class="text-xs text-neutral-400 mt-1 flex items-center gap-1.5 sm:gap-2 flex-wrap font-sans">
+                  <span>Stakeholder: <strong id="activeDM" class="text-neutral-200 font-semibold">--</strong></span>
+                  <span class="text-neutral-700">•</span>
+                  <span>Hub: <span id="activeCity" class="text-neutral-300">--</span></span>
+                  <span class="text-neutral-700">•</span>
+                  <a id="activeSiteLink" href="#" target="_blank" class="text-neutral-300 hover:text-white inline-flex items-center gap-1 font-medium underline decoration-white/20 hover:decoration-white">
+                    <span>Live Website</span>
+                    <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                      <polyline points="15 3 21 3 21 9"></polyline>
+                      <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                  </a>
+                  <span class="text-neutral-700">•</span>
+                  <button onclick="openClientTeardownModal()" class="text-neutral-300 hover:text-white inline-flex items-center gap-1 font-medium underline decoration-white/20 hover:decoration-white">
+                    <span>View Teardown</span>
+                  </button>
+                </p>
+              </div>
+
+              <!-- Meta Status Chips Strip -->
+              <div class="flex items-center gap-1.5 flex-wrap pt-0.5">
+                <span id="activeRating" class="text-[11px] bg-amber-400/10 text-amber-300 font-mono px-2 py-0.5 rounded border border-amber-400/20 font-bold">★ 4.8</span>
+                <span id="activeType" class="text-[11px] font-mono px-2 py-0.5 rounded bg-white/[0.05] text-neutral-300 border border-white/[0.08] font-medium">UPGRADE</span>
+                <span id="activeFee" class="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-bold">Floor ₹50,000</span>
+                <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-neutral-800 text-neutral-300 border border-white/[0.08] font-medium hidden sm:inline">₹4,999 Audit Free</span>
+                <span id="currentLockStatus" class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono text-[10px] font-medium">🟢 Available to Dial</span>
+              </div>
+
+              <!-- Detected Flaws Container -->
+              <div id="flawsContainer" class="flex items-center gap-1.5 flex-wrap pt-1"></div>
+            </div>
+
+            <!-- Primary Actions & Stepper Cluster -->
+            <div class="flex flex-col sm:items-end gap-2 pt-1 max-w-full w-full sm:w-auto">
+              <!-- Tactile Queue Position Stepper (Prev / Next) -->
+              <div class="flex items-center justify-between sm:justify-end gap-1.5 w-full sm:w-auto">
+                <span id="leadQueuePosition" class="text-[11px] font-mono text-neutral-400 bg-white/[0.04] border border-white/[0.08] px-2 py-1 rounded-md">Lead 1 of 65</span>
+                <div class="inline-flex rounded-lg bg-black/40 border border-white/[0.08] p-0.5">
+                  <button 
+                    id="btnPrevLeadHero" 
+                    onclick="advanceLead(-1)" 
+                    title="Previous Prospect (Shortcut: K)" 
+                    class="px-2.5 py-1 rounded-md text-xs font-mono text-neutral-300 hover:text-white hover:bg-white/[0.08] transition flex items-center gap-1"
+                  >
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                    <span>Prev</span>
+                    <kbd class="text-[9px] text-neutral-500 bg-white/5 px-1 rounded ml-0.5 hidden lg:inline">K</kbd>
+                  </button>
+                  <button 
+                    id="btnNextLeadHero" 
+                    onclick="advanceLead(1)" 
+                    title="Next Prospect (Shortcut: J)" 
+                    class="px-2.5 py-1 rounded-md text-xs font-mono text-neutral-300 hover:text-white hover:bg-white/[0.08] transition flex items-center gap-1"
+                  >
+                    <span>Next</span>
+                    <kbd class="text-[9px] text-neutral-500 bg-white/5 px-1 rounded mr-0.5 hidden lg:inline">J</kbd>
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Call, WhatsApp and DNC Buttons -->
+              <div class="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto flex-wrap sm:flex-nowrap">
+                <a 
+                  id="callActionBtn" 
+                  href="#" 
+                  onclick="handleCallInitiated()"
+                  class="flex-1 sm:flex-initial px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs tracking-wide shadow-md shadow-emerald-950/40 transition flex items-center justify-center gap-2"
+                >
+                  <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                  </svg>
+                  <div class="text-left leading-tight">
+                    <div class="text-[9px] text-emerald-200 uppercase font-mono tracking-wider">Dial Prospect</div>
+                    <div id="callPhoneText" class="font-mono text-xs font-bold truncate">+91 00000 00000</div>
+                  </div>
+                </a>
+
+                <a 
+                  id="whatsappActionBtn" 
+                  href="#" 
+                  target="_blank" 
+                  class="px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.09] text-emerald-300 border border-emerald-500/30 font-semibold text-xs transition flex items-center justify-center gap-1.5"
+                >
+                  <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                  </svg>
+                  <span>WhatsApp</span>
+                </a>
+
+                <button 
+                  onclick="markDNC()" 
+                  title="Mark Do-Not-Call (Blacklist)" 
+                  class="p-2 sm:p-2.5 rounded-lg bg-white/[0.04] hover:bg-rose-950/30 text-neutral-400 hover:text-rose-400 border border-white/[0.06] hover:border-rose-800/30 transition shrink-0"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- In-Call Elapsed Timer (Hidden when inactive) -->
+          <div id="callTimerBox" class="hidden mt-3 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-xs font-mono">
+            <span class="text-emerald-400 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              Live Call In Progress
+            </span>
+            <span id="callTimerDigits" class="font-bold text-white bg-black/40 px-2 py-0.5 rounded border border-white/10">00:00</span>
+          </div>
+        </div>
+
+        <!-- 2. THE TELEPROMPTER HERO CARD (Unified Single-Row Toolbar) -->
+        <div class="studio-panel rounded-xl overflow-hidden shadow-lg border border-white/[0.08] flex flex-col shrink-0">
+          <!-- Sleek Consolidated Toolbar -->
+          <div class="bg-[#121318] px-2.5 sm:px-4 py-2 border-b border-white/[0.06] flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
+            <!-- Mode Switcher -->
+            <div class="flex rounded-md bg-black/50 p-0.5 text-xs border border-white/[0.06] font-mono">
+              <button id="tabModePitch" onclick="setScriptMode('pitch')" class="px-2 sm:px-2.5 py-1 rounded font-semibold text-neutral-950 bg-white shadow-sm transition text-[11px] sm:text-xs">
+                Main Pitch
+              </button>
+              <button id="tabModeGatekeeper" onclick="setScriptMode('gatekeeper')" class="px-2 sm:px-2.5 py-1 rounded font-medium text-neutral-400 hover:text-white transition text-[11px] sm:text-xs">
+                Gatekeeper
+              </button>
+              <button id="tabModeChallenge" onclick="setScriptMode('challenge')" class="px-2 sm:px-2.5 py-1 rounded font-medium text-amber-400 hover:text-amber-300 transition flex items-center gap-1 text-[11px] sm:text-xs">
+                <svg class="w-3 h-3 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
+                </svg>
+                <span>15s Challenge</span>
+              </button>
+            </div>
+
+            <!-- Pitch Angle Pills -->
+            <div id="angleSwitcherRow" class="flex items-center gap-1 text-[10px] sm:text-[11px] font-mono">
+              <button onclick="setAngle('speed')" class="angle-btn active px-2 py-0.5 rounded bg-white/[0.1] text-white border border-white/[0.15] font-medium">Speed</button>
+              <button onclick="setAngle('commission')" class="angle-btn px-2 py-0.5 rounded text-neutral-400 hover:text-white transition">Commission</button>
+              <button onclick="setAngle('visual')" class="angle-btn px-2 py-0.5 rounded text-neutral-400 hover:text-white transition">3D Visual</button>
+            </div>
+
+            <!-- Language Selector -->
+            <div id="scriptLangSelector" class="flex rounded-md bg-black/50 p-0.5 text-xs border border-white/[0.06] font-mono">
+              <button onclick="setLang('ml')" class="lang-btn active px-2 sm:px-2.5 py-0.5 rounded font-semibold text-neutral-950 bg-white shadow-sm transition text-[11px] sm:text-xs">മലയാളം</button>
+              <button onclick="setLang('manglish')" class="lang-btn px-2 sm:px-2.5 py-0.5 rounded font-medium text-neutral-400 hover:text-white transition text-[11px] sm:text-xs">Manglish</button>
+              <button onclick="setLang('en')" class="lang-btn px-2 sm:px-2.5 py-0.5 rounded font-medium text-neutral-400 hover:text-white transition text-[11px] sm:text-xs">English</button>
+            </div>
+          </div>
+
+          <!-- Doctor / Owner Live Phone Challenge Banner -->
+          <div id="livePhoneChallengeCard" onclick="toggleLivePhoneChallenge()" class="bg-[#151410] border-b border-amber-500/20 px-3 sm:px-4 py-2 flex items-center justify-between gap-2 cursor-pointer hover:bg-[#1A1813] transition">
+            <div class="flex items-center gap-2 min-w-0">
+              <svg class="w-3.5 h-3.5 text-amber-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+              </svg>
+              <span class="text-xs font-mono text-amber-300 font-bold truncate">15-Second Live Phone Challenge:</span>
+              <span class="text-xs text-neutral-300 hidden md:inline">Ask owner to test mobile latency & lack of thumb button live on phone</span>
+            </div>
+            <button onclick="toggleLivePhoneChallenge()" class="px-2.5 py-1 rounded bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 font-mono text-[11px] font-semibold transition shrink-0">
+              Launch Prompt
+            </button>
+          </div>
+
+          <!-- Spoken Script Area (Editorial Reading Experience) -->
+          <div class="p-4 sm:p-6 bg-[#0E0F14]">
+            <div 
+              id="scriptContentBox" 
+              class="text-[15px] sm:text-[18px] leading-[1.75] sm:leading-[1.8] text-neutral-100 font-normal font-sans tracking-normal min-h-[90px] break-words"
+            >
+              Loading verified practitioner script...
+            </div>
+          </div>
+
+          <!-- 3. INTERACTIVE 6-OBJECTION SOUNDBOARD -->
+          <div class="bg-[#121318] border-t border-white/[0.06] p-2.5 sm:p-4 space-y-2.5">
+            <div class="flex items-center justify-between text-[11px] font-mono text-neutral-400">
+              <span class="uppercase font-semibold tracking-wider flex items-center gap-1.5 text-neutral-300">
+                <svg class="w-3.5 h-3.5 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <span>1-Tap Objection Soundboard</span>
+              </span>
+              <span class="text-[10px] text-neutral-500 hidden sm:inline">Instant rebuttals in active language</span>
+            </div>
+
+            <!-- 6 Objection Buttons Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+              <button id="btnObj0" onclick="toggleObjection(0)" class="obj-btn text-left p-2 rounded-lg bg-[#17181F] hover:bg-[#1D1E26] text-xs font-medium text-neutral-200 border border-white/[0.05] transition flex items-center justify-between min-w-0">
+                <span class="truncate">Send email / brochure</span>
+                <span class="text-[10px] font-mono text-neutral-500 ml-1 shrink-0">#1</span>
+              </button>
+              <button id="btnObj1" onclick="toggleObjection(1)" class="obj-btn text-left p-2 rounded-lg bg-[#17181F] hover:bg-[#1D1E26] text-xs font-medium text-neutral-200 border border-white/[0.05] transition flex items-center justify-between min-w-0">
+                <span class="truncate">Have agency / web guy</span>
+                <span class="text-[10px] font-mono text-neutral-500 ml-1 shrink-0">#2</span>
+              </button>
+              <button id="btnObj2" onclick="toggleObjection(2)" class="obj-btn text-left p-2 rounded-lg bg-[#17181F] hover:bg-[#1D1E26] text-xs font-medium text-neutral-200 border border-white/[0.05] transition flex items-center justify-between min-w-0">
+                <span class="truncate">Not looking to invest</span>
+                <span class="text-[10px] font-mono text-neutral-500 ml-1 shrink-0">#3</span>
+              </button>
+              <button id="btnObj3" onclick="toggleObjection(3)" class="obj-btn text-left p-2 rounded-lg bg-[#17181F] hover:bg-[#1D1E26] text-xs font-medium text-neutral-200 border border-white/[0.05] transition flex items-center justify-between min-w-0">
+                <span class="truncate">Get leads from Practo</span>
+                <span class="text-[10px] font-mono text-neutral-500 ml-1 shrink-0">#4</span>
+              </button>
+              <button id="btnObj4" onclick="toggleObjection(4)" class="obj-btn text-left p-2 rounded-lg bg-[#17181F] hover:bg-[#1D1E26] text-xs font-medium text-neutral-200 border border-white/[0.05] transition flex items-center justify-between min-w-0">
+                <span class="truncate">Nephew built our site</span>
+                <span class="text-[10px] font-mono text-neutral-500 ml-1 shrink-0">#5</span>
+              </button>
+              <button id="btnObj5" onclick="toggleObjection(5)" class="obj-btn text-left p-2 rounded-lg bg-[#17181F] hover:bg-[#1D1E26] text-xs font-medium text-neutral-200 border border-white/[0.05] transition flex items-center justify-between min-w-0">
+                <span class="truncate">Instagram is enough</span>
+                <span class="text-[10px] font-mono text-neutral-500 ml-1 shrink-0">#6</span>
+              </button>
+            </div>
+
+            <!-- Active Objection Rebuttal Slideout -->
+            <div id="objectionBox" class="hidden bg-[#151410] border border-amber-500/30 rounded-lg p-2.5 sm:p-3 space-y-1 text-xs transition">
+              <div class="flex items-center justify-between font-mono text-[10px] text-amber-300 font-bold">
+                <span>REBUTTAL SCRIPT</span>
+                <span id="objectionLangIndicator" class="uppercase bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-700/50">ML</span>
+              </div>
+              <p id="objectionText" class="text-neutral-200 leading-relaxed font-sans text-xs sm:text-sm break-words"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. POST-CALL OUTCOME LOGGER & DISCOVERY HANDOFF -->
+        <div class="studio-panel rounded-xl p-3 sm:p-4 space-y-3 shrink-0">
+          <div class="flex items-center justify-between text-[11px] font-mono text-neutral-400">
+            <span class="uppercase font-semibold tracking-wider text-neutral-300">Call Outcome & Discovery Handoff</span>
+            <button onclick="resetLocalDispositions()" class="text-[10px] text-neutral-500 hover:text-neutral-300">Reset Session</button>
+          </div>
+
+          <!-- Outcome Button Row -->
+          <div class="flex flex-wrap gap-2">
+            <button onclick="logOutcome('discovery_booked')" class="flex-1 min-w-[140px] py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition flex items-center justify-center gap-1.5">
+              <span>Discovery Booked</span>
+            </button>
+            <button onclick="logOutcome('connected_callback')" class="py-2 px-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-neutral-200 border border-white/[0.08] font-medium text-xs transition flex items-center gap-1">
+              <span>Callback</span>
+            </button>
+            <button onclick="logOutcome('gatekeeper_rejection')" class="py-2 px-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-neutral-200 border border-white/[0.08] font-medium text-xs transition flex items-center gap-1">
+              <span>Gatekeeper</span>
+            </button>
+            <button onclick="logOutcome('busy')" class="py-2 px-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] font-semibold text-xs transition flex items-center gap-1">
+              <span>Busy / No Ans</span>
+            </button>
+            <button onclick="logOutcome('not_interested')" class="py-2 px-3 rounded-lg bg-white/[0.04] hover:bg-rose-950/30 text-neutral-300 hover:text-rose-300 border border-white/[0.08] font-medium text-xs transition flex items-center gap-1">
+              <span>Not Interested</span>
+            </button>
+          </div>
+
+          <!-- Scheduling & Proposal Link Row -->
+          <div class="flex flex-col sm:flex-row items-center gap-2 pt-1">
+            <input 
+              type="datetime-local" 
+              id="discoveryInput" 
+              class="w-full sm:flex-1 bg-[#15161B] border border-white/[0.08] rounded-lg px-3 py-1.5 text-xs font-mono text-neutral-200 focus:outline-none focus:border-white/30"
+            />
+            <button onclick="generateGoogleCalendarInvite()" class="w-full sm:w-auto px-3.5 py-1.5 rounded-lg bg-white text-neutral-950 hover:bg-neutral-200 font-mono text-xs font-semibold shadow-sm transition flex items-center justify-center gap-1 shrink-0">
+              <span>Google Meet ↗</span>
+            </button>
+            <button onclick="generateProposalForActiveLead()" class="w-full sm:w-auto px-3.5 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-neutral-200 border border-white/[0.08] font-mono text-xs font-semibold transition flex items-center justify-center gap-1 shrink-0">
+              <span>Proposal Brief</span>
+            </button>
+            <div class="flex items-center gap-1.5 w-full sm:w-auto">
+              <button id="btnPrevLeadHandoff" onclick="advanceLead(-1)" title="Previous Prospect (K)" class="flex-1 sm:flex-initial px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.08] font-mono text-xs font-semibold transition flex items-center justify-center gap-1 shrink-0">
+                <span>← Prev</span>
+              </button>
+              <button id="btnNextLeadHandoff" onclick="saveAndNext()" title="Save Notes & Advance (J)" class="flex-1 sm:flex-initial px-3.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.08] font-mono text-xs font-semibold transition flex items-center justify-center gap-1 shrink-0">
+                <span>Save & Next →</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Voice Memo Debrief Section -->
+          <div class="pt-2 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div class="flex items-center gap-2 text-xs text-neutral-400">
+              <svg class="w-3.5 h-3.5 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="22"></line>
+              </svg>
+              <span>15s Voice Memo Debrief: Record audio note for automated pain point extraction</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="recordVoiceBtn" onclick="toggleVoiceRecording()" class="px-3 py-1 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/40 font-mono text-xs font-semibold transition flex items-center gap-1.5 shrink-0">
+                <span id="recordDot" class="w-2 h-2 rounded-full bg-rose-500"></span>
+                <span id="recordText">Record Voice Memo</span>
+              </button>
+              <button id="aiTranscribeBtn" onclick="analyzeVoiceMemoWithGemini()" class="hidden px-2.5 py-1 rounded-lg bg-purple-950/40 text-purple-300 border border-purple-800/40 font-mono text-xs">Analyze</button>
+            </div>
+          </div>
+
+          <!-- Hidden/Collapsible Elements Required by Test Suite -->
+          <audio id="audioPlayback" class="hidden"></audio>
+          <div id="voiceAiAnalysisBox" class="hidden bg-[#15161B] border border-white/10 rounded-lg p-3 space-y-2 text-xs">
+            <div class="flex items-center justify-between font-mono">
+              <span class="text-blue-400 font-bold">Gemini AI Voice Debrief:</span>
+              <span id="aiSentimentBadge" class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px]">Positive</span>
+            </div>
+            <p id="aiActionStrategy" class="text-neutral-300"></p>
+            <p id="aiTranscriptText" class="text-neutral-400 text-[11px] italic"></p>
+          </div>
+          <textarea id="callNotesInput" rows="2" placeholder="Private call notes (auto-synced with voice debrief)..." class="w-full bg-[#15161B] border border-white/[0.08] rounded-lg p-2 text-xs text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-white/30 font-sans"></textarea>
+        </div>
+
+      </div>
+
+      <!-- =============================================================== -->
+      <!-- COLUMN 3 (RIGHT): EXECUTIVE INTELLIGENCE DOSSIER                -->
+      <!-- =============================================================== -->
+      <div id="dossierPane" class="hidden xl:flex flex-col w-full xl:w-96 border-t xl:border-t-0 xl:border-l border-white/[0.06] bg-[#101114] overflow-y-auto p-4 sm:p-5 space-y-4 shrink-0 custom-scrollbar">
+
+        <div class="flex items-center justify-between font-mono text-[11px] text-neutral-400 border-b border-white/[0.06] pb-2">
+          <span class="uppercase font-bold tracking-wider text-neutral-300 flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"></line>
+              <line x1="12" y1="20" x2="12" y2="4"></line>
+              <line x1="6" y1="20" x2="6" y2="14"></line>
+            </svg>
+            <span>Executive Audit Dossier</span>
+          </span>
+          <span class="text-[10px] text-neutral-400 font-mono">Verified Telemetry</span>
+        </div>
+
+        <!-- 1. THE 4 HERO TRIAGE SIGNALS (Unified Precision Studio Grid) -->
+        <div class="grid grid-cols-2 gap-2">
+          <!-- Revenue Leak -->
+          <div class="bg-[#15161B] border border-white/[0.06] rounded-xl p-3 space-y-1 hover:border-white/[0.12] transition">
+            <div class="text-[10px] font-mono text-neutral-400 flex items-center gap-1.5 uppercase font-medium">
+              <span class="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0"></span>
+              <span>Revenue Leak</span>
+            </div>
+            <div id="revenueLeakBadge" class="font-bold text-xs text-white leading-tight">₹1,80,000/mo Leak</div>
+            <div class="text-[10px] text-neutral-400">Cellular 4G drop-off</div>
+          </div>
+
+          <!-- DPDP Act Status -->
+          <div class="bg-[#15161B] border border-white/[0.06] rounded-xl p-3 space-y-1 hover:border-white/[0.12] transition">
+            <div class="text-[10px] font-mono text-neutral-400 flex items-center gap-1.5 uppercase font-medium">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span>
+              <span>DPDP Status</span>
+            </div>
+            <div id="dpdpComplianceBadge" class="font-bold text-xs text-white leading-tight">Non-Compliant</div>
+            <div id="dpdpRiskBadge" class="text-[10px] text-amber-400 font-medium">High Legal Risk</div>
+          </div>
+
+          <!-- Thumb Zone -->
+          <div class="bg-[#15161B] border border-white/[0.06] rounded-xl p-3 space-y-1 hover:border-white/[0.12] transition">
+            <div class="text-[10px] font-mono text-neutral-400 flex items-center gap-1.5 uppercase font-medium">
+              <span class="w-1.5 h-1.5 rounded-full bg-neutral-400 shrink-0"></span>
+              <span>Thumb-Zone</span>
+            </div>
+            <div id="thumbZoneBadge" class="font-bold text-xs text-white leading-tight">No Sticky Bar</div>
+            <div class="text-[10px] text-neutral-400">Live phone challenge</div>
+          </div>
+
+          <!-- Friction Index -->
+          <div class="bg-[#15161B] border border-white/[0.06] rounded-xl p-3 space-y-1 hover:border-white/[0.12] transition">
+            <div class="text-[10px] font-mono text-neutral-400 flex items-center gap-1.5 uppercase font-medium">
+              <span class="w-1.5 h-1.5 rounded-full bg-neutral-400 shrink-0"></span>
+              <span>Friction</span>
+            </div>
+            <div id="bookingFrictionBadge" class="font-bold text-xs text-white leading-tight">7 Steps</div>
+            <div id="bookingSeverityBadge" class="text-[10px] text-amber-400 font-medium">Severe Drop-off</div>
+          </div>
+        </div>
+
+        <!-- 2. TECHNICAL TELEMETRY (Structured Property Sheet) -->
+        <div class="bg-[#15161B] border border-white/[0.06] rounded-xl divide-y divide-white/[0.04] text-xs">
+          <div class="p-2.5 flex items-center justify-between">
+            <span class="text-[11px] font-mono text-neutral-400">Business Timing:</span>
+            <span id="timingBadge" class="font-mono text-[11px] font-semibold text-amber-300">Moderate Availability</span>
+          </div>
+          <div class="p-2.5 flex items-center justify-between">
+            <span class="text-[11px] font-mono text-neutral-400">Mobile Speed & LCP:</span>
+            <span class="font-mono text-[11px] text-white">
+              <strong id="speedScore" class="text-rose-400">32/100</strong> • <span id="lcpTime" class="text-neutral-300">4.1s</span>
+            </span>
+          </div>
+          <div class="p-2.5 flex items-center justify-between">
+            <span class="text-[11px] font-mono text-neutral-400">Detected CMS:</span>
+            <span id="techStackBadge" class="font-mono text-[11px] text-neutral-200 truncate max-w-[160px]">WordPress / Elementor</span>
+          </div>
+          <div class="p-2.5 flex items-center justify-between">
+            <span class="text-[11px] font-mono text-neutral-400">Security Audit:</span>
+            <span class="font-mono text-[11px] text-amber-300 flex items-center gap-1">
+              <span id="securityAuditGrade">MODERATE</span>
+              <span id="securityAuditScore" class="text-neutral-500 text-[10px]">(42/100)</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- 3. BASELESS TECH SPEND & COMMISSION BLEED -->
+        <div class="bg-[#15161B] border border-amber-500/20 rounded-xl p-3 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-mono text-amber-300 font-bold flex items-center gap-1.5">
+              <span>Wasted Tech Spend:</span>
+            </span>
+            <span id="wastedSpendBadge" class="text-[10px] font-mono bg-amber-500/10 text-amber-300 px-2 py-0.5 rounded border border-amber-500/20 font-semibold">
+              ₹42,000/yr on Practo
+            </span>
+          </div>
+          <div id="wastedBreakdownList" class="space-y-1 text-xs text-neutral-300"></div>
+        </div>
+
+        <!-- 4. LAYMAN CALLER CHEAT SHEET (Clean Studio Talking Points) -->
+        <div class="space-y-2">
+          <div class="text-[11px] font-mono text-neutral-400 uppercase font-semibold">Caller Talking Points:</div>
+
+          <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1">
+            <div class="text-[10px] font-mono text-neutral-300 font-semibold flex items-center gap-1.5">
+              <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">01</span>
+              <span>FIRST ICEBREAKER</span>
+            </div>
+            <p id="callerIcebreakerText" class="text-xs text-neutral-200 leading-relaxed font-sans">
+              "How many of your monthly inquiries come straight from your site versus paying 15-25% to aggregators?"
+            </p>
+          </div>
+
+          <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1">
+            <div class="text-[10px] font-mono text-neutral-300 font-semibold flex items-center gap-1.5">
+              <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">02</span>
+              <span>LAYMAN SPEED METAPHOR</span>
+            </div>
+            <p id="callerLaymanAnalogy" class="text-xs text-neutral-200 leading-relaxed font-sans">
+              "Your website is like having a clinic door with a rusty latch taking 4.1 seconds to open..."
+            </p>
+          </div>
+
+          <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1">
+            <div class="text-[10px] font-mono text-neutral-300 font-semibold flex items-center gap-1.5">
+              <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">03</span>
+              <span>SECURITY HOOK</span>
+            </div>
+            <p id="callerSecurityHook" class="text-xs text-neutral-200 leading-relaxed font-sans">
+              "Their intake form lacks anti-bot security, risking Chrome trust warnings."
+            </p>
+          </div>
+
+          <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1">
+            <div class="text-[10px] font-mono text-neutral-300 font-semibold flex items-center gap-1.5">
+              <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">04</span>
+              <span>COMPETITOR CONTRAST</span>
+            </div>
+            <p id="callerCompetitorEdge" class="text-xs text-neutral-200 leading-relaxed font-sans">
+              "Top clinics use zero-latency WhatsApp direct booking to capture consultations with zero commissions."
+            </p>
+          </div>
+        </div>
+
+        <!-- 5. LAYMAN ANALOGY CHEAT BADGES (1-Click Metaphor Modals) -->
+        <div class="pt-1">
+          <div class="text-[10px] font-mono text-neutral-400 uppercase mb-1.5">Layman Analogy Cheat Keys:</div>
+          <div class="flex flex-wrap gap-1">
+            <button onclick="showLaymanAnalogy('lcp')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">LCP (Speed)</button>
+            <button onclick="showLaymanAnalogy('dom')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">DOM (Bloat)</button>
+            <button onclick="showLaymanAnalogy('dpdp')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">DPDP (Legal)</button>
+            <button onclick="showLaymanAnalogy('tls')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">TLS (Security)</button>
+            <button onclick="showLaymanAnalogy('webgl')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">WebGL (3D)</button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STICKY BOTTOM THUMB-ZONE ACTION BAR (< 768px Mobile) -->
+  <div class="md:hidden fixed bottom-0 left-0 right-0 bg-[#101114] border-t border-white/[0.08] px-2 py-2 flex items-center justify-between gap-1.5 z-40 shadow-2xl">
+    <button 
+      id="mobilePrevBtn" 
+      onclick="advanceLead(-1)" 
+      title="Previous Prospect" 
+      class="w-9 h-9 rounded-xl bg-white/[0.05] active:bg-white/[0.12] text-neutral-200 border border-white/[0.08] shrink-0 transition flex items-center justify-center"
+    >
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+    <a 
+      id="mobileCallBtn" 
+      href="#" 
+      onclick="handleCallInitiated()"
+      class="flex-1 min-w-0 px-2 py-2 rounded-xl bg-emerald-600 active:bg-emerald-700 text-white font-bold text-xs tracking-wider flex items-center justify-center gap-1.5 shadow-lg transition"
+    >
+      <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+      </svg>
+      <span class="truncate">Call</span>
+    </a>
+    <a 
+      id="mobileWaBtn" 
+      href="#" 
+      target="_blank" 
+      class="flex-1 min-w-0 px-2 py-2 rounded-xl bg-emerald-500 active:bg-emerald-600 text-white font-bold text-xs tracking-wider flex items-center justify-center gap-1.5 shadow-lg transition"
+    >
+      <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+      </svg>
+      <span class="truncate">WhatsApp</span>
+    </a>
+    <button 
+      id="mobileNextBtn" 
+      onclick="advanceLead(1)" 
+      title="Next Prospect" 
+      class="w-9 h-9 rounded-xl bg-white/[0.05] active:bg-white/[0.12] text-neutral-200 border border-white/[0.08] shrink-0 transition flex items-center justify-center"
+    >
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+  </div>
+
+  <!-- MODALS & OVERLAYS -->
+
+  <!-- 1. AUTH GATE OVERLAY -->
+  <div id="authGateOverlay" class="hidden fixed inset-0 bg-[#090A0E]/95 backdrop-blur-md flex items-center justify-center p-4 z-50">
+    <div class="studio-panel-elevated rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5 border border-white/10">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-white/10 border border-white/15 flex items-center justify-center text-white">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+          </div>
+          <span class="font-bold font-mono text-sm tracking-tight text-white uppercase">SprintDial Studio</span>
+        </div>
+        <span class="text-[10px] font-mono text-neutral-400 bg-white/5 px-2 py-0.5 rounded border border-white/5">Studio V3</span>
+      </div>
+
+      <div class="space-y-1">
+        <h2 class="text-base font-bold text-white tracking-tight">Outbound Calling Workstation</h2>
+        <p class="text-xs text-neutral-400 leading-relaxed">
+          Operating strictly on Apoorv's behalf. Enter authorized credentials to initialize verified queues and anti-clash lock states.
+        </p>
+      </div>
+
+      <form onsubmit="handleCredentialsAuth(event)" class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-mono text-neutral-400 mb-1">Username / Caller ID</label>
+          <input 
+            type="text" 
+            id="loginUsernameInput" 
+            placeholder="apoorv or your worker username" 
+            class="w-full bg-[#101114] border border-white/10 rounded-xl px-3 py-2 text-xs font-mono text-white placeholder-neutral-600 focus:outline-none focus:border-white/30"
+          />
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-[11px] font-mono text-neutral-400">Password</label>
+            <span class="text-[10px] font-mono text-neutral-500">Apoorv PIN: [SECURE_ENV]</span>
+          </div>
+          <input 
+            type="password" 
+            id="loginPasswordInput" 
+            placeholder="••••••••" 
+            class="w-full bg-[#101114] border border-white/10 rounded-xl px-3 py-2 text-xs font-mono text-white placeholder-neutral-600 focus:outline-none focus:border-white/30"
+          />
+        </div>
+
+        <div id="loginErrorMsg" class="hidden text-xs text-rose-400 font-mono"></div>
+
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-white hover:bg-neutral-200 text-neutral-950 font-mono text-xs font-bold shadow transition">
+          Unlock Workstation →
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. LAYMAN ANALOGY MODAL -->
+  <div id="laymanAnalogyModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="studio-panel-elevated rounded-2xl max-w-lg w-full p-6 space-y-4 border border-white/10 shadow-2xl">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span id="laymanAnalogyIcon" class="text-xl">💡</span>
+          <div>
+            <h3 id="laymanAnalogyTitle" class="text-sm font-bold text-white font-mono">Layman Concept</h3>
+            <span id="laymanAnalogyCategory" class="text-[10px] font-mono text-blue-400">SPEED METAPHOR</span>
+          </div>
+        </div>
+        <button onclick="closeLaymanAnalogy()" class="text-neutral-400 hover:text-white text-lg">✕</button>
+      </div>
+
+      <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-2">
+        <div class="text-[10px] font-mono text-amber-400 uppercase font-semibold">Everyday Analogy:</div>
+        <p id="laymanAnalogyMetaphor" class="text-sm text-neutral-200 leading-relaxed font-sans"></p>
+      </div>
+
+      <div class="space-y-1">
+        <div class="text-[10px] font-mono text-neutral-400 uppercase">Spoken Script Talking Point:</div>
+        <p id="laymanAnalogyTalkingPoint" class="text-xs text-neutral-300 leading-relaxed"></p>
+      </div>
+
+      <div class="pt-2 flex justify-end">
+        <button onclick="closeLaymanAnalogy()" class="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-mono text-xs transition">
+          Got It
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. CLIENT TEARDOWN MODAL -->
+  <div id="clientTeardownModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="studio-panel-elevated rounded-2xl max-w-xl w-full p-6 space-y-4 border border-white/10 shadow-2xl">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-bold text-white">Client Technical Teardown</h3>
+          <p id="modalClientName" class="text-xs text-blue-400 font-mono">--</p>
+        </div>
+        <button onclick="closeClientTeardownModal()" class="text-neutral-400 hover:text-white text-lg">✕</button>
+      </div>
+      <div class="text-xs text-neutral-300 space-y-2">
+        <p>Current 4G Cellular Latency: <strong id="modalCurrentLcp" class="text-rose-400 font-mono">--</strong></p>
+        <p>Target Apoorv Headless Benchmark: <strong class="text-emerald-400 font-mono">0.8s (Instantaneous)</strong></p>
+      </div>
+      <div class="pt-2 flex justify-end gap-2">
+        <button onclick="copyTeardownLink()" class="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-mono text-xs transition">
+          Copy Link
+        </button>
+        <button onclick="closeClientTeardownModal()" class="px-4 py-1.5 rounded-lg bg-white text-neutral-950 hover:bg-neutral-200 font-semibold font-mono text-xs transition">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. PROPOSAL BRIEF MODAL -->
+  <div id="proposalModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="studio-panel-elevated rounded-2xl max-w-2xl w-full p-6 space-y-4 border border-white/10 shadow-2xl flex flex-col max-h-[90vh]">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-bold text-white">Executive Proposal Brief</h3>
+          <p id="proposalClientSubtitle" class="text-xs text-neutral-400 font-mono">Tailored for Apoorv</p>
+        </div>
+        <button onclick="closeProposalModal()" class="text-neutral-400 hover:text-white text-lg">✕</button>
+      </div>
+
+      <div id="proposalContent" class="flex-1 overflow-y-auto bg-[#101114] border border-white/5 rounded-xl p-4 text-xs font-mono text-slate-200 space-y-2 leading-relaxed custom-scrollbar whitespace-pre-wrap"></div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="copyProposalText()" class="px-4 py-1.5 rounded-lg bg-white text-neutral-950 hover:bg-neutral-200 font-mono text-xs font-semibold shadow-sm transition">
+          Copy Markdown
+        </button>
+        <button onclick="downloadProposalMarkdown()" class="px-4 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-neutral-200 border border-white/[0.08] font-mono text-xs font-semibold transition">
+          Download .md
+        </button>
+        <button onclick="closeProposalModal()" class="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-mono text-xs transition">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. KEYBOARD SHORTCUTS MODAL -->
+  <div id="shortcutsModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="studio-panel-elevated rounded-2xl max-w-md w-full p-6 space-y-4 border border-white/10 shadow-2xl">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-bold text-white font-mono">Keyboard Shortcuts</h3>
+        <button onclick="toggleShortcutsModal()" class="text-neutral-400 hover:text-white text-lg">✕</button>
+      </div>
+      <div class="space-y-2 text-xs font-mono">
+        <div class="flex justify-between py-1 border-b border-white/5"><span class="text-neutral-400">Search Prospect Queue</span><kbd class="px-2 py-0.5 rounded bg-white/10 text-white">/</kbd></div>
+        <div class="flex justify-between py-1 border-b border-white/5"><span class="text-neutral-400">Next Prospect</span><kbd class="px-2 py-0.5 rounded bg-white/10 text-white">J</kbd></div>
+        <div class="flex justify-between py-1 border-b border-white/5"><span class="text-neutral-400">Previous Prospect</span><kbd class="px-2 py-0.5 rounded bg-white/10 text-white">K</kbd></div>
+        <div class="flex justify-between py-1 border-b border-white/5"><span class="text-neutral-400">Toggle Language (ML/EN)</span><kbd class="px-2 py-0.5 rounded bg-white/10 text-white">L</kbd></div>
+        <div class="flex justify-between py-1 border-b border-white/5"><span class="text-neutral-400">Trigger 15s Challenge</span><kbd class="px-2 py-0.5 rounded bg-white/10 text-white">C</kbd></div>
+        <div class="flex justify-between py-1 border-b border-white/5"><span class="text-neutral-400">Dismiss Modals</span><kbd class="px-2 py-0.5 rounded bg-white/10 text-white">Esc</kbd></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. OWNER ADMIN CONSOLE MODAL (5 Operational Tabs) -->
+  <div id="adminModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="studio-panel-elevated rounded-2xl max-w-4xl w-full p-6 space-y-5 border border-white/10 shadow-2xl flex flex-col max-h-[92vh]">
+      <!-- Header -->
+      <div class="flex items-center justify-between border-b border-white/10 pb-4">
+        <div>
+          <h2 class="text-base font-bold text-white font-mono">Owner Administration Console</h2>
+          <p class="text-xs text-neutral-400">SprintDial Pipeline Analytics & Autonomous Scraper Controls</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="runQuickPreset('kochi_clinics')" class="text-[10px] font-mono px-2 py-1 rounded bg-blue-950/50 text-blue-300 border border-blue-800/40 hover:bg-blue-900/60 transition">Quick Preset: Kochi Clinics</button>
+          <button onclick="closeAdminModal()" class="text-neutral-400 hover:text-white text-lg">✕</button>
+        </div>
+      </div>
+
+      <!-- KPI Bar -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="bg-[#101114] border border-white/5 rounded-xl p-3">
+          <div class="text-[10px] font-mono text-neutral-400 uppercase">Total Leads</div>
+          <div id="adminTotalLeads" class="text-lg font-black text-white font-mono">60</div>
+        </div>
+        <div class="bg-[#101114] border border-white/5 rounded-xl p-3">
+          <div class="text-[10px] font-mono text-neutral-400 uppercase">Pipeline Value</div>
+          <div id="adminPipelineVal" class="text-lg font-black text-emerald-400 font-mono">₹30,00,000</div>
+        </div>
+        <div class="bg-[#101114] border border-white/5 rounded-xl p-3">
+          <div class="text-[10px] font-mono text-neutral-400 uppercase">Dials Today</div>
+          <div id="adminDialsToday" class="text-lg font-black text-blue-400 font-mono">0</div>
+        </div>
+        <div class="bg-[#101114] border border-white/5 rounded-xl p-3">
+          <div class="text-[10px] font-mono text-neutral-400 uppercase">Discovery Booked</div>
+          <div class="text-lg font-black text-purple-400 font-mono">
+            <span id="adminBookedCount">0</span> (<span id="adminBookedVal">₹0</span>)
+          </div>
+          <span id="adminCallbackCount" class="hidden">0</span>
+          <span id="adminDncCount" class="hidden">0</span>
+        </div>
+      </div>
+
+      <!-- Admin Tab Switchers -->
+      <div class="flex border-b border-white/10 gap-2 font-mono text-xs overflow-x-auto pb-1">
+        <button id="btnAdminTabGemini" onclick="switchAdminTab('gemini')" class="px-3 py-1.5 rounded-lg bg-white text-neutral-950 font-semibold transition shrink-0 shadow-sm">Gemini AI & Scout</button>
+        <button id="btnAdminTabIngest" onclick="switchAdminTab('ingest')" class="px-3 py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Bulk Ingestion</button>
+        <button id="btnAdminTabLogs" onclick="switchAdminTab('logs')" class="px-3 py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Call Logs</button>
+        <button id="btnAdminTabSync" onclick="switchAdminTab('sync')" class="px-3 py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Cloud Sync</button>
+        <button id="btnAdminTabUsers" onclick="switchAdminTab('users')" class="px-3 py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Worker Logins</button>
+      </div>
+
+      <!-- Tab 1: Gemini AI -->
+      <div id="adminTabGemini" class="flex-1 overflow-y-auto space-y-4 custom-scrollbar">
+        <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-mono text-neutral-300 font-bold">Gemini API Key (Stored locally):</label>
+            <span id="geminiKeyStatusBadge" class="text-[10px] font-mono text-neutral-500">Key Status: Unconfigured</span>
+          </div>
+          <div class="flex gap-2">
+            <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." class="flex-1 bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-white/30" />
+            <button onclick="saveGeminiApiKeyUI()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition">Save Key</button>
+            <button onclick="testGeminiConnectionUI()" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-neutral-200 font-mono text-xs transition">Test</button>
+          </div>
+        </div>
+
+        <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
+          <div class="text-xs font-mono text-neutral-300 font-bold">Autonomous Single-Lead Scout:</div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <input type="text" id="aiScoutBusinessInput" placeholder="Business name & area..." class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white" />
+            <select id="aiScoutCitySelect" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white">
+              <option value="Kochi">Kochi</option>
+              <option value="Bangalore">Bangalore</option>
+              <option value="Hyderabad">Hyderabad</option>
+            </select>
+            <select id="aiScoutCategorySelect" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white">
+              <option value="Dental Clinic">Dental Clinic</option>
+              <option value="Architecture Studio">Architecture Studio</option>
+              <option value="Fine Dining">Fine Dining</option>
+              <option value="Luxury Salon">Luxury Salon</option>
+            </select>
+          </div>
+          <button onclick="runAiScoutFromUI()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold shadow transition">
+            <span id="aiScoutBtnText">Audit & Inject Lead with Gemini</span>
+          </button>
+        </div>
+
+        <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
+          <div class="text-xs font-mono text-neutral-300 font-bold">Autonomous Background Batch Scout Worker:</div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <select id="adminBatchVertical" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white">
+              <option value="Dental Clinic">Dental Clinic</option>
+              <option value="Interior Design">Interior Design</option>
+              <option value="Restaurant">Restaurant</option>
+            </select>
+            <select id="adminBatchCity" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white">
+              <option value="Kochi">Kochi</option>
+              <option value="Bangalore">Bangalore</option>
+            </select>
+            <input type="number" id="adminBatchCount" value="5" min="1" max="15" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white" />
+          </div>
+          <button id="btnRunBatchWorker" onclick="runBatchScoutFromAdmin()" class="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-mono text-xs font-bold shadow transition">
+            <span id="batchWorkerBtnText">Run Autonomous Worker Now</span>
+          </button>
+        </div>
+
+        <div id="aiLiveLogTerminal" class="hidden bg-black/80 border border-white/10 rounded-xl p-3 font-mono text-xs text-emerald-400 max-h-40 overflow-y-auto whitespace-pre-wrap">
+          <span id="aiLiveLogText">Initializing agentic runtime...</span>
+        </div>
+      </div>
+
+      <!-- Tab 2: Ingestion -->
+      <div id="adminTabIngest" class="hidden flex-1 overflow-y-auto space-y-3 custom-scrollbar">
+        <textarea id="agentJsonInput" rows="6" placeholder="Paste prospect JSON schema array..." class="w-full bg-[#15161B] border border-white/10 rounded-xl p-3 text-xs font-mono text-slate-200 focus:outline-none focus:border-white/30"></textarea>
+        <div class="flex gap-2">
+          <button onclick="ingestAgentProspects()" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold shadow transition">
+            Ingest Leads into Queue
+          </button>
+          <button onclick="insertSampleProspectTemplate()" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-300 font-mono text-xs transition border border-white/10">
+            Load Sample JSON
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab 3: Call Logs -->
+      <div id="adminTabLogs" class="hidden flex-1 overflow-y-auto space-y-3 custom-scrollbar">
+        <div class="flex justify-end">
+          <button onclick="exportCallDataToCSV()" class="px-3 py-1.5 rounded-lg bg-emerald-950/40 hover:bg-emerald-900/60 text-emerald-300 border border-emerald-800/40 font-mono text-xs transition">
+            Export CSV
+          </button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs font-mono">
+            <thead class="bg-black/40 text-neutral-400 border-b border-white/10">
+              <tr>
+                <th class="p-2">Timestamp</th>
+                <th class="p-2">Prospect</th>
+                <th class="p-2">Outcome</th>
+                <th class="p-2">Caller</th>
+              </tr>
+            </thead>
+            <tbody id="adminCallLogsBody" class="divide-y divide-white/5"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 4: Cloud Sync -->
+      <div id="adminTabSync" class="hidden flex-1 overflow-y-auto space-y-3 custom-scrollbar">
+        <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono text-neutral-300 font-bold">Firebase Realtime Sync:</span>
+            <span id="firebaseSyncStatusBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-neutral-400 border border-white/5">Local Broadcast Active</span>
+          </div>
+          <div class="flex gap-2">
+            <input type="text" id="firebaseDbUrlInput" placeholder="https://your-project.firebaseio.com" class="flex-1 bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-white/30" />
+            <button onclick="saveFirebaseDbUrlUI()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition">Save & Connect</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 5: Worker Accounts -->
+      <div id="adminTabUsers" class="hidden flex-1 overflow-y-auto space-y-4 custom-scrollbar">
+        <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
+          <div class="text-xs font-mono text-neutral-300 font-bold">Create Authorized Caller Account:</div>
+          <form onsubmit="handleCreateWorkerAccount(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <input type="text" id="newWorkerUsername" placeholder="username" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white" />
+            <input type="text" id="newWorkerDisplayName" placeholder="Display Name" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white" />
+            <input type="password" id="newWorkerPassword" placeholder="Password" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white" />
+            <div class="sm:col-span-3">
+              <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition">
+                Create Worker Account
+              </button>
+            </div>
+          </form>
+        </div>
+        <div id="adminUsersList" class="space-y-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="prospects_data.js"></script>
+  <script src="custom_prospects.js"></script>
+  <script src="app.js"></script>
+
+
+</body>
+</html>
+
+

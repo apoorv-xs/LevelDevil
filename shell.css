@@ -41,6 +41,18 @@
   outline: none;
 }
 
+@media (max-width: 640px) {
+  .site-nav {
+    top: 10px;
+    right: 10px;
+    padding: 2px;
+  }
+  .site-nav a {
+    padding: 8px 8px;
+    font-size: 10px;
+  }
+}
+
 .shell-status {
   position: fixed;
   left: 16px;

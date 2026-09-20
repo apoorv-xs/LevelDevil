@@ -20,15 +20,16 @@
   <main class="shell">
     <header class="topbar">
       <nav class="site-nav" aria-label="Primary navigation">
-        <a href="/">Portfolio</a>
-        <a href="/sales" aria-current="page">Sales</a>
+        <a href="/">Home</a>
+        <a href="/sales" aria-current="page">Contact Him</a>
+        <a href="/workspace/">Workspace</a>
       </nav>
     </header>
 
     <section class="hero">
-      <p class="eyebrow">Private operating system</p>
-      <h1>Turn interest into the next move.</h1>
-      <p class="lede">Submit an inquiry, apply to represent Apoorv, or sign in to the workspace. Authorization is enforced by the server.</p>
+      <p class="eyebrow">Open Collaboration & Direct Inquiries</p>
+      <h1>Have an idea, project, or problem? Let's build.</h1>
+      <p class="lede">Big or small, from rapid 60 FPS performance optimizations and GLSL shaders to full WebGPU interactive builds. Every opportunity welcome. Submit an inquiry below, apply to represent Apoorv, or enter the outbound workspace.</p>
     </section>
 
     <nav class="action-rail" aria-label="Sales actions">
@@ -44,9 +45,27 @@
         <p class="eyebrow">Public</p>
         <h2>Project inquiry</h2>
         <form id="inquiry-form">
-          <label>Name <input name="name" autocomplete="name" required maxlength="120"></label>
-          <label>Email <input name="email" type="email" autocomplete="email" required maxlength="254"></label>
-          <label>What can we build together? <textarea name="message" required maxlength="4000"></textarea></label>
+          <label>Name <input name="name" autocomplete="name" required maxlength="120" placeholder="Your name or organization"></label>
+          <label>Email <input name="email" type="email" autocomplete="email" required maxlength="254" placeholder="name@company.com"></label>
+          <label>Project Type 
+            <select name="scope" style="width:100%; padding:8px 10px; background:var(--white); border:2px solid var(--ink); font-family:'Courier Prime', monospace; font-size:14px; margin-top:4px;">
+              <option value="Performance Sprint">Performance Optimization / 60 FPS Fix</option>
+              <option value="3D Web Feature">3D WebUI Feature / Procedural Shader</option>
+              <option value="Product Configurator">3D Product Configurator / E-Commerce Viewer</option>
+              <option value="Full Interactive Site">Full Interactive Website / WebGPU Experience</option>
+              <option value="Exploration / Other">Other / Creative Tech Exploration</option>
+            </select>
+          </label>
+          <label>Budget Tier
+            <select name="budget" style="width:100%; padding:8px 10px; background:var(--white); border:2px solid var(--ink); font-family:'Courier Prime', monospace; font-size:14px; margin-top:4px;">
+              <option value="Flexible">Flexible / Let's Discuss</option>
+              <option value="Under $1k">Micro-Sprint (&lt; $1,000)</option>
+              <option value="$1k - $5k">Mid-Sprint ($1,000 – $5,000)</option>
+              <option value="$5k - $15k">Flagship Build ($5,000 – $15,000)</option>
+              <option value="$15k+">Enterprise / Bespoke ($15,000+)</option>
+            </select>
+          </label>
+          <label>What can we build together? <textarea name="message" required maxlength="4000" placeholder="Tell me about your project, timeline, or challenge..."></textarea></label>
           <button type="submit">Send inquiry</button>
         </form>
       </article>
@@ -54,22 +73,30 @@
       <article class="card" id="application-card">
         <p class="eyebrow">Public</p>
         <h2>Apply as a sales representative</h2>
+        <p class="muted" style="margin-top:0; margin-bottom:1rem; font-size:13px; line-height:1.4;">Represent Apoorv and earn 15%–20% commission on closed creative tech deals. Access live prospect dossiers, teleprompter scripts, and 1-tap WhatsApp proposals inside the Workspace.</p>
         <form id="application-form">
-          <label>Name <input name="name" autocomplete="name" required maxlength="120"></label>
-          <label>Email <input name="email" type="email" autocomplete="email" required maxlength="254"></label>
-          <label>Why are you a fit? <textarea name="message" required maxlength="4000"></textarea></label>
+          <label>Name <input name="name" autocomplete="name" required maxlength="120" placeholder="Your name"></label>
+          <label>Email <input name="email" type="email" autocomplete="email" required maxlength="254" placeholder="name@domain.com"></label>
+          <label>Why are you a fit? <textarea name="message" required maxlength="4000" placeholder="Your background, outreach experience, or target market..."></textarea></label>
           <button type="submit">Submit application</button>
         </form>
       </article>
 
       <article class="card card-wide" id="workspace-card">
-        <p class="eyebrow">Protected</p>
-        <h2>Workspace access</h2>
-        <div id="auth-placeholder" class="auth-placeholder">
-          <p><strong>Authenticated entry</strong></p>
-          <p class="muted">Owner and sales-representative workspaces require Firebase authentication. The public build does not accept pasted tokens or expose a bypass.</p>
-          <button id="sign-in" type="button">Sign in to workspace</button>
+        <p class="eyebrow">Workstation</p>
+        <h2>SprintDial Cockpit & Workspace</h2>
+        <div class="auth-placeholder">
+          <p><strong>Dedicated Outbound Calling & Teleprompter Console</strong></p>
+          <p class="muted">Access the complete SprintDial cockpit with real-time prospect queues, multi-caller anti-clash locking, interactive objection soundboard, and 1-click proposal generator.</p>
+          <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-top:1rem;">
+            <a href="/workspace/" style="display:inline-flex; align-items:center; gap:8px; padding:12px 18px; background:var(--ink); color:var(--white); text-decoration:none; font-family:'Press Start 2P', monospace; font-size:11px; border:2px solid var(--ink); box-shadow:4px 4px 0 var(--amber-light);">
+              <span>Launch Workspace Console</span>
+              <span>&rarr;</span>
+            </a>
+            <button id="sign-in" type="button" class="secondary" style="font-size:11px;">Sign in with Firebase</button>
+          </div>
         </div>
+        <div id="auth-placeholder" hidden></div>
         <div id="workspace" hidden>
           <div class="workspace-head">
             <p id="workspace-role"></p>

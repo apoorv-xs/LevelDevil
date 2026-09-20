@@ -10,11 +10,23 @@ function isSalesRoute(pathname = window.location.pathname) {
   return pathname === "/sales" || pathname.startsWith("/sales/") || pathname.endsWith("/sales.html");
 }
 
+function isWorkspaceRoute(pathname = window.location.pathname) {
+  return pathname === "/workspace" || pathname.startsWith("/workspace/") || pathname.endsWith("/workspace/index.html");
+}
+
 function setActiveNavigation(root = document) {
   const sales = isSalesRoute();
+  const workspace = isWorkspaceRoute();
   root.querySelectorAll(".site-nav a").forEach((link) => {
     const target = link.getAttribute("href") || "";
-    const active = sales ? target.includes("sales") : target === "/" || target === "index.html";
+    let active = false;
+    if (workspace) {
+      active = target.includes("workspace");
+    } else if (sales) {
+      active = target.includes("sales") || target.includes("contact");
+    } else {
+      active = target === "/" || target === "index.html";
+    }
     if (active) link.setAttribute("aria-current", "page");
     else link.removeAttribute("aria-current");
   });

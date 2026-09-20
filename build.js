@@ -44,6 +44,14 @@ if (fs.existsSync(fontsSrcDir)) {
     console.log('Copied: fonts directory');
 }
 
+// Copy workspace directory
+const workspaceSrcDir = path.join(srcDir, 'workspace');
+const workspaceDistDir = path.join(distDir, 'workspace');
+if (fs.existsSync(workspaceSrcDir)) {
+    fs.cpSync(workspaceSrcDir, workspaceDistDir, { recursive: true });
+    console.log('Copied: workspace directory');
+}
+
 // Static Web Apps reads routing and security headers from the deployed output.
 const staticWebAppConfig = path.join(srcDir, 'staticwebapp.config.json');
 if (fs.existsSync(staticWebAppConfig)) {
