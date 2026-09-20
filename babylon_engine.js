@@ -84,7 +84,9 @@
 
         to3DY(y2d) {
             const screenH = (typeof height === "function") ? height() : window.innerHeight;
-            return -(y2d - screenH / 2) * this.SCALE;
+            const scrollY = window.scrollY || window.pageYOffset || 0;
+            const screenY = y2d - scrollY;
+            return -(screenY - screenH / 2) * this.SCALE;
         },
 
         to3DVec(x2d, y2d, z = 0) {

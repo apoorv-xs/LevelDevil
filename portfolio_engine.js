@@ -58,6 +58,14 @@ onLoad(() => {
 
     syncDOM();
 
+    // Position player safely on the first prominent platform
+    const firstPlatform = get("platform")[0];
+    if (firstPlatform) {
+        player.pos.x = firstPlatform.pos.x + Math.min(120, firstPlatform.width / 2);
+        player.pos.y = firstPlatform.pos.y - 30;
+        player.vel.y = 0;
+    }
+
     const resizeObserver = new ResizeObserver(() => { syncDOM(); });
     document.querySelectorAll('[data-kaboom-body="true"]').forEach(el => { resizeObserver.observe(el); });
     resizeObserver.observe(document.body);
@@ -75,6 +83,11 @@ onLoad(() => {
     let isRespawning = false;
 
     onUpdate(() => {
+        // Clamp terminal fall velocity to eliminate tunneling through platforms
+        if (player.vel.y > 650) {
+            player.vel.y = 650;
+        }
+
         const currentScrollY = window.scrollY;
         const scrollDelta = currentScrollY - lastScrollY;
         lastScrollY = currentScrollY;
@@ -97,22 +110,32 @@ onLoad(() => {
         const viewBottom = currentScrollY + window.innerHeight;
         
         // Out of bounds / Glass Smash Sequence
-        if ((player.pos.y > viewBottom + 200 || player.pos.y < viewTop - 500) && !isRespawning) {
+        if ((player.pos.y > viewBottom + 250 || player.pos.y < viewTop - 400) && !isRespawning) {
             isRespawning = true;
             player.vel.y = 0;
             player.vel.x = 0;
             
+            // Find visible platforms in current viewport
+            const visiblePlats = get("platform").filter(p => p.pos.y >= viewTop - 30 && p.pos.y <= viewBottom);
+            let respawnX = window.innerWidth / 2;
+            let respawnY = viewTop + 100;
+            if (visiblePlats.length > 0) {
+                visiblePlats.sort((a, b) => a.pos.y - b.pos.y);
+                const targetPlat = visiblePlats[0];
+                respawnX = targetPlat.pos.x + Math.min(100, targetPlat.width / 2);
+                respawnY = targetPlat.pos.y - 30;
+            }
+
             if (window.Player3D && window.Player3D.smashIntoCamera) {
                 window.Player3D.smashIntoCamera();
             }
 
-            // Wait for smash animation to finish before respawning
             setTimeout(() => {
-                player.pos = vec2(window.innerWidth / 2, window.scrollY + 50);
+                player.pos = vec2(respawnX, respawnY);
                 player.vel.y = 0;
                 player.vel.x = 0;
                 isRespawning = false;
-            }, 1000);
+            }, 600);
         }
 
         // Initialize 3D Player if engine is ready

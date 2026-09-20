@@ -24,40 +24,42 @@
         if (!this.isCreated || this.isSmashing) return;
         this.isSmashing = true;
 
-        // Animate towards the camera (Z-axis) and scale up
-        const smashZ = -150; 
+        // Animate towards the camera (Z-axis is -25, so -20 hits the camera lens glass)
+        const smashZ = -20; 
         const originalZ = 0;
+        const originalY = this.root.position.y;
         const originalScale = this.root.scaling.clone();
         
         // Babylon Animation
         BABYLON.Animation.CreateAndStartAnimation(
-            "smashMove", this.root, "position.z", 60, 20, 
+            "smashMove", this.root, "position.z", 60, 15, 
             originalZ, smashZ, 2, new BABYLON.SineEase()
         );
         
         BABYLON.Animation.CreateAndStartAnimation(
-            "smashScale", this.root, "scaling", 60, 20, 
-            originalScale, new BABYLON.Vector3(5, 5, 5), 2, new BABYLON.SineEase()
+            "smashScale", this.root, "scaling", 60, 15, 
+            originalScale, new BABYLON.Vector3(3, 3, 3), 2, new BABYLON.SineEase()
         );
 
-        // Screen Shake Effect (Requires camera access, but we can fake it by shaking the root or relying on Kaboom shake)
+        // Screen Shake Effect
         setTimeout(() => {
-            if (typeof shake === 'function') shake(20); // Kaboom screen shake
+            if (typeof shake === 'function') shake(15);
             
-            // Slide down the glass
+            // Slide slightly down
             BABYLON.Animation.CreateAndStartAnimation(
-                "slideDown", this.root, "position.y", 60, 30, 
-                this.root.position.y, this.root.position.y - 100, 2, new BABYLON.CubicEase()
+                "slideDown", this.root, "position.y", 60, 20, 
+                this.root.position.y, this.root.position.y - 4, 2, new BABYLON.CubicEase()
             );
 
             // Reset after slide
             setTimeout(() => {
                 this.isSmashing = false;
                 this.root.position.z = originalZ;
+                this.root.position.y = originalY;
                 this.root.scaling = originalScale;
-            }, 1000);
+            }, 600);
             
-        }, 300); // 300ms to hit the glass
+        }, 250);
     },
 
         create(scene) {
