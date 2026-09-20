@@ -82,7 +82,7 @@
             border: 3px solid var(--ink);
             box-shadow: 5px 5px 0 var(--purple-dark);
             padding: 16px 20px;
-            max-width: 260px;
+            max-width: 320px;
             font-family: "Courier Prime", monospace;
             font-size: 0.85rem;
         }
@@ -130,56 +130,6 @@
             padding: 5px 10px;
             border: 2px solid var(--ink);
             box-shadow: 2px 2px 0 var(--ink);
-        }
-
-        /* --- 2-COLUMN ASYMMETRIC ABOUT LAYOUT --- */
-        .about-split {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 2rem;
-            margin-bottom: 3rem;
-            align-items: stretch;
-        }
-
-        .about-sidebar {
-            background: var(--cream);
-            border: 4px solid var(--ink);
-            box-shadow: 6px 6px 0 var(--ink);
-            padding: 24px;
-            font-family: "Courier Prime", monospace;
-        }
-
-        .about-sidebar h3 {
-            font-family: "Press Start 2P", monospace;
-            font-size: 0.9rem;
-            margin-top: 0;
-            margin-bottom: 12px;
-            color: var(--purple-dark);
-        }
-
-        .about-sidebar ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            font-size: 0.9rem;
-            line-height: 1.8;
-        }
-
-        .about-main-card {
-            background: var(--white);
-            border: 4px solid var(--ink);
-            box-shadow: 8px 8px 0 var(--ink);
-            padding: 2.2rem;
-        }
-
-        .about-main-card p {
-            font-size: 1.15rem;
-            line-height: 1.7;
-            margin: 0 0 1.2rem 0;
-        }
-
-        .about-main-card p:last-child {
-            margin-bottom: 0;
         }
 
         /* --- WORK / PROJECTS LAYOUT --- */
@@ -407,7 +357,6 @@
         @media (max-width: 960px) {
             .hero-section { grid-template-columns: 1fr; }
             .hero-section h1 { font-size: 2.8rem; }
-            .about-split { grid-template-columns: 1fr; }
             .featured-project-card { grid-template-columns: 1fr; gap: 1.2rem; }
             .projects-two-column { grid-template-columns: 1fr; }
             .capabilities-grid { grid-template-columns: 1fr; }
@@ -484,7 +433,7 @@
                 <div class="role-badge" data-kaboom-body="true" data-trap="false">CREATIVE TECHNOLOGIST & 3D ARCHITECT</div>
                 <h1 data-kaboom-body="true" data-trap="false">APOORV</h1>
                 <p class="hero-hook" data-kaboom-body="true" data-trap="false">
-                    Building GPU-accelerated interfaces that perform and feel like nothing else.
+                    Treating the browser as a spatial canvas. Building GPU-accelerated, locked 60 FPS interfaces that perform and feel like nothing else.
                 </p>
                 <div class="controls-pill" data-kaboom-body="true" data-trap="false">
                     <span>[ WASD / Arrow Keys to Pilot ]</span>
@@ -502,46 +451,32 @@
             </div>
 
             <aside class="hero-aside-status" data-kaboom-body="true" data-trap="false">
-                <div style="font-weight: 700; margin-bottom: 8px;">
+                <div style="font-weight: 700; margin-bottom: 8px; font-family: 'Press Start 2P', monospace; font-size: 0.68rem; color: var(--purple-dark);">
                     <span class="status-dot"></span>AVAILABILITY
                 </div>
-                <p style="margin: 0; line-height: 1.5;">Open for select high-end 3D Web, WebGPU & creative engineering contracts.</p>
+                <p style="margin: 0; line-height: 1.5; font-size: 0.85rem; color: var(--ink);">
+                    Open for select high-end 3D Web, WebGPU &amp; creative engineering contracts.
+                </p>
+                <div style="border-top: 2px dashed var(--ink); padding-top: 12px; margin-top: 14px;">
+                    <div style="font-family: 'Press Start 2P', monospace; font-size: 0.62rem; color: var(--purple-dark); margin-bottom: 8px;">
+                        CORE DISCIPLINES
+                    </div>
+                    <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.82rem; line-height: 1.7; font-family: 'Courier Prime', monospace; font-weight: 700; color: var(--ink);">
+                        <li>• Real-Time 3D WebUI</li>
+                        <li>• WebGPU Architecture</li>
+                        <li>• GLSL / TSL Shaders</li>
+                        <li>• 60 FPS Optimization</li>
+                        <li>• Autonomous Agent Systems</li>
+                    </ul>
+                    <div style="margin-top: 12px; font-size: 0.75rem; color: var(--purple-dark); font-weight: 700; letter-spacing: 0.04em;">
+                        LOCATION: GLOBAL / REMOTE
+                    </div>
+                </div>
             </aside>
         </section>
 
-        <!-- SECTION 1: ABOUT (2-COLUMN EDITORIAL SPLIT) -->
-        <div class="section-header" data-kaboom-body="true" data-trap="false">
-            <span>ABOUT</span>
-            <span class="section-tag">OVERVIEW</span>
-        </div>
-
-        <div class="about-split">
-            <div class="about-sidebar" data-kaboom-body="true" data-trap="false">
-                <h3>DISCIPLINES</h3>
-                <ul>
-                    <li>• Real-Time 3D WebUI</li>
-                    <li>• WebGPU Engine Architecture</li>
-                    <li>• Branchless GLSL & TSL Shaders</li>
-                    <li>• Performance Optimization</li>
-                    <li>• Autonomous Agent Systems</li>
-                </ul>
-                <div style="margin-top: 20px; font-size: 0.8rem; color: var(--purple-dark); font-weight: 700;">
-                    LOCATION: GLOBAL / REMOTE
-                </div>
-            </div>
-
-            <div class="about-main-card" data-kaboom-body="true" data-trap="false">
-                <p>
-                    I treat the browser as a spatial canvas. Most interactive web projects struggle because they inherit bloated templates, run at choppy frame rates, and treat 3D as a decorative gimmick.
-                </p>
-                <p>
-                    I design and build tactile, living digital systems from first principles. By pairing rigorous graphics engineering with fluid kinetic choreography, every build is crafted to run at locked 60 FPS while delivering uncompromising visual authority.
-                </p>
-            </div>
-        </div>
-
-        <!-- SECTION 2: SELECTED WORK -->
-        <div class="section-header" id="selected-work" data-kaboom-body="true" data-trap="false">
+        <!-- SECTION 1: SELECTED WORK -->
+        <div class="section-header" id="selected-work" data-kaboom-body="true" data-trap="false" style="margin-top: 3.5rem;">
             <span>SELECTED WORK</span>
             <span class="section-tag">4 PROJECTS</span>
         </div>
