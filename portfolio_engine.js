@@ -55,14 +55,27 @@ onLoad(() => {
         });
     }
 
-    syncDOM();
+    function placePlayerOnHero() {
+        const spawnEl = document.querySelector('.role-badge[data-kaboom-body="true"]') || document.querySelector('h1[data-kaboom-body="true"]');
+        if (spawnEl) {
+            const r = spawnEl.getBoundingClientRect();
+            player.pos = vec2(r.left + 60, r.top + window.scrollY);
+            if (player.vel) player.vel = vec2(0, 0);
+            console.log("placePlayerOnHero placed player at:", player.pos.x, player.pos.y, "spawnEl:", spawnEl.tagName, spawnEl.className);
+        }
+    }
 
-    // Position player directly standing on top of the hero H1
-    const heroH1 = document.querySelector('h1[data-kaboom-body="true"]') || get("platform")[0]?.domElement;
-    if (heroH1) {
-        const r = heroH1.getBoundingClientRect();
-        player.pos = vec2(r.left + 100, r.top + window.scrollY - 35);
-        if (player.vel) player.vel = vec2(0, 0);
+    syncDOM();
+    placePlayerOnHero();
+
+    // Re-sync platforms and ground player when fonts are fully loaded
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+            syncDOM();
+            if (window.controlMode === "idle") {
+                placePlayerOnHero();
+            }
+        });
     }
 
     const resizeObserver = new ResizeObserver(() => { syncDOM(); });
