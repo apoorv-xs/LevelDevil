@@ -365,7 +365,7 @@
         }
 
         /* --- CANVAS OVERLAYS --- */
-        #babylon-canvas {
+        #three-canvas, #babylon-canvas {
             position: fixed;
             top: 0;
             left: 0;
@@ -553,13 +553,13 @@
                     <h3>LEVEL DEVIL: SPATIAL ENGINE</h3>
                     <div class="project-category">2.5D Gamified Web Engine</div>
                     <div class="tech-pill-rack">
-                        <span class="tech-pill accent">Babylon.js</span>
+                        <span class="tech-pill accent">Three.js</span>
                         <span class="tech-pill">Kaboom.js</span>
                         <span class="tech-pill">Spatial Canvas</span>
                         <span class="tech-pill">Troll Physics</span>
                     </div>
                     <p data-kaboom-body="true" data-trap="false" style="font-size: 0.95rem; line-height: 1.6; margin: 8px 0 12px;">
-                        Transforming standard web pages into living worlds. A custom dual-engine architecture combining Babylon.js 3D depth meshes with Kaboom.js 2D platforming physics—powering the very canvas you are exploring right now.
+                        Transforming standard web pages into living worlds. A custom dual-engine architecture combining Three.js 3D depth meshes with Kaboom.js 2D platforming physics—powering the very canvas you are exploring right now.
                     </p>
                     <span class="tech-pill accent" data-kaboom-body="true" data-trap="false" style="display: inline-block;">
                         ACTIVE CANVAS (PLAY ABOVE)
@@ -708,8 +708,8 @@
         })();
     </script>
 
-    <!-- BABYLON.JS 3D CANVAS -->
-    <canvas id="babylon-canvas"></canvas>
+    <!-- THREE.JS 3D CANVAS -->
+    <canvas id="three-canvas"></canvas>
 
     <!-- KABOOM CONTAINER -->
     <div id="game-container">
@@ -725,7 +725,7 @@
         <button class="btn-dir" id="btn-jump">^</button>
     </div>
 
-    <script src="babylon.min.js"></script>
+    <script src="three.min.js"></script>
     <script src="shell.js"></script>
     <script src="collision_editor.js?v=1006"></script>
 </body>
