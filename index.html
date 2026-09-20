@@ -482,7 +482,7 @@
         <section class="hero-section">
             <div class="hero-main">
                 <div class="role-badge" data-kaboom-body="true" data-trap="false">Creative Technologist & 3D UI Engineer</div>
-                <h1 data-kaboom-body="true" data-trap="false">APOORV A S</h1>
+                <h1 data-kaboom-body="true" data-trap="false">APOORV</h1>
                 <p class="hero-hook" data-kaboom-body="true" data-trap="false">
                     Building GPU-accelerated interfaces that perform and feel like nothing else.
                 </p>
@@ -490,6 +490,14 @@
                     <span>[ WASD / Arrow Keys to Pilot ]</span>
                     <span>•</span>
                     <span>[ Scroll to Explore ]</span>
+                </div>
+                <div class="hero-actions" style="margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap;" data-kaboom-body="true" data-trap="false">
+                    <a href="#selected-work" class="topbar-btn" style="text-decoration: none;">
+                        <span>SELECTED WORK ↓</span>
+                    </a>
+                    <a href="/sales" class="topbar-btn topbar-btn-primary" style="text-decoration: none;">
+                        <span>INITIATE CONTRACT ↗</span>
+                    </a>
                 </div>
             </div>
 
@@ -533,7 +541,7 @@
         </div>
 
         <!-- SECTION 2: SELECTED WORK -->
-        <div class="section-header" data-kaboom-body="true" data-trap="false">
+        <div class="section-header" id="selected-work" data-kaboom-body="true" data-trap="false">
             <span>SELECTED WORK</span>
             <span class="section-tag">4 PROJECTS</span>
         </div>
@@ -549,8 +557,13 @@
                     <span class="tech-pill">GSAP Parallax</span>
                     <span class="tech-pill">60 FPS</span>
                 </div>
-                <div style="font-family: 'Courier Prime', monospace; font-size: 0.85rem; font-weight: 700;">
+                <div style="font-family: 'Courier Prime', monospace; font-size: 0.85rem; font-weight: 700; margin-top: 6px;">
                     ROLE: Lead Creative Technologist
+                </div>
+                <div style="margin-top: 10px;">
+                    <a href="https://apoorv.qzz.io" target="_blank" rel="noopener noreferrer" class="tech-pill accent" style="text-decoration: none; display: inline-block;">
+                        CASE STUDY ↗
+                    </a>
                 </div>
             </div>
             <div>
@@ -560,7 +573,7 @@
             </div>
         </article>
 
-        <!-- Projects 2 & 3: Side-by-Side Platforms (ERAVEX & Chronicles) -->
+        <!-- Projects 2 & 3: Side-by-Side Platforms (ERAVEX & Level Devil Spatial Engine) -->
         <div class="projects-two-column">
             <article class="standard-project-card" data-kaboom-body="true" data-trap="false">
                 <div>
@@ -568,27 +581,35 @@
                     <div class="project-category">WebGPU & 3D Engine Core</div>
                     <div class="tech-pill-rack">
                         <span class="tech-pill accent">WebGPU</span>
-                        <span class="tech-pill">Gaussian Splats</span>
+                        <span class="tech-pill">Three.js</span>
+                        <span class="tech-pill">TSL Shaders</span>
                         <span class="tech-pill">Draco Pipeline</span>
                     </div>
-                    <p style="font-size: 0.95rem; line-height: 1.6; margin: 0;">
-                        Custom engine architecture supporting multi-viewport shading, volumetric radiance fields, and a sub-5MB Draco/Meshopt compression pipeline for instant loading.
+                    <p style="font-size: 0.95rem; line-height: 1.6; margin: 8px 0 12px;">
+                        Flagship WebGPU 3D creative studio and procedural engine (Silicon Renaissance). Features multi-viewport shading, volumetric radiance fields, procedural scene staging, and a sub-5MB Draco/Meshopt compression pipeline.
                     </p>
+                    <a href="https://silicon-renaissance.vercel.app" target="_blank" rel="noopener noreferrer" class="tech-pill accent" style="text-decoration: none; display: inline-block;">
+                        LIVE ENGINE ↗
+                    </a>
                 </div>
             </article>
 
             <article class="standard-project-card" data-kaboom-body="true" data-trap="false">
                 <div>
-                    <h3>CHRONICLES</h3>
-                    <div class="project-category">3D Interactive Odyssey</div>
+                    <h3>LEVEL DEVIL: SPATIAL ENGINE</h3>
+                    <div class="project-category">2.5D Gamified Web Engine</div>
                     <div class="tech-pill-rack">
-                        <span class="tech-pill accent">Spatial Story</span>
-                        <span class="tech-pill">2.5D Engine</span>
-                        <span class="tech-pill">Babylon + Kaboom</span>
+                        <span class="tech-pill accent">Babylon.js</span>
+                        <span class="tech-pill">Kaboom.js</span>
+                        <span class="tech-pill">Spatial Canvas</span>
+                        <span class="tech-pill">Troll Physics</span>
                     </div>
-                    <p style="font-size: 0.95rem; line-height: 1.6; margin: 0;">
-                        Transforming standard web pages into living worlds. Demonstrating that editorial storytelling and real-time physics can blend seamlessly in a single canvas.
+                    <p style="font-size: 0.95rem; line-height: 1.6; margin: 8px 0 12px;">
+                        Transforming standard web pages into living worlds. A custom dual-engine architecture combining Babylon.js 3D depth meshes with Kaboom.js 2D platforming physics—powering the very interactive canvas you are exploring right now.
                     </p>
+                    <span class="tech-pill accent" style="display: inline-block;">
+                        ACTIVE CANVAS (PLAY ABOVE)
+                    </span>
                 </div>
             </article>
         </div>
@@ -603,6 +624,7 @@
                         <span class="tech-pill accent">Agentic Loops</span>
                         <span class="tech-pill">Browser Bridge</span>
                         <span class="tech-pill">CI/CD Security</span>
+                        <span class="tech-pill">B:\ Core</span>
                     </div>
                 </div>
                 <p style="font-size: 1rem; line-height: 1.6; margin: 0;">
@@ -619,7 +641,7 @@
 
         <div class="capabilities-grid">
             <div class="capability-card" data-kaboom-body="true" data-trap="false">
-                <div class="capability-val" id="live-fps">60.0</div>
+                <div class="capability-val" id="capability-fps">60.0</div>
                 <div class="capability-lbl">16.6ms Render Floor</div>
                 <p>Strict DPR clamping and merged draw calls keep frame rates locked at 60 FPS even on mid-tier mobile devices.</p>
             </div>
@@ -637,16 +659,16 @@
             </div>
         </div>
 
-        <!-- SECTION 4: RECENT NOTES -->
+        <!-- SECTION 4: RECENT DISPATCHES -->
         <div class="section-header" data-kaboom-body="true" data-trap="false">
-            <span>RECENT NOTES</span>
-            <span class="section-tag">LOGS</span>
+            <span>RECENT DISPATCHES</span>
+            <a href="https://x.com/apoorv_xs" target="_blank" rel="noopener noreferrer" class="section-tag" style="text-decoration: none; color: inherit;">@APOORV_XS ↗</a>
         </div>
 
         <div class="notes-grid">
             <article class="note-card" data-kaboom-body="true" data-trap="bounce">
                 <div class="note-header">
-                    <span>@apoorv_xs</span>
+                    <a href="https://x.com/apoorv_xs" target="_blank" rel="noopener noreferrer" style="color: var(--purple-dark); text-decoration: underline; font-weight: bold;">@apoorv_xs</a>
                     <span>[BOUNCE PAD]</span>
                 </div>
                 <p style="font-family: 'Courier Prime', monospace; font-size: 0.95rem; margin: 0; line-height: 1.5;">
@@ -656,7 +678,7 @@
 
             <article class="note-card" data-kaboom-body="true" data-trap="bounce">
                 <div class="note-header">
-                    <span>@apoorv_xs</span>
+                    <a href="https://x.com/apoorv_xs" target="_blank" rel="noopener noreferrer" style="color: var(--purple-dark); text-decoration: underline; font-weight: bold;">@apoorv_xs</a>
                     <span>[BOUNCE PAD]</span>
                 </div>
                 <p style="font-family: 'Courier Prime', monospace; font-size: 0.95rem; margin: 0; line-height: 1.5;">
@@ -666,7 +688,7 @@
 
             <article class="note-card" data-kaboom-body="true" data-trap="bounce" style="grid-column: 1 / -1;">
                 <div class="note-header">
-                    <span>@apoorv_xs</span>
+                    <a href="https://x.com/apoorv_xs" target="_blank" rel="noopener noreferrer" style="color: var(--purple-dark); text-decoration: underline; font-weight: bold;">@apoorv_xs</a>
                     <span>[BOUNCE PAD]</span>
                 </div>
                 <p style="font-family: 'Courier Prime', monospace; font-size: 0.95rem; margin: 0; line-height: 1.5;">
@@ -687,7 +709,7 @@
                 <p>Have a project that needs to stand out? Let's build something fast, tactile, and unforgettable.</p>
             </div>
             <div style="display: flex; flex-direction: column; gap: 10px;">
-                <a href="sales.html" class="cta-btn-primary" data-kaboom-body="true" data-trap="cta">
+                <a href="/sales" class="cta-btn-primary" data-kaboom-body="true" data-trap="cta">
                     INITIATE CONTRACT
                 </a>
                 <a href="https://github.com/apoorv-xs" target="_blank" rel="noopener noreferrer" class="cta-btn-secondary" data-kaboom-body="true" data-trap="false">
@@ -703,12 +725,15 @@
             let lastTime = performance.now();
             let frames = 0;
             const fpsEl = document.getElementById('live-fps');
+            const capEl = document.getElementById('capability-fps');
             function updateFPS() {
                 frames++;
                 const now = performance.now();
                 if (now >= lastTime + 1000) {
                     const currentFPS = (frames * 1000) / (now - lastTime);
-                    if (fpsEl) fpsEl.textContent = currentFPS.toFixed(1);
+                    const fpsStr = currentFPS.toFixed(1);
+                    if (fpsEl) fpsEl.textContent = fpsStr;
+                    if (capEl) capEl.textContent = fpsStr;
                     frames = 0;
                     lastTime = now;
                 }
