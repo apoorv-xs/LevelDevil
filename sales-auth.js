@@ -15,15 +15,14 @@
   let authPromise;
   async function getAuth() {
     if (!authPromise) {
-      authPromise = Promise.all([
-        load("firebase-app-compat.js"),
-        load("firebase-auth-compat.js"),
-      ]).then(() => {
+      authPromise = (async () => {
+        await load("firebase-app-compat.js");
+        await load("firebase-auth-compat.js");
         const app = window.firebase.apps.length
           ? window.firebase.app()
           : window.firebase.initializeApp(firebaseConfig);
         return window.firebase.auth(app);
-      });
+      })();
     }
     return authPromise;
   }

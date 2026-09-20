@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <title>Apoorv Sales Platform</title>
+  <title>Contact Apoorv | Creative Technologist & 3D WebUI Architect</title>
   <!-- Font Preconnect & Local Preload -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,9 +12,9 @@
   <link rel="preload" href="/fonts/courier-prime-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/courier-prime-700.woff2" as="font" type="font/woff2" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="fonts.css">
-  <link rel="stylesheet" href="sales.css">
-  <link rel="stylesheet" href="shell.css">
+  <link rel="stylesheet" href="/fonts.css">
+  <link rel="stylesheet" href="/sales.css">
+  <link rel="stylesheet" href="/shell.css">
 </head>
 <body class="sales-page">
   <main class="shell">
@@ -27,9 +27,20 @@
     </header>
 
     <section class="hero">
-      <p class="eyebrow">Open Collaboration & Direct Inquiries</p>
+      <p class="eyebrow">Direct Contact & Inquiries</p>
       <h1>Have an idea, project, or problem? Let's build.</h1>
-      <p class="lede">Big or small, from rapid 60 FPS performance optimizations and GLSL shaders to full WebGPU interactive builds. Every opportunity welcome. Submit an inquiry below, apply to represent Apoorv, or enter the outbound workspace.</p>
+      <p class="lede">Big or small, from rapid 60 FPS performance optimizations and GLSL shaders to full WebGPU interactive builds. Reach out directly or submit a project brief below.</p>
+      <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:1.25rem;">
+        <a href="mailto:apoorv.as2003@gmail.com" style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; background:var(--ink); color:var(--white); text-decoration:none; font-family:'Courier Prime', monospace; font-size:13px; font-weight:700; border:2px solid var(--ink); box-shadow:3px 3px 0 var(--amber-light);">
+          <span>Email: apoorv.as2003@gmail.com</span>
+        </a>
+        <a href="https://x.com/apoorv_xs" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; background:var(--paper); color:var(--ink); text-decoration:none; font-family:'Courier Prime', monospace; font-size:13px; font-weight:700; border:2px solid var(--ink); box-shadow:3px 3px 0 var(--ink);">
+          <span>X: @apoorv_xs</span>
+        </a>
+        <a href="https://github.com/apoorv-xs" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; background:var(--paper); color:var(--ink); text-decoration:none; font-family:'Courier Prime', monospace; font-size:13px; font-weight:700; border:2px solid var(--ink); box-shadow:3px 3px 0 var(--ink);">
+          <span>GitHub: @apoorv-xs</span>
+        </a>
+      </div>
     </section>
 
     <nav class="action-rail" aria-label="Sales actions">
@@ -73,7 +84,7 @@
       <article class="card" id="application-card">
         <p class="eyebrow">Public</p>
         <h2>Apply as a sales representative</h2>
-        <p class="muted" style="margin-top:0; margin-bottom:1rem; font-size:13px; line-height:1.4;">Represent Apoorv and earn 15%–20% commission on closed creative tech deals. Access live prospect dossiers, teleprompter scripts, and 1-tap WhatsApp proposals inside the Workspace.</p>
+        <p class="muted" style="margin-top:0; margin-bottom:1rem; font-size:13px; line-height:1.4;">Represent Apoorv and earn 15%–20% commission on closed creative tech deals. Access live prospect dossiers, audit briefings, and 1-tap proposals inside the Workspace.</p>
         <form id="application-form">
           <label>Name <input name="name" autocomplete="name" required maxlength="120" placeholder="Your name"></label>
           <label>Email <input name="email" type="email" autocomplete="email" required maxlength="254" placeholder="name@domain.com"></label>
@@ -84,10 +95,10 @@
 
       <article class="card card-wide" id="workspace-card">
         <p class="eyebrow">Workstation</p>
-        <h2>SprintDial Cockpit & Workspace</h2>
+        <h2>Apoorv Studio Workbench</h2>
         <div class="auth-placeholder">
-          <p><strong>Dedicated Outbound Calling & Teleprompter Console</strong></p>
-          <p class="muted">Access the complete SprintDial cockpit with real-time prospect queues, multi-caller anti-clash locking, interactive objection soundboard, and 1-click proposal generator.</p>
+          <p><strong>Executive Client Intelligence & Project Workspace</strong></p>
+          <p class="muted">Access verified prospect dossiers, 60 FPS mobile audit teardowns, live engineering proposals, and real-time deal telemetry.</p>
           <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-top:1rem;">
             <a href="/workspace/" style="display:inline-flex; align-items:center; gap:8px; padding:12px 18px; background:var(--ink); color:var(--white); text-decoration:none; font-family:'Press Start 2P', monospace; font-size:11px; border:2px solid var(--ink); box-shadow:4px 4px 0 var(--amber-light);">
               <span>Launch Workspace Console</span>
@@ -107,9 +118,9 @@
       </article>
     </section>
   </main>
-  <script src="sales-config.js"></script>
-  <script src="sales-auth.js"></script>
-  <script src="shell.js"></script>
-  <script src="sales-app.js" type="module"></script>
+  <script src="/sales-config.js"></script>
+  <script src="/sales-auth.js"></script>
+  <script src="/shell.js"></script>
+  <script src="/sales-app.js" type="module"></script>
 </body>
 </html>

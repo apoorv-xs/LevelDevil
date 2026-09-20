@@ -48,7 +48,7 @@ async function loadPortfolio() {
 }
 
 async function loadSalesRoute() {
-  if (window.location.pathname.endsWith("/sales.html")) return;
+  if (document.body?.classList?.contains("sales-page") || window.location.pathname.endsWith("/sales.html")) return;
   const response = await fetch("/sales.html");
   if (!response.ok) throw new Error("Sales view unavailable");
   const html = await response.text();

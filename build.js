@@ -59,4 +59,11 @@ if (fs.existsSync(staticWebAppConfig)) {
     console.log('Copied: staticwebapp.config.json');
 }
 
+// Vercel reads routing configuration from output directory if present
+const vercelConfig = path.join(srcDir, 'vercel.json');
+if (fs.existsSync(vercelConfig)) {
+    fs.copyFileSync(vercelConfig, path.join(distDir, 'vercel.json'));
+    console.log('Copied: vercel.json');
+}
+
 console.log("Build Complete. Assets ready in /dist");

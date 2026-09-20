@@ -1,4 +1,27 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/sales",
+      "destination": "/sales.html"
+    },
+    {
+      "source": "/sales/:match*",
+      "destination": "/sales.html"
+    },
+    {
+      "source": "/contact",
+      "destination": "/sales.html"
+    },
+    {
+      "source": "/contact/:match*",
+      "destination": "/sales.html"
+    },
+    {
+      "source": "/workspace",
+      "destination": "/workspace/index.html"
+    }
+  ]
 }
