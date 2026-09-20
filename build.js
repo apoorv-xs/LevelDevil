@@ -36,6 +36,14 @@ files.forEach(file => {
     }
 });
 
+// Copy fonts directory
+const fontsSrcDir = path.join(srcDir, 'fonts');
+const fontsDistDir = path.join(distDir, 'fonts');
+if (fs.existsSync(fontsSrcDir)) {
+    fs.cpSync(fontsSrcDir, fontsDistDir, { recursive: true });
+    console.log('Copied: fonts directory');
+}
+
 // Static Web Apps reads routing and security headers from the deployed output.
 const staticWebAppConfig = path.join(srcDir, 'staticwebapp.config.json');
 if (fs.existsSync(staticWebAppConfig)) {
