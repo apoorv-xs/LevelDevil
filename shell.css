@@ -37,6 +37,20 @@
   flex-shrink: 0;
 }
 
+.topbar-brand-name {
+  font: 700 13px/1 "Press Start 2P", monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--shell-ink);
+  display: inline-block;
+  transition: color 0.15s ease, transform 0.1s ease;
+}
+
+.topbar-brand:hover .topbar-brand-name {
+  color: var(--shell-purple);
+  transform: translate(1px, 1px);
+}
+
 .topbar-brand-logo {
   width: 28px;
   height: 28px;
@@ -154,6 +168,17 @@
 
 .topbar-btn:hover {
   background: var(--shell-accent);
+}
+
+.topbar-btn-primary {
+  background: var(--shell-accent);
+  font-weight: 700;
+}
+
+.topbar-btn-primary:hover {
+  background: #f6c962;
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--shell-line);
 }
 
 .topbar-dot {
