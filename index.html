@@ -176,35 +176,59 @@
         <section class="portfolio-card" data-kaboom-body="true" data-trap="false" style="margin-top: 2rem;">
             <h2>ABOUT</h2>
             <p>I build high-performance WebGL, WebGPU, and interactive 3D experiences. Obsessed with 60 FPS, branchless GLSL, and unconventional UI.</p>
-            <p>Currently merging technical art with aggressive sales acquisition systems.</p>
+            <p>Currently merging technical art with aggressive sales acquisition systems via autonomous agents.</p>
         </section>
 
-        <section class="portfolio-card" style="background: transparent; border: none; box-shadow: none; padding: 0;">
-            <h2 data-kaboom-body="true" data-trap="false">PROJECTS</h2>
-            <div class="projects-grid">
-                <div class="project-item" data-kaboom-body="true" data-trap="drop" onclick="window.open('https://flux-fluid-studio.vercel.app/', '_blank')">
-                    <h3>FLUX FLUID</h3>
-                    <p>WebGL Spatial Fluid Dynamics Sandbox & Exporter</p>
-                </div>
-                <div class="project-item" data-kaboom-body="true" data-trap="drop" onclick="window.open('https://github.com/apoorv-xs/Oversight', '_blank')">
-                    <h3>OVERSIGHT</h3>
-                    <p>Adaptive Network Threat Detection Engine</p>
-                </div>
-                <div class="project-item" data-kaboom-body="true" data-trap="spikes" onclick="window.open('sales.html', '_self')">
-                    <h3>SPRINTDIAL</h3>
-                    <p>High-Velocity Outbound Console & Lead Manager</p>
-                </div>
-                <div class="project-item" data-kaboom-body="true" data-trap="drop" onclick="window.open('https://maison-anima.vercel.app/', '_blank')">
-                    <h3>MAISON ANIMA</h3>
-                    <p>Luxury E-Commerce & Monogram Studio</p>
-                </div>
-            </div>
+        <!-- DEEP DIVES -->
+        <h2 data-kaboom-body="true" data-trap="false" style="margin-top: 3rem; margin-bottom: 1rem; border-bottom: 2px solid var(--ink); padding-bottom: 10px;">CORE ARCHITECTURE</h2>
+        
+        <section class="portfolio-card" data-kaboom-body="true" data-trap="false" style="margin-bottom: 2rem;">
+            <h3>ERAVEX 3D Studio & WebGPU Engine</h3>
+            <div style="font-family: 'Courier Prime', monospace; font-size: 0.85rem; color: var(--purple); margin-bottom: 15px;">[ WebGPU | Three.js | Draco/KTX2 | Gaussian Splats ]</div>
+            <p>A proprietary zero-cost computational engine delivering mathematically pure, 60 FPS interactive systems. The architecture strictly enforces a 16.6ms frame budget, keeping draw calls below 50 via InstancedMeshes and MergedGeometries.</p>
+            <ul style="font-family: 'Courier Prime', monospace; font-size: 0.9rem; margin-top: 10px; padding-left: 20px;">
+                <li>Draco & Meshopt glTF compression pipeline (< 5MB payload).</li>
+                <li>Volumetric radiance fields (Gaussian Splats) at locked 60 FPS.</li>
+                <li>Zero memory leaks via strict dispose() lifecycles.</li>
+            </ul>
         </section>
+
+        <section class="portfolio-card" data-kaboom-body="true" data-trap="false" style="margin-bottom: 2rem;">
+            <h3>Autonomous Agent Syndicate</h3>
+            <div style="font-family: 'Courier Prime', monospace; font-size: 0.85rem; color: var(--purple); margin-bottom: 15px;">[ Antigravity 2.0 | LLM Orchestration | CI/CD Pentesting ]</div>
+            <p>A multi-agent parallel execution blueprint orchestrating Hunter, Forge, and Foundry subagents. These agents handle full CI/CD pipeline security scanning, vulnerability patching via Strix, and high-ticket creative tech contract scouting.</p>
+        </section>
+
+        <section class="portfolio-card" data-kaboom-body="true" data-trap="false" style="margin-bottom: 2rem;">
+            <h3>Procedural Shader Vault</h3>
+            <div style="font-family: 'Courier Prime', monospace; font-size: 0.85rem; color: var(--purple); margin-bottom: 15px;">[ GLSL | WGSL | HTTP 402 Micropayments | LYGIA ]</div>
+            <p>Packaging procedural shaders and 3D UI components into commercial turnkey packs. Features include branchless GLSL fragment & raymarching math, flow-field curl noise, and integration with keyless Web3 HTTP 402 micropayment APIs.</p>
+        </section>
+
+        <!-- TRANSMISSIONS / TWEETS -->
+        <h2 data-kaboom-body="true" data-trap="false" style="margin-top: 3rem; margin-bottom: 1rem; border-bottom: 2px solid var(--ink); padding-bottom: 10px;">LIVE TRANSMISSIONS</h2>
+        
+        <div class="projects-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 3rem;">
+            <article class="project-item" data-kaboom-body="true" style="background: var(--white); border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); padding: 15px;">
+                <strong style="color: var(--purple);">@apoorv_xs</strong>
+                <p style="font-family: 'Courier Prime', monospace; font-size: 0.9rem; margin-top: 10px;">Just dropped the new WebGPU Gaussian Splat renderer. Locked at 60FPS on a 5-year old Android. Optimize your draw calls.</p>
+            </article>
+
+            <article class="project-item" data-kaboom-body="true" style="background: var(--white); border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); padding: 15px;">
+                <strong style="color: var(--purple);">@apoorv_xs</strong>
+                <p style="font-family: 'Courier Prime', monospace; font-size: 0.9rem; margin-top: 10px;">Why build generic websites when you can build mathematically pure interactives? The 2.5D Kaboom + Babylon engine is live.</p>
+            </article>
+            
+            <article class="project-item" data-kaboom-body="true" style="background: var(--white); border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); padding: 15px; grid-column: 1 / -1;">
+                <strong style="color: var(--purple);">@apoorv_xs</strong>
+                <p style="font-family: 'Courier Prime', monospace; font-size: 0.9rem; margin-top: 10px;">Integrating Antigravity agents into the build pipeline. Zero-cost compute advantage is the ultimate moat.</p>
+            </article>
+        </div>
 
         <section class="portfolio-card" data-kaboom-body="true" data-trap="false">
             <h2>LET'S TALK</h2>
             <p>Ready to build something impossible?</p>
-            <a href="mailto:contact@example.com" class="action-btn" style="display: inline-block; background: var(--purple); color: var(--white); border: 4px solid var(--ink); padding: 15px 30px; font-family: 'Press Start 2P'; text-decoration: none; margin-top: 20px; box-shadow: 4px 4px 0 var(--ink);">Email Me</a>
+            <a href="mailto:contact@example.com" class="action-btn" data-kaboom-body="true" data-trap="cta" style="display: inline-block; background: var(--purple); color: var(--white); border: 4px solid var(--ink); padding: 15px 30px; font-family: 'Press Start 2P'; text-decoration: none; margin-top: 20px; box-shadow: 4px 4px 0 var(--ink);">Email Me</a>
         </section>
     </main>
 
