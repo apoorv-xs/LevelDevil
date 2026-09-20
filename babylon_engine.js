@@ -31,8 +31,8 @@
 
             // 2. Create Main Scene
             this.scene = new BABYLON.Scene(this.engine);
-            // Warm retro Amber/Gold atmosphere
-            this.scene.clearColor = new BABYLON.Color4(0.91, 0.71, 0.35, 1.0);
+            // Transparent so we can see the DOM underneath!
+            this.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
 
             // 3. Setup Camera (2.5D Viewport)
             this.camera = new BABYLON.UniversalCamera("camera3D", new BABYLON.Vector3(0, 0, -25), this.scene);
