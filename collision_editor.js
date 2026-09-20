@@ -27,6 +27,51 @@
         renderOverlay();
     }
 
+    // Direct DOM Bottom Snapping Engine for Visual Mapper
+    function snapFromDOM() {
+        const elements = document.querySelectorAll('[data-kaboom-body="true"], [data-rail="true"]');
+        const scrollY = window.scrollY || window.pageYOffset || 0;
+        const newRails = [];
+
+        elements.forEach(el => {
+            const rect = el.getBoundingClientRect();
+            if (rect.width < 10 || rect.height < 4) return;
+
+            // Compute landing rail strictly at the BOTTOM edge/baseline of the DOM element
+            const yRail = Math.round(rect.bottom + scrollY);
+            const rawTrap = el.getAttribute("data-trap");
+            const trapType = (rawTrap && rawTrap !== "false" && rawTrap !== "none") ? rawTrap : "normal";
+
+            const tag = el.tagName;
+            const cls = el.className && typeof el.className === "string" ? '.' + el.className.split(' ')[0] : '';
+            const name = el.id ? `${tag}#${el.id}` : `${tag}${cls}`;
+
+            newRails.push({
+                xLeft: Math.round(rect.left),
+                xRight: Math.round(rect.right),
+                width: Math.round(rect.width),
+                y: yRail,
+                domElement: el,
+                trap: trapType,
+                name: name
+            });
+        });
+
+        // Deduplicate any identical overlapping rails
+        const unique = [];
+        for (const r of newRails) {
+            const dup = unique.find(u => Math.abs(u.y - r.y) <= 2 && Math.abs(u.xLeft - r.xLeft) <= 4 && Math.abs(u.xRight - r.xRight) <= 4);
+            if (!dup) unique.push(r);
+        }
+
+        window.landingRails = unique;
+        saveToLocal();
+        renderOverlay();
+        updateHudContent();
+        console.log("🛠 Visual Collision Mapper snapped from DOM bottom:", unique.length);
+        return unique;
+    }
+
     function saveToLocal() {
         try {
             const clean = (window.landingRails || []).map(r => ({
@@ -37,14 +82,20 @@
                 trap: r.trap || "normal",
                 name: r.name || (r.domElement ? (r.domElement.tagName + (r.domElement.className ? '.' + r.domElement.className.split(' ')[0] : '')) : "custom_rail")
             }));
-            localStorage.setItem("apoorv_custom_rails_v2", JSON.stringify(clean));
-            console.log("💾 Saved custom rails v2 to localStorage:", clean.length);
+            localStorage.setItem("apoorv_custom_rails_v3", JSON.stringify(clean));
+            console.log("💾 Saved custom rails v3 to localStorage:", clean.length);
         } catch(e) {
             console.warn("Could not save to localStorage", e);
         }
     }
 
     function initEditor() {
+        // Clean out legacy top-based rails
+        try {
+            localStorage.removeItem("apoorv_custom_rails");
+            localStorage.removeItem("apoorv_custom_rails_v2");
+        } catch (e) {}
+
         // Toggle Button in bottom-right corner
         const toggleBtn = document.createElement("button");
         toggleBtn.id = "collision-editor-toggle-btn";
@@ -97,6 +148,11 @@
             toggleBtn.style.background = "#fce566";
             toggleBtn.style.color = "#17120f";
             toggleBtn.innerHTML = "✕ CLOSE (E)";
+        }
+
+        // Ensure clean bottom rails on first open if no v3 edits exist
+        if (!localStorage.getItem("apoorv_custom_rails_v3") || getRails().length === 0) {
+            snapFromDOM();
         }
 
         createOverlay();
@@ -301,11 +357,10 @@
         const btnSnapDOM = hudDock.querySelector("#btn-snap-dom");
         if (btnSnapDOM) {
             btnSnapDOM.addEventListener("click", () => {
-                if (window.syncDOM) window.syncDOM(true);
+                snapFromDOM();
                 selectedRailIndex = -1;
                 renderOverlay();
                 updateHudContent();
-                saveToLocal();
             });
         }
 
@@ -334,7 +389,8 @@
                 if (confirm("Clear custom edits and re-sync from HTML DOM bottom?")) {
                     localStorage.removeItem("apoorv_custom_rails");
                     localStorage.removeItem("apoorv_custom_rails_v2");
-                    if (window.syncDOM) window.syncDOM(true);
+                    localStorage.removeItem("apoorv_custom_rails_v3");
+                    snapFromDOM();
                     selectedRailIndex = -1;
                     renderOverlay();
                     updateHudContent();

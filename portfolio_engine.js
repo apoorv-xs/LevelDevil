@@ -143,7 +143,7 @@ onLoad(() => {
 
     function loadSavedRails() {
         try {
-            const saved = localStorage.getItem("apoorv_custom_rails_v2");
+            const saved = localStorage.getItem("apoorv_custom_rails_v3");
             if (saved) {
                 const parsed = JSON.parse(saved);
                 if (Array.isArray(parsed) && parsed.length > 0) {
@@ -203,7 +203,7 @@ onLoad(() => {
     }
 
     function syncDOM(force = false) {
-        if (!force && localStorage.getItem("apoorv_custom_rails_v2")) {
+        if (!force && localStorage.getItem("apoorv_custom_rails_v3")) {
             if (loadSavedRails()) return;
         }
 
