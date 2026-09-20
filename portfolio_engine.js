@@ -90,7 +90,7 @@ onLoad(() => {
         {"xLeft":192,"xRight":668,"width":476,"y":492,"trap":"normal","name":"DIV.controls-pill"},
         {"xLeft":192,"xRight":366,"width":174,"y":532,"trap":"normal","name":"A.topbar-btn"},
         {"xLeft":376,"xRight":587,"width":211,"y":532,"trap":"normal","name":"A.topbar-btn"},
-        {"xLeft":1008,"xRight":1328,"width":320,"y":492,"trap":"normal","name":"ASIDE.hero-aside-status"},
+        {"xLeft":1008,"xRight":1328,"width":320,"y":492,"trap":"drop","name":"ASIDE.hero-aside-status"},
         {"xLeft":1031,"xRight":1305,"width":274,"y":280,"trap":"normal","name":"P"},
         {"xLeft":1031,"xRight":1305,"width":274,"y":354,"trap":"normal","name":"LI"},
         {"xLeft":1031,"xRight":1305,"width":274,"y":376,"trap":"normal","name":"LI"},
@@ -107,7 +107,7 @@ onLoad(() => {
         {"xLeft":631,"xRight":1289,"width":658,"y":1137,"trap":"normal","name":"DIV"},
         {"xLeft":192,"xRight":744,"width":552,"y":1583,"trap":"normal","name":"ARTICLE.standard-project-card"},
         {"xLeft":228,"xRight":708,"width":480,"y":1458,"trap":"normal","name":"P"},
-        {"xLeft":228,"xRight":342,"width":114,"y":1499,"trap":"normal","name":"A.tech-pill"},
+        {"xLeft":228,"xRight":342,"width":114,"y":1499,"trap":"spikes","name":"A.tech-pill"},
         {"xLeft":776,"xRight":1328,"width":552,"y":1583,"trap":"normal","name":"ARTICLE.standard-project-card"},
         {"xLeft":812,"xRight":1292,"width":480,"y":1506,"trap":"normal","name":"P"},
         {"xLeft":812,"xRight":1032,"width":220,"y":1547,"trap":"normal","name":"SPAN.tech-pill"},
@@ -117,7 +117,7 @@ onLoad(() => {
         {"xLeft":192,"xRight":1328,"width":1136,"y":2032,"trap":"normal","name":"DIV.section-header"},
         {"xLeft":192,"xRight":555,"width":363,"y":2304,"trap":"normal","name":"DIV.capability-card"},
         {"xLeft":225,"xRight":522,"width":297,"y":2271,"trap":"normal","name":"P"},
-        {"xLeft":579,"xRight":941,"width":363,"y":2304,"trap":"normal","name":"DIV.capability-card"},
+        {"xLeft":579,"xRight":941,"width":363,"y":2304,"trap":"glitch","name":"DIV.capability-card"},
         {"xLeft":611,"xRight":909,"width":297,"y":2271,"trap":"normal","name":"P"},
         {"xLeft":965,"xRight":1328,"width":363,"y":2304,"trap":"normal","name":"DIV.capability-card"},
         {"xLeft":998,"xRight":1295,"width":297,"y":2271,"trap":"normal","name":"P"},
@@ -132,7 +132,7 @@ onLoad(() => {
         {"xLeft":192,"xRight":1328,"width":1136,"y":3235,"trap":"normal","name":"SECTION.contact-card"},
         {"xLeft":237,"xRight":875,"width":638,"y":3069,"trap":"normal","name":"H2"},
         {"xLeft":237,"xRight":875,"width":638,"y":3144,"trap":"normal","name":"P"},
-        {"xLeft":907,"xRight":1283,"width":376,"y":3073,"trap":"cta","name":"A.cta-btn-primary"},
+        {"xLeft":907,"xRight":1283,"width":376,"y":3073,"trap":"bounce","name":"A.cta-btn-primary"},
         {"xLeft":907,"xRight":1090,"width":183,"y":3174,"trap":"normal","name":"A.cta-btn-secondary"},
         {"xLeft":1100,"xRight":1283,"width":183,"y":3174,"trap":"normal","name":"A.cta-btn-secondary"}
     ];
@@ -215,6 +215,146 @@ onLoad(() => {
         return uniqueRails;
     }
 
+    // --- 5 SECTOR KYBER DATA CORES (COLLECTIBLE REWARD SYSTEM) ---
+    const DATA_CORES = [
+        { id: "core-1", name: "Jakku Scavenger Core", relX: 980, y: 190, sector: "S-01", collected: false, obj: null },
+        { id: "core-2", name: "Foundry Power Module", relX: 560, y: 1360, sector: "S-02", collected: false, obj: null },
+        { id: "core-3", name: "Quantum Encryption Key", relX: 560, y: 2120, sector: "S-03", collected: false, obj: null },
+        { id: "core-4", name: "Hyper-Matter Fuel Cell", relX: 460, y: 2520, sector: "S-04", collected: false, obj: null },
+        { id: "core-5", name: "Stellar Uplink Transceiver", relX: 900, y: 2980, sector: "S-05", collected: false, obj: null }
+    ];
+
+    let collectedCoresCount = 0;
+
+    function spawnDataCores() {
+        const BASE_SHELL_LEFT = 192;
+        const shell = document.querySelector('main.portfolio-shell');
+        const currentShellLeft = shell ? (shell.getBoundingClientRect().left + 32) : BASE_SHELL_LEFT;
+        const deltaX = Math.round(currentShellLeft - BASE_SHELL_LEFT);
+
+        DATA_CORES.forEach((core) => {
+            if (core.obj) {
+                try { destroy(core.obj); } catch(e) {}
+                core.obj = null;
+            }
+            if (core.collected) return;
+
+            const coreX = BASE_SHELL_LEFT + core.relX + deltaX;
+
+            const coreObj = add([
+                pos(coreX, core.y),
+                rect(22, 22),
+                rotate(45),
+                anchor("center"),
+                color(0, 229, 255),
+                outline(3, rgb(23, 18, 15)),
+                area(),
+                z(30),
+                "data_core"
+            ]);
+
+            core.obj = coreObj;
+        });
+    }
+
+    function collectDataCore(core) {
+        if (core.collected) return;
+        core.collected = true;
+        collectedCoresCount++;
+
+        // SFX
+        if (window.SFX && window.SFX.playPickup) window.SFX.playPickup();
+
+        // Animate core collection burst
+        if (core.obj) {
+            tween(core.obj.scale, vec2(2.0, 2.0), 0.2, (v) => core.obj.scale = v);
+            tween(core.obj.opacity, 0, 0.25, (v) => core.obj.opacity = v, easings.easeOutQuad).onEnd(() => {
+                try { destroy(core.obj); } catch(e) {}
+                core.obj = null;
+            });
+        }
+
+        // Particle sparkle burst
+        const originX = core.obj ? core.obj.pos.x : player.pos.x;
+        const originY = core.obj ? core.obj.pos.y : player.pos.y - 35;
+        for (let i = 0; i < 14; i++) {
+            const pAngle = (Math.PI * 2 * i) / 14;
+            const pSpeed = 120 + Math.random() * 80;
+            const p = add([
+                pos(originX, originY),
+                rect(5, 5),
+                rotate(45),
+                anchor("center"),
+                color(0, 229, 255),
+                outline(1, rgb(23, 18, 15)),
+                opacity(1),
+                z(35)
+            ]);
+            tween(p.pos.x, p.pos.x + Math.cos(pAngle) * pSpeed * 0.35, 0.35, (v) => p.pos.x = v);
+            tween(p.pos.y, p.pos.y + Math.sin(pAngle) * pSpeed * 0.35, 0.35, (v) => p.pos.y = v);
+            tween(p.opacity, 0, 0.35, (v) => p.opacity = v, easings.easeOutQuad).onEnd(() => {
+                try { destroy(p); } catch(e) {}
+            });
+        }
+
+        // Update HUD
+        const coresPill = document.getElementById("topbar-cores");
+        if (coresPill) {
+            coresPill.textContent = `💎 ${collectedCoresCount}/5 CORES`;
+            coresPill.style.background = "#fce566";
+            setTimeout(() => { if (coresPill) coresPill.style.background = ""; }, 300);
+        }
+
+        // Check for 5/5 Grand Reward: Golden Astromech Overcharge Mode
+        if (collectedCoresCount >= 5) {
+            triggerGoldenOvercharge();
+        }
+    }
+
+    function triggerGoldenOvercharge() {
+        console.log("5/5 DATA CORES COLLECTED! UNLOCKING GOLDEN ASTROMECH OVERCHARGE!");
+        if (window.SFX && window.SFX.playVictory) window.SFX.playVictory();
+
+        if (window.Player3D && window.Player3D.setGoldenMode) {
+            window.Player3D.setGoldenMode(true);
+        }
+
+        const coresPill = document.getElementById("topbar-cores");
+        if (coresPill) {
+            coresPill.textContent = "★ 5/5 GOLDEN DROID ★";
+            coresPill.style.background = "#ffd700";
+            coresPill.style.color = "#17120f";
+            coresPill.style.borderColor = "#17120f";
+            coresPill.style.boxShadow = "0 0 12px #ffd700, 2px 2px 0 #17120f";
+        }
+
+        // Overcharge jump celebration
+        if (player) {
+            player.jump(JUMP_FORCE * 1.25);
+        }
+
+        // Confetti celebration
+        for (let i = 0; i < 35; i++) {
+            const cx = player ? player.pos.x + (Math.random() - 0.5) * 400 : window.innerWidth / 2;
+            const cy = (player ? player.pos.y : window.scrollY + 300) - Math.random() * 200;
+            const colors = [rgb(255, 215, 0), rgb(0, 229, 255), rgb(235, 94, 40), rgb(255, 255, 255)];
+            const conf = add([
+                pos(cx, cy),
+                rect(8, 8),
+                rotate(Math.random() * 360),
+                color(colors[i % colors.length]),
+                outline(1, rgb(23, 18, 15)),
+                opacity(1),
+                z(40)
+            ]);
+            tween(conf.pos.y, conf.pos.y + 150 + Math.random() * 100, 0.8 + Math.random() * 0.4, (v) => conf.pos.y = v);
+            tween(conf.angle, conf.angle + 360, 1.2, (v) => conf.angle = v);
+            tween(conf.opacity, 0, 1.2, (v) => conf.opacity = v).onEnd(() => {
+                try { destroy(conf); } catch(e) {}
+            });
+        }
+    }
+
     function syncDOM(force = false) {
         if (!force && localStorage.getItem("apoorv_custom_rails_v3")) {
             if (loadSavedRails()) return;
@@ -224,6 +364,7 @@ onLoad(() => {
         landingRails = getCalibratedRails();
         window.landingRails = landingRails;
         console.log("Master calibrated bottom ground rails loaded as default:", landingRails.length);
+        spawnDataCores();
     }
 
     window.landingRails = landingRails;
@@ -295,26 +436,28 @@ onLoad(() => {
         if (!rail) return;
 
         if (rail.trap === "bounce") {
-            p.jump(JUMP_FORCE * 1.35);
+            p.jump(JUMP_FORCE * 1.45);
             if (rail.domElement) {
                 rail.domElement.style.transition = "transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
-                rail.domElement.style.transform = "scale(0.97) translateY(4px)";
+                rail.domElement.style.transform = "scale(0.95) translateY(6px)";
                 setTimeout(() => {
                     if (rail.domElement) rail.domElement.style.transform = "scale(1) translateY(0)";
                 }, 150);
             }
             if (window.SFX && window.SFX.playJump) window.SFX.playJump();
         } else if (rail.trap === "drop") {
+            // Level Devil Quicksand / Collapsing Platform Trap (0.1s warning)
             if (rail.domElement) {
-                rail.domElement.style.transition = "transform 0.1s";
-                rail.domElement.style.transform = "translateX(5px)";
-                setTimeout(() => { if (rail.domElement) rail.domElement.style.transform = "translateX(-5px)"; }, 50);
-                setTimeout(() => { if (rail.domElement) rail.domElement.style.transform = "translateX(0)"; }, 100);
+                rail.domElement.style.transition = "transform 0.08s";
+                rail.domElement.style.transform = "translateX(4px)";
+                setTimeout(() => { if (rail.domElement) rail.domElement.style.transform = "translateX(-4px)"; }, 35);
+                setTimeout(() => { if (rail.domElement) rail.domElement.style.transform = "translateX(0)"; }, 70);
 
                 setTimeout(() => {
                     if (rail.domElement) {
-                        rail.domElement.style.transition = "transform 1s ease-in";
-                        rail.domElement.style.transform = "translateY(1000px)";
+                        rail.domElement.style.transition = "transform 0.6s ease-in, opacity 0.6s";
+                        rail.domElement.style.transform = "translateY(600px)";
+                        rail.domElement.style.opacity = "0.2";
                     }
                     const idx = landingRails.indexOf(rail);
                     if (idx !== -1) landingRails.splice(idx, 1);
@@ -322,10 +465,13 @@ onLoad(() => {
                         p.grounded = false;
                         p.currentRail = null;
                     }
-                }, 500);
+                }, 100);
             }
+            if (window.SFX && window.SFX.playTrap) window.SFX.playTrap();
         } else if (rail.trap === "spikes") {
-            if (typeof shake === "function") shake(10);
+            if (window.SFX && window.SFX.playTrap) window.SFX.playTrap();
+            if (window.Player3D && window.Player3D.smashIntoCamera) window.Player3D.smashIntoCamera();
+            if (typeof shake === "function") shake(12);
             respawnPlayer();
         }
     }
@@ -419,6 +565,18 @@ onLoad(() => {
 
                     for (const rail of landingRails) {
                         if (player.pos.x >= rail.xLeft - 10 && player.pos.x <= rail.xRight + 10) {
+                            // Glitch platform: intangible when phasing out
+                            if (rail.trap === "glitch") {
+                                const t = (typeof time === "function") ? time() : performance.now() * 0.001;
+                                const isGlitchSolid = Math.sin(t * 2) > -0.25;
+                                if (!isGlitchSolid) {
+                                    if (rail.domElement) rail.domElement.style.opacity = "0.35";
+                                    continue;
+                                } else {
+                                    if (rail.domElement) rail.domElement.style.opacity = "1.0";
+                                }
+                            }
+
                             // Swept interval check: yPrev <= rail.y <= yNext
                             if (yPrev <= rail.y + 0.1 && rail.y <= yNext + 0.5) {
                                 if (rail.y < bestY) {
@@ -520,11 +678,28 @@ onLoad(() => {
         const sectorPill = document.getElementById("topbar-sector");
         if (sectorPill && sectorPill.textContent !== sectorName) {
             sectorPill.textContent = sectorName;
+            if (window.SFX && window.SFX.playSectorChange) {
+                window.SFX.playSectorChange();
+            }
         }
 
         if (window.Engine3D && window.Engine3D.setSectorDepth) {
             window.Engine3D.setSectorDepth(effectiveDepth, sectorClass);
         }
+
+        // --- DATA CORES FLOATING ANIMATION & COLLISION ---
+        DATA_CORES.forEach((core, idx) => {
+            if (!core.collected && core.obj) {
+                const t = (typeof time === "function") ? time() : performance.now() * 0.001;
+                core.obj.pos.y = core.y + Math.sin(t * 4 + idx) * 8;
+                core.obj.angle = 45 + Math.sin(t * 2 + idx) * 15;
+
+                // Check collision with player (hitbox center around y - 35)
+                if (player && Math.hypot(player.pos.x - core.obj.pos.x, (player.pos.y - 35) - core.obj.pos.y) < 38) {
+                    collectDataCore(core);
+                }
+            }
+        });
 
         // Initialize 3D Player if engine is ready
         if (window.Engine3D && window.Engine3D.isReady && !is3DReady) {

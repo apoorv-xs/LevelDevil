@@ -128,25 +128,36 @@
   box-shadow: 2px 2px 0 var(--shell-line);
 }
 
-/* Right Utility / Status Anchor */
 .topbar-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-shrink: 0;
 }
 
+@media (max-width: 1360px) {
+  .topbar-fps-badge {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1180px) {
+  #topbar-sector {
+    display: none !important;
+  }
+}
+
 .topbar-badge {
-  font: 10px "Press Start 2P", monospace;
+  font: 9px "Press Start 2P", monospace;
   background: var(--shell-white);
   color: var(--shell-ink);
   border: 2px solid var(--shell-line);
   box-shadow: 2px 2px 0 var(--shell-line);
-  padding: 6px 10px;
+  padding: 5px 8px;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   line-height: 1;
 }
 

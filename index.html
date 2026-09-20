@@ -409,6 +409,16 @@
         }
 
         /* --- CANVAS OVERLAYS --- */
+        #game-parallax-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0; /* Behind DOM, above body background */
+            pointer-events: none;
+        }
+
         #three-canvas, #babylon-canvas {
             position: fixed;
             top: 0;
@@ -462,7 +472,13 @@
             <div id="topbar-sector" class="topbar-sector-badge hide-mobile" title="Active Droid Sector">
                 S-01: JAKKU DUNES
             </div>
-            <div class="topbar-badge hide-mobile" title="Real-Time WebGL Performance Benchmark">
+            <div id="topbar-cores" class="topbar-sector-badge" title="Collected Kyber Data Cores">
+                💎 0/5 CORES
+            </div>
+            <button id="sfx-toggle-btn" class="topbar-btn hide-mobile" onclick="if(window.SFX)window.SFX.toggleMute()" title="Toggle Sound (8-Bit Audio)" style="padding: 4px 8px; cursor: pointer; background: var(--shell-white); border: 2px solid var(--shell-line); box-shadow: 2px 2px 0 var(--shell-line); font-size: 10px;">
+                🔊
+            </button>
+            <div class="topbar-badge topbar-fps-badge hide-mobile" title="Real-Time WebGL Performance Benchmark">
                 <span class="topbar-dot"></span>
                 <span><span id="live-fps">60.0</span> FPS</span>
             </div>
@@ -754,6 +770,9 @@
             requestAnimationFrame(updateFPS);
         })();
     </script>
+
+    <!-- 2D PROCEDURAL PARALLAX CANVAS -->
+    <canvas id="game-parallax-canvas"></canvas>
 
     <!-- THREE.JS 3D CANVAS -->
     <canvas id="three-canvas"></canvas>

@@ -171,10 +171,113 @@
         return texture;
     }
 
+    // Helper: Golden Overcharge Body Texture (24K Gold & Cyan Cyber Circuits)
+    function createGoldenBodyTexture() {
+        const canvas = document.createElement("canvas");
+        canvas.width = 1024;
+        canvas.height = 512;
+        const ctx = canvas.getContext("2d");
+
+        // 1. Radiant 24K Gold Metallic Base
+        const grad = ctx.createLinearGradient(0, 0, 1024, 512);
+        grad.addColorStop(0, "#ffd700");
+        grad.addColorStop(0.3, "#fff275");
+        grad.addColorStop(0.7, "#f59e0b");
+        grad.addColorStop(1, "#ffd700");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 1024, 512);
+
+        // 2. Cyan Energy Circuit Lines
+        ctx.strokeStyle = "#00e5ff";
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(0, 128); ctx.lineTo(1024, 128);
+        ctx.moveTo(0, 384); ctx.lineTo(1024, 384);
+        for (let x = 0; x <= 1024; x += 256) {
+            ctx.moveTo(x, 0); ctx.lineTo(x, 512);
+        }
+        ctx.stroke();
+
+        // 3. Golden Astromech Tool Panels with Glowing Cyan Cores
+        function drawGoldPanel(cx, cy, radius) {
+            ctx.fillStyle = "#b45309"; // Burnished dark gold
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "#17120f";
+            ctx.stroke();
+
+            ctx.fillStyle = "#fef08a"; // Bright gold ring
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius * 0.72, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Glowing Cyan Energy Core
+            ctx.fillStyle = "#00e5ff";
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius * 0.40, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        const eqY = 256;
+        const panelR = 86;
+        drawGoldPanel(128, eqY, panelR);
+        drawGoldPanel(384, eqY, panelR);
+        drawGoldPanel(640, eqY, panelR);
+        drawGoldPanel(896, eqY, panelR);
+
+        drawGoldPanel(256, 75, 52);
+        drawGoldPanel(768, 75, 52);
+        drawGoldPanel(256, 437, 52);
+        drawGoldPanel(768, 437, 52);
+
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.ClampToEdgeWrapping;
+        return texture;
+    }
+
+    // Helper: Golden Head Texture
+    function createGoldenHeadTexture() {
+        const canvas = document.createElement("canvas");
+        canvas.width = 512;
+        canvas.height = 256;
+        const ctx = canvas.getContext("2d");
+
+        // 24K Gold Base
+        ctx.fillStyle = "#ffd700";
+        ctx.fillRect(0, 0, 512, 256);
+
+        // Radiant Cyan Racing Stripe
+        ctx.fillStyle = "#00e5ff";
+        ctx.fillRect(0, 165, 512, 48);
+        ctx.strokeStyle = "#17120f";
+        ctx.lineWidth = 3.5;
+        ctx.strokeRect(0, 165, 512, 48);
+
+        // Dark Gold Rim
+        ctx.fillStyle = "#b45309";
+        ctx.fillRect(0, 222, 512, 34);
+        ctx.strokeRect(0, 222, 512, 34);
+
+        const texture = new THREE.CanvasTexture(canvas);
+        return texture;
+    }
+
     const Player3D = {
         root: null,
         bodyContainer: null,
         bodyBall: null,
+        bodyMesh: null,
+        domeMesh: null,
+        bodyMat: null,
+        headMat: null,
+        goldenBodyMat: null,
+        goldenHeadMat: null,
+        goldenHalo: null,
         headGroup: null,
         groundShadow: null,
         primaryLens: null,
@@ -184,9 +287,40 @@
         shortAntenna: null,
         isCreated: false,
         isSmashing: false,
+        isGoldenMode: false,
         lastX: 0,
         currentRollZ: 0,
         headTiltZ: 0,
+
+        setGoldenMode(active) {
+            this.isGoldenMode = Boolean(active);
+            if (!this.bodyMesh || !this.domeMesh) return;
+
+            if (this.isGoldenMode) {
+                if (!this.goldenBodyMat) {
+                    this.goldenBodyMat = new THREE.MeshToonMaterial({
+                        map: createGoldenBodyTexture(),
+                        color: 0xffffff
+                    });
+                }
+                if (!this.goldenHeadMat) {
+                    this.goldenHeadMat = new THREE.MeshToonMaterial({
+                        map: createGoldenHeadTexture(),
+                        color: 0xffffff
+                    });
+                }
+                this.bodyMesh.material = this.goldenBodyMat;
+                this.domeMesh.material = this.goldenHeadMat;
+                if (this.goldenHalo) this.goldenHalo.visible = true;
+                if (this.antennaLed) this.antennaLed.material.color.setHex(0xffd700);
+                console.log("Golden Astromech Overcharge Mode ACTIVATED!");
+            } else {
+                this.bodyMesh.material = this.bodyMat;
+                this.domeMesh.material = this.headMat;
+                if (this.goldenHalo) this.goldenHalo.visible = false;
+                if (this.antennaLed) this.antennaLed.material.color.setHex(0x00ffff);
+            }
+        },
 
         smashIntoCamera() {
             if (!this.isCreated || this.isSmashing) return;
@@ -328,6 +462,9 @@
             // Core sphere with flush painted BB-8 graphics
             const sphereGeo = new THREE.SphereGeometry(BALL_RADIUS, 36, 28);
             const bodyMesh = new THREE.Mesh(sphereGeo, bodyMat);
+            this.bodyMesh = bodyMesh;
+            this.bodyMat = bodyMat;
+            this.headMat = headMat;
             this.bodyBall.add(bodyMesh);
 
             // Cel-shaded ink outline hull for body sphere (Matching #17120f border strokes)
@@ -357,8 +494,21 @@
             const DOME_RADIUS = 0.45;
             const domeGeo = new THREE.SphereGeometry(DOME_RADIUS, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2);
             const domeMesh = new THREE.Mesh(domeGeo, headMat);
+            this.domeMesh = domeMesh;
             domeMesh.position.y = 0.06;
             this.headGroup.add(domeMesh);
+
+            // Golden Overcharge Radiant Halo Ring (Unlocked upon 5/5 Data Cores)
+            const haloGeo = new THREE.TorusGeometry(0.55, 0.03, 16, 32);
+            const haloMat = new THREE.MeshBasicMaterial({
+                color: 0xffd700,
+                transparent: true,
+                opacity: 0.85
+            });
+            this.goldenHalo = new THREE.Mesh(haloGeo, haloMat);
+            this.goldenHalo.position.set(0, 0.25, -0.15);
+            this.goldenHalo.visible = false;
+            this.headGroup.add(this.goldenHalo);
 
             // Dome cel-shaded ink outline hull
             const domeOutlineGeo = new THREE.SphereGeometry(DOME_RADIUS * 1.038, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2);
@@ -535,10 +685,15 @@
                 }
             }
 
-            // 7. Pulsing Antenna LED Beacon
+            // 7. Pulsing Antenna LED Beacon & Golden Halo Spin
             if (this.antennaLed) {
                 const pulse = 0.5 + 0.5 * Math.sin(t * 6);
                 this.antennaLed.scale.set(1 + pulse * 0.3, 1 + pulse * 0.3, 1 + pulse * 0.3);
+            }
+            if (this.goldenHalo && this.goldenHalo.visible) {
+                this.goldenHalo.rotation.z += 0.035;
+                const haloPulse = 0.8 + 0.2 * Math.sin(t * 8);
+                this.goldenHalo.scale.set(haloPulse, haloPulse, haloPulse);
             }
         }
     };
