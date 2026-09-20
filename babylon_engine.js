@@ -26,6 +26,8 @@
                 preserveDrawingBuffer: true,
                 stencil: true,
                 antialias: true,
+                alpha: true,
+                premultipliedAlpha: false,
                 powerPreference: "high-performance"
             });
 
