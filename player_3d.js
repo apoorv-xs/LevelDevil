@@ -1,17 +1,187 @@
-// player_3d.js - Expressive 3D BB-8 Astromech Droid for Level Devil Remaster (Three.js)
+// player_3d.js - Expressive Cel-Shaded 3D BB-8 Astromech Droid for Level Devil Remaster (Three.js)
 (function () {
     "use strict";
+
+    // Helper: Generate procedural high-detail BB-8 body texture with flush panels and ink seams
+    function createBB8BodyTexture() {
+        const canvas = document.createElement("canvas");
+        canvas.width = 1024;
+        canvas.height = 512;
+        const ctx = canvas.getContext("2d");
+
+        // 1. Base Warm Off-White Ceramic
+        ctx.fillStyle = "#f5f2e9";
+        ctx.fillRect(0, 0, 1024, 512);
+
+        // 2. Ink Panel Seams (Hand-drawn construction lines)
+        ctx.strokeStyle = "#17120f";
+        ctx.lineWidth = 3;
+
+        // Horizontal latitude panel lines
+        ctx.beginPath();
+        ctx.moveTo(0, 128); ctx.lineTo(1024, 128);
+        ctx.moveTo(0, 384); ctx.lineTo(1024, 384);
+        ctx.stroke();
+
+        // Vertical longitude panel lines connecting panels
+        for (let x = 0; x <= 1024; x += 256) {
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, 512);
+            ctx.stroke();
+        }
+
+        // Secondary subtle diagonal panel seams
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = "rgba(23, 18, 15, 0.45)";
+        for (let x = 0; x < 1024; x += 256) {
+            ctx.beginPath();
+            ctx.moveTo(x + 64, 128); ctx.lineTo(x + 192, 0);
+            ctx.moveTo(x + 64, 384); ctx.lineTo(x + 192, 512);
+            ctx.stroke();
+        }
+
+        // Helper: Draw an authentic flush BB-8 circular panel at (cx, cy)
+        function drawPanel(cx, cy, radius) {
+            // Outer Orange Ring
+            ctx.fillStyle = "#eb5e28"; // BB-8 Safety Orange
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "#17120f";
+            ctx.stroke();
+
+            // Inner Ceramic Gap Ring
+            ctx.fillStyle = "#f5f2e9";
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius * 0.72, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#17120f";
+            ctx.stroke();
+
+            // Inner Silver Mechanical Ring
+            ctx.fillStyle = "#8a939e";
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius * 0.52, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = "#17120f";
+            ctx.stroke();
+
+            // Center Charcoal Tool Socket Core
+            ctx.fillStyle = "#1d2127";
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius * 0.32, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "#17120f";
+            ctx.stroke();
+
+            // Technical details: 4 radial crosshair tabs
+            ctx.strokeStyle = "#17120f";
+            ctx.lineWidth = 3.5;
+            const dist1 = radius * 0.72;
+            const dist2 = radius * 0.98;
+            for (let a = 0; a < Math.PI * 2; a += Math.PI / 2) {
+                ctx.beginPath();
+                ctx.moveTo(cx + Math.cos(a) * dist1, cy + Math.sin(a) * dist1);
+                ctx.lineTo(cx + Math.cos(a) * dist2, cy + Math.sin(a) * dist2);
+                ctx.stroke();
+            }
+
+            // Diagonal mini access notches
+            ctx.fillStyle = "#17120f";
+            for (let a = Math.PI / 4; a < Math.PI * 2; a += Math.PI / 2) {
+                const nx = cx + Math.cos(a) * (radius * 0.85);
+                const ny = cy + Math.sin(a) * (radius * 0.85);
+                ctx.beginPath();
+                ctx.arc(nx, ny, 3.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Center accent amber indicator
+            ctx.fillStyle = "#fce566";
+            ctx.fillRect(cx - 3, cy - 3, 6, 6);
+            ctx.strokeStyle = "#17120f";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(cx - 3, cy - 3, 6, 6);
+        }
+
+        // Draw 4 Equatorial Panels spaced at 90-degree intervals (Y = 256)
+        const eqY = 256;
+        const panelR = 86;
+        drawPanel(128, eqY, panelR);
+        drawPanel(384, eqY, panelR);
+        drawPanel(640, eqY, panelR);
+        drawPanel(896, eqY, panelR);
+
+        // Draw Polar Circular Panels (Top and Bottom caps)
+        drawPanel(256, 75, 52);
+        drawPanel(768, 75, 52);
+        drawPanel(256, 437, 52);
+        drawPanel(768, 437, 52);
+
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.ClampToEdgeWrapping;
+        return texture;
+    }
+
+    // Helper: Generate procedural head dome texture with orange racing stripe and panel seams
+    function createBB8HeadTexture() {
+        const canvas = document.createElement("canvas");
+        canvas.width = 512;
+        canvas.height = 256;
+        const ctx = canvas.getContext("2d");
+
+        // Base Warm Off-White
+        ctx.fillStyle = "#f5f2e9";
+        ctx.fillRect(0, 0, 512, 256);
+
+        // Signature Orange Racing Stripe around lower dome
+        ctx.fillStyle = "#eb5e28";
+        ctx.fillRect(0, 165, 512, 48);
+        ctx.strokeStyle = "#17120f";
+        ctx.lineWidth = 3.5;
+        ctx.strokeRect(0, 165, 512, 48);
+
+        // Silver Base Neck Rim
+        ctx.fillStyle = "#7c858d";
+        ctx.fillRect(0, 222, 512, 34);
+        ctx.strokeRect(0, 222, 512, 34);
+
+        // Dome Seams
+        ctx.strokeStyle = "#17120f";
+        ctx.lineWidth = 2.5;
+        for (let x = 64; x < 512; x += 128) {
+            ctx.beginPath();
+            ctx.moveTo(x, 40);
+            ctx.lineTo(x, 165);
+            ctx.stroke();
+
+            // Accent silver square on seam
+            ctx.fillStyle = "#8a939e";
+            ctx.fillRect(x - 5, 95, 10, 8);
+            ctx.strokeRect(x - 5, 95, 10, 8);
+        }
+
+        const texture = new THREE.CanvasTexture(canvas);
+        return texture;
+    }
 
     const Player3D = {
         root: null,
         bodyContainer: null,
         bodyBall: null,
         headGroup: null,
+        groundShadow: null,
         primaryLens: null,
         secondarySensor: null,
         tallAntenna: null,
+        antennaLed: null,
         shortAntenna: null,
-        haloRing: null,
         isCreated: false,
         isSmashing: false,
         lastX: 0,
@@ -84,66 +254,69 @@
             this.root.name = "heroRoot";
             scene.add(this.root);
 
-            // 2. High-Grade Tactile Materials
-            // Warm off-white ceramic chassis with soft specular highlights
-            const ceramicMat = new THREE.MeshStandardMaterial({
-                color: 0xf5f3ec,
-                roughness: 0.32,
-                metalness: 0.12
+            // 2. High-Grade Cel-Shaded & Ink Line Materials
+            const bodyTexture = createBB8BodyTexture();
+            const headTexture = createBB8HeadTexture();
+
+            // Cel-shaded body material with smooth flush painted graphics
+            const bodyMat = new THREE.MeshToonMaterial({
+                map: bodyTexture,
+                color: 0xffffff
             });
 
-            // Signature Star Wars BB-8 Safety Orange
-            const orangeMat = new THREE.MeshStandardMaterial({
-                color: 0xeb5e28,
-                roughness: 0.38,
-                metalness: 0.15
+            // Cel-shaded head material
+            const headMat = new THREE.MeshToonMaterial({
+                map: headTexture,
+                color: 0xffffff
+            });
+
+            // Black ink outline material (Inverted hull technique)
+            const inkOutlineMat = new THREE.MeshBasicMaterial({
+                color: 0x17120f,
+                side: THREE.BackSide
             });
 
             // Gunmetal / Silver detailing
-            const silverMat = new THREE.MeshStandardMaterial({
-                color: 0x7c858d,
-                roughness: 0.28,
-                metalness: 0.75
-            });
-
-            // Charcoal tool socket interior
-            const charcoalMat = new THREE.MeshStandardMaterial({
-                color: 0x1f2329,
-                roughness: 0.65,
-                metalness: 0.4
+            const silverMat = new THREE.MeshToonMaterial({
+                color: 0x7c858d
             });
 
             // Glossy black camera photoreceptor lens
             const lensMat = new THREE.MeshStandardMaterial({
-                color: 0x08080a,
-                roughness: 0.04,
+                color: 0x050508,
+                roughness: 0.05,
                 metalness: 0.95
             });
 
-            // Lens reflection pin-point
+            // Lens reflection pin-point glint
             const glassDotMat = new THREE.MeshBasicMaterial({
                 color: 0xffffff
             });
 
             // Cyan optical sensor
-            const cyanSensorMat = new THREE.MeshStandardMaterial({
-                color: 0x00e5ff,
-                emissive: 0x00b0ff,
-                emissiveIntensity: 0.6,
-                roughness: 0.2
+            const cyanSensorMat = new THREE.MeshBasicMaterial({
+                color: 0x00e5ff
             });
 
-            // Recruiter Gold Halo Material
-            const haloMat = new THREE.MeshStandardMaterial({
-                color: 0xfce566,
-                emissive: 0xf59e0b,
-                emissiveIntensity: 0.8,
-                roughness: 0.25,
-                metalness: 0.5
+            // Antenna beacon LED
+            const ledMat = new THREE.MeshBasicMaterial({
+                color: 0x00ffff
             });
 
-            // 3. Spherical Rolling Body Construction
-            // Ball radius = 0.65 units, sitting on Y = 0 baseline (center at Y = 0.65)
+            // 3. Ground Contact Drop Shadow (Ink Ellipse anchored to rail)
+            const shadowGeo = new THREE.CircleGeometry(0.70, 32);
+            const shadowMat = new THREE.MeshBasicMaterial({
+                color: 0x17120f,
+                transparent: true,
+                opacity: 0.35
+            });
+            this.groundShadow = new THREE.Mesh(shadowGeo, shadowMat);
+            this.groundShadow.rotation.x = -Math.PI / 2;
+            this.groundShadow.position.y = 0.02;
+            this.groundShadow.scale.set(1.0, 0.45, 1.0);
+            this.root.add(this.groundShadow);
+
+            // 4. Smooth Spherical Rolling Body Construction (Flush, No Stuck-on Donut Rings!)
             const BALL_RADIUS = 0.65;
             this.bodyContainer = new THREE.Group();
             this.bodyContainer.position.y = BALL_RADIUS;
@@ -152,120 +325,107 @@
             this.bodyBall = new THREE.Group();
             this.bodyContainer.add(this.bodyBall);
 
-            // Core sphere
-            const sphereGeo = new THREE.SphereGeometry(BALL_RADIUS, 32, 24);
-            const bodyMesh = new THREE.Mesh(sphereGeo, ceramicMat);
+            // Core sphere with flush painted BB-8 graphics
+            const sphereGeo = new THREE.SphereGeometry(BALL_RADIUS, 36, 28);
+            const bodyMesh = new THREE.Mesh(sphereGeo, bodyMat);
             this.bodyBall.add(bodyMesh);
 
-            // 6 Characteristic BB-8 Circular Orange Tool Panels (Mapped orthogonally to faces)
-            const ringGeo = new THREE.TorusGeometry(0.32, 0.06, 16, 32);
-            const coreGeo = new THREE.CylinderGeometry(0.14, 0.14, 0.04, 20);
+            // Cel-shaded ink outline hull for body sphere (Matching #17120f border strokes)
+            const bodyOutlineGeo = new THREE.SphereGeometry(BALL_RADIUS * 1.035, 36, 28);
+            const bodyOutlineMesh = new THREE.Mesh(bodyOutlineGeo, inkOutlineMat);
+            this.bodyBall.add(bodyOutlineMesh);
 
-            const orientations = [
-                { pos: [0, 0, BALL_RADIUS - 0.02], rot: [0, 0, 0] },             // Front
-                { pos: [0, 0, -BALL_RADIUS + 0.02], rot: [0, Math.PI, 0] },       // Back
-                { pos: [BALL_RADIUS - 0.02, 0, 0], rot: [0, Math.PI / 2, 0] },    // Right
-                { pos: [-BALL_RADIUS + 0.02, 0, 0], rot: [0, -Math.PI / 2, 0] },  // Left
-                { pos: [0, BALL_RADIUS - 0.02, 0], rot: [Math.PI / 2, 0, 0] },    // Top
-                { pos: [0, -BALL_RADIUS + 0.02, 0], rot: [-Math.PI / 2, 0, 0] }   // Bottom
-            ];
-
-            orientations.forEach((ori) => {
-                const ringGroup = new THREE.Group();
-                ringGroup.position.set(ori.pos[0], ori.pos[1], ori.pos[2]);
-                ringGroup.rotation.set(ori.rot[0], ori.rot[1], ori.rot[2]);
-
-                const ringMesh = new THREE.Mesh(ringGeo, orangeMat);
-                ringGroup.add(ringMesh);
-
-                const centerMesh = new THREE.Mesh(coreGeo, charcoalMat);
-                centerMesh.rotation.x = Math.PI / 2;
-                ringGroup.add(centerMesh);
-
-                // Small silver tool notch
-                const notchGeo = new THREE.BoxGeometry(0.04, 0.12, 0.04);
-                const notchMesh = new THREE.Mesh(notchGeo, silverMat);
-                notchMesh.position.set(0.24, 0, 0.02);
-                ringGroup.add(notchMesh);
-
-                this.bodyBall.add(ringGroup);
-            });
-
-            // 4. Floating Magnetic Dome (Head)
-            // Sits magnetically hovering at Y = 1.30
+            // 5. Floating Magnetic Dome (Chunky, Expressive Astromech Head)
+            // Sits magnetically hovering at Y = 1.28
             this.headGroup = new THREE.Group();
-            this.headGroup.position.y = 1.30;
+            this.headGroup.position.y = 1.28;
             this.root.add(this.headGroup);
 
-            // Neck base disk (Gunmetal base ring)
-            const neckGeo = new THREE.CylinderGeometry(0.38, 0.40, 0.06, 32);
+            // Neck base disk (Gunmetal ring)
+            const neckGeo = new THREE.CylinderGeometry(0.40, 0.42, 0.06, 32);
             const neckMesh = new THREE.Mesh(neckGeo, silverMat);
             neckMesh.position.y = 0.03;
             this.headGroup.add(neckMesh);
 
-            // Upper Hemisphere Dome
-            const domeGeo = new THREE.SphereGeometry(0.42, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2);
-            const domeMesh = new THREE.Mesh(domeGeo, ceramicMat);
+            // Neck ink outline
+            const neckOutlineGeo = new THREE.CylinderGeometry(0.42, 0.44, 0.065, 32);
+            const neckOutlineMesh = new THREE.Mesh(neckOutlineGeo, inkOutlineMat);
+            neckOutlineMesh.position.y = 0.03;
+            this.headGroup.add(neckOutlineMesh);
+
+            // Upper Hemisphere Dome (Scale 0.46 for expressive chibi proportions)
+            const DOME_RADIUS = 0.45;
+            const domeGeo = new THREE.SphereGeometry(DOME_RADIUS, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2);
+            const domeMesh = new THREE.Mesh(domeGeo, headMat);
             domeMesh.position.y = 0.06;
             this.headGroup.add(domeMesh);
 
-            // Orange racing band around lower dome rim
-            const bandGeo = new THREE.TorusGeometry(0.41, 0.025, 16, 32);
-            const bandMesh = new THREE.Mesh(bandGeo, orangeMat);
-            bandMesh.rotation.x = Math.PI / 2;
-            bandMesh.position.y = 0.11;
-            this.headGroup.add(bandMesh);
+            // Dome cel-shaded ink outline hull
+            const domeOutlineGeo = new THREE.SphereGeometry(DOME_RADIUS * 1.038, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2);
+            const domeOutlineMesh = new THREE.Mesh(domeOutlineGeo, inkOutlineMat);
+            domeOutlineMesh.position.y = 0.06;
+            this.headGroup.add(domeOutlineMesh);
 
-            // Primary Photoreceptor (Large Glossy Black Lens)
-            const lensMountGeo = new THREE.CylinderGeometry(0.12, 0.13, 0.04, 24);
+            // Primary Photoreceptor (Large Glossy Black Lens with Silver Bezel)
+            const lensMountGeo = new THREE.CylinderGeometry(0.14, 0.15, 0.05, 24);
             const lensMount = new THREE.Mesh(lensMountGeo, silverMat);
             lensMount.rotation.x = Math.PI / 2;
-            lensMount.position.set(0, 0.24, 0.36);
+            lensMount.position.set(0, 0.25, 0.38);
             this.headGroup.add(lensMount);
 
-            const lensGeo = new THREE.SphereGeometry(0.10, 24, 16);
+            const lensMountOutlineGeo = new THREE.CylinderGeometry(0.155, 0.165, 0.055, 24);
+            const lensMountOutline = new THREE.Mesh(lensMountOutlineGeo, inkOutlineMat);
+            lensMountOutline.rotation.x = Math.PI / 2;
+            lensMountOutline.position.set(0, 0.25, 0.38);
+            this.headGroup.add(lensMountOutline);
+
+            // Glossy black eye lens
+            const lensGeo = new THREE.SphereGeometry(0.115, 24, 16);
             this.primaryLens = new THREE.Mesh(lensGeo, lensMat);
-            this.primaryLens.position.set(0, 0.24, 0.38);
+            this.primaryLens.position.set(0, 0.25, 0.40);
             this.headGroup.add(this.primaryLens);
 
-            // Pinpoint specular glass reflection dot
-            const dotGeo = new THREE.SphereGeometry(0.022, 12, 12);
+            // Sharp pinpoint specular glass reflection glint
+            const dotGeo = new THREE.SphereGeometry(0.024, 12, 12);
             const glassDot = new THREE.Mesh(dotGeo, glassDotMat);
-            glassDot.position.set(0.035, 0.27, 0.46);
+            glassDot.position.set(0.04, 0.29, 0.50);
             this.headGroup.add(glassDot);
 
             // Secondary Indicator Sensor (Cyan)
-            const secMountGeo = new THREE.CylinderGeometry(0.05, 0.055, 0.03, 16);
+            const secMountGeo = new THREE.CylinderGeometry(0.06, 0.065, 0.04, 16);
             const secMount = new THREE.Mesh(secMountGeo, silverMat);
             secMount.rotation.x = Math.PI / 2;
-            secMount.position.set(0.16, 0.12, 0.37);
+            secMount.position.set(0.18, 0.13, 0.39);
             this.headGroup.add(secMount);
 
-            const secSensorGeo = new THREE.SphereGeometry(0.045, 16, 12);
+            const secSensorGeo = new THREE.SphereGeometry(0.05, 16, 12);
             this.secondarySensor = new THREE.Mesh(secSensorGeo, cyanSensorMat);
-            this.secondarySensor.position.set(0.16, 0.12, 0.39);
+            this.secondarySensor.position.set(0.18, 0.13, 0.42);
             this.headGroup.add(this.secondarySensor);
 
-            // Dual Antennae on Dome
-            // Tall main antenna
-            const tallAntGeo = new THREE.CylinderGeometry(0.010, 0.012, 0.46, 12);
+            // Dual Astromech Antennae on Dome
+            // Tall main antenna with collar and cyan LED tip
+            const tallAntCollarGeo = new THREE.CylinderGeometry(0.025, 0.03, 0.06, 12);
+            const tallAntCollar = new THREE.Mesh(tallAntCollarGeo, silverMat);
+            tallAntCollar.position.set(-0.11, 0.48, -0.06);
+            this.headGroup.add(tallAntCollar);
+
+            const tallAntGeo = new THREE.CylinderGeometry(0.010, 0.014, 0.48, 12);
             this.tallAntenna = new THREE.Mesh(tallAntGeo, silverMat);
-            this.tallAntenna.position.set(-0.10, 0.44 + 0.23, -0.06);
+            this.tallAntenna.position.set(-0.11, 0.48 + 0.24, -0.06);
             this.headGroup.add(this.tallAntenna);
 
-            // Short needle antenna
-            const shortAntGeo = new THREE.CylinderGeometry(0.012, 0.014, 0.22, 12);
-            this.shortAntenna = new THREE.Mesh(shortAntGeo, silverMat);
-            this.shortAntenna.position.set(0.14, 0.44 + 0.11, -0.08);
-            this.headGroup.add(this.shortAntenna);
+            // Antenna beacon LED (Pulsing cyan/orange status light)
+            const ledGeo = new THREE.SphereGeometry(0.022, 10, 10);
+            this.antennaLed = new THREE.Mesh(ledGeo, ledMat);
+            this.antennaLed.position.set(-0.11, 0.48 + 0.48, -0.06);
+            this.headGroup.add(this.antennaLed);
 
-            // Recruiter Mode Gold Halo (Torus)
-            const haloGeo = new THREE.TorusGeometry(0.70, 0.06, 16, 32);
-            this.haloRing = new THREE.Mesh(haloGeo, haloMat);
-            this.haloRing.position.set(0, 2.25, 0);
-            this.haloRing.rotation.x = Math.PI / 6;
-            this.root.add(this.haloRing);
-            this.haloRing.visible = false;
+            // Short stub antenna
+            const shortAntGeo = new THREE.CylinderGeometry(0.014, 0.018, 0.24, 12);
+            this.shortAntenna = new THREE.Mesh(shortAntGeo, silverMat);
+            this.shortAntenna.position.set(0.15, 0.48 + 0.12, -0.08);
+            this.headGroup.add(this.shortAntenna);
 
             // Register shadows with engine
             if (window.Engine3D && window.Engine3D.addShadowCaster) {
@@ -273,7 +433,7 @@
             }
 
             this.isCreated = true;
-            console.log("3D BB-8 Astromech Droid Created in Three.js.");
+            console.log("Cel-Shaded 3D BB-8 Astromech Droid with Flush Panels & Ink Outlines Created in Three.js.");
         },
 
         // --- REAL-TIME FRAME SYNCHRONIZATION WITH 2D KABOOM PLAYER ---
@@ -311,14 +471,14 @@
 
             if (isGrounded && Math.abs(deltaX) > 0.0001) {
                 // Roll sphere: Delta theta = -deltaX / radius
-                this.currentRollZ -= (deltaX / 0.65) * 1.2;
+                this.currentRollZ -= (deltaX / 0.65) * 1.25;
                 this.bodyBall.rotation.z = this.currentRollZ;
             }
 
             // 4. Momentum Tilt (The BB-8 Lean)
             let targetTiltZ = 0;
             if (isMoving) {
-                targetTiltZ = isFacingLeft ? 0.22 : -0.22; // ~12 degrees forward lean
+                targetTiltZ = isFacingLeft ? 0.22 : -0.22; // ~12 degrees forward sprint lean
             }
             this.headTiltZ += (targetTiltZ - this.headTiltZ) * 0.15;
             this.headGroup.rotation.z = this.headTiltZ;
@@ -330,10 +490,7 @@
             if (window.mousePos2D && window.Engine3D) {
                 const mouse3D = window.Engine3D.to3DVec(window.mousePos2D.x, window.mousePos2D.y, 0);
                 const dx = mouse3D.x - this.root.position.x;
-                const dy = mouse3D.y - (this.root.position.y + 1.30);
-
-                const facingMult = isFacingLeft ? -1 : 1;
-                const localForward = dx * facingMult;
+                const dy = mouse3D.y - (this.root.position.y + 1.28);
 
                 // Pitch (look up / down)
                 targetPitch = Math.max(-0.35, Math.min(0.35, -dy * 0.06));
@@ -344,32 +501,44 @@
             this.headGroup.rotation.x += (targetPitch - this.headGroup.rotation.x) * 0.1;
             this.headGroup.rotation.y += (targetYaw - this.headGroup.rotation.y) * 0.1;
 
-            // 6. Jump & Airborne Dynamics
+            // 6. Jump & Airborne Dynamics + Contact Shadow
             if (!isGrounded) {
-                // Airborne: Dome lifts slightly on magnetic repulsion, slight wobble
-                this.headGroup.position.y = 1.36 + Math.sin(t * 12) * 0.02;
+                // Airborne: Dome lifts slightly on magnetic cushion, slight wobble
+                this.headGroup.position.y = 1.34 + Math.sin(t * 12) * 0.02;
                 this.bodyContainer.scale.set(0.92, 1.10, 0.92); // Stretch in air
                 this.tallAntenna.rotation.z = Math.sin(t * 15) * 0.12; // Antenna flutter
+
+                // Contact shadow scales down and fades as BB-8 rises
+                if (this.groundShadow) {
+                    this.groundShadow.scale.set(0.7, 0.3, 0.7);
+                    this.groundShadow.material.opacity = 0.18;
+                }
             } else if (isMoving) {
                 // Rolling on ground: Subtle magnetic chatter
-                this.headGroup.position.y = 1.30 + Math.abs(Math.sin(t * 18)) * 0.03;
+                this.headGroup.position.y = 1.28 + Math.abs(Math.sin(t * 18)) * 0.025;
                 this.bodyContainer.scale.set(1.0, 1.0, 1.0);
                 this.tallAntenna.rotation.z = (isFacingLeft ? 0.08 : -0.08);
+
+                if (this.groundShadow) {
+                    this.groundShadow.scale.set(1.05, 0.45, 1.05);
+                    this.groundShadow.material.opacity = 0.35;
+                }
             } else {
                 // Idle curious floating hover
-                this.headGroup.position.y = 1.30 + Math.sin(t * 3) * 0.02;
+                this.headGroup.position.y = 1.28 + Math.sin(t * 3) * 0.02;
                 this.bodyContainer.scale.set(1.0, 1.0, 1.0);
                 this.tallAntenna.rotation.z = Math.sin(t * 2) * 0.03;
+
+                if (this.groundShadow) {
+                    this.groundShadow.scale.set(1.0, 0.45, 1.0);
+                    this.groundShadow.material.opacity = 0.35;
+                }
             }
 
-            // 7. Recruiter Mode Gold Halo
-            if (this.haloRing) {
-                const isRecruiter = (window.isRecruiterActive && window.isRecruiterActive());
-                this.haloRing.visible = isRecruiter;
-                if (isRecruiter) {
-                    this.haloRing.rotation.y += 0.04;
-                    this.haloRing.position.y = 2.25 + Math.sin(t * 4) * 0.06;
-                }
+            // 7. Pulsing Antenna LED Beacon
+            if (this.antennaLed) {
+                const pulse = 0.5 + 0.5 * Math.sin(t * 6);
+                this.antennaLed.scale.set(1 + pulse * 0.3, 1 + pulse * 0.3, 1 + pulse * 0.3);
             }
         }
     };
