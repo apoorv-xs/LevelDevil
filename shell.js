@@ -1,9 +1,9 @@
 const portfolioScripts = [
-  "kaboom.js?v=2",
-  "babylon_engine.js?v=2",
-  "player_3d.js?v=2",
-  "player.js?v=13",
-  "portfolio_engine.js?v=6"
+  "kaboom.js?v=999",
+  "babylon_engine.js?v=999",
+  "player_3d.js?v=999",
+  "player.js?v=999",
+  "portfolio_engine.js?v=1000"
 ];
 
 function isSalesRoute(pathname = window.location.pathname) {

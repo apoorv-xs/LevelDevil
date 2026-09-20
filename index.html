@@ -13,155 +13,276 @@
     <link rel="stylesheet" href="shell.css">
     <link rel="stylesheet" href="sales.css">
     <style>
-        /* Portfolio Specific Layouts on top of sales.css */
-        
+        /* --- CORE BRUTALIST & STEPPED PLATFORMING LAYOUT --- */
         main.portfolio-shell {
-            max-width: 900px;
+            max-width: 960px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 2rem 1.5rem 6rem;
             position: relative;
             z-index: 1;
         }
 
         .hero-section {
-            padding: 15vh 0 10vh 0;
-            border-bottom: 2px dashed rgba(23, 18, 15, 0.2);
+            padding: 12vh 0 8vh 0;
+            border-bottom: 3px dashed var(--ink);
+            text-align: center;
         }
 
         .hero-section h1 {
             font-family: "Press Start 2P", monospace;
-            font-size: 4rem;
+            font-size: 3.8rem;
             color: var(--ink);
             text-transform: uppercase;
-            margin: 0;
-        }
-
-        @media (max-width: 768px) {
-            .hero-section h1 { font-size: 2.5rem; }
-            .projects-grid { grid-template-columns: 1fr !important; }
+            margin: 0 0 1rem 0;
+            letter-spacing: -1px;
+            text-shadow: 4px 4px 0 var(--white);
         }
 
         .hero-section p.subtitle {
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: var(--purple);
+            font-family: "Press Start 2P", monospace;
+            font-size: 1.15rem;
+            color: var(--purple-dark);
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 2rem;
+            margin: 0 0 1.5rem 0;
+            letter-spacing: 1px;
+            background: var(--cream);
+            display: inline-block;
+            padding: 8px 16px;
+            border: 3px solid var(--ink);
+            box-shadow: 4px 4px 0 var(--ink);
         }
 
+        .hero-hook-banner {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--ink);
+            max-width: 720px;
+            margin: 0 auto 1.5rem auto;
+            line-height: 1.6;
+        }
+
+        .controls-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            font-family: "Courier Prime", monospace;
+            background: var(--white);
+            border: 2px solid var(--ink);
+            padding: 8px 16px;
+            box-shadow: 3px 3px 0 var(--ink);
+            margin-top: 10px;
+        }
+
+        /* --- ACT HEADINGS --- */
+        .act-heading {
+            font-family: "Press Start 2P", monospace;
+            font-size: 1.3rem;
+            color: var(--ink);
+            margin: 4.5rem 0 1.5rem 0;
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--ink);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .act-badge {
+            font-size: 0.75rem;
+            background: var(--purple);
+            color: var(--white);
+            padding: 4px 8px;
+            border: 2px solid var(--ink);
+        }
+
+        /* --- STEPPED PLATFORM CARDS --- */
         .portfolio-card {
             background: var(--white);
             border: 4px solid var(--ink);
             box-shadow: 8px 8px 0 var(--ink);
-            padding: 2rem;
-            margin-bottom: 3rem;
+            padding: 2.2rem;
+            margin-bottom: 2.5rem;
             position: relative;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
 
-        .portfolio-card h2 {
+        .portfolio-card:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 10px 10px 0 var(--purple-dark);
+        }
+
+        .portfolio-card h2, .portfolio-card h3 {
             font-family: "Press Start 2P", monospace;
-            font-size: 1.5rem;
             margin-top: 0;
             color: var(--ink);
         }
-        
-        .projects-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-top: 2rem;
+
+        .portfolio-card h2 { font-size: 1.4rem; }
+        .portfolio-card h3 { font-size: 1.15rem; line-height: 1.4; }
+
+        .step-left {
+            margin-right: 10%;
+            margin-left: 0;
         }
 
-        .project-item {
-            background: var(--amber-light);
-            border: 4px solid var(--ink);
-            padding: 1.5rem;
-            cursor: pointer;
-            transition: transform 0.1s, box-shadow 0.1s;
+        .step-right {
+            margin-left: 10%;
+            margin-right: 0;
         }
 
-        .project-item:hover {
-            transform: translate(-4px, -4px);
-            box-shadow: 6px 6px 0 var(--purple);
+        .step-center {
+            margin-left: 3%;
+            margin-right: 3%;
         }
 
-        .project-item h3 {
-            font-family: "Press Start 2P", monospace;
-            font-size: 1rem;
-            margin-top: 0;
+        .tech-pill-rack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 12px 0 18px 0;
         }
 
-        /* --- CANVAS OVERLAY --- */
-        #babylon-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 50; /* Above DOM, below Kaboom */
-            pointer-events: none;
-            outline: none;
-            background: transparent;
+        .tech-pill {
+            font-size: 0.8rem;
+            font-family: "Courier Prime", monospace;
+            background: var(--cream);
+            color: var(--ink);
+            border: 2px solid var(--ink);
+            padding: 4px 10px;
+            font-weight: 700;
         }
 
-        #game-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 100;
-            pointer-events: none; /* Let clicks pass through to DOM */
-        }
-
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-            background: transparent;
-        }
-
-        /* Mobile Controls */
-        #mobile-controls {
-            display: none;
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            z-index: 200;
-            justify-content: space-between;
-            pointer-events: auto; /* Catch clicks */
-        }
-
-        .btn-dir {
+        .tech-pill.accent {
             background: var(--purple);
-            border: 4px solid var(--ink);
             color: var(--white);
-            padding: 15px 20px;
-            font-family: 'Press Start 2P';
-            user-select: none;
-            touch-action: manipulation;
+        }
+
+        /* --- TELEMETRY DECK --- */
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .telemetry-stat {
+            background: var(--cream);
+            border: 3px solid var(--ink);
+            padding: 16px;
             box-shadow: 4px 4px 0 var(--ink);
         }
 
-        .btn-dir:active {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0 var(--ink);
+        .telemetry-val {
+            font-family: "Press Start 2P", monospace;
+            font-size: 1.6rem;
+            color: var(--purple-dark);
+            margin-bottom: 6px;
         }
 
+        .telemetry-lbl {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        /* --- TRANSMISSION CARDS --- */
+        .transmissions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 2.5rem;
+        }
+
+        .transmission-item {
+            background: var(--white);
+            border: 3px solid var(--ink);
+            box-shadow: 6px 6px 0 var(--ink);
+            padding: 18px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .transmission-item:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 8px 8px 0 var(--purple);
+        }
+
+        .transmission-author {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: "Press Start 2P", monospace;
+            font-size: 0.75rem;
+            color: var(--purple-dark);
+            margin-bottom: 12px;
+            border-bottom: 2px dashed var(--ink);
+            padding-bottom: 8px;
+        }
+
+        /* --- CTAs --- */
+        .cta-box {
+            background: var(--cream);
+            border: 5px solid var(--ink);
+            box-shadow: 10px 10px 0 var(--purple-dark);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .cta-btn-primary {
+            display: inline-block;
+            background: var(--purple);
+            color: var(--white);
+            border: 4px solid var(--ink);
+            padding: 18px 36px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 1rem;
+            text-decoration: none;
+            margin: 12px;
+            box-shadow: 6px 6px 0 var(--ink);
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .cta-btn-primary:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 9px 9px 0 var(--ink);
+            background: var(--purple-dark);
+        }
+
+        .cta-btn-secondary {
+            display: inline-block;
+            background: var(--white);
+            color: var(--ink);
+            border: 4px solid var(--ink);
+            padding: 18px 28px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.9rem;
+            text-decoration: none;
+            margin: 12px;
+            box-shadow: 6px 6px 0 var(--ink);
+            transition: transform 0.1s;
+        }
+
+        .cta-btn-secondary:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 9px 9px 0 var(--purple);
+        }
+
+        /* --- RESPONSIVENESS --- */
         @media (max-width: 768px) {
-            #mobile-controls {
-                display: flex;
+            .hero-section h1 { font-size: 2.2rem; }
+            .hero-section p.subtitle { font-size: 0.85rem; }
+            .step-left, .step-right, .step-center {
+                margin-left: 0;
+                margin-right: 0;
             }
-            .hero-section h1 { font-size: 2.5rem; }
-            .projects-grid { grid-template-columns: 1fr; }
+            .transmissions-grid { grid-template-columns: 1fr; }
+            .portfolio-card { padding: 1.5rem; }
         }
     </style>
 </head>
 
 <body>
-    <!-- Topbar like sales.html -->
+    <!-- Topbar Navigation -->
     <header class="topbar">
         <nav class="site-nav" aria-label="Primary navigation" style="z-index: 150;">
             <a href="/" aria-current="page">Portfolio</a>
@@ -170,70 +291,189 @@
     </header>
 
     <main class="portfolio-shell">
+        <!-- ACT 1: THE MONIKER & MANIFESTO (WHO I AM) -->
         <section class="hero-section">
             <h1 data-kaboom-body="true" data-trap="false">APOORV A S</h1>
-            <p class="subtitle" data-kaboom-body="true" data-trap="false">Creative Technologist</p>
-            <p style="color: var(--ink);">(Use WASD to take control of the character. Scroll down to explore.)</p>
+            <p class="subtitle" data-kaboom-body="true" data-trap="false">Creative Technologist & 3D UI Engineer</p>
+            <p class="hero-hook-banner" data-kaboom-body="true" data-trap="false">
+                Building GPU-accelerated interfaces that perform and feel like nothing else.
+            </p>
+            <div class="controls-pill" data-kaboom-body="true" data-trap="false">
+                <span>[ WASD / Arrows to Pilot Digital Twin ]</span>
+                <span>•</span>
+                <span>[ Scroll to Descend ]</span>
+            </div>
         </section>
 
-        <section class="portfolio-card" data-kaboom-body="true" data-trap="false" style="margin-top: 2rem;">
-            <h2>ABOUT</h2>
-            <p>I build high-performance WebGL, WebGPU, and interactive 3D experiences. Obsessed with 60 FPS, branchless GLSL, and unconventional UI.</p>
-            <p>Currently merging technical art with aggressive sales acquisition systems via autonomous agents.</p>
+        <section class="portfolio-card step-center" data-kaboom-body="true" data-trap="false" style="margin-top: 3rem;">
+            <h2>01 // THE MANIFESTO</h2>
+            <p style="font-size: 1.1rem; line-height: 1.7; margin-bottom: 0;">
+                The modern web has been flattened into sterile, predictable templates. I treat the browser as a spatial canvas—engineering tactile, living digital experiences powered by Three.js, WebGL, and custom shaders, without sacrificing a single millisecond of performance.
+            </p>
         </section>
 
-        <!-- DEEP DIVES -->
-        <h2 data-kaboom-body="true" data-trap="false" style="margin-top: 3rem; margin-bottom: 1rem; border-bottom: 2px solid var(--ink); padding-bottom: 10px;">CORE ARCHITECTURE</h2>
-        
-        <section class="portfolio-card" data-kaboom-body="true" data-trap="false" style="margin-bottom: 2rem;">
-            <h3>ERAVEX 3D Studio & WebGPU Engine</h3>
-            <div style="font-family: 'Courier Prime', monospace; font-size: 0.85rem; color: var(--purple); margin-bottom: 15px;">[ WebGPU | Three.js | Draco/KTX2 | Gaussian Splats ]</div>
-            <p>A proprietary zero-cost computational engine delivering mathematically pure, 60 FPS interactive systems. The architecture strictly enforces a 16.6ms frame budget, keeping draw calls below 50 via InstancedMeshes and MergedGeometries.</p>
-            <ul style="font-family: 'Courier Prime', monospace; font-size: 0.9rem; margin-top: 10px; padding-left: 20px;">
-                <li>Draco & Meshopt glTF compression pipeline (&lt; 5MB payload).</li>
-                <li>Volumetric radiance fields (Gaussian Splats) at locked 60 FPS.</li>
-                <li>Zero memory leaks via strict dispose() lifecycles.</li>
-            </ul>
-        </section>
+        <!-- ACT 2: THE ARSENAL (WHAT I DO) -->
+        <div class="act-heading" data-kaboom-body="true" data-trap="false">
+            <span>02 // THE ARSENAL</span>
+            <span class="act-badge">MAJOR WORK</span>
+        </div>
 
-        <section class="portfolio-card" data-kaboom-body="true" data-trap="false" style="margin-bottom: 2rem;">
-            <h3>Autonomous Agent Syndicate</h3>
-            <div style="font-family: 'Courier Prime', monospace; font-size: 0.85rem; color: var(--purple); margin-bottom: 15px;">[ Antigravity 2.0 | LLM Orchestration | CI/CD Pentesting ]</div>
-            <p>A multi-agent parallel execution blueprint orchestrating Hunter, Forge, and Foundry subagents. These agents handle full CI/CD pipeline security scanning, vulnerability patching via Strix, and high-ticket creative tech contract scouting.</p>
-        </section>
+        <!-- Project 1: Maison Anima (Step Left) -->
+        <article class="portfolio-card step-left" data-kaboom-body="true" data-trap="false">
+            <h3>MAISON ANIMA</h3>
+            <div style="font-family: 'Courier Prime', monospace; font-size: 0.9rem; color: var(--purple-dark); font-weight: 700;">Luxury 3D Digital Showcase</div>
+            <div class="tech-pill-rack">
+                <span class="tech-pill accent">Three.js</span>
+                <span class="tech-pill">Web Audio API</span>
+                <span class="tech-pill">GSAP Parallax</span>
+                <span class="tech-pill">60 FPS Locked</span>
+            </div>
+            <p>Bespoke high-fashion digital twin blending real-time spatial audio synthesis, cinematic camera choreography, and interactive procedural depth parallax.</p>
+        </article>
 
-        <section class="portfolio-card" data-kaboom-body="true" data-trap="false" style="margin-bottom: 2rem;">
-            <h3>Procedural Shader Vault</h3>
-            <div style="font-family: 'Courier Prime', monospace; font-size: 0.85rem; color: var(--purple); margin-bottom: 15px;">[ GLSL | WGSL | HTTP 402 Micropayments | LYGIA ]</div>
-            <p>Packaging procedural shaders and 3D UI components into commercial turnkey packs. Features include branchless GLSL fragment & raymarching math, flow-field curl noise, and integration with keyless Web3 HTTP 402 micropayment APIs.</p>
-        </section>
+        <!-- Project 2: ERAVEX (Step Right) -->
+        <article class="portfolio-card step-right" data-kaboom-body="true" data-trap="false">
+            <h3>ERAVEX 3D STUDIO</h3>
+            <div style="font-family: 'Courier Prime', monospace; font-size: 0.9rem; color: var(--purple-dark); font-weight: 700;">WebGPU & Three.js Engine Core</div>
+            <div class="tech-pill-rack">
+                <span class="tech-pill accent">WebGPU</span>
+                <span class="tech-pill">Subpiece Hierarchy</span>
+                <span class="tech-pill">Gaussian Splats</span>
+                <span class="tech-pill">&lt; 5MB Payloads</span>
+            </div>
+            <p>A high-performance computational 3D engine supporting multi-viewport shading, volumetric radiance fields, and a Draco/Meshopt asset compression pipeline.</p>
+        </article>
 
-        <!-- TRANSMISSIONS / TWEETS -->
-        <h2 data-kaboom-body="true" data-trap="false" style="margin-top: 3rem; margin-bottom: 1rem; border-bottom: 2px solid var(--ink); padding-bottom: 10px;">LIVE TRANSMISSIONS</h2>
-        
-        <div class="projects-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 3rem;">
-            <article class="project-item" data-kaboom-body="true" style="background: var(--white); border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); padding: 15px;">
-                <strong style="color: var(--purple);">@apoorv_xs</strong>
-                <p style="font-family: 'Courier Prime', monospace; font-size: 0.9rem; margin-top: 10px;">Just dropped the new WebGPU Gaussian Splat renderer. Locked at 60FPS on a 5-year old Android. Optimize your draw calls.</p>
-            </article>
+        <!-- Project 3: Chronicles (Step Left) -->
+        <article class="portfolio-card step-left" data-kaboom-body="true" data-trap="false">
+            <h3>CHRONICLES</h3>
+            <div style="font-family: 'Courier Prime', monospace; font-size: 0.9rem; color: var(--purple-dark); font-weight: 700;">3D Interactive Odyssey</div>
+            <div class="tech-pill-rack">
+                <span class="tech-pill accent">Spatial Storytelling</span>
+                <span class="tech-pill">2.5D Hybrid Engine</span>
+                <span class="tech-pill">Kaboom + Babylon</span>
+            </div>
+            <p>Transforming standard web documentation into a living, physical world. Proving that editorial depth and game-loop physics can co-exist with zero latency.</p>
+        </article>
 
-            <article class="project-item" data-kaboom-body="true" style="background: var(--white); border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); padding: 15px;">
-                <strong style="color: var(--purple);">@apoorv_xs</strong>
-                <p style="font-family: 'Courier Prime', monospace; font-size: 0.9rem; margin-top: 10px;">Why build generic websites when you can build mathematically pure interactives? The 2.5D Kaboom + Babylon engine is live.</p>
-            </article>
+        <!-- Project 4: Jarvis & The Syndicate (Step Right) -->
+        <article class="portfolio-card step-right" data-kaboom-body="true" data-trap="false">
+            <h3>JARVIS & THE AGENT SYNDICATE</h3>
+            <div style="font-family: 'Courier Prime', monospace; font-size: 0.9rem; color: var(--purple-dark); font-weight: 700;">Autonomous Engineering Loops</div>
+            <div class="tech-pill-rack">
+                <span class="tech-pill accent">Antigravity 2.0</span>
+                <span class="tech-pill">LLM Browser Bridge</span>
+                <span class="tech-pill">10x Shipping Velocity</span>
+            </div>
+            <p>Autonomous multi-agent orchestration managing asset pipelines, security audits, and deployment boilerplate—freeing full creative focus for high-margin graphics math.</p>
+        </article>
+
+        <!-- ACT 3: THE ENGINEERING MOAT (WHY I'M DIFFERENT) -->
+        <div class="act-heading" data-kaboom-body="true" data-trap="false">
+            <span>03 // THE ENGINEERING MOAT</span>
+            <span class="act-badge">PERFORMANCE FLOOR</span>
+        </div>
+
+        <section class="portfolio-card step-center" data-kaboom-body="true" data-trap="false">
+            <h2>BUILT TO WITHSTAND REAL HARDWARE</h2>
+            <p>Most 3D websites fail because they overheat mobile processors and bleed GPU memory. I engineer with non-negotiable production boundaries:</p>
             
-            <article class="project-item" data-kaboom-body="true" style="background: var(--white); border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); padding: 15px; grid-column: 1 / -1;">
-                <strong style="color: var(--purple);">@apoorv_xs</strong>
-                <p style="font-family: 'Courier Prime', monospace; font-size: 0.9rem; margin-top: 10px;">Integrating Antigravity agents into the build pipeline. Zero-cost compute advantage is the ultimate moat.</p>
+            <div class="telemetry-grid">
+                <div class="telemetry-stat" data-kaboom-body="true" data-trap="false">
+                    <div class="telemetry-val" id="live-fps">60.0</div>
+                    <div class="telemetry-lbl">16.6ms Render Budget</div>
+                    <p style="font-size: 0.8rem; margin: 6px 0 0 0;">Strict DPR clamping & merged draw calls (&lt; 50).</p>
+                </div>
+                <div class="telemetry-stat" data-kaboom-body="true" data-trap="false">
+                    <div class="telemetry-val">&lt; 5MB</div>
+                    <div class="telemetry-lbl">Featherweight Assets</div>
+                    <p style="font-size: 0.8rem; margin: 6px 0 0 0;">Draco geometry compression & KTX2/WebP texture pipeline.</p>
+                </div>
+                <div class="telemetry-stat" data-kaboom-body="true" data-trap="false">
+                    <div class="telemetry-val">0 LEAKS</div>
+                    <div class="telemetry-lbl">Strict GPU Disposal</div>
+                    <p style="font-size: 0.8rem; margin: 6px 0 0 0;">Explicit dispose() lifecycles across textures and materials.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACT 4: LIVE TRANSMISSIONS (PROOF OF WORK) -->
+        <div class="act-heading" data-kaboom-body="true" data-trap="false">
+            <span>04 // LIVE TRANSMISSIONS</span>
+            <span class="act-badge">EXPERIMENTS</span>
+        </div>
+
+        <div class="transmissions-grid">
+            <article class="transmission-item" data-kaboom-body="true" data-trap="bounce">
+                <div class="transmission-author">
+                    <span>@apoorv_xs</span>
+                    <span style="font-size: 0.65rem;">[BOUNCE PAD]</span>
+                </div>
+                <p style="font-family: 'Courier Prime', monospace; font-size: 0.95rem; margin: 0; line-height: 1.5;">
+                    "The web shouldn't feel like a static PDF. When digital interfaces have weight, momentum, and tactile lighting, user retention shifts completely."
+                </p>
+            </article>
+
+            <article class="transmission-item" data-kaboom-body="true" data-trap="bounce">
+                <div class="transmission-author">
+                    <span>@apoorv_xs</span>
+                    <span style="font-size: 0.65rem;">[BOUNCE PAD]</span>
+                </div>
+                <p style="font-family: 'Courier Prime', monospace; font-size: 0.95rem; margin: 0; line-height: 1.5;">
+                    "Tested our WebGPU Gaussian Splat pipeline on a 5-year-old Android. Locked 60 FPS. Optimize your draw calls and respect the GPU."
+                </p>
+            </article>
+
+            <article class="transmission-item" data-kaboom-body="true" data-trap="bounce" style="grid-column: 1 / -1;">
+                <div class="transmission-author">
+                    <span>@apoorv_xs</span>
+                    <span style="font-size: 0.65rem;">[BOUNCE PAD]</span>
+                </div>
+                <p style="font-family: 'Courier Prime', monospace; font-size: 0.95rem; margin: 0; line-height: 1.5;">
+                    "Building with autonomous agents isn't about hype—it's about eliminating repetitive boilerplate so 100% of bandwidth goes into high-margin creative engineering."
+                </p>
             </article>
         </div>
 
-        <section class="portfolio-card" data-kaboom-body="true" data-trap="false">
-            <h2>LET'S TALK</h2>
-            <p>Ready to build something impossible?</p>
-            <a href="mailto:contact@example.com" class="action-btn" data-kaboom-body="true" data-trap="cta" style="display: inline-block; background: var(--purple); color: var(--white); border: 4px solid var(--ink); padding: 15px 30px; font-family: 'Press Start 2P'; text-decoration: none; margin-top: 20px; box-shadow: 4px 4px 0 var(--ink);">Email Me</a>
+        <!-- ACT 5: THE CLOSE & INITIATION -->
+        <section class="cta-box step-center" data-kaboom-body="true" data-trap="false">
+            <h2 style="font-family: 'Press Start 2P', monospace; font-size: 1.5rem; color: var(--ink); margin-top: 0;">
+                05 // READY TO BUILD?
+            </h2>
+            <p style="font-size: 1.15rem; max-width: 600px; margin: 0 auto 2rem auto; font-weight: 700;">
+                Available for select creative technology contracts, bespoke 3D WebUI architecture, and high-performance interactive experiences.
+            </p>
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
+                <a href="sales.html" class="cta-btn-primary" data-kaboom-body="true" data-trap="cta">
+                    INITIATE CONTRACT
+                </a>
+                <a href="https://github.com/apoorv-xs" target="_blank" rel="noopener noreferrer" class="cta-btn-secondary" data-kaboom-body="true" data-trap="false">
+                    VIEW GITHUB
+                </a>
+            </div>
         </section>
     </main>
+
+    <!-- LIVE TELEMETRY SCRIPT -->
+    <script>
+        (function() {
+            let lastTime = performance.now();
+            let frames = 0;
+            const fpsEl = document.getElementById('live-fps');
+            function updateFPS() {
+                frames++;
+                const now = performance.now();
+                if (now >= lastTime + 1000) {
+                    const currentFPS = (frames * 1000) / (now - lastTime);
+                    if (fpsEl) fpsEl.textContent = currentFPS.toFixed(1);
+                    frames = 0;
+                    lastTime = now;
+                }
+                requestAnimationFrame(updateFPS);
+            }
+            requestAnimationFrame(updateFPS);
+        })();
+    </script>
 
     <!-- BABYLON.JS 3D CANVAS -->
     <canvas id="babylon-canvas"></canvas>
@@ -253,6 +493,6 @@
     </div>
 
     <script src="babylon.min.js"></script>
-    <script src="shell.js"></script>
+    <script src="shell.js?v=1000"></script>
 </body>
 </html>
