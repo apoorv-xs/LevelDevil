@@ -736,51 +736,25 @@ function signOutGoogle() {
   signOut();
 }
 
-// Keyboard Shortcuts Engine
+// Minimal Keyboard Helpers (Escape to dismiss, / to search)
 function setupKeyboardShortcuts() {
   window.addEventListener('keydown', (e) => {
-    // Don't trigger if user is typing in an input or textarea
     if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
 
-    if (e.key === 'j' || e.key === 'ArrowDown') {
+    if (e.key === '/') {
       e.preventDefault();
-      advanceLead(1);
-    } else if (e.key === 'k' || e.key === 'ArrowUp') {
-      e.preventDefault();
-      advanceLead(-1);
-    } else if (e.key === 'd' || e.key === 'Enter') {
-      e.preventDefault();
-      document.getElementById('callActionBtn').click();
-    } else if (e.key === 'w' || e.key === 'W') {
-      e.preventDefault();
-      document.getElementById('whatsappActionBtn').click();
-    } else if (e.key === '1') {
-      e.preventDefault();
-      logOutcome('discovery_booked');
-    } else if (e.key === '2') {
-      e.preventDefault();
-      logOutcome('connected_callback');
-    } else if (e.key === '3') {
-      e.preventDefault();
-      logOutcome('gatekeeper_rejection');
-    } else if (e.key === '4') {
-      e.preventDefault();
-      logOutcome('busy');
-    } else if (e.key === '5') {
-      e.preventDefault();
-      logOutcome('not_interested');
-    } else if (e.key === '/') {
-      e.preventDefault();
-      document.getElementById('queueSearchInput').focus();
-    } else if (e.key === 'm' || e.key === 'M') {
-      e.preventDefault();
-      setLang(activeLang === 'ml' ? 'en' : 'ml');
+      document.getElementById('queueSearchInput')?.focus();
+    } else if (e.key === 'Escape') {
+      closeAdminModal();
+      closeProposalModal();
+      closeClientTeardownModal();
+      closeLaymanAnalogy();
     }
   });
 }
 
 function toggleShortcutsModal() {
-  document.getElementById('shortcutsModal').classList.toggle('hidden');
+  // Deprecated: No hotkeys needed in executive workbench
 }
 
 function advanceLead(direction) {
@@ -850,16 +824,16 @@ function renderQueue() {
     } ${isLocked ? 'bg-rose-950/20' : ''} ${isDNC ? 'opacity-30 line-through' : ''}`;
 
     let badgeClass = "bg-white/5 text-gray-400 border border-white/5";
-    let badgeText = "Available";
+    let badgeText = "Verified";
     if (isDNC) {
       badgeClass = "bg-rose-950/40 text-rose-400 border border-rose-800 font-bold";
-      badgeText = "DNC";
+      badgeText = "Excluded";
     } else if (isLocked) {
       badgeClass = "bg-rose-950/60 text-rose-300 border border-rose-700 font-bold animate-pulse";
-      badgeText = `IN CALL (${p.lockedBy || 'Busy'})`;
+      badgeText = "In Review";
     } else if (isBooked) {
       badgeClass = "bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold";
-      badgeText = "BOOKED";
+      badgeText = "Retained";
     } else if (p.status !== 'available') {
       badgeClass = "bg-amber-950/50 text-amber-300 border border-amber-700/50";
       badgeText = p.status.replace('_', ' ');
@@ -1014,11 +988,11 @@ function renderActiveProspect() {
   if (isDNC) {
     if (lockedBadge) {
       lockedBadge.classList.remove('hidden');
-      lockedBadge.innerText = "🚫 DNC / BLACKLISTED";
+      lockedBadge.innerText = "🚫 EXCLUDED";
     }
     if (lockStatusSpan) {
       lockStatusSpan.className = "px-2.5 py-0.5 rounded-full bg-rose-900/50 text-rose-300 border border-rose-700/60 font-mono text-[11px] font-bold";
-      lockStatusSpan.innerText = "🚫 Blacklisted (Do Not Call)";
+      lockStatusSpan.innerText = "Excluded";
     }
     if (callBtn) {
       callBtn.href = "#";
@@ -1028,11 +1002,11 @@ function renderActiveProspect() {
   } else if (isLockedByOther) {
     if (lockedBadge) {
       lockedBadge.classList.remove('hidden');
-      lockedBadge.innerText = `🔒 IN CALL BY ${p.lockedBy?.toUpperCase()} (${p.lockedEmail})`;
+      lockedBadge.innerText = `🔒 IN REVIEW BY ${p.lockedBy?.toUpperCase()} (${p.lockedEmail})`;
     }
     if (lockStatusSpan) {
       lockStatusSpan.className = "px-2.5 py-0.5 rounded-full bg-rose-900/50 text-rose-300 border border-rose-700/60 font-mono text-[11px] font-bold";
-      lockStatusSpan.innerText = `Locked by ${p.lockedBy} (Do Not Dial)`;
+      lockStatusSpan.innerText = `In Review (${p.lockedBy})`;
     }
     if (callBtn) {
       callBtn.href = "#";
@@ -1043,7 +1017,7 @@ function renderActiveProspect() {
     if (lockedBadge) lockedBadge.classList.add('hidden');
     if (lockStatusSpan) {
       lockStatusSpan.className = "px-2.5 py-0.5 rounded-full bg-emerald-900/30 text-emerald-400 border border-emerald-800/40 font-mono text-[11px] font-medium";
-      lockStatusSpan.innerText = "Available to Dial";
+      lockStatusSpan.innerText = "Audit Ready";
     }
     if (callBtn) {
       callBtn.href = `tel:${p.tel}`;

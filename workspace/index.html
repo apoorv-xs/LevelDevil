@@ -564,11 +564,6 @@
 
     <!-- Right: Utility Controls & Admin -->
     <div class="flex items-center gap-1.5 sm:gap-2">
-      <!-- Shortcuts Hint -->
-      <button onclick="toggleShortcutsModal()" title="Keyboard Shortcuts" class="px-2 py-1 text-[10px] font-arcade bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] transition hidden sm:inline-flex items-center gap-1">
-        <span>Keys</span>
-      </button>
-
       <!-- Audio SFX Toggle -->
       <button id="sfxToggleBtn" onclick="toggleAudioSFX()" title="Toggle Sound Effects" class="p-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] transition">
         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -587,16 +582,6 @@
       <div class="flex items-center gap-2 pl-2 border-l-2 border-[#17120f]">
         <img id="userImg" src="https://ui-avatars.com/api/?name=Apoorv&background=fff1bd&color=17120f" class="w-6 h-6 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] object-cover" alt="User">
         <span id="userEmail" class="text-[11px] font-mono text-[#17120f] hidden xl:inline">apoorv@eravex.studio</span>
-        <button onclick="signOutGoogle()" title="Sign Out" class="p-1 text-xs text-[#17120f] hover:text-[#8f1727] transition">
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-            <polyline points="16 17 21 12 16 7"></polyline>
-            <line x1="21" y1="12" x2="9" y2="12"></line>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </header>
         <button onclick="signOutGoogle()" title="Sign Out" class="p-1 text-xs text-[#17120f] hover:text-[#8f1727] transition">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -746,14 +731,25 @@
               onclick="generateProposalForActiveLead()" 
               class="px-3.5 py-2 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] font-arcade text-[10px] sm:text-xs shadow-[2px_2px_0_#17120f] transition flex items-center justify-center gap-1.5"
             >
-              <span>📄 Proposal Brief</span>
+              <svg class="w-3.5 h-3.5 text-[#17120f] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              <span>Proposal Brief</span>
             </button>
 
             <button 
               onclick="openClientTeardownModal()" 
               class="px-3.5 py-2 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] font-arcade text-[10px] sm:text-xs shadow-[2px_2px_0_#17120f] transition flex items-center justify-center gap-1.5"
             >
-              <span>🔬 Teardown</span>
+              <svg class="w-3.5 h-3.5 text-[#17120f] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <span>Teardown</span>
             </button>
           </div>
         </div>
@@ -921,7 +917,7 @@
               <span>Thumb-Zone</span>
             </div>
             <div id="thumbZoneBadge" class="font-bold text-xs text-white leading-tight">No Sticky Bar</div>
-            <div class="text-[10px] text-neutral-400">Live phone challenge</div>
+            <div class="text-[10px] text-neutral-400">Mobile Web UX</div>
           </div>
 
           <!-- Friction Index -->
@@ -931,14 +927,14 @@
               <span>Friction</span>
             </div>
             <div id="bookingFrictionBadge" class="font-bold text-xs text-white leading-tight">7 Steps</div>
-            <div id="bookingSeverityBadge" class="text-[10px] text-amber-400 font-medium">Severe Drop-off</div>
+            <div id="bookingSeverityBadge" class="text-[9.5px] text-amber-400 font-medium leading-tight truncate">Severe Drop-off</div>
           </div>
         </div>
 
         <!-- 2. TECHNICAL TELEMETRY (Structured Property Sheet) -->
         <div class="bg-[#15161B] border border-white/[0.06] rounded-xl divide-y divide-white/[0.04] text-xs">
           <div class="p-2.5 flex items-center justify-between">
-            <span class="text-[11px] font-mono text-neutral-400">Business Timing:</span>
+            <span class="text-[11px] font-mono text-neutral-400">Availability:</span>
             <span id="timingBadge" class="font-mono text-[11px] font-semibold text-amber-300">Moderate Availability</span>
           </div>
           <div class="p-2.5 flex items-center justify-between">
@@ -973,14 +969,14 @@
           <div id="wastedBreakdownList" class="space-y-1 text-xs text-neutral-300"></div>
         </div>
 
-        <!-- 4. LAYMAN CALLER CHEAT SHEET (Clean Studio Talking Points) -->
+        <!-- 4. ARCHITECTURAL RECOMMENDATIONS -->
         <div class="space-y-2">
-          <div class="text-[11px] font-mono text-neutral-400 uppercase font-semibold">Caller Talking Points:</div>
+          <div class="text-[11px] font-arcade text-[#17120f] uppercase font-bold">Architectural Recommendations:</div>
 
           <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1">
             <div class="text-[10px] font-mono text-neutral-300 font-semibold flex items-center gap-1.5">
               <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">01</span>
-              <span>FIRST ICEBREAKER</span>
+              <span>HEADLESS EDGE CACHING & SPEED</span>
             </div>
             <p id="callerIcebreakerText" class="text-xs text-neutral-200 leading-relaxed font-sans">
               "How many of your monthly inquiries come straight from your site versus paying 15-25% to aggregators?"
@@ -990,7 +986,7 @@
           <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1">
             <div class="text-[10px] font-mono text-neutral-300 font-semibold flex items-center gap-1.5">
               <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">02</span>
-              <span>LAYMAN SPEED METAPHOR</span>
+              <span>CELLULAR CONVERSION BOTTLENECK</span>
             </div>
             <p id="callerLaymanAnalogy" class="text-xs text-neutral-200 leading-relaxed font-sans">
               "Your website is like having a clinic door with a rusty latch taking 4.1 seconds to open..."
@@ -1000,7 +996,7 @@
           <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1">
             <div class="text-[10px] font-mono text-neutral-300 font-semibold flex items-center gap-1.5">
               <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">03</span>
-              <span>SECURITY HOOK</span>
+              <span>PRIVACY & DPDP FORM SHIELDING</span>
             </div>
             <p id="callerSecurityHook" class="text-xs text-neutral-200 leading-relaxed font-sans">
               "Their intake form lacks anti-bot security, risking Chrome trust warnings."
@@ -1010,7 +1006,7 @@
           <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1">
             <div class="text-[10px] font-mono text-neutral-300 font-semibold flex items-center gap-1.5">
               <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">04</span>
-              <span>COMPETITOR CONTRAST</span>
+              <span>DIRECT INTAKE & 60 FPS WEBGL ADVANTAGE</span>
             </div>
             <p id="callerCompetitorEdge" class="text-xs text-neutral-200 leading-relaxed font-sans">
               "Top clinics use zero-latency WhatsApp direct booking to capture consultations with zero commissions."
@@ -1018,9 +1014,9 @@
           </div>
         </div>
 
-        <!-- 5. LAYMAN ANALOGY CHEAT BADGES (1-Click Metaphor Modals) -->
+        <!-- 5. ARCHITECTURAL DEEP DIVES -->
         <div class="pt-1">
-          <div class="text-[10px] font-mono text-neutral-400 uppercase mb-1.5">Layman Analogy Cheat Keys:</div>
+          <div class="text-[10px] font-arcade text-[#17120f] uppercase mb-1.5">Architectural Deep Dives:</div>
           <div class="flex flex-wrap gap-1">
             <button onclick="showLaymanAnalogy('lcp')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">LCP (Speed)</button>
             <button onclick="showLaymanAnalogy('dom')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">DOM (Bloat)</button>
@@ -1224,23 +1220,6 @@
     </div>
   </div>
 
-  <!-- 5. KEYBOARD SHORTCUTS MODAL -->
-  <div id="shortcutsModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-    <div class="studio-panel-elevated rounded-2xl max-w-md w-full p-6 space-y-4 border border-white/10 shadow-2xl">
-      <div class="flex items-center justify-between">
-        <h3 class="text-sm font-bold text-white font-mono">Keyboard Shortcuts</h3>
-        <button onclick="toggleShortcutsModal()" class="text-neutral-400 hover:text-white text-lg">✕</button>
-      </div>
-      <div class="space-y-2 text-xs font-mono">
-        <div class="flex justify-between py-1 border-b border-white/5"><span class="text-neutral-400">Search Prospect Queue</span><kbd class="px-2 py-0.5 rounded bg-white/10 text-white">/</kbd></div>
-        <div class="flex justify-between py-1 border-b border-white/5"><span class="text-neutral-400">Next Prospect</span><kbd class="px-2 py-0.5 rounded bg-white/10 text-white">J</kbd></div>
-        <div class="flex justify-between py-1 border-b border-white/5"><span class="text-neutral-400">Previous Prospect</span><kbd class="px-2 py-0.5 rounded bg-white/10 text-white">K</kbd></div>
-        <div class="flex justify-between py-1 border-b border-white/5"><span class="text-neutral-400">Toggle Language (ML/EN)</span><kbd class="px-2 py-0.5 rounded bg-white/10 text-white">L</kbd></div>
-        <div class="flex justify-between py-1 border-b border-white/5"><span class="text-neutral-400">Trigger 15s Challenge</span><kbd class="px-2 py-0.5 rounded bg-white/10 text-white">C</kbd></div>
-        <div class="flex justify-between py-1 border-b border-white/5"><span class="text-neutral-400">Dismiss Modals</span><kbd class="px-2 py-0.5 rounded bg-white/10 text-white">Esc</kbd></div>
-      </div>
-    </div>
-  </div>
 
   <!-- 6. OWNER ADMIN CONSOLE MODAL (5 Operational Tabs) -->
   <div id="adminModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 z-50">
