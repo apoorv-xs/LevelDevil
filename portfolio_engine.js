@@ -143,13 +143,13 @@ onLoad(() => {
 
     function loadSavedRails() {
         try {
-            const saved = localStorage.getItem("apoorv_custom_rails");
+            const saved = localStorage.getItem("apoorv_custom_rails_v2");
             if (saved) {
                 const parsed = JSON.parse(saved);
                 if (Array.isArray(parsed) && parsed.length > 0) {
                     landingRails = parsed;
                     window.landingRails = landingRails;
-                    console.log("Loaded custom ground rails from localStorage:", landingRails.length);
+                    console.log("Loaded custom ground rails v2 from localStorage:", landingRails.length);
                     return true;
                 }
             }
@@ -159,50 +159,88 @@ onLoad(() => {
         return false;
     }
 
+    // Dynamic DOM Bottom Landing Rail Detection
+    function detectDOMBottomRails() {
+        const elements = document.querySelectorAll('[data-kaboom-body="true"], [data-rail="true"]');
+        const scrollY = window.scrollY || window.pageYOffset || 0;
+        const detected = [];
+
+        elements.forEach(el => {
+            const rect = el.getBoundingClientRect();
+            // Disregard collapsed or non-visible elements
+            if (rect.width < 10 || rect.height < 4) return;
+
+            // Restructure detection: Landing rail is computed at the BOTTOM edge/baseline of the DOM element
+            const yRail = Math.round(rect.bottom + scrollY);
+            const rawTrap = el.getAttribute("data-trap");
+            const trapType = (rawTrap && rawTrap !== "false" && rawTrap !== "none") ? rawTrap : "normal";
+
+            const tag = el.tagName;
+            const cls = el.className && typeof el.className === "string" ? '.' + el.className.split(' ')[0] : '';
+            const name = el.id ? `${tag}#${el.id}` : `${tag}${cls}`;
+
+            detected.push({
+                xLeft: Math.round(rect.left),
+                xRight: Math.round(rect.right),
+                width: Math.round(rect.width),
+                y: yRail,
+                domElement: el,
+                trap: trapType,
+                name: name
+            });
+        });
+
+        // Deduplicate any identical overlapping rails (within 2px Y and 4px X)
+        const uniqueRails = [];
+        for (const r of detected) {
+            const dup = uniqueRails.find(u => Math.abs(u.y - r.y) <= 2 && Math.abs(u.xLeft - r.xLeft) <= 4 && Math.abs(u.xRight - r.xRight) <= 4);
+            if (!dup) {
+                uniqueRails.push(r);
+            }
+        }
+
+        return uniqueRails;
+    }
+
     function syncDOM(force = false) {
-        if (!force && localStorage.getItem("apoorv_custom_rails")) {
+        if (!force && localStorage.getItem("apoorv_custom_rails_v2")) {
             if (loadSavedRails()) return;
         }
 
-        // Use the pre-calibrated master rail map with responsive horizontal tracking
-        landingRails = getCalibratedRails();
+        // Dynamically compute rails from the bottom edge/baseline of DOM elements
+        const domRails = detectDOMBottomRails();
+        if (domRails.length > 0) {
+            landingRails = domRails;
+        } else {
+            landingRails = getCalibratedRails();
+        }
+
         window.landingRails = landingRails;
-        console.log("Master ground rails loaded:", landingRails.length);
+        console.log("Ground landing rails synced from DOM bottom:", landingRails.length);
     }
 
     window.landingRails = landingRails;
     window.syncDOM = () => syncDOM(true);
     window.setPhysicsActive = (val) => { isPhysicsActive = val; };
 
-    // Pillar 6: Spawn player perched on H1 "APOORV"
+    // Pillar 6: Spawn player perched on the bottom baseline of H1 "APOORV"
     function placePlayerOnHero() {
-        const h1Rail = landingRails.find(r => r.name === "H1");
-        if (h1Rail && player) {
-            player.pos.x = h1Rail.xLeft + 120;
-            player.pos.y = h1Rail.y;
+        const h1 = document.querySelector('h1[data-kaboom-body="true"]') || document.querySelector('h1');
+        if (h1 && player) {
+            const r = h1.getBoundingClientRect();
+            const scrollY = window.scrollY || window.pageYOffset || 0;
+            const targetY = Math.round(r.bottom + scrollY);
+            player.pos.x = Math.round(r.left + 120);
+            player.pos.y = targetY;
             player.vy = 0;
             if (player.vel) {
                 player.vel.x = 0;
                 player.vel.y = 0;
             }
             player.grounded = true;
-            player.currentRail = h1Rail;
-            console.log("placePlayerOnHero perched player on calibrated H1:", player.pos.x, player.pos.y);
-        } else {
-            const h1 = document.querySelector('h1');
-            if (h1 && player) {
-                const r = h1.getBoundingClientRect();
-                const scrollY = window.scrollY || window.pageYOffset || 0;
-                player.pos.x = r.left + 120;
-                player.pos.y = r.top + scrollY;
-                player.vy = 0;
-                if (player.vel) {
-                    player.vel.x = 0;
-                    player.vel.y = 0;
-                }
-                player.grounded = true;
-                player.currentRail = null;
-            }
+            const matchingRail = landingRails.find(rail => rail.domElement === h1 || rail.name === "H1" || (rail.xLeft <= player.pos.x && rail.xRight >= player.pos.x && Math.abs(rail.y - targetY) <= 5));
+            player.currentRail = matchingRail || null;
+            console.log("placePlayerOnHero perched player on H1 bottom:", player.pos.x, player.pos.y);
         }
     }
 

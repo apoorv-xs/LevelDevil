@@ -37,8 +37,8 @@
                 trap: r.trap || "normal",
                 name: r.name || (r.domElement ? (r.domElement.tagName + (r.domElement.className ? '.' + r.domElement.className.split(' ')[0] : '')) : "custom_rail")
             }));
-            localStorage.setItem("apoorv_custom_rails", JSON.stringify(clean));
-            console.log("💾 Saved custom rails to localStorage:", clean.length);
+            localStorage.setItem("apoorv_custom_rails_v2", JSON.stringify(clean));
+            console.log("💾 Saved custom rails v2 to localStorage:", clean.length);
         } catch(e) {
             console.warn("Could not save to localStorage", e);
         }
@@ -301,7 +301,7 @@
         const btnSnapDOM = hudDock.querySelector("#btn-snap-dom");
         if (btnSnapDOM) {
             btnSnapDOM.addEventListener("click", () => {
-                if (window.syncDOM) window.syncDOM();
+                if (window.syncDOM) window.syncDOM(true);
                 selectedRailIndex = -1;
                 renderOverlay();
                 updateHudContent();
@@ -331,9 +331,10 @@
         const btnReset = hudDock.querySelector("#btn-reset-rails");
         if (btnReset) {
             btnReset.addEventListener("click", () => {
-                if (confirm("Clear custom edits and re-sync from HTML DOM?")) {
+                if (confirm("Clear custom edits and re-sync from HTML DOM bottom?")) {
                     localStorage.removeItem("apoorv_custom_rails");
-                    if (window.syncDOM) window.syncDOM();
+                    localStorage.removeItem("apoorv_custom_rails_v2");
+                    if (window.syncDOM) window.syncDOM(true);
                     selectedRailIndex = -1;
                     renderOverlay();
                     updateHudContent();
