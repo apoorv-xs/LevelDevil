@@ -50,7 +50,6 @@ body::after {
   padding: 42px 0 72px;
 }
 
-.topbar,
 .workspace-head {
   display: flex;
   justify-content: space-between;
@@ -221,9 +220,7 @@ pre {
 }
 
 @media (max-width: 720px) {
-  .shell { width: min(100% - 24px, 560px); padding-top: 34px; }
-  .topbar { align-items: flex-start; padding-right: 4px; }
-  .site-nav { position: static; }
+  .shell { width: min(100% - 24px, 560px); padding-top: 54px; }
   .hero { padding-top: 38px; }
   .grid { grid-template-columns: 1fr; }
   .card-wide { grid-column: auto; }

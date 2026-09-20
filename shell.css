@@ -6,14 +6,25 @@
   --shell-line: #17120f;
 }
 
-.site-nav {
+/* --- GLOBAL UNIFIED TOPBAR HEADER --- */
+.topbar {
   position: fixed;
   top: 18px;
-  left: 50%;
-  transform: translateX(-50%);
-  right: auto;
-  z-index: 250;
+  left: 0;
+  right: 0;
+  width: 100%;
   display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 250;
+  pointer-events: none;
+  margin: 0;
+  padding: 0;
+}
+
+.site-nav {
+  pointer-events: auto;
+  display: inline-flex;
   gap: 0;
   align-items: center;
   padding: 4px;
@@ -23,17 +34,20 @@
   box-shadow: 5px 5px 0 var(--shell-line);
   font-family: "Press Start 2P", monospace;
   white-space: nowrap;
+  margin: 0 auto;
 }
 
 .site-nav a {
   color: var(--shell-ink);
   border: 2px solid transparent;
   border-radius: 0;
-  padding: 10px 12px;
+  padding: 10px 14px;
   text-decoration: none;
   font-size: 12px;
   line-height: 1;
-  white-space: nowrap;
+  white-space: nowrap !important;
+  display: inline-block;
+  transition: all 0.1s ease;
 }
 
 .site-nav a:hover,
@@ -43,18 +57,20 @@
   border-color: var(--shell-ink);
   color: var(--shell-ink);
   outline: none;
+  box-shadow: 2px 2px 0 var(--shell-line);
 }
 
 @media (max-width: 640px) {
+  .topbar {
+    top: 8px;
+  }
   .site-nav {
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    right: auto;
     padding: 2px;
+    border-width: 2px;
+    box-shadow: 3px 3px 0 var(--shell-line);
   }
   .site-nav a {
-    padding: 8px 8px;
+    padding: 7px 8px;
     font-size: 10px;
   }
 }
@@ -104,8 +120,6 @@
 }
 
 @media (max-width: 720px) {
-  .site-nav { position: static; max-width: 100%; }
-  .site-nav a { padding: 8px 9px; font-size: 10px; }
   .action-rail { margin-bottom: 22px; }
   .action-rail a { flex: 1 1 100%; text-align: center; }
 }
