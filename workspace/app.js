@@ -866,13 +866,13 @@ function renderQueue() {
     }
 
     item.innerHTML = `
-      <div class="flex justify-between items-center">
-        <span class="font-bold text-xs text-white truncate max-w-[190px]">${p.name}</span>
-        <span class="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded ${badgeClass}">${badgeText}</span>
+      <div class="flex justify-between items-center gap-1.5">
+        <span class="font-bold text-xs text-white truncate flex-1 min-w-0">${p.name}</span>
+        <span class="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded shrink-0 ${badgeClass}">${badgeText}</span>
       </div>
-      <div class="flex justify-between text-[11px] text-gray-400">
-        <span class="truncate max-w-[170px]">${p.dm}</span>
-        <span class="font-mono text-neutral-400 font-medium text-[10px]">${p.ptype}</span>
+      <div class="flex justify-between items-center gap-1.5 text-[11px] text-gray-400">
+        <span class="truncate flex-1 min-w-0">${p.dm}</span>
+        <span class="font-mono text-neutral-400 font-medium text-[10px] shrink-0">${p.ptype}</span>
       </div>
     `;
 
@@ -2017,7 +2017,7 @@ function exportCallDataToCSV() {
   const encodedUri = encodeURI(csvContent);
   const link = document.createElement('a');
   link.setAttribute('href', encodedUri);
-  link.setAttribute('download', `sprintdial_outbound_report_${new Date().toISOString().slice(0, 10)}.csv`);
+  link.setAttribute('download', `studio_workbench_report_${new Date().toISOString().slice(0, 10)}.csv`);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
