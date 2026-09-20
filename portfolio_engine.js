@@ -86,7 +86,28 @@ onLoad(() => {
     let landingRails = [];
     let isPhysicsActive = false;
 
-    function syncDOM() {
+    function loadSavedRails() {
+        try {
+            const saved = localStorage.getItem("apoorv_custom_rails");
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    landingRails = parsed;
+                    window.landingRails = landingRails;
+                    console.log("Loaded custom ground rails from localStorage:", landingRails.length);
+                    return true;
+                }
+            }
+        } catch(e) {
+            console.warn("Failed to load custom rails", e);
+        }
+        return false;
+    }
+
+    function syncDOM(force = false) {
+        if (!force && localStorage.getItem("apoorv_custom_rails")) {
+            if (loadSavedRails()) return;
+        }
         const elements = document.querySelectorAll('[data-kaboom-body="true"]');
         const scrollY = window.scrollY || window.pageYOffset || 0;
         landingRails = [];
@@ -104,17 +125,24 @@ onLoad(() => {
                 yRail = rect.top + scrollY;
             }
 
-            const trapType = el.getAttribute("data-trap");
+            const rawTrap = el.getAttribute("data-trap");
+            const trapType = (rawTrap && rawTrap !== "false" && rawTrap !== "none") ? rawTrap : "normal";
             landingRails.push({
                 xLeft: rect.left,
                 xRight: rect.right,
                 width: rect.width,
                 y: yRail,
                 domElement: el,
-                trap: trapType
+                trap: trapType,
+                name: el.tagName + (el.id ? '#' + el.id : (el.className ? '.' + el.className.split(' ')[0] : ''))
             });
         });
+        window.landingRails = landingRails;
     }
+
+    window.landingRails = landingRails;
+    window.syncDOM = () => syncDOM(true);
+    window.setPhysicsActive = (val) => { isPhysicsActive = val; };
 
     // Pillar 6: Spawn player perched on H1 "APOORV A S" (X = r.left + 120, Y = r.top)
     function placePlayerOnHero() {
