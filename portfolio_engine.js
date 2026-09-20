@@ -82,9 +82,64 @@ onLoad(() => {
     const player = window.createPlayer ? window.createPlayer(window.innerWidth / 2, 0) : createPlayer(window.innerWidth / 2, 0);
     window.player = player;
 
-    // Pillar 1 & 2 & 3: 1D Continuous Swept Horizontal Landing Rail system
+    // Pillar 1 & 2 & 3: Master Calibrated 1D Continuous Swept Ground Rails Map
+    const CALIBRATED_RAILS = [
+        { "xLeft": 192, "xRight": 801, "width": 609, "y": 160, "trap": "normal", "name": "DIV.role-badge" },
+        { "xLeft": 192, "xRight": 561, "width": 369, "y": 224, "trap": "normal", "name": "H1" },
+        { "xLeft": 192, "xRight": 976, "width": 784, "y": 314, "trap": "normal", "name": "P.hero-hook" },
+        { "xLeft": 192, "xRight": 668, "width": 475, "y": 435, "trap": "normal", "name": "DIV.controls-pill" },
+        { "xLeft": 192, "xRight": 588, "width": 396, "y": 489, "trap": "normal", "name": "DIV.hero-actions" },
+        { "xLeft": 1008, "xRight": 1328, "width": 320, "y": 160, "trap": "normal", "name": "ASIDE.hero-aside-status" },
+        { "xLeft": 193, "xRight": 1328, "width": 1135, "y": 559, "trap": "normal", "name": "drawn_rail" },
+        { "xLeft": 192, "xRight": 482, "width": 290, "y": 618, "trap": "normal", "name": "drawn_rail" },
+        { "xLeft": 1186, "xRight": 1331, "width": 145, "y": 614, "trap": "normal", "name": "drawn_rail" },
+        { "xLeft": 192, "xRight": 1328, "width": 1136, "y": 664, "trap": "normal", "name": "DIV#selected-work" },
+        { "xLeft": 192, "xRight": 1328, "width": 1136, "y": 699, "trap": "normal", "name": "ARTICLE.featured-project-card" },
+        { "xLeft": 192, "xRight": 744, "width": 552, "y": 1179, "trap": "normal", "name": "ARTICLE.standard-project-card" },
+        { "xLeft": 776, "xRight": 1328, "width": 552, "y": 1179, "trap": "normal", "name": "ARTICLE.standard-project-card" },
+        { "xLeft": 192, "xRight": 1328, "width": 1136, "y": 1584, "trap": "normal", "name": "ARTICLE.standard-project-card" },
+        { "xLeft": 193, "xRight": 457, "width": 264, "y": 1951, "trap": "normal", "name": "drawn_rail" },
+        { "xLeft": 527, "xRight": 771, "width": 244, "y": 1949, "trap": "normal", "name": "drawn_rail" },
+        { "xLeft": 1197, "xRight": 1331, "width": 134, "y": 1947, "trap": "normal", "name": "drawn_rail" },
+        { "xLeft": 192, "xRight": 1328, "width": 1136, "y": 1995, "trap": "normal", "name": "DIV.section-header" },
+        { "xLeft": 192, "xRight": 555, "width": 363, "y": 2030, "trap": "normal", "name": "DIV.capability-card" },
+        { "xLeft": 579, "xRight": 942, "width": 363, "y": 2030, "trap": "normal", "name": "DIV.capability-card" },
+        { "xLeft": 966, "xRight": 1328, "width": 363, "y": 2030, "trap": "normal", "name": "DIV.capability-card" },
+        { "xLeft": 191, "xRight": 571, "width": 380, "y": 2352, "trap": "normal", "name": "drawn_rail" },
+        { "xLeft": 1165, "xRight": 1331, "width": 166, "y": 2347, "trap": "normal", "name": "drawn_rail" },
+        { "xLeft": 192, "xRight": 1328, "width": 1136, "y": 2397, "trap": "normal", "name": "DIV.section-header" },
+        { "xLeft": 192, "xRight": 748, "width": 556, "y": 2432, "trap": "bounce", "name": "ARTICLE.note-card" },
+        { "xLeft": 772, "xRight": 1328, "width": 556, "y": 2432, "trap": "bounce", "name": "ARTICLE.note-card" },
+        { "xLeft": 192, "xRight": 1328, "width": 1136, "y": 2634, "trap": "bounce", "name": "ARTICLE.note-card" },
+        { "xLeft": 192, "xRight": 459, "width": 267, "y": 2827, "trap": "normal", "name": "drawn_rail" },
+        { "xLeft": 1221, "xRight": 1328, "width": 107, "y": 2825, "trap": "normal", "name": "drawn_rail" },
+        { "xLeft": 192, "xRight": 1328, "width": 1136, "y": 2871, "trap": "normal", "name": "DIV.section-header" },
+        { "xLeft": 192, "xRight": 1328, "width": 1136, "y": 2906, "trap": "normal", "name": "SECTION.contact-card" },
+        { "xLeft": 908, "xRight": 1284, "width": 376, "y": 2967, "trap": "cta", "name": "A.cta-btn-primary" },
+        { "xLeft": 240, "xRight": 718, "width": 478, "y": 2995, "trap": "normal", "name": "drawn_rail" },
+        { "xLeft": 238, "xRight": 797, "width": 559, "y": 3051, "trap": "normal", "name": "drawn_rail" },
+        { "xLeft": 908, "xRight": 1091, "width": 183, "y": 3055, "trap": "normal", "name": "A.cta-btn-secondary" },
+        { "xLeft": 1101, "xRight": 1284, "width": 183, "y": 3055, "trap": "normal", "name": "A.cta-btn-secondary" },
+        { "xLeft": 240, "xRight": 708, "width": 468, "y": 3084, "trap": "normal", "name": "drawn_rail" },
+        { "xLeft": 195, "xRight": 1325, "width": 1130, "y": 3190, "trap": "normal", "name": "drawn_rail" }
+    ];
+
     let landingRails = [];
     let isPhysicsActive = false;
+
+    function getCalibratedRails() {
+        const BASE_SHELL_LEFT = 192;
+        const shell = document.querySelector('main.portfolio-shell');
+        const currentShellLeft = shell ? (shell.getBoundingClientRect().left + 32) : BASE_SHELL_LEFT;
+        const deltaX = Math.round(currentShellLeft - BASE_SHELL_LEFT);
+
+        return CALIBRATED_RAILS.map(r => ({
+            ...r,
+            xLeft: r.xLeft + deltaX,
+            xRight: r.xRight + deltaX,
+            width: r.xRight - r.xLeft
+        }));
+    }
 
     function loadSavedRails() {
         try {
@@ -108,59 +163,46 @@ onLoad(() => {
         if (!force && localStorage.getItem("apoorv_custom_rails")) {
             if (loadSavedRails()) return;
         }
-        const elements = document.querySelectorAll('[data-kaboom-body="true"]');
-        const scrollY = window.scrollY || window.pageYOffset || 0;
-        landingRails = [];
 
-        elements.forEach(el => {
-            const rect = el.getBoundingClientRect();
-            if (rect.width <= 0 || rect.height <= 0) return;
-
-            // Pillar 3: Section headers walk directly on the visual underline.
-            // Cards/badges calculate rail at top.
-            let yRail;
-            if (el.classList.contains("section-header") || el.matches(".section-header")) {
-                yRail = rect.bottom + scrollY - 3;
-            } else {
-                yRail = rect.top + scrollY;
-            }
-
-            const rawTrap = el.getAttribute("data-trap");
-            const trapType = (rawTrap && rawTrap !== "false" && rawTrap !== "none") ? rawTrap : "normal";
-            landingRails.push({
-                xLeft: rect.left,
-                xRight: rect.right,
-                width: rect.width,
-                y: yRail,
-                domElement: el,
-                trap: trapType,
-                name: el.tagName + (el.id ? '#' + el.id : (el.className ? '.' + el.className.split(' ')[0] : ''))
-            });
-        });
+        // Use the pre-calibrated master rail map with responsive horizontal tracking
+        landingRails = getCalibratedRails();
         window.landingRails = landingRails;
+        console.log("Master ground rails loaded:", landingRails.length);
     }
 
     window.landingRails = landingRails;
     window.syncDOM = () => syncDOM(true);
     window.setPhysicsActive = (val) => { isPhysicsActive = val; };
 
-    // Pillar 6: Spawn player perched on H1 "APOORV A S" (X = r.left + 120, Y = r.top)
+    // Pillar 6: Spawn player perched on H1 "APOORV"
     function placePlayerOnHero() {
-        const h1 = document.querySelector('h1');
-        if (h1 && player) {
-            const r = h1.getBoundingClientRect();
-            const scrollY = window.scrollY || window.pageYOffset || 0;
-            player.pos.x = r.left + 120;
-            player.pos.y = r.top + scrollY;
+        const h1Rail = landingRails.find(r => r.name === "H1");
+        if (h1Rail && player) {
+            player.pos.x = h1Rail.xLeft + 120;
+            player.pos.y = h1Rail.y;
             player.vy = 0;
             if (player.vel) {
                 player.vel.x = 0;
                 player.vel.y = 0;
             }
             player.grounded = true;
-            const matchingRail = landingRails.find(rail => rail.domElement === h1);
-            player.currentRail = matchingRail || null;
-            console.log("placePlayerOnHero perched player on H1:", player.pos.x, player.pos.y);
+            player.currentRail = h1Rail;
+            console.log("placePlayerOnHero perched player on calibrated H1:", player.pos.x, player.pos.y);
+        } else {
+            const h1 = document.querySelector('h1');
+            if (h1 && player) {
+                const r = h1.getBoundingClientRect();
+                const scrollY = window.scrollY || window.pageYOffset || 0;
+                player.pos.x = r.left + 120;
+                player.pos.y = r.top + scrollY;
+                player.vy = 0;
+                if (player.vel) {
+                    player.vel.x = 0;
+                    player.vel.y = 0;
+                }
+                player.grounded = true;
+                player.currentRail = null;
+            }
         }
     }
 

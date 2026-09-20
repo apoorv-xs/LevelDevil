@@ -66,4 +66,11 @@ if (fs.existsSync(vercelConfig)) {
     console.log('Copied: vercel.json');
 }
 
+// Master calibrated ground rails map
+const groundRails = path.join(srcDir, 'ground_rails.json');
+if (fs.existsSync(groundRails)) {
+    fs.copyFileSync(groundRails, path.join(distDir, 'ground_rails.json'));
+    console.log('Copied: ground_rails.json');
+}
+
 console.log("Build Complete. Assets ready in /dist");
