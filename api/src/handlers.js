@@ -2,7 +2,7 @@ import { parseBody, validate, ok } from "./http.js";
 import { guard } from "./auth.js";
 import * as service from "./services.js";
 import { qualify } from "./ai.js";
-export const publicInquiry = (req) => { const body = validate(parseBody(req), { name: { required: true, type: "string", max: 120 }, email: { required: true, type: "string", max: 254 }, message: { required: true, type: "string", max: 5000 } }); return ok(service.createInquiry(body), 201); };
+export const publicInquiry = (req) => { const body = validate(parseBody(req), { name: { required: true, type: "string", max: 120 }, email: { required: true, type: "string", max: 254 }, message: { required: true, type: "string", max: 5000 }, scope: { type: "string", max: 200 }, budget: { type: "string", max: 100 } }); return ok(service.createInquiry(body), 201); };
 export const publicApplication = (req) => { const body = validate(parseBody(req), { name: { required: true, type: "string", max: 120 }, email: { required: true, type: "string", max: 254 }, message: { required: true, type: "string", max: 5000 }, resumeUrl: { type: "string", max: 2048 } }); return ok(service.createApplication(body), 201); };
 export const ownerApplications = async (req) => { await guard(req, ["owner"]); return ok(service.listApplications()); };
 export const ownerInvitation = async (req) => { const user = await guard(req, ["owner"]); return ok(service.createInvitation(validate(parseBody(req), { email: { required: true, type: "string", max: 254 } }), user.uid), 201); };

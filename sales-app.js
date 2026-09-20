@@ -25,20 +25,109 @@ async function request(path, options = {}) {
   return payload;
 }
 
+function saveInquiryLocally(data) {
+  try {
+    const existing = JSON.parse(localStorage.getItem("apoorv_inquiries") || "[]");
+    existing.unshift({ id: `inq_${Date.now()}`, timestamp: new Date().toISOString(), ...data });
+    localStorage.setItem("apoorv_inquiries", JSON.stringify(existing.slice(0, 50)));
+  } catch (err) {
+    console.warn("Failed to persist inquiry locally", err);
+  }
+}
+
+async function dispatchWebhook(values) {
+  const webhookUrl = window.SALES_PLATFORM_CONFIG?.webhookUrl;
+  if (!webhookUrl) return false;
+  try {
+    let body;
+    if (webhookUrl.includes("discord.com/api/webhooks")) {
+      body = JSON.stringify({
+        username: "Apoorv Studio Radar",
+        avatar_url: "https://apoorv.qzz.io/favicon.ico",
+        embeds: [{
+          title: "🚀 New Project Inquiry Received!",
+          color: 0xfce566,
+          fields: [
+            { name: "👤 Client / Name", value: values.name || "N/A", inline: true },
+            { name: "✉️ Email", value: values.email || "N/A", inline: true },
+            { name: "🎯 Scope", value: values.scope || "N/A", inline: true },
+            { name: "💰 Budget Tier", value: values.budget || "N/A", inline: true },
+            { name: "📝 Message", value: values.message || "No message provided" }
+          ],
+          footer: { text: "Apoorv Studio Sales Platform • apoorv.qzz.io" },
+          timestamp: new Date().toISOString()
+        }]
+      });
+    } else {
+      body = JSON.stringify({ ...values, timestamp: new Date().toISOString(), source: "apoorv.qzz.io/sales" });
+    }
+
+    const res = await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body
+    });
+    return res.ok;
+  } catch (err) {
+    console.warn("Webhook dispatch error:", err);
+    return false;
+  }
+}
+
 async function submitPublicForm(event, path, successMessage) {
   event.preventDefault();
   const form = event.currentTarget;
   const values = Object.fromEntries(new FormData(form));
   const submit = form.querySelector('button[type="submit"]');
-  setStatus("Sending...");
+  setStatus("Dispatching inquiry...");
   form.setAttribute("aria-busy", "true");
   if (submit) submit.disabled = true;
+
+  if (path === "/inquiry") {
+    saveInquiryLocally(values);
+  }
+
+  let webhookDelivered = false;
+  if (window.SALES_PLATFORM_CONFIG?.webhookUrl) {
+    webhookDelivered = await dispatchWebhook(values);
+  }
+
   try {
     await request(path, { method: "POST", body: JSON.stringify(values) });
     form.reset();
     setStatus(successMessage);
+    const fallbackBox = form.querySelector(".inquiry-fallback-box");
+    if (fallbackBox) fallbackBox.remove();
   } catch (error) {
-    setStatus(error instanceof Error ? error.message : "Unable to submit the form.", true);
+    if (webhookDelivered) {
+      form.reset();
+      setStatus("Inquiry dispatched via notification rail! Apoorv will follow up within 24 hours.");
+    } else {
+      setStatus(error instanceof Error ? error.message : "Unable to submit the form.", true);
+      if (path === "/inquiry") {
+        const subject = encodeURIComponent(`Project Inquiry: ${values.scope || "Creative Engineering"} - ${values.name || "Client"}`);
+        const body = encodeURIComponent(`Hi Apoorv,\n\nName: ${values.name || ""}\nEmail: ${values.email || ""}\nScope: ${values.scope || ""}\nBudget: ${values.budget || ""}\n\nMessage:\n${values.message || ""}\n`);
+        const mailto = `mailto:${window.SALES_PLATFORM_CONFIG?.directEmail || "apoorv.as2003@gmail.com"}?subject=${subject}&body=${body}`;
+        const whatsappNumber = (window.SALES_PLATFORM_CONFIG?.directPhone || "+919310808381").replace(/[^0-9]/g, "");
+        const waLink = `https://wa.me/${whatsappNumber}?text=${body}`;
+
+        let fallbackBox = form.querySelector(".inquiry-fallback-box");
+        if (!fallbackBox) {
+          fallbackBox = document.createElement("div");
+          fallbackBox.className = "inquiry-fallback-box";
+          fallbackBox.style.cssText = "margin-top:14px; padding:12px; background:var(--white); border:2px solid var(--ink); box-shadow:3px 3px 0 var(--ink); font-family:'Courier Prime',monospace; font-size:13px; text-align:left;";
+          form.appendChild(fallbackBox);
+        }
+        fallbackBox.innerHTML = `
+          <div style="font-weight:bold; color:var(--ink); margin-bottom:6px;">⚡ Direct Dispatch Fallback:</div>
+          <div style="margin-bottom:10px; color:var(--ink); font-size:12px;">Network endpoint was unreachable, but your details are safely stored. Tap to dispatch directly:</div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a href="${mailto}" style="padding:6px 12px; background:var(--accent-yellow); border:2px solid var(--ink); color:var(--ink); text-decoration:none; font-weight:bold; font-size:12px; display:inline-flex; align-items:center; gap:6px;">✉️ Send via Email</a>
+            <a href="${waLink}" target="_blank" rel="noopener" style="padding:6px 12px; background:var(--white); border:2px solid var(--ink); color:var(--ink); text-decoration:none; font-weight:bold; font-size:12px; display:inline-flex; align-items:center; gap:6px;">💬 Send via WhatsApp</a>
+          </div>
+        `;
+      }
+    }
   } finally {
     form.removeAttribute("aria-busy");
     if (submit) submit.disabled = false;
