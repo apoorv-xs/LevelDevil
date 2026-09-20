@@ -22,6 +22,48 @@
     <link rel="stylesheet" href="shell.css">
     <link rel="stylesheet" href="sales.css">
     <style>
+        /* --- THE DROID'S DESCENT: 5-ZONE CONTINUOUS STORY BACKGROUND --- */
+        body {
+            background-color: #07040d !important;
+            background-image:
+                /* Retro arcade scanline texture */
+                repeating-linear-gradient(0deg, rgba(23, 18, 15, .04) 0 2px, transparent 2px 6px),
+                /* Continuous 5-Zone Story Gradient Mapped to Document Percentage */
+                linear-gradient(to bottom,
+                    #e6a83b 0%,                          /* Sector 1: Jakku Desert Sands (Hero) */
+                    #f5c253 14%,
+                    #6b4e36 20%,                        /* Transition to Industrial Foundry */
+                    #3a322c 25%,                        /* Sector 2: The Forge & Catwalks (Selected Work) */
+                    #483e37 52%,
+                    #342838 58%,                        /* Transition to Cybernetic Core */
+                    #481b6d 62%,                        /* Sector 3: Cybernetic Neural Core (Capabilities) */
+                    #5c228c 70%,
+                    #2e1f2b 73%,                        /* Transition to Reactor Pit */
+                    #221c19 76%,                        /* Sector 4: Reactor Hazard Pit (Notes & Traps) */
+                    #181311 83%,
+                    #120c1c 86%,                        /* Transition to Deep Space */
+                    #0c0816 90%,                        /* Sector 5: Deep Space Transmission Beacon (Contact) */
+                    #05030a 100%
+                ) !important;
+            background-repeat: repeat, no-repeat !important;
+            background-size: auto, 100% 100% !important;
+            background-attachment: scroll !important;
+        }
+
+        .topbar-sector-badge {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 8px;
+            background: var(--shell-white);
+            color: var(--shell-ink);
+            border: 2px solid var(--shell-line);
+            box-shadow: 2px 2px 0 var(--shell-line);
+            padding: 6px 10px;
+            display: inline-flex;
+            align-items: center;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
         /* --- ASYMMETRIC BRUTALIST & EDITORIAL PLATFORMING LAYOUT --- */
         main.portfolio-shell {
             max-width: 1200px;
@@ -113,11 +155,13 @@
         /* --- FAMILIAR SECTION HEADINGS --- */
         .section-header {
             font-family: "Press Start 2P", monospace;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             color: var(--ink);
+            background: var(--cream);
+            border: 3px solid var(--ink);
+            box-shadow: 5px 5px 0 var(--ink);
+            padding: 14px 20px;
             margin: 5rem 0 2rem 0;
-            padding-bottom: 14px;
-            border-bottom: 3px solid var(--ink);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -415,6 +459,9 @@
 
         <!-- Right: Telemetry & Inquire CTA -->
         <div class="topbar-actions">
+            <div id="topbar-sector" class="topbar-sector-badge hide-mobile" title="Active Droid Sector">
+                S-01: JAKKU DUNES
+            </div>
             <div class="topbar-badge hide-mobile" title="Real-Time WebGL Performance Benchmark">
                 <span class="topbar-dot"></span>
                 <span><span id="live-fps">60.0</span> FPS</span>

@@ -9,6 +9,8 @@
         camera: null,
         sunLight: null,
         ambientLight: null,
+        atmosphereParticles: null,
+        currentSectorClass: "sector-1",
         isReady: false,
         _isInitializing: false,
         SCALE: 0.05, // 100 2D pixels = 5 3D world units
@@ -76,7 +78,29 @@
             this.sunLight.shadow.bias = -0.0005;
             this.scene.add(this.sunLight);
 
-            // 5. Window Resize Handler
+            // 5. Atmospheric Story Particle System (Shifts with active Sector)
+            const PARTICLE_COUNT = 160;
+            const pGeo = new THREE.BufferGeometry();
+            const pPositions = new Float32Array(PARTICLE_COUNT * 3);
+
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                pPositions[i * 3] = (Math.random() - 0.5) * 60;
+                pPositions[i * 3 + 1] = (Math.random() - 0.5) * 45;
+                pPositions[i * 3 + 2] = (Math.random() - 0.5) * 20 - 5;
+            }
+            pGeo.setAttribute("position", new THREE.BufferAttribute(pPositions, 3));
+
+            const pMat = new THREE.PointsMaterial({
+                size: 0.22,
+                color: 0xf59e0b,
+                transparent: true,
+                opacity: 0.55
+            });
+
+            this.atmosphereParticles = new THREE.Points(pGeo, pMat);
+            this.scene.add(this.atmosphereParticles);
+
+            // 6. Window Resize Handler
             window.addEventListener("resize", () => {
                 if (this.renderer && this.camera) {
                     const width = window.innerWidth;
@@ -88,10 +112,32 @@
                 }
             });
 
-            // 6. Start Render Loop
+            // 7. Start Render Loop
             const render = () => {
                 requestAnimationFrame(render);
                 if (this.renderer && this.scene && this.camera) {
+                    // Animate ambient particles according to active sector
+                    if (this.atmosphereParticles) {
+                        const posAttr = this.atmosphereParticles.geometry.attributes.position;
+                        const arr = posAttr.array;
+                        for (let i = 0; i < 160; i++) {
+                            const idx = i * 3;
+                            if (this.currentSectorClass === "sector-2" || this.currentSectorClass === "sector-4") {
+                                // Sparks / reactor heat rise upwards
+                                arr[idx + 1] += 0.04;
+                                if (arr[idx + 1] > 22) arr[idx + 1] = -22;
+                            } else if (this.currentSectorClass === "sector-5") {
+                                // Starfield subtle twinkling drift
+                                arr[idx] += Math.sin(Date.now() * 0.001 + i) * 0.003;
+                            } else {
+                                // Desert dust / cyber data drift sideways
+                                arr[idx] += 0.02;
+                                if (arr[idx] > 30) arr[idx] = -30;
+                            }
+                        }
+                        posAttr.needsUpdate = true;
+                    }
+
                     this.renderer.render(this.scene, this.camera);
                 }
             };
@@ -100,6 +146,36 @@
             this.isReady = true;
             this._isInitializing = false;
             console.log("Three.js 2.5D Engine & PBR Lighting Pipeline Initialized.");
+        },
+
+        // Dynamically morph atmospheric particles based on Sector depth
+        setSectorDepth(depthY, sectorClass) {
+            if (this.currentSectorClass === sectorClass) return;
+            this.currentSectorClass = sectorClass;
+            if (!this.atmosphereParticles) return;
+
+            const mat = this.atmosphereParticles.material;
+            if (sectorClass === "sector-1") {
+                mat.color.setHex(0xf59e0b); // Amber desert dust
+                mat.size = 0.20;
+                mat.opacity = 0.55;
+            } else if (sectorClass === "sector-2") {
+                mat.color.setHex(0xf97316); // Copper/orange foundry sparks
+                mat.size = 0.24;
+                mat.opacity = 0.65;
+            } else if (sectorClass === "sector-3") {
+                mat.color.setHex(0x00e5ff); // Cyan cyber data packets
+                mat.size = 0.22;
+                mat.opacity = 0.75;
+            } else if (sectorClass === "sector-4") {
+                mat.color.setHex(0xef4444); // Red-orange reactor embers
+                mat.size = 0.26;
+                mat.opacity = 0.80;
+            } else if (sectorClass === "sector-5") {
+                mat.color.setHex(0xffffff); // Starfield white stars
+                mat.size = 0.28;
+                mat.opacity = 0.90;
+            }
         },
 
         // Scale factor calibrated to camera distance Z = 80 and fov = 16.04 deg (0.28 rad)

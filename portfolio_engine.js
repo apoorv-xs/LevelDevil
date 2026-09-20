@@ -458,14 +458,72 @@ onLoad(() => {
             }
         }
 
+        // --- DUAL-MODE CAMERA TRACKING ---
+        // When the player is active (WASD/arrows/touch), smoothly scroll the page down/up to follow BB-8 across the sections
+        const isPlayerActive = (typeof isKeyDown === "function" && (isKeyDown("left") || isKeyDown("right") || isKeyDown("up") || isKeyDown("down") || isKeyDown("a") || isKeyDown("d") || isKeyDown("w") || isKeyDown("s") || isKeyDown("space"))) || Boolean(window.mobileLeftDown || window.mobileRightDown || window.mobileJumpPressed || player.isMovingThisFrame);
+
+        if (isPlayerActive && isPhysicsActive && !isRespawning) {
+            const lowerComfortZone = currentScrollY + window.innerHeight * 0.60;
+            const upperComfortZone = currentScrollY + window.innerHeight * 0.25;
+
+            if (player.pos.y > lowerComfortZone) {
+                const targetScrollY = Math.min(
+                    document.documentElement.scrollHeight - window.innerHeight,
+                    player.pos.y - window.innerHeight * 0.45
+                );
+                const diff = targetScrollY - currentScrollY;
+                if (diff > 1) {
+                    window.scrollBy(0, Math.min(diff * 0.12, 25));
+                }
+            } else if (player.pos.y < upperComfortZone && currentScrollY > 0) {
+                const targetScrollY = Math.max(0, player.pos.y - window.innerHeight * 0.35);
+                const diff = targetScrollY - currentScrollY;
+                if (diff < -1) {
+                    window.scrollBy(0, Math.max(diff * 0.12, -25));
+                }
+            }
+        }
+
         camPos(window.innerWidth / 2, currentScrollY + window.innerHeight / 2);
 
         const viewTop = currentScrollY;
         const viewBottom = currentScrollY + window.innerHeight;
 
-        // Out of bounds Recovery
-        if ((player.pos.y > viewBottom + 300 || player.pos.y < viewTop - 300) && !isRespawning && isPhysicsActive) {
+        // Out of bounds Recovery: generous threshold (650px below viewport or past bottom boundary)
+        const docBottom = Math.max(document.body.scrollHeight, 3450);
+        if ((player.pos.y > docBottom + 100 || player.pos.y > viewBottom + 650 || player.pos.y < viewTop - 400) && !isRespawning && isPhysicsActive) {
             respawnPlayer();
+        }
+
+        // --- REAL-TIME SECTOR NARRATIVE CALCULATION ---
+        const effectiveDepth = Math.max(currentScrollY + window.innerHeight * 0.35, player.pos.y);
+        let sectorName = "S-01: JAKKU DUNES";
+        let sectorClass = "sector-1";
+
+        if (effectiveDepth >= 2850) {
+            sectorName = "S-05: TRANSMISSION BEACON";
+            sectorClass = "sector-5";
+        } else if (effectiveDepth >= 2400) {
+            sectorName = "S-04: REACTOR PIT";
+            sectorClass = "sector-4";
+        } else if (effectiveDepth >= 1950) {
+            sectorName = "S-03: CYBER CORE";
+            sectorClass = "sector-3";
+        } else if (effectiveDepth >= 650) {
+            sectorName = "S-02: THE FORGE";
+            sectorClass = "sector-2";
+        }
+
+        window.currentSector = sectorName;
+        window.currentSectorClass = sectorClass;
+
+        const sectorPill = document.getElementById("topbar-sector");
+        if (sectorPill && sectorPill.textContent !== sectorName) {
+            sectorPill.textContent = sectorName;
+        }
+
+        if (window.Engine3D && window.Engine3D.setSectorDepth) {
+            window.Engine3D.setSectorDepth(effectiveDepth, sectorClass);
         }
 
         // Initialize 3D Player if engine is ready
