@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" class="dark h-full">
+<html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>SprintDial — Outbound Calling Workstation</title>
+  <title>SprintDial — Outbound Workstation | Apoorv A S</title>
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#0A0B0D">
+  <meta name="theme-color" content="#e6a83b">
 
-  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <!-- Universal Retro Typography (Press Start 2P & Courier Prime) -->
+  <link rel="stylesheet" href="/fonts.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Press+Start+2P&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -20,23 +21,23 @@
       theme: {
         extend: {
           colors: {
-            brand: {
-              50: '#F5F5F7',
-              500: '#71717A',
-              600: '#52525B',
-              700: '#3F3F46',
-            },
-            canvas: '#0A0B0D',
-            surface: {
-              sidebar: '#101114',
-              card: '#15161B',
-              elevated: '#1A1B22',
-              input: '#121317',
+            retro: {
+              amber: '#e6a83b',
+              amberLight: '#f6c962',
+              cream: '#fff1bd',
+              ink: '#17120f',
+              purple: '#6d3bb8',
+              purpleDark: '#3d226b',
+              paper: '#fff4c9',
+              white: '#fffdf1',
+              danger: '#8f1727',
+              accent: '#fce566',
             }
           },
           fontFamily: {
-            sans: ['"Plus Jakarta Sans"', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif],
-            mono: ['"JetBrains Mono"', monospace],
+            arcade: ['"Press Start 2P"', monospace],
+            mono: ['"Courier Prime"', '"Courier New"', monospace],
+            sans: ['"Courier Prime"', '"Courier New"', monospace],
           }
         }
       }
@@ -44,108 +45,499 @@
   </script>
 
   <style>
-    /* Bespoke Custom Scrollbar */
+    :root {
+      color-scheme: light;
+      --amber: #e6a83b;
+      --amber-light: #f6c962;
+      --cream: #fff1bd;
+      --ink: #17120f;
+      --purple: #6d3bb8;
+      --purple-dark: #3d226b;
+      --paper: #fff4c9;
+      --white: #fffdf1;
+      --danger: #8f1727;
+      --accent: #fce566;
+    }
+
+    /* Bespoke Custom Retro Scrollbar */
     ::-webkit-scrollbar {
-      width: 5px;
-      height: 5px;
+      width: 8px;
+      height: 8px;
     }
     ::-webkit-scrollbar-track {
-      background: transparent;
+      background: var(--paper);
+      border: 1px solid var(--ink);
     }
     ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 9999px;
+      background: var(--ink);
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.18);
+      background: var(--purple);
     }
     .custom-scrollbar {
       scrollbar-width: thin;
-      scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+      scrollbar-color: var(--ink) var(--paper);
     }
 
-    /* Timing Badges Required by Automated Test Suite */
+    /* Base Body: Amber Grain / Scanline Paper */
+    body.retro-workspace {
+      background:
+        linear-gradient(to bottom, transparent 0 22%, rgba(109, 59, 184, .12) 22% 23%, transparent 23% 72%, rgba(23, 18, 15, .11) 72% 73%, transparent 73%),
+        repeating-linear-gradient(0deg, rgba(23, 18, 15, .045) 0 2px, transparent 2px 6px),
+        var(--amber) !important;
+      color: var(--ink) !important;
+      font-family: "Courier Prime", "Courier New", monospace !important;
+    }
+
+    /* Top App Bar */
+    .retro-workspace header {
+      background: var(--paper) !important;
+      border-bottom: 3px solid var(--ink) !important;
+      box-shadow: 0 4px 0 var(--ink) !important;
+      color: var(--ink) !important;
+      height: 54px !important;
+    }
+
+    /* Universal 3-Pillar Navigation */
+    .retro-workspace .site-nav {
+      display: flex;
+      gap: 0;
+      align-items: center;
+      padding: 3px;
+      border: 2px solid var(--ink);
+      border-radius: 0;
+      background: var(--paper);
+      box-shadow: 3px 3px 0 var(--ink);
+      font-family: "Press Start 2P", monospace;
+    }
+    .retro-workspace .site-nav a {
+      color: var(--ink);
+      border: 2px solid transparent;
+      border-radius: 0;
+      padding: 6px 10px;
+      text-decoration: none;
+      font-size: 11px;
+      line-height: 1;
+      transition: all 0.1s ease;
+    }
+    .retro-workspace .site-nav a:hover,
+    .retro-workspace .site-nav a:focus-visible,
+    .retro-workspace .site-nav a[aria-current="page"] {
+      background: var(--accent);
+      border-color: var(--ink);
+      color: var(--ink);
+      box-shadow: 2px 2px 0 var(--ink);
+    }
+
+    /* Paneling & Surfaces */
+    .retro-workspace .studio-panel {
+      background: var(--white) !important;
+      border: 2px solid var(--ink) !important;
+      box-shadow: 3px 3px 0 var(--ink) !important;
+      border-radius: 0 !important;
+      color: var(--ink) !important;
+    }
+    .retro-workspace .studio-panel-elevated {
+      background: var(--cream) !important;
+      border: 3px solid var(--ink) !important;
+      box-shadow: 5px 5px 0 var(--ink) !important;
+      border-radius: 0 !important;
+      color: var(--ink) !important;
+    }
+
+    /* Workstation Columns */
+    .retro-workspace #queuePane {
+      background: var(--paper) !important;
+      border-right: 3px solid var(--ink) !important;
+    }
+    .retro-workspace #dossierPane {
+      background: var(--paper) !important;
+      border-left: 3px solid var(--ink) !important;
+    }
+    .retro-workspace #cockpitPane {
+      background: transparent !important;
+    }
+
+    /* Queue Pane Search & Territory Filters */
+    .retro-workspace #queuePane > div:first-child,
+    .retro-workspace #queuePane > div:nth-child(2) {
+      background: var(--cream) !important;
+      border-bottom: 2px solid var(--ink) !important;
+    }
+    .retro-workspace #queueSearchInput {
+      background: var(--white) !important;
+      color: var(--ink) !important;
+      border: 2px solid var(--ink) !important;
+      border-radius: 0 !important;
+      box-shadow: 2px 2px 0 var(--ink) !important;
+      font-family: "Courier Prime", monospace !important;
+    }
+    .retro-workspace #queueSearchInput::placeholder {
+      color: rgba(23, 18, 15, 0.5) !important;
+    }
+
+    /* City Filter Buttons */
+    .retro-workspace .city-tab {
+      background: var(--white) !important;
+      color: var(--ink) !important;
+      border: 2px solid var(--ink) !important;
+      border-radius: 0 !important;
+      box-shadow: 2px 2px 0 var(--ink) !important;
+      font-family: "Press Start 2P", monospace !important;
+      font-size: 9px !important;
+    }
+    .retro-workspace .city-tab.active {
+      background: var(--accent) !important;
+      box-shadow: 1px 1px 0 var(--ink) !important;
+      transform: translate(1px, 1px);
+    }
+
+    /* Queue Items Rendered by app.js */
+    .retro-workspace #queueList > div {
+      background: var(--white) !important;
+      border: 2px solid var(--ink) !important;
+      box-shadow: 2px 2px 0 var(--ink) !important;
+      margin: 5px 8px !important;
+      border-radius: 0 !important;
+      color: var(--ink) !important;
+      transition: all 0.1s ease;
+    }
+    .retro-workspace #queueList > div:hover {
+      background: var(--cream) !important;
+      transform: translate(-1px, -1px);
+      box-shadow: 3px 3px 0 var(--ink) !important;
+    }
+    .retro-workspace #queueList > div[class*="border-white"],
+    .retro-workspace #queueList > div[class*="bg-white/[0.08]"] {
+      background: var(--accent) !important;
+      border: 2px solid var(--ink) !important;
+      box-shadow: 4px 4px 0 var(--ink) !important;
+      transform: translate(-2px, -2px);
+    }
+    .retro-workspace #queueList > div span {
+      color: var(--ink) !important;
+    }
+    .retro-workspace #queueList > div .font-bold {
+      font-family: "Press Start 2P", monospace !important;
+      font-size: 10px !important;
+      line-height: 1.4 !important;
+    }
+
+    /* Teleprompter Script Area */
+    .retro-workspace #scriptContentBox {
+      background: var(--white) !important;
+      border: 2px dashed var(--ink) !important;
+      border-radius: 0 !important;
+      color: var(--ink) !important;
+      font-family: "Courier Prime", monospace !important;
+    }
+    .retro-workspace #livePhoneChallengeCard {
+      background: var(--cream) !important;
+      border: 2px solid var(--ink) !important;
+      box-shadow: 3px 3px 0 var(--ink) !important;
+      border-radius: 0 !important;
+      color: var(--ink) !important;
+    }
+
+    /* Soundboard Objection Buttons */
+    .retro-workspace .obj-btn {
+      background: var(--white) !important;
+      border: 2px solid var(--ink) !important;
+      box-shadow: 2px 2px 0 var(--ink) !important;
+      border-radius: 0 !important;
+      color: var(--ink) !important;
+      font-family: "Courier Prime", monospace !important;
+      font-weight: bold !important;
+      transition: all 0.1s ease;
+    }
+    .retro-workspace .obj-btn:hover {
+      background: var(--cream) !important;
+    }
+    .retro-workspace .obj-btn.active,
+    .retro-workspace .obj-btn:active {
+      background: var(--accent) !important;
+      box-shadow: 1px 1px 0 var(--ink) !important;
+      transform: translate(1px, 1px);
+    }
+
+    /* Rebuttal Box */
+    .retro-workspace #objectionBox {
+      background: var(--cream) !important;
+      border: 2px solid var(--ink) !important;
+      box-shadow: 3px 3px 0 var(--ink) !important;
+      border-radius: 0 !important;
+      color: var(--ink) !important;
+    }
+
+    /* Action Buttons (Call, WhatsApp, Stepper) */
+    .retro-workspace #callActionBtn,
+    .retro-workspace #mobileCallBtn {
+      background: #2e7d32 !important;
+      border: 2px solid var(--ink) !important;
+      box-shadow: 3px 3px 0 var(--ink) !important;
+      border-radius: 0 !important;
+      color: #fff !important;
+      font-family: "Press Start 2P", monospace !important;
+      font-size: 11px !important;
+    }
+    .retro-workspace #whatsappActionBtn,
+    .retro-workspace #mobileWaBtn {
+      background: var(--white) !important;
+      border: 2px solid var(--ink) !important;
+      box-shadow: 3px 3px 0 var(--ink) !important;
+      border-radius: 0 !important;
+      color: var(--ink) !important;
+      font-family: "Press Start 2P", monospace !important;
+      font-size: 11px !important;
+    }
+    .retro-workspace #whatsappActionBtn:hover,
+    .retro-workspace #mobileWaBtn:hover {
+      background: var(--accent) !important;
+    }
+    .retro-workspace #btnPrevLeadHero,
+    .retro-workspace #btnNextLeadHero,
+    .retro-workspace #btnPrevLeadHandoff,
+    .retro-workspace #btnNextLeadHandoff,
+    .retro-workspace #mobilePrevBtn,
+    .retro-workspace #mobileNextBtn {
+      background: var(--white) !important;
+      border: 2px solid var(--ink) !important;
+      box-shadow: 2px 2px 0 var(--ink) !important;
+      border-radius: 0 !important;
+      color: var(--ink) !important;
+      font-family: "Press Start 2P", monospace !important;
+      font-size: 10px !important;
+    }
+
+    /* Timing Badges */
     .badge-optimal {
-      background: rgba(16, 185, 129, 0.1) !important;
-      color: #34D399 !important;
-      border: 1px solid rgba(16, 185, 129, 0.2) !important;
+      background: #d4edda !important;
+      color: #155724 !important;
+      border: 2px solid var(--ink) !important;
+      box-shadow: 1px 1px 0 var(--ink) !important;
+      font-family: "Press Start 2P", monospace !important;
+      font-size: 9px !important;
     }
     .badge-rush {
-      background: rgba(244, 63, 94, 0.1) !important;
-      color: #FB7185 !important;
-      border: 1px solid rgba(244, 63, 94, 0.2) !important;
+      background: #f8d7da !important;
+      color: #721c24 !important;
+      border: 2px solid var(--ink) !important;
+      box-shadow: 1px 1px 0 var(--ink) !important;
+      font-family: "Press Start 2P", monospace !important;
+      font-size: 9px !important;
     }
     .badge-moderate {
-      background: rgba(245, 158, 11, 0.1) !important;
-      color: #FBBF24 !important;
-      border: 1px solid rgba(245, 158, 11, 0.2) !important;
+      background: #fff3cd !important;
+      color: #856404 !important;
+      border: 2px solid var(--ink) !important;
+      box-shadow: 1px 1px 0 var(--ink) !important;
+      font-family: "Press Start 2P", monospace !important;
+      font-size: 9px !important;
     }
 
-    /* Studio Subtle Glass Panel */
-    .studio-panel {
-      background: #14151A;
-      border: 1px solid rgba(255, 255, 255, 0.06);
+    /* General Typography & Headers */
+    .retro-workspace h1,
+    .retro-workspace h2,
+    .retro-workspace h3,
+    .retro-workspace .font-arcade {
+      font-family: "Press Start 2P", monospace !important;
+      color: var(--ink) !important;
     }
-    .studio-panel-elevated {
-      background: #1A1B22;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    .retro-workspace p,
+    .retro-workspace span,
+    .retro-workspace strong,
+    .retro-workspace a,
+    .retro-workspace label {
+      color: var(--ink);
+    }
+    .retro-workspace input,
+    .retro-workspace textarea,
+    .retro-workspace select {
+      background: var(--white) !important;
+      color: var(--ink) !important;
+      border: 2px solid var(--ink) !important;
+      border-radius: 0 !important;
+      box-shadow: 2px 2px 0 var(--ink) !important;
+      font-family: "Courier Prime", monospace !important;
+    }
+
+    /* Dossier Cards */
+    .retro-workspace #dossierPane .bg-\[\#15161B\] {
+      background: var(--white) !important;
+      border: 2px solid var(--ink) !important;
+      box-shadow: 2px 2px 0 var(--ink) !important;
+      border-radius: 0 !important;
+      color: var(--ink) !important;
+    }
+
+    /* Modals & Overlays */
+    .retro-workspace .backdrop-blur-sm,
+    .retro-workspace .backdrop-blur-md {
+      background: rgba(23, 18, 15, 0.82) !important;
+    }
+    .retro-workspace #adminModal .studio-panel-elevated,
+    .retro-workspace #shortcutsModal .studio-panel-elevated,
+    .retro-workspace #clientTeardownModal .studio-panel-elevated,
+    .retro-workspace #proposalModal .studio-panel-elevated,
+    .retro-workspace #laymanAnalogyModal .studio-panel-elevated,
+    .retro-workspace #authGateOverlay .studio-panel-elevated {
+      background: var(--white) !important;
+      border: 3px solid var(--ink) !important;
+      box-shadow: 8px 8px 0 var(--ink) !important;
+      border-radius: 0 !important;
+      color: var(--ink) !important;
+    }
+    .retro-workspace #adminModal button,
+    .retro-workspace #proposalModal button,
+    .retro-workspace #clientTeardownModal button,
+    .retro-workspace #shortcutsModal button {
+      border: 2px solid var(--ink) !important;
+      box-shadow: 2px 2px 0 var(--ink) !important;
+      border-radius: 0 !important;
+      font-family: "Press Start 2P", monospace !important;
+      font-size: 10px !important;
+    }
+
+    /* Universal Color Overrides for Retro Paper & Ink */
+    .retro-workspace .text-white,
+    .retro-workspace .text-neutral-100,
+    .retro-workspace .text-neutral-200,
+    .retro-workspace .text-neutral-300,
+    .retro-workspace .text-neutral-400,
+    .retro-workspace .text-slate-200 {
+      color: var(--ink) !important;
+    }
+    .retro-workspace .text-neutral-500,
+    .retro-workspace .text-neutral-600,
+    .retro-workspace .text-neutral-700 {
+      color: rgba(23, 18, 15, 0.6) !important;
+    }
+    .retro-workspace .border-white\/\[0\.08\],
+    .retro-workspace .border-white\/\[0\.06\],
+    .retro-workspace .border-white\/10,
+    .retro-workspace .border-white\/5,
+    .retro-workspace .border-white\/15,
+    .retro-workspace .border-white\/20 {
+      border-color: var(--ink) !important;
+    }
+    .retro-workspace .bg-\[\#0A0B0D\],
+    .retro-workspace .bg-\[\#101114\],
+    .retro-workspace .bg-\[\#121318\],
+    .retro-workspace .bg-\[\#0E0F14\],
+    .retro-workspace .bg-\[\#0E0F13\],
+    .retro-workspace .bg-\[\#14151A\],
+    .retro-workspace .bg-\[\#15161B\],
+    .retro-workspace .bg-\[\#17181F\],
+    .retro-workspace .bg-\[\#1A1B22\],
+    .retro-workspace .bg-\[\#151410\] {
+      background-color: var(--white) !important;
+    }
+    .retro-workspace .bg-black\/40,
+    .retro-workspace .bg-black\/50,
+    .retro-workspace .bg-black\/80 {
+      background-color: var(--cream) !important;
+      border-color: var(--ink) !important;
+    }
+    .retro-workspace .bg-white\/\[0\.04\],
+    .retro-workspace .bg-white\/\[0\.05\],
+    .retro-workspace .bg-white\/\[0\.06\],
+    .retro-workspace .bg-white\/10 {
+      background-color: var(--cream) !important;
+    }
+
+    /* Exceptions for High-Contrast Colored Buttons */
+    .retro-workspace #callActionBtn,
+    .retro-workspace #callActionBtn *,
+    .retro-workspace #mobileCallBtn,
+    .retro-workspace #mobileCallBtn * {
+      color: #fff !important;
+    }
+    .retro-workspace #lockedBadge {
+      background: var(--danger) !important;
+      color: #fff !important;
+      border-bottom: 2px solid var(--ink) !important;
+      border-left: 2px solid var(--ink) !important;
+    }
+
+    /* Admin Table Styling */
+    .retro-workspace table thead {
+      background: var(--cream) !important;
+      border-bottom: 2px solid var(--ink) !important;
+    }
+    .retro-workspace table th,
+    .retro-workspace table td {
+      color: var(--ink) !important;
+      border-bottom: 1px solid rgba(23, 18, 15, 0.15) !important;
+    }
+    .retro-workspace kbd {
+      background: var(--cream) !important;
+      border: 1px solid var(--ink) !important;
+      color: var(--ink) !important;
+      box-shadow: 1px 1px 0 var(--ink) !important;
+    }
+
+    /* Mobile Bars */
+    .retro-workspace .md\:hidden.fixed.bottom-0 {
+      background: var(--paper) !important;
+      border-top: 3px solid var(--ink) !important;
+      box-shadow: 0 -4px 0 var(--ink) !important;
     }
   </style>
 </head>
-<body class="bg-[#0A0B0D] text-neutral-200 h-full flex flex-col font-sans antialiased select-none overflow-x-hidden overflow-y-hidden">
+<body class="retro-workspace h-full flex flex-col font-sans antialiased select-none overflow-x-hidden overflow-y-hidden">
 
-  <!-- TOP APP BAR (50px Sleek Studio Navigation) -->
-  <header class="h-[50px] bg-[#101114] border-b border-white/[0.06] px-2.5 sm:px-5 flex items-center justify-between shrink-0 z-30 overflow-hidden">
+  <!-- TOP APP BAR (54px Retro Brutalist Navigation) -->
+  <header class="h-[54px] bg-[#fff4c9] border-b-[3px] border-[#17120f] px-2.5 sm:px-5 flex items-center justify-between shrink-0 z-30 overflow-hidden shadow-[0_4px_0_#17120f]">
     <!-- Left: Brand & Real-Time Sync Indicator -->
     <div class="flex items-center gap-3">
-      <div class="flex items-center gap-2.5">
-        <div class="w-6 h-6 rounded-md bg-white/[0.08] border border-white/15 flex items-center justify-center text-white">
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <a href="/" class="flex items-center gap-2.5 hover:opacity-90 transition">
+        <div class="w-7 h-7 bg-[#fce566] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] flex items-center justify-center text-[#17120f]">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
           </svg>
         </div>
         <div class="flex items-center gap-2">
-          <span class="font-extrabold text-xs tracking-wider text-white font-mono uppercase">SprintDial</span>
-          <span class="text-[10px] font-mono text-neutral-400 bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 rounded tracking-wide hidden sm:inline">On Apoorv's Behalf</span>
+          <span class="font-arcade text-xs tracking-wider text-[#17120f] uppercase">SprintDial</span>
+          <span class="text-[9px] font-arcade text-[#17120f] bg-[#fff1bd] border-2 border-[#17120f] px-1.5 py-0.5 shadow-[1px_1px_0_#17120f] tracking-wide hidden sm:inline">On Apoorv's Behalf</span>
         </div>
-      </div>
+      </a>
 
       <!-- Realtime Workstation Sync Indicator -->
-      <div class="hidden md:flex items-center gap-2 pl-3 border-l border-white/[0.08] text-[11px] font-mono">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span class="text-neutral-400">Caller:</span>
-        <span id="userName" class="text-neutral-200 font-semibold">Apoorv</span>
+      <div class="hidden md:flex items-center gap-2 pl-3 border-l-2 border-[#17120f] text-[11px] font-mono">
+        <span class="w-2 h-2 rounded-full bg-emerald-600 border border-[#17120f] animate-pulse"></span>
+        <span class="text-[#17120f]/70">Caller:</span>
+        <span id="userName" class="text-[#17120f] font-bold">Apoorv</span>
       </div>
     </div>
 
     <!-- Center: Universal 3-Option Navigation & Momentum -->
     <div class="flex items-center gap-2 sm:gap-4">
       <!-- Universal Nav (Home / Contact Him / Workspace) -->
-      <nav class="flex items-center gap-1 font-mono text-[11px] bg-black/40 border border-white/[0.08] p-0.5 rounded-lg" aria-label="Primary navigation">
-        <a href="/" class="px-2 sm:px-2.5 py-1 rounded text-neutral-400 hover:text-white hover:bg-white/[0.06] transition">Home</a>
-        <a href="/sales" class="px-2 sm:px-2.5 py-1 rounded text-neutral-400 hover:text-white hover:bg-white/[0.06] transition">Contact Him</a>
-        <a href="/workspace/" class="px-2 sm:px-2.5 py-1 rounded font-bold bg-white text-black shadow-sm" aria-current="page">Workspace</a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="/">Home</a>
+        <a href="/sales">Contact Him</a>
+        <a href="/workspace/" aria-current="page">Workspace</a>
       </nav>
 
       <!-- Minimalist Daily Dials Progress -->
-      <div class="hidden xl:flex items-center gap-2.5 bg-black/40 border border-white/[0.06] px-3 py-1 rounded-full">
-        <span class="text-[11px] font-mono text-neutral-400">Momentum:</span>
-        <div class="w-16 sm:w-24 bg-white/10 h-1.5 rounded-full overflow-hidden">
-          <div id="dialProgressBar" class="bg-white h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+      <div class="hidden xl:flex items-center gap-2.5 bg-[#fff1bd] border-2 border-[#17120f] px-3 py-1 shadow-[2px_2px_0_#17120f]">
+        <span class="text-[10px] font-arcade text-[#17120f]">Momentum:</span>
+        <div class="w-16 sm:w-24 bg-[#fffdf1] border border-[#17120f] h-2 overflow-hidden">
+          <div id="dialProgressBar" class="bg-[#6d3bb8] h-full transition-all duration-300" style="width: 0%"></div>
         </div>
-        <span id="dialCountText" class="font-mono text-xs font-bold text-white">0 / 20</span>
+        <span id="dialCountText" class="font-mono text-xs font-bold text-[#17120f]">0 / 20</span>
       </div>
     </div>
 
     <!-- Right: Utility Controls & Admin -->
     <div class="flex items-center gap-1.5 sm:gap-2">
       <!-- Shortcuts Hint -->
-      <button onclick="toggleShortcutsModal()" title="Keyboard Shortcuts" class="px-2 py-1 rounded-md text-[11px] font-mono bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] transition hidden sm:inline-flex items-center gap-1">
+      <button onclick="toggleShortcutsModal()" title="Keyboard Shortcuts" class="px-2 py-1 text-[10px] font-arcade bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] transition hidden sm:inline-flex items-center gap-1">
         <span>Keys</span>
       </button>
 
       <!-- Audio SFX Toggle -->
-      <button id="sfxToggleBtn" onclick="toggleAudioSFX()" title="Toggle Sound Effects" class="p-1.5 rounded-md bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] transition">
+      <button id="sfxToggleBtn" onclick="toggleAudioSFX()" title="Toggle Sound Effects" class="p-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] transition">
         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
           <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
@@ -153,16 +545,16 @@
       </button>
 
       <!-- Owner Admin Trigger -->
-      <button id="adminBtnHeader" onclick="openAdminModal()" class="px-2.5 py-1 rounded-md text-xs font-mono font-medium bg-white/[0.05] hover:bg-white/[0.09] text-neutral-200 border border-white/[0.08] transition flex items-center gap-1.5 shadow-sm">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+      <button id="adminBtnHeader" onclick="openAdminModal()" class="px-2.5 py-1 text-[10px] font-arcade bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] transition flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 border border-[#17120f]"></span>
         <span class="hidden sm:inline">Admin Console</span><span class="sm:hidden">Admin</span>
       </button>
 
       <!-- User Chip & Logout -->
-      <div class="flex items-center gap-2 pl-2 border-l border-white/[0.08]">
-        <img id="userImg" src="https://ui-avatars.com/api/?name=Apoorv&background=222328&color=FFFFFF" class="w-6 h-6 rounded-full border border-white/20 object-cover" alt="User">
-        <span id="userEmail" class="text-[11px] font-mono text-neutral-400 hidden xl:inline">apoorv@eravex.studio</span>
-        <button onclick="signOutGoogle()" title="Sign Out" class="p-1 rounded text-xs text-neutral-400 hover:text-rose-400 transition">
+      <div class="flex items-center gap-2 pl-2 border-l-2 border-[#17120f]">
+        <img id="userImg" src="https://ui-avatars.com/api/?name=Apoorv&background=fff1bd&color=17120f" class="w-6 h-6 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] object-cover" alt="User">
+        <span id="userEmail" class="text-[11px] font-mono text-[#17120f] hidden xl:inline">apoorv@eravex.studio</span>
+        <button onclick="signOutGoogle()" title="Sign Out" class="p-1 text-xs text-[#17120f] hover:text-[#8f1727] transition">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
             <polyline points="16 17 21 12 16 7"></polyline>
@@ -174,18 +566,18 @@
   </header>
 
   <!-- MULTI-CALLER COLLISION GUARD BANNER (Hidden unless remote lead lock occurs) -->
-  <div id="lockNotificationBar" class="hidden bg-amber-950/80 border-b border-amber-600/40 px-4 py-1 text-xs text-amber-200 font-mono flex items-center justify-between shrink-0">
+  <div id="lockNotificationBar" class="hidden bg-[#f8d7da] border-b-2 border-[#17120f] px-4 py-1.5 text-xs text-[#721c24] font-arcade flex items-center justify-between shrink-0">
     <span id="liveStatusMsg">Connecting concurrency listener...</span>
-    <span class="text-[10px] text-amber-300/80">Real-Time Collision Guard Active</span>
+    <span class="text-[10px] text-[#721c24]">Real-Time Collision Guard Active</span>
   </div>
 
   <!-- MOBILE-RESPONSIVE VIEW SWITCHER TABS (< 768px) -->
-  <div class="md:hidden bg-[#101114] border-b border-white/[0.06] px-3 py-1.5 flex items-center justify-center shrink-0">
-    <div class="flex rounded-lg bg-black/40 p-0.5 text-xs border border-white/[0.06] w-full font-mono">
-      <button id="mobileTabQueue" onclick="showMobilePane('queue')" class="flex-1 py-1.5 rounded-md font-semibold text-neutral-950 bg-white shadow-sm transition text-center">
+  <div class="md:hidden bg-[#fff4c9] border-b-2 border-[#17120f] px-3 py-1.5 flex items-center justify-center shrink-0">
+    <div class="flex bg-[#fffdf1] p-0.5 text-xs border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] w-full font-arcade">
+      <button id="mobileTabQueue" onclick="showMobilePane('queue')" class="flex-1 py-1.5 font-bold text-[#17120f] bg-[#fce566] border border-[#17120f] transition text-center">
         Queue (<span id="mobileQueueCount">60</span>)
       </button>
-      <button id="mobileTabCockpit" onclick="showMobilePane('cockpit')" class="flex-1 py-1.5 rounded-md font-medium text-neutral-400 hover:text-white transition text-center">
+      <button id="mobileTabCockpit" onclick="showMobilePane('cockpit')" class="flex-1 py-1.5 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center">
         Cockpit
       </button>
     </div>
@@ -197,29 +589,29 @@
     <!-- ================================================================= -->
     <!-- COLUMN 1: PROSPECT QUEUE (Sidebar: 300px - 320px)                 -->
     <!-- ================================================================= -->
-    <div id="queuePane" class="w-full md:w-72 lg:w-80 border-r border-white/[0.06] bg-[#101114] flex flex-col shrink-0 overflow-hidden">
+    <div id="queuePane" class="w-full md:w-72 lg:w-80 border-r-2 border-[#17120f] bg-[#fff4c9] flex flex-col shrink-0 overflow-hidden">
       <!-- Territory Filter Segmented Control -->
-      <div class="p-2.5 border-b border-white/[0.06] flex items-center justify-between gap-2 bg-[#121318]">
-        <div class="flex rounded-lg bg-black/40 p-0.5 text-xs border border-white/[0.06] font-mono">
-          <button onclick="filterCity('All')" class="city-tab active px-2.5 py-1 rounded-md font-semibold text-neutral-950 bg-white shadow-sm transition">All</button>
-          <button onclick="filterCity('Kochi')" class="city-tab px-2.5 py-1 rounded-md font-medium text-neutral-400 hover:text-white transition">Kochi</button>
-          <button onclick="filterCity('Bangalore')" class="city-tab px-2.5 py-1 rounded-md font-medium text-neutral-400 hover:text-white transition">BLR</button>
-          <button onclick="filterCity('Hyderabad')" class="city-tab px-2.5 py-1 rounded-md font-medium text-neutral-400 hover:text-white transition">HYD</button>
+      <div class="p-2.5 border-b-2 border-[#17120f] flex items-center justify-between gap-2 bg-[#fff1bd]">
+        <div class="flex bg-[#fffdf1] p-0.5 text-xs border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade">
+          <button onclick="filterCity('All')" class="city-tab active px-2.5 py-1 font-bold text-[#17120f] bg-[#fce566] transition">All</button>
+          <button onclick="filterCity('Kochi')" class="city-tab px-2.5 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition">Kochi</button>
+          <button onclick="filterCity('Bangalore')" class="city-tab px-2.5 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition">BLR</button>
+          <button onclick="filterCity('Hyderabad')" class="city-tab px-2.5 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition">HYD</button>
         </div>
-        <span id="leadCountBadge" class="text-[11px] font-mono text-neutral-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]">60 Leads</span>
+        <span id="leadCountBadge" class="text-[10px] font-arcade text-[#17120f] bg-[#fffdf1] px-2 py-1 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f]">60 Leads</span>
       </div>
 
       <!-- Search Input -->
-      <div class="p-2.5 border-b border-white/[0.06] bg-[#0E0F13]">
+      <div class="p-2.5 border-b-2 border-[#17120f] bg-[#fff4c9]">
         <div class="relative">
           <input 
             type="text" 
             id="queueSearchInput" 
             oninput="handleSearch(this.value)" 
             placeholder="Search doctor, clinic, hub (/ to focus)..." 
-            class="w-full bg-[#15161B] border border-white/[0.08] rounded-lg pl-8 pr-3 py-1.5 text-xs text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-white/30 transition font-sans"
+            class="w-full bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] pl-8 pr-3 py-1.5 text-xs text-[#17120f] placeholder-[#17120f]/50 focus:outline-none focus:bg-[#fce566] transition font-mono"
           />
-          <span class="absolute left-2.5 top-2 text-neutral-500">
+          <span class="absolute left-2.5 top-2 text-[#17120f]">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -229,7 +621,7 @@
       </div>
 
       <!-- Prospect Queue List Container -->
-      <div id="queueList" class="flex-1 overflow-y-auto divide-y divide-white/[0.03] custom-scrollbar"></div>
+      <div id="queueList" class="flex-1 overflow-y-auto divide-y-0 custom-scrollbar"></div>
     </div>
 
     <!-- ================================================================= -->
