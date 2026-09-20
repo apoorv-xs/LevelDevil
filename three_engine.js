@@ -82,19 +82,26 @@
             const PARTICLE_COUNT = 160;
             const pGeo = new THREE.BufferGeometry();
             const pPositions = new Float32Array(PARTICLE_COUNT * 3);
+            const pColors = new Float32Array(PARTICLE_COUNT * 3);
 
             for (let i = 0; i < PARTICLE_COUNT; i++) {
                 pPositions[i * 3] = (Math.random() - 0.5) * 60;
                 pPositions[i * 3 + 1] = (Math.random() - 0.5) * 45;
                 pPositions[i * 3 + 2] = (Math.random() - 0.5) * 20 - 5;
+
+                // Initial soft golden cloud mist (S-01)
+                pColors[i * 3] = 1.0;
+                pColors[i * 3 + 1] = 0.88;
+                pColors[i * 3 + 2] = 0.45;
             }
             pGeo.setAttribute("position", new THREE.BufferAttribute(pPositions, 3));
+            pGeo.setAttribute("color", new THREE.BufferAttribute(pColors, 3));
 
             const pMat = new THREE.PointsMaterial({
-                size: 0.22,
-                color: 0xf59e0b,
+                size: 0.28,
+                vertexColors: true,
                 transparent: true,
-                opacity: 0.55
+                opacity: 0.65
             });
 
             this.atmosphereParticles = new THREE.Points(pGeo, pMat);
@@ -116,22 +123,39 @@
             const render = () => {
                 requestAnimationFrame(render);
                 if (this.renderer && this.scene && this.camera) {
-                    // Animate ambient particles according to active sector
+                    // Animate ambient particles according to active stratum
                     if (this.atmosphereParticles) {
                         const posAttr = this.atmosphereParticles.geometry.attributes.position;
                         const arr = posAttr.array;
+                        const now = Date.now() * 0.001;
                         for (let i = 0; i < 160; i++) {
                             const idx = i * 3;
-                            if (this.currentSectorClass === "sector-2" || this.currentSectorClass === "sector-4") {
-                                // Sparks / reactor heat rise upwards
-                                arr[idx + 1] += 0.04;
+                            if (this.currentSectorClass === "sector-2") {
+                                // S-02: Cloudbreak vapor particles drifting upward
+                                arr[idx + 1] += 0.035;
+                                arr[idx] += Math.sin(now + i) * 0.01;
                                 if (arr[idx + 1] > 22) arr[idx + 1] = -22;
+                            } else if (this.currentSectorClass === "sector-3") {
+                                // S-03: Industrial copper/amber sparks rising fast
+                                arr[idx + 1] += 0.065;
+                                arr[idx] += (Math.random() - 0.5) * 0.04;
+                                if (arr[idx + 1] > 22) arr[idx + 1] = -22;
+                                if (arr[idx] > 30) arr[idx] = -30;
+                                else if (arr[idx] < -30) arr[idx] = 30;
+                            } else if (this.currentSectorClass === "sector-4") {
+                                // S-04: Rooftop evening dust / city ember motes swirling
+                                arr[idx] += Math.sin(now * 1.5 + i) * 0.02;
+                                arr[idx + 1] += 0.018;
+                                if (arr[idx + 1] > 22) arr[idx + 1] = -22;
+                                if (arr[idx] > 30) arr[idx] = -30;
+                                else if (arr[idx] < -30) arr[idx] = 30;
                             } else if (this.currentSectorClass === "sector-5") {
-                                // Starfield subtle twinkling drift
-                                arr[idx] += Math.sin(Date.now() * 0.001 + i) * 0.003;
+                                // S-05: Runway beacon lights with subtle pulsing shimmer
+                                arr[idx] += Math.sin(now * 2.5 + i) * 0.004;
                             } else {
-                                // Desert dust / cyber data drift sideways
+                                // S-01: Soft golden cloud mist / sunbeam motes drifting gently
                                 arr[idx] += 0.02;
+                                arr[idx + 1] += Math.sin(now + i) * 0.008;
                                 if (arr[idx] > 30) arr[idx] = -30;
                             }
                         }
@@ -148,34 +172,71 @@
             console.log("Three.js 2.5D Engine & PBR Lighting Pipeline Initialized.");
         },
 
-        // Dynamically morph atmospheric particles based on Sector depth
+        // Dynamically morph atmospheric particles based on 5 strata depth
         setSectorDepth(depthY, sectorClass) {
             if (this.currentSectorClass === sectorClass) return;
             this.currentSectorClass = sectorClass;
             if (!this.atmosphereParticles) return;
 
             const mat = this.atmosphereParticles.material;
+            const colAttr = this.atmosphereParticles.geometry.attributes.color;
+            const colors = colAttr.array;
+
             if (sectorClass === "sector-1") {
-                mat.color.setHex(0xf59e0b); // Amber desert dust
-                mat.size = 0.20;
-                mat.opacity = 0.55;
+                // S-01 (10,000m): Soft golden cloud mist / sunbeam motes (#fff4c9 / #fde047)
+                mat.size = 0.28;
+                mat.opacity = 0.60;
+                for (let i = 0; i < 160; i++) {
+                    colors[i * 3] = 1.0;
+                    colors[i * 3 + 1] = 0.88 + Math.random() * 0.08;
+                    colors[i * 3 + 2] = 0.45 + Math.random() * 0.35;
+                }
             } else if (sectorClass === "sector-2") {
-                mat.color.setHex(0xf97316); // Copper/orange foundry sparks
-                mat.size = 0.24;
-                mat.opacity = 0.65;
+                // S-02 (7,500m): Cloudbreak vapor particles drifting upward (#f59e0b / #d97706)
+                mat.size = 0.34;
+                mat.opacity = 0.50;
+                for (let i = 0; i < 160; i++) {
+                    colors[i * 3] = 0.96;
+                    colors[i * 3 + 1] = 0.62 + Math.random() * 0.15;
+                    colors[i * 3 + 2] = 0.04 + Math.random() * 0.08;
+                }
             } else if (sectorClass === "sector-3") {
-                mat.color.setHex(0x00e5ff); // Cyan cyber data packets
+                // S-03 (4,500m): Industrial copper/amber sparks (#b45309 / #d97706)
                 mat.size = 0.22;
                 mat.opacity = 0.75;
+                for (let i = 0; i < 160; i++) {
+                    colors[i * 3] = 0.85 + Math.random() * 0.15;
+                    colors[i * 3 + 1] = 0.35 + Math.random() * 0.25;
+                    colors[i * 3 + 2] = 0.04;
+                }
             } else if (sectorClass === "sector-4") {
-                mat.color.setHex(0xef4444); // Red-orange reactor embers
-                mat.size = 0.26;
-                mat.opacity = 0.80;
+                // S-04 (2,000m): Rooftop evening dust / city ember motes (#92400e / #f59e0b)
+                mat.size = 0.25;
+                mat.opacity = 0.65;
+                for (let i = 0; i < 160; i++) {
+                    colors[i * 3] = 0.65 + Math.random() * 0.30;
+                    colors[i * 3 + 1] = 0.25 + Math.random() * 0.25;
+                    colors[i * 3 + 2] = 0.05;
+                }
             } else if (sectorClass === "sector-5") {
-                mat.color.setHex(0xffffff); // Starfield white stars
-                mat.size = 0.28;
-                mat.opacity = 0.90;
+                // S-05 (0m): Runway beacon lights (amber #fce566 & cyan #00e5ff)
+                mat.size = 0.36;
+                mat.opacity = 0.85;
+                for (let i = 0; i < 160; i++) {
+                    if (i % 2 === 0) {
+                        // Brilliant yellow runway strip lights (#fce566)
+                        colors[i * 3] = 0.99;
+                        colors[i * 3 + 1] = 0.90;
+                        colors[i * 3 + 2] = 0.40;
+                    } else {
+                        // Cyan threshold beacon lights (#00e5ff)
+                        colors[i * 3] = 0.0;
+                        colors[i * 3 + 1] = 0.90;
+                        colors[i * 3 + 2] = 1.0;
+                    }
+                }
             }
+            colAttr.needsUpdate = true;
         },
 
         // Scale factor calibrated to camera distance Z = 80 and fov = 16.04 deg (0.28 rad)

@@ -22,28 +22,25 @@
     <link rel="stylesheet" href="shell.css">
     <link rel="stylesheet" href="sales.css">
     <style>
-        /* --- THE DROID'S DESCENT: 5-ZONE CONTINUOUS STORY BACKGROUND --- */
+        /* --- STRATOSPHERIC PLUNGE: 5-STRATA CONTINUOUS DESCENT --- */
         body {
-            background-color: #07040d !important;
+            background-color: #17120f !important;
             background-image:
                 /* Retro arcade scanline texture */
                 repeating-linear-gradient(0deg, rgba(23, 18, 15, .04) 0 2px, transparent 2px 6px),
-                /* Continuous 5-Zone Story Gradient Mapped to Document Percentage */
+                /* Continuous 5-Strata Story Gradient Mapped to Document Percentage */
                 linear-gradient(to bottom,
-                    #e6a83b 0%,                          /* Sector 1: Jakku Desert Sands (Hero) */
-                    #f5c253 14%,
-                    #6b4e36 20%,                        /* Transition to Industrial Foundry */
-                    #3a322c 25%,                        /* Sector 2: The Forge & Catwalks (Selected Work) */
-                    #483e37 52%,
-                    #342838 58%,                        /* Transition to Cybernetic Core */
-                    #481b6d 62%,                        /* Sector 3: Cybernetic Neural Core (Capabilities) */
-                    #5c228c 70%,
-                    #2e1f2b 73%,                        /* Transition to Reactor Pit */
-                    #221c19 76%,                        /* Sector 4: Reactor Hazard Pit (Notes & Traps) */
-                    #181311 83%,
-                    #120c1c 86%,                        /* Transition to Deep Space */
-                    #0c0816 90%,                        /* Sector 5: Deep Space Transmission Beacon (Contact) */
-                    #05030a 100%
+                    #fff4c9 0%,                          /* Stratum 1 (0%-18%): The Golden Cirrus (10,000m) - Butter cream */
+                    #fde047 10%,                         /* Warm sun gold */
+                    #f59e0b 18%,                         /* Stratum 2 (18%-38%): Cloudbreak & Peaks (7,500m) - Amber */
+                    #d97706 28%,                         /* Bronze haze */
+                    #b45309 38%,                         /* Stratum 3 (38%-65%): Industrial Sky-Girders (4,500m) - Ochre */
+                    #92400e 52%,                         /* Terracotta / copper */
+                    #78350f 65%,                         /* Stratum 4 (65%-82%): City Spires & Rooftops (2,000m) - Umber */
+                    #451a03 74%,                         /* Deep charcoal brown */
+                    #291003 82%,                         /* Stratum 5 (82%-100%): Terra Firma Landing Terminal (0m) */
+                    #1c1917 92%,                         /* Solid bedrock slate */
+                    #17120f 100%                         /* Solid bedrock slate-ink with runway lighting */
                 ) !important;
             background-repeat: repeat, no-repeat !important;
             background-size: auto, 100% 100% !important;
@@ -52,12 +49,12 @@
 
         .topbar-sector-badge {
             font-family: 'Press Start 2P', monospace;
-            font-size: 8px;
+            font-size: 7.5px;
             background: var(--shell-white);
             color: var(--shell-ink);
             border: 2px solid var(--shell-line);
             box-shadow: 2px 2px 0 var(--shell-line);
-            padding: 6px 10px;
+            padding: 4px 7px;
             display: inline-flex;
             align-items: center;
             letter-spacing: 0.05em;
@@ -469,8 +466,8 @@
 
         <!-- Right: Telemetry & Inquire CTA -->
         <div class="topbar-actions">
-            <div id="topbar-sector" class="topbar-sector-badge hide-mobile" title="Active Droid Sector">
-                S-01: JAKKU DUNES
+            <div id="topbar-sector" class="topbar-sector-badge hide-mobile" title="Aviation Altimeter & Descent Stratum">
+                ALT: 10,000m • CIRRUS
             </div>
             <div id="topbar-cores" class="topbar-sector-badge" title="Collected Kyber Data Cores">
                 💎 0/5 CORES

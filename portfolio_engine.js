@@ -215,13 +215,13 @@ onLoad(() => {
         return uniqueRails;
     }
 
-    // --- 5 SECTOR KYBER DATA CORES (COLLECTIBLE REWARD SYSTEM) ---
+    // --- 5 STRATA KYBER DATA CORES (COLLECTIBLE REWARD SYSTEM) ---
     const DATA_CORES = [
-        { id: "core-1", name: "Jakku Scavenger Core", relX: 980, y: 190, sector: "S-01", collected: false, obj: null },
-        { id: "core-2", name: "Foundry Power Module", relX: 560, y: 1360, sector: "S-02", collected: false, obj: null },
-        { id: "core-3", name: "Quantum Encryption Key", relX: 560, y: 2120, sector: "S-03", collected: false, obj: null },
-        { id: "core-4", name: "Hyper-Matter Fuel Cell", relX: 460, y: 2520, sector: "S-04", collected: false, obj: null },
-        { id: "core-5", name: "Stellar Uplink Transceiver", relX: 900, y: 2980, sector: "S-05", collected: false, obj: null }
+        { id: "core-1", name: "Cirrus Telemetry Core", relX: 980, y: 190, sector: "S-01", collected: false, obj: null },
+        { id: "core-2", name: "Cloudbreak Barometric Core", relX: 560, y: 1360, sector: "S-02", collected: false, obj: null },
+        { id: "core-3", name: "Sky-Girder Structural Core", relX: 560, y: 2120, sector: "S-03", collected: false, obj: null },
+        { id: "core-4", name: "Rooftop Signal Core", relX: 460, y: 2520, sector: "S-04", collected: false, obj: null },
+        { id: "core-5", name: "Terra Firma Touchdown Core", relX: 900, y: 2980, sector: "S-05", collected: false, obj: null }
     ];
 
     let collectedCoresCount = 0;
@@ -520,6 +520,50 @@ onLoad(() => {
         }, 200);
     }
 
+    // --- TOUCHDOWN CELEBRATORY SEQUENCE ---
+    let touchdownCelebrated = false;
+    function triggerTouchdownCelebration() {
+        if (touchdownCelebrated) return;
+        touchdownCelebrated = true;
+        console.log("TOUCHDOWN CONFIRMED: 0m REACHED AT TERRA FIRMA RUNWAY!");
+
+        // 8-bit celebratory chime
+        if (window.SFX && window.SFX.playVictory) {
+            window.SFX.playVictory();
+        }
+
+        // Illuminate runway strip lights on Contact Card
+        const contactCard = document.querySelector('.contact-card');
+        if (contactCard) {
+            contactCard.style.transition = "box-shadow 0.4s ease, border-color 0.4s ease";
+            contactCard.style.boxShadow = "0 0 35px #fce566, 10px 10px 0 var(--purple-dark)";
+            contactCard.style.borderColor = "#fce566";
+            setTimeout(() => {
+                if (contactCard) {
+                    contactCard.style.boxShadow = "10px 10px 0 var(--purple-dark)";
+                    contactCard.style.borderColor = "var(--ink)";
+                }
+            }, 2000);
+        }
+
+        // Flashing runway strobe on topbar badge
+        const sectorPill = document.getElementById("topbar-sector");
+        if (sectorPill) {
+            sectorPill.style.background = "#fce566";
+            sectorPill.style.color = "#17120f";
+            sectorPill.style.borderColor = "#17120f";
+            sectorPill.style.boxShadow = "0 0 14px #fce566, 2px 2px 0 var(--shell-line)";
+            setTimeout(() => {
+                if (sectorPill) {
+                    sectorPill.style.background = "";
+                    sectorPill.style.color = "";
+                    sectorPill.style.borderColor = "";
+                    sectorPill.style.boxShadow = "";
+                }
+            }, 1500);
+        }
+    }
+
     onUpdate(() => {
         const dtTotal = dt();
         const currentScrollY = window.scrollY || window.pageYOffset || 0;
@@ -653,31 +697,48 @@ onLoad(() => {
             respawnPlayer();
         }
 
-        // --- REAL-TIME SECTOR NARRATIVE CALCULATION ---
-        const effectiveDepth = Math.max(currentScrollY + window.innerHeight * 0.35, player.pos.y);
-        let sectorName = "S-01: JAKKU DUNES";
+        // --- REAL-TIME AVIATION ALTIMETER & 5-STRATA CALCULATION ---
+        const docMax = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        const playerDescent = (player && player.pos) ? Math.max(0, player.pos.y - currentScrollY - 312) : 0;
+        const effectiveDepth = Math.min(docMax, Math.max(0, currentScrollY + playerDescent));
+        const altitudeMeters = Math.max(0, Math.round(10000 - (effectiveDepth / docMax) * 10000));
+
+        let hudText = "";
         let sectorClass = "sector-1";
 
-        if (effectiveDepth >= 2850) {
-            sectorName = "S-05: TRANSMISSION BEACON";
-            sectorClass = "sector-5";
-        } else if (effectiveDepth >= 2400) {
-            sectorName = "S-04: REACTOR PIT";
-            sectorClass = "sector-4";
-        } else if (effectiveDepth >= 1950) {
-            sectorName = "S-03: CYBER CORE";
-            sectorClass = "sector-3";
-        } else if (effectiveDepth >= 650) {
-            sectorName = "S-02: THE FORGE";
+        if (altitudeMeters >= 7500) {
+            hudText = `ALT: ${altitudeMeters.toLocaleString()}m • CIRRUS`;
+            sectorClass = "sector-1";
+        } else if (altitudeMeters >= 4500) {
+            hudText = `ALT: ${altitudeMeters.toLocaleString()}m • CLOUDBREAK`;
             sectorClass = "sector-2";
+        } else if (altitudeMeters >= 2000) {
+            hudText = `ALT: ${altitudeMeters.toLocaleString()}m • GIRDERS`;
+            sectorClass = "sector-3";
+        } else if (altitudeMeters >= 350) {
+            hudText = `ALT: ${altitudeMeters.toLocaleString()}m • ROOFTOPS`;
+            sectorClass = "sector-4";
+        } else {
+            hudText = "ALT: 0m • TOUCHDOWN";
+            sectorClass = "sector-5";
+            triggerTouchdownCelebration();
         }
 
-        window.currentSector = sectorName;
+        if (altitudeMeters >= 1000) {
+            touchdownCelebrated = false;
+        }
+
+        const prevSectorClass = window.currentSectorClass;
+        window.currentSector = hudText;
         window.currentSectorClass = sectorClass;
+        window.currentAltitude = altitudeMeters;
 
         const sectorPill = document.getElementById("topbar-sector");
-        if (sectorPill && sectorPill.textContent !== sectorName) {
-            sectorPill.textContent = sectorName;
+        if (sectorPill && sectorPill.textContent !== hudText) {
+            sectorPill.textContent = hudText;
+        }
+
+        if (prevSectorClass && prevSectorClass !== sectorClass) {
             if (window.SFX && window.SFX.playSectorChange) {
                 window.SFX.playSectorChange();
             }
