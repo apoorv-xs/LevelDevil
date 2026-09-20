@@ -405,6 +405,36 @@
             .notes-grid { grid-template-columns: 1fr; }
             .contact-card { grid-template-columns: 1fr; text-align: center; }
         }
+
+        /* --- CANVAS OVERLAYS --- */
+        #babylon-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 50; /* Above DOM background, below game container */
+            pointer-events: none;
+            outline: none;
+            background: transparent;
+        }
+
+        #game-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 100;
+            pointer-events: none; /* Let clicks pass through to DOM */
+        }
+
+        #game-canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            background: transparent;
+        }
     </style>
 </head>
 
@@ -676,6 +706,6 @@
     </div>
 
     <script src="babylon.min.js"></script>
-    <script src="shell.js?v=1001"></script>
+    <script src="shell.js?v=1002"></script>
 </body>
 </html>

@@ -12,14 +12,13 @@ const JUMP_FORCE = 550;
 const GRAVITY = 1600;
 setGravity(GRAVITY);
 
-window.controlMode = "ambient"; // Default to ambient so the digital twin lives immediately
+window.controlMode = "idle"; // Idle on spawn so character stays grounded on hero header
 
 let manualTimeout = null;
 
 // Wait for next frame so player.js is definitely loaded
 onLoad(() => {
     // --- THE PLAYER ---
-    // Uses createPlayer from player.js
     const player = window.createPlayer ? window.createPlayer(window.innerWidth / 2, 0) : createPlayer(window.innerWidth / 2, 0);
     window.player = player;
 
@@ -58,12 +57,12 @@ onLoad(() => {
 
     syncDOM();
 
-    // Position player safely on the first prominent platform
-    const firstPlatform = get("platform")[0];
-    if (firstPlatform) {
-        player.pos.x = firstPlatform.pos.x + Math.min(120, firstPlatform.width / 2);
-        player.pos.y = firstPlatform.pos.y - 30;
-        player.vel.y = 0;
+    // Position player directly standing on top of the hero H1
+    const heroH1 = document.querySelector('h1[data-kaboom-body="true"]') || get("platform")[0]?.domElement;
+    if (heroH1) {
+        const r = heroH1.getBoundingClientRect();
+        player.pos = vec2(r.left + 100, r.top + window.scrollY - 35);
+        if (player.vel) player.vel = vec2(0, 0);
     }
 
     const resizeObserver = new ResizeObserver(() => { syncDOM(); });
@@ -84,7 +83,7 @@ onLoad(() => {
 
     onUpdate(() => {
         // Clamp terminal fall velocity to eliminate tunneling through platforms
-        if (player.vel.y > 650) {
+        if (player.vel && player.vel.y > 650) {
             player.vel.y = 650;
         }
 
@@ -94,12 +93,9 @@ onLoad(() => {
 
         // Apply Scroll Wind Force if scrolling fast
         if (Math.abs(scrollDelta) > 15 && !isRespawning && player.isGrounded()) {
-            // Push the player physically
             player.move(0, scrollDelta * 20);
-            if (window.Player3D) {
-                // Lean character (simulate wind)
+            if (window.Player3D && window.Player3D.root) {
                 window.Player3D.root.rotation.z = scrollDelta * 0.05;
-                // Reset rotation tween
                 tween(window.Player3D.root.rotation.z, 0, 0.5, (v) => window.Player3D.root.rotation.z = v, easings.easeOutQuad);
             }
         }
@@ -109,33 +105,43 @@ onLoad(() => {
         const viewTop = currentScrollY;
         const viewBottom = currentScrollY + window.innerHeight;
         
-        // Out of bounds / Glass Smash Sequence
-        if ((player.pos.y > viewBottom + 250 || player.pos.y < viewTop - 400) && !isRespawning) {
+        // Out of bounds Recovery
+        if ((player.pos.y > viewBottom + 300 || player.pos.y < viewTop - 300) && !isRespawning) {
             isRespawning = true;
-            player.vel.y = 0;
-            player.vel.x = 0;
-            
-            // Find visible platforms in current viewport
-            const visiblePlats = get("platform").filter(p => p.pos.y >= viewTop - 30 && p.pos.y <= viewBottom);
-            let respawnX = window.innerWidth / 2;
-            let respawnY = viewTop + 100;
-            if (visiblePlats.length > 0) {
-                visiblePlats.sort((a, b) => a.pos.y - b.pos.y);
-                const targetPlat = visiblePlats[0];
-                respawnX = targetPlat.pos.x + Math.min(100, targetPlat.width / 2);
-                respawnY = targetPlat.pos.y - 30;
+            if (player.vel) {
+                player.vel.x = 0;
+                player.vel.y = 0;
             }
 
-            if (window.Player3D && window.Player3D.smashIntoCamera) {
-                window.Player3D.smashIntoCamera();
+            // Find platform closest to current viewport center
+            const viewCenterY = currentScrollY + window.innerHeight / 2;
+            const plats = get("platform");
+            let targetPlat = null;
+            let minDist = Infinity;
+            for (const p of plats) {
+                const d = Math.abs(p.pos.y - viewCenterY);
+                if (d < minDist) {
+                    minDist = d;
+                    targetPlat = p;
+                }
+            }
+
+            const respawnX = targetPlat ? (targetPlat.pos.x + Math.min(100, targetPlat.width / 2)) : (window.innerWidth / 2);
+            const respawnY = targetPlat ? (targetPlat.pos.y - 35) : (currentScrollY + 80);
+
+            player.pos = vec2(respawnX, respawnY);
+            if (player.vel) {
+                player.vel.x = 0;
+                player.vel.y = 0;
+            }
+            if (window.Player3D && window.Player3D.root) {
+                window.Player3D.isSmashing = false;
+                window.Player3D.root.position.z = 0;
             }
 
             setTimeout(() => {
-                player.pos = vec2(respawnX, respawnY);
-                player.vel.y = 0;
-                player.vel.x = 0;
                 isRespawning = false;
-            }, 600);
+            }, 200);
         }
 
         // Initialize 3D Player if engine is ready
