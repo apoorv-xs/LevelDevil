@@ -107,9 +107,7 @@ async function submitPublicForm(event, path, successMessage) {
       if (path === "/inquiry") {
         const subject = encodeURIComponent(`Project Inquiry: ${values.scope || "Creative Engineering"} - ${values.name || "Client"}`);
         const body = encodeURIComponent(`Hi Apoorv,\n\nName: ${values.name || ""}\nEmail: ${values.email || ""}\nScope: ${values.scope || ""}\nBudget: ${values.budget || ""}\n\nMessage:\n${values.message || ""}\n`);
-        const mailto = `mailto:${window.SALES_PLATFORM_CONFIG?.directEmail || "apoorv.as2003@gmail.com"}?subject=${subject}&body=${body}`;
-        const whatsappNumber = (window.SALES_PLATFORM_CONFIG?.directPhone || "+919310808381").replace(/[^0-9]/g, "");
-        const waLink = `https://wa.me/${whatsappNumber}?text=${body}`;
+        const mailto = `mailto:${window.SALES_PLATFORM_CONFIG?.directEmail || "apoorvworkid@gmail.com"}?subject=${subject}&body=${body}`;
 
         let fallbackBox = form.querySelector(".inquiry-fallback-box");
         if (!fallbackBox) {
@@ -120,10 +118,9 @@ async function submitPublicForm(event, path, successMessage) {
         }
         fallbackBox.innerHTML = `
           <div style="font-weight:bold; color:var(--ink); margin-bottom:6px;">⚡ Direct Dispatch Fallback:</div>
-          <div style="margin-bottom:10px; color:var(--ink); font-size:12px;">Network endpoint was unreachable, but your details are safely stored. Tap to dispatch directly:</div>
+          <div style="margin-bottom:10px; color:var(--ink); font-size:12px;">Network endpoint was unreachable, but your details are safely stored. Tap below to dispatch directly:</div>
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <a href="${mailto}" style="padding:6px 12px; background:var(--accent-yellow); border:2px solid var(--ink); color:var(--ink); text-decoration:none; font-weight:bold; font-size:12px; display:inline-flex; align-items:center; gap:6px;">✉️ Send via Email</a>
-            <a href="${waLink}" target="_blank" rel="noopener" style="padding:6px 12px; background:var(--white); border:2px solid var(--ink); color:var(--ink); text-decoration:none; font-weight:bold; font-size:12px; display:inline-flex; align-items:center; gap:6px;">💬 Send via WhatsApp</a>
+            <a href="${mailto}" style="padding:6px 14px; background:var(--accent-yellow); border:2px solid var(--ink); color:var(--ink); text-decoration:none; font-weight:bold; font-size:12px; display:inline-flex; align-items:center; gap:6px;">✉️ Dispatch via Email</a>
           </div>
         `;
       }
