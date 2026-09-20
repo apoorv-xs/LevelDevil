@@ -28,15 +28,14 @@ describe("Unified application shell", () => {
   it("keeps public forms and protected entry in the sales view", () => {
     const sales = read("sales.html");
     expect(sales).toContain('id="inquiry-form"');
-    expect(sales).toContain('id="application-form"');
     expect(sales).toContain('id="sign-in"');
+    expect(sales).toContain('id="topbar-sign-in"');
     expect(sales).toContain('id="auth-placeholder"');
     expect(sales).toContain('href="/sales"');
     expect(sales).not.toContain("Firebase ID token");
     expect(sales).toContain('aria-label="Sales actions"');
     expect(sales).toContain('href="#inquiry-card"');
-    expect(sales).toContain('href="#application-card"');
-    expect(sales).toContain('href="#workspace-card"');
+    expect(sales).not.toContain("Apoorv Studio Workbench");
   });
 
   it("uses deployed API routes and surfaces API error messages", () => {
