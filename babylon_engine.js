@@ -9,17 +9,28 @@
         ambientLight: null,
         shadowGenerator: null,
         isReady: false,
+        _isInitializing: false,
         SCALE: 0.05, // 100 2D pixels = 5 3D world units
 
         init() {
+            // Pillar 5: Guard against duplicate init calls
+            if (this.isReady || this._isInitializing) return;
+            this._isInitializing = true;
+
             if (typeof BABYLON === "undefined") {
                 console.warn("Babylon.js CDN not yet loaded. Retrying in 100ms...");
-                setTimeout(() => this.init(), 100);
+                setTimeout(() => {
+                    this._isInitializing = false;
+                    this.init();
+                }, 100);
                 return;
             }
 
             this.canvas = document.getElementById("babylon-canvas");
-            if (!this.canvas) return;
+            if (!this.canvas) {
+                this._isInitializing = false;
+                return;
+            }
 
             // 1. Create Engine with hardware acceleration & anti-aliasing
             this.engine = new BABYLON.Engine(this.canvas, true, {
@@ -37,10 +48,11 @@
             this.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
 
             // 3. Setup Camera (2.5D Viewport)
-            this.camera = new BABYLON.UniversalCamera("camera3D", new BABYLON.Vector3(0, 0, -25), this.scene);
+            // Pillar 4: Move camera to Z = -80 and set fov = 0.28 rad (~16 deg)
+            this.camera = new BABYLON.UniversalCamera("camera3D", new BABYLON.Vector3(0, 0, -80), this.scene);
             this.camera.inputs.clear(); // Detach all default camera inputs so Kaboom receives all keys
             this.camera.setTarget(new BABYLON.Vector3(0, 0, 0));
-            this.camera.fov = 0.85; // ~50 degrees FOV for cinematic depth
+            this.camera.fov = 0.28; // ~16 degrees FOV for flattened perspective shearing
 
             // 4. Setup Lighting
             // Ambient Warm Fill Light
@@ -73,20 +85,29 @@
             });
 
             this.isReady = true;
+            this._isInitializing = false;
             console.log("Babylon.js 2.5D Engine & PBR Lighting Pipeline Initialized.");
+        },
+
+        // Pillar 4: getScale() calibrated to Z = 80 and fov = 0.28 rad
+        getScale() {
+            const screenH = (typeof height === "function") ? height() : window.innerHeight;
+            const fov = this.camera ? this.camera.fov : 0.28;
+            const visibleHeight = 2 * 80 * Math.tan(fov / 2);
+            return visibleHeight / screenH;
         },
 
         // --- 2D to 3D COORDINATE CONVERSION UTILITIES ---
         to3DX(x2d) {
             const screenW = (typeof width === "function") ? width() : window.innerWidth;
-            return (x2d - screenW / 2) * this.SCALE;
+            return (x2d - screenW / 2) * this.getScale();
         },
 
         to3DY(y2d) {
             const screenH = (typeof height === "function") ? height() : window.innerHeight;
             const scrollY = window.scrollY || window.pageYOffset || 0;
             const screenY = y2d - scrollY;
-            return -(screenY - screenH / 2) * this.SCALE;
+            return -(screenY - screenH / 2) * this.getScale();
         },
 
         to3DVec(x2d, y2d, z = 0) {

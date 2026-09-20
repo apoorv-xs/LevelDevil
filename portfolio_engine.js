@@ -13,99 +13,329 @@ const GRAVITY = 1600;
 setGravity(GRAVITY);
 
 window.controlMode = "idle"; // Idle on spawn so character stays grounded on hero header
-
 let manualTimeout = null;
 
-// Wait for next frame so player.js is definitely loaded
+// Track mouse position for companion 3D head/eye gaze
+window.mousePos2D = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+window.addEventListener("mousemove", (e) => {
+    window.mousePos2D.x = e.clientX;
+    window.mousePos2D.y = e.clientY;
+});
+
+// Mobile control state flags
+window.mobileLeftDown = false;
+window.mobileRightDown = false;
+window.mobileJumpPressed = false;
+
+// Wire touch & mouse events on #mobile-controls
+const btnLeft = document.getElementById("btn-left");
+const btnRight = document.getElementById("btn-right");
+const btnJump = document.getElementById("btn-jump");
+
+if (btnLeft) {
+    const startLeft = (e) => {
+        if (e.cancelable) e.preventDefault();
+        window.controlMode = "manual";
+        window.mobileLeftDown = true;
+    };
+    const endLeft = (e) => {
+        if (e.cancelable) e.preventDefault();
+        window.mobileLeftDown = false;
+    };
+    btnLeft.addEventListener("touchstart", startLeft, { passive: false });
+    btnLeft.addEventListener("touchend", endLeft, { passive: false });
+    btnLeft.addEventListener("touchcancel", endLeft, { passive: false });
+    btnLeft.addEventListener("mousedown", startLeft);
+    btnLeft.addEventListener("mouseup", endLeft);
+}
+
+if (btnRight) {
+    const startRight = (e) => {
+        if (e.cancelable) e.preventDefault();
+        window.controlMode = "manual";
+        window.mobileRightDown = true;
+    };
+    const endRight = (e) => {
+        if (e.cancelable) e.preventDefault();
+        window.mobileRightDown = false;
+    };
+    btnRight.addEventListener("touchstart", startRight, { passive: false });
+    btnRight.addEventListener("touchend", endRight, { passive: false });
+    btnRight.addEventListener("touchcancel", endRight, { passive: false });
+    btnRight.addEventListener("mousedown", startRight);
+    btnRight.addEventListener("mouseup", endRight);
+}
+
+if (btnJump) {
+    const doJump = (e) => {
+        if (e.cancelable) e.preventDefault();
+        window.controlMode = "manual";
+        window.mobileJumpPressed = true;
+    };
+    btnJump.addEventListener("touchstart", doJump, { passive: false });
+    btnJump.addEventListener("mousedown", doJump);
+}
+
+// Wait for next frame so player.js is loaded
 onLoad(() => {
     // --- THE PLAYER ---
     const player = window.createPlayer ? window.createPlayer(window.innerWidth / 2, 0) : createPlayer(window.innerWidth / 2, 0);
     window.player = player;
 
-    // Track DOM elements and their Kaboom bodies
-    const domBodies = new Map();
+    // Pillar 1 & 2 & 3: 1D Continuous Swept Horizontal Landing Rail system
+    let landingRails = [];
+    let isPhysicsActive = false;
 
     function syncDOM() {
         const elements = document.querySelectorAll('[data-kaboom-body="true"]');
-        
+        const scrollY = window.scrollY || window.pageYOffset || 0;
+        landingRails = [];
+
         elements.forEach(el => {
-            const rectPos = el.getBoundingClientRect();
-            const scrollY = window.scrollY;
-            const absY = rectPos.top + scrollY;
-            const absX = rectPos.left;
-            
-            if (!domBodies.has(el)) {
-                const trapType = el.getAttribute("data-trap");
-                const kBody = add([
-                    rect(rectPos.width, rectPos.height),
-                    pos(absX, absY),
-                    area(),
-                    body({ isStatic: true }),
-                    opacity(0), // Invisible
-                    "platform",
-                    { trap: trapType, domElement: el }
-                ]);
-                domBodies.set(el, kBody);
+            const rect = el.getBoundingClientRect();
+            if (rect.width <= 0 || rect.height <= 0) return;
+
+            // Pillar 3: Section headers walk directly on the visual underline.
+            // Cards/badges calculate rail at top.
+            let yRail;
+            if (el.classList.contains("section-header") || el.matches(".section-header")) {
+                yRail = rect.bottom + scrollY - 3;
             } else {
-                const kBody = domBodies.get(el);
-                kBody.pos.x = absX;
-                kBody.pos.y = absY;
-                kBody.use(rect(rectPos.width, rectPos.height));
+                yRail = rect.top + scrollY;
             }
+
+            const trapType = el.getAttribute("data-trap");
+            landingRails.push({
+                xLeft: rect.left,
+                xRight: rect.right,
+                width: rect.width,
+                y: yRail,
+                domElement: el,
+                trap: trapType
+            });
         });
     }
 
+    // Pillar 6: Spawn player perched on H1 "APOORV A S" (X = r.left + 120, Y = r.top)
     function placePlayerOnHero() {
-        const spawnEl = document.querySelector('.role-badge[data-kaboom-body="true"]') || document.querySelector('h1[data-kaboom-body="true"]');
-        if (spawnEl) {
-            const r = spawnEl.getBoundingClientRect();
-            player.pos = vec2(r.left + 60, r.top + window.scrollY);
-            if (player.vel) player.vel = vec2(0, 0);
-            console.log("placePlayerOnHero placed player at:", player.pos.x, player.pos.y, "spawnEl:", spawnEl.tagName, spawnEl.className);
+        const h1 = document.querySelector('h1');
+        if (h1 && player) {
+            const r = h1.getBoundingClientRect();
+            const scrollY = window.scrollY || window.pageYOffset || 0;
+            player.pos.x = r.left + 120;
+            player.pos.y = r.top + scrollY;
+            player.vy = 0;
+            if (player.vel) {
+                player.vel.x = 0;
+                player.vel.y = 0;
+            }
+            player.grounded = true;
+            const matchingRail = landingRails.find(rail => rail.domElement === h1);
+            player.currentRail = matchingRail || null;
+            console.log("placePlayerOnHero perched player on H1:", player.pos.x, player.pos.y);
         }
     }
 
+    // Initial DOM sync and placement
     syncDOM();
     placePlayerOnHero();
 
-    // Re-sync platforms and ground player when fonts are fully loaded
+    // Pillar 5: Ensure initial physics sleep until document.fonts.ready finishes
+    const activatePhysics = () => {
+        syncDOM();
+        if (window.controlMode === "idle") {
+            placePlayerOnHero();
+        }
+        isPhysicsActive = true;
+        console.log("Fonts ready: physics activated with Frame 0 stability.");
+    };
+
     if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(() => {
-            syncDOM();
-            if (window.controlMode === "idle") {
-                placePlayerOnHero();
-            }
-        });
+        document.fonts.ready.then(activatePhysics);
+    } else {
+        activatePhysics();
     }
 
-    const resizeObserver = new ResizeObserver(() => { syncDOM(); });
+    const resizeObserver = new ResizeObserver(() => {
+        syncDOM();
+    });
     document.querySelectorAll('[data-kaboom-body="true"]').forEach(el => { resizeObserver.observe(el); });
     resizeObserver.observe(document.body);
+    window.addEventListener("resize", () => { syncDOM(); });
 
-    // --- BABYLON 3D BRIDGE ---
-    if (window.Engine3D) {
-        window.Engine3D.init();
-    }
+    // Note: Pillar 5 removes duplicate window.Engine3D.init() call.
+    // Engine3D auto-initializes itself in babylon_engine.js.
     let is3DReady = false;
 
     // --- SCROLL-WIND PHYSICS & CAMERA SYNC ---
-    debug.inspect = false; // Turn off hitboxes now that we have 3D!
-    
+    debug.inspect = false;
     let lastScrollY = window.scrollY;
     let isRespawning = false;
 
-    onUpdate(() => {
-        // Clamp terminal fall velocity to eliminate tunneling through platforms
-        if (player.vel && player.vel.y > 650) {
-            player.vel.y = 650;
+    function handleLanding(p, rail) {
+        if (typeof p.triggerGround === "function") {
+            p.triggerGround(rail);
         }
 
-        const currentScrollY = window.scrollY;
+        if (!rail) return;
+
+        if (rail.trap === "bounce") {
+            p.jump(JUMP_FORCE * 1.35);
+            if (rail.domElement) {
+                rail.domElement.style.transition = "transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+                rail.domElement.style.transform = "scale(0.97) translateY(4px)";
+                setTimeout(() => {
+                    if (rail.domElement) rail.domElement.style.transform = "scale(1) translateY(0)";
+                }, 150);
+            }
+            if (window.SFX && window.SFX.playJump) window.SFX.playJump();
+        } else if (rail.trap === "drop") {
+            if (rail.domElement) {
+                rail.domElement.style.transition = "transform 0.1s";
+                rail.domElement.style.transform = "translateX(5px)";
+                setTimeout(() => { if (rail.domElement) rail.domElement.style.transform = "translateX(-5px)"; }, 50);
+                setTimeout(() => { if (rail.domElement) rail.domElement.style.transform = "translateX(0)"; }, 100);
+
+                setTimeout(() => {
+                    if (rail.domElement) {
+                        rail.domElement.style.transition = "transform 1s ease-in";
+                        rail.domElement.style.transform = "translateY(1000px)";
+                    }
+                    const idx = landingRails.indexOf(rail);
+                    if (idx !== -1) landingRails.splice(idx, 1);
+                    if (p.currentRail === rail) {
+                        p.grounded = false;
+                        p.currentRail = null;
+                    }
+                }, 500);
+            }
+        } else if (rail.trap === "spikes") {
+            if (typeof shake === "function") shake(10);
+            respawnPlayer();
+        }
+    }
+
+    function respawnPlayer() {
+        isRespawning = true;
+        player.vy = 0;
+        if (player.vel) {
+            player.vel.x = 0;
+            player.vel.y = 0;
+        }
+        player.grounded = false;
+        player.currentRail = null;
+
+        const currentScrollY = window.scrollY || window.pageYOffset || 0;
+        const viewCenterY = currentScrollY + window.innerHeight / 2;
+
+        let targetPlat = null;
+        let minDist = Infinity;
+        for (const p of landingRails) {
+            const d = Math.abs(p.y - viewCenterY);
+            if (d < minDist) {
+                minDist = d;
+                targetPlat = p;
+            }
+        }
+
+        const respawnX = targetPlat ? (targetPlat.xLeft + Math.min(100, targetPlat.width / 2)) : (window.innerWidth / 2);
+        const respawnY = targetPlat ? (targetPlat.y - 15) : (currentScrollY + 80);
+
+        player.pos.x = respawnX;
+        player.pos.y = respawnY;
+        player.vy = 0;
+        if (player.vel) {
+            player.vel.x = 0;
+            player.vel.y = 0;
+        }
+
+        if (window.Player3D && window.Player3D.root) {
+            window.Player3D.isSmashing = false;
+            window.Player3D.root.position.z = 0;
+        }
+
+        setTimeout(() => {
+            isRespawning = false;
+        }, 200);
+    }
+
+    onUpdate(() => {
+        const dtTotal = dt();
+        const currentScrollY = window.scrollY || window.pageYOffset || 0;
+
+        // Pillar 1 & 2: 3-Sub-Step Vertical Integration with Swept Interval Collision
+        if (isPhysicsActive && !isRespawning && dtTotal > 0) {
+            const clampedDt = Math.min(dtTotal, 0.05);
+            const SUB_STEPS = 3;
+            const subDt = clampedDt / SUB_STEPS;
+
+            for (let step = 0; step < SUB_STEPS; step++) {
+                // Grounded walking: check if player stepped off the rail laterally
+                if (player.grounded && player.currentRail) {
+                    const rail = player.currentRail;
+                    const onRailX = (player.pos.x >= rail.xLeft - 10 && player.pos.x <= rail.xRight + 10);
+                    if (!onRailX) {
+                        // Stepped off the edge
+                        player.grounded = false;
+                        player.currentRail = null;
+                    } else {
+                        // Maintain vertical lock on rail
+                        player.pos.y = rail.y;
+                        player.vy = 0;
+                        continue;
+                    }
+                }
+
+                // Apply gravity
+                player.vy += GRAVITY * subDt;
+                if (player.vy > 650) {
+                    player.vy = 650;
+                }
+
+                const yPrev = player.pos.y;
+                const yNext = yPrev + player.vy * subDt;
+
+                // Swept interval collision check: ONLY when falling downwards (vy >= 0)
+                // Upward motion passes freely through platforms (jump-through mechanic)
+                // Lateral collision is strictly ignored (eliminates horizontal ejection)
+                if (player.vy >= 0) {
+                    let bestRail = null;
+                    let bestY = Infinity;
+
+                    for (const rail of landingRails) {
+                        if (player.pos.x >= rail.xLeft - 10 && player.pos.x <= rail.xRight + 10) {
+                            // Swept interval check: yPrev <= rail.y <= yNext
+                            if (yPrev <= rail.y + 0.1 && rail.y <= yNext + 0.5) {
+                                if (rail.y < bestY) {
+                                    bestY = rail.y;
+                                    bestRail = rail;
+                                }
+                            }
+                        }
+                    }
+
+                    if (bestRail) {
+                        player.pos.y = bestRail.y;
+                        player.vy = 0;
+                        player.grounded = true;
+                        player.currentRail = bestRail;
+                        handleLanding(player, bestRail);
+                        break;
+                    } else {
+                        player.pos.y = yNext;
+                    }
+                } else {
+                    // Moving upwards: jump-through platforms freely
+                    player.pos.y = yNext;
+                }
+            }
+        }
+
         const scrollDelta = currentScrollY - lastScrollY;
         lastScrollY = currentScrollY;
 
         // Apply Scroll Wind Force if scrolling fast
-        if (Math.abs(scrollDelta) > 15 && !isRespawning && player.isGrounded()) {
+        if (Math.abs(scrollDelta) > 15 && !isRespawning && player.isGrounded && player.isGrounded()) {
             player.move(0, scrollDelta * 20);
             if (window.Player3D && window.Player3D.root) {
                 window.Player3D.root.rotation.z = scrollDelta * 0.05;
@@ -114,47 +344,13 @@ onLoad(() => {
         }
 
         camPos(window.innerWidth / 2, currentScrollY + window.innerHeight / 2);
-        
+
         const viewTop = currentScrollY;
         const viewBottom = currentScrollY + window.innerHeight;
-        
+
         // Out of bounds Recovery
-        if ((player.pos.y > viewBottom + 300 || player.pos.y < viewTop - 300) && !isRespawning) {
-            isRespawning = true;
-            if (player.vel) {
-                player.vel.x = 0;
-                player.vel.y = 0;
-            }
-
-            // Find platform closest to current viewport center
-            const viewCenterY = currentScrollY + window.innerHeight / 2;
-            const plats = get("platform");
-            let targetPlat = null;
-            let minDist = Infinity;
-            for (const p of plats) {
-                const d = Math.abs(p.pos.y - viewCenterY);
-                if (d < minDist) {
-                    minDist = d;
-                    targetPlat = p;
-                }
-            }
-
-            const respawnX = targetPlat ? (targetPlat.pos.x + Math.min(100, targetPlat.width / 2)) : (window.innerWidth / 2);
-            const respawnY = targetPlat ? (targetPlat.pos.y - 35) : (currentScrollY + 80);
-
-            player.pos = vec2(respawnX, respawnY);
-            if (player.vel) {
-                player.vel.x = 0;
-                player.vel.y = 0;
-            }
-            if (window.Player3D && window.Player3D.root) {
-                window.Player3D.isSmashing = false;
-                window.Player3D.root.position.z = 0;
-            }
-
-            setTimeout(() => {
-                isRespawning = false;
-            }, 200);
+        if ((player.pos.y > viewBottom + 300 || player.pos.y < viewTop - 300) && !isRespawning && isPhysicsActive) {
+            respawnPlayer();
         }
 
         // Initialize 3D Player if engine is ready
@@ -166,7 +362,7 @@ onLoad(() => {
         }
 
         // Sync 3D Player
-        if (is3DReady) {
+        if (is3DReady && window.Player3D) {
             window.Player3D.syncWith2D(player);
         }
     });
@@ -187,192 +383,37 @@ onLoad(() => {
         }, 4000);
     });
 
-    // Smart AI State
-    let aiState = "seek"; // 'seek', 'wander', or 'sales_pitch'
-    let aiWanderDir = 1;
-    let stuckTimer = 0;
-    let lastX = 0;
-    
-    // Idle/Sales tracking
-    let lastMousePos = vec2(0, 0);
-    let idleTimer = 0;
-    let targetCTA = null;
-
-    // Ambient Controls (Smart AI & Sales Agent)
+    // Pillar 6: Refactored Ambient AI: safe idle perching and attentive companion gaze
     onUpdate(() => {
-        if (window.controlMode === "ambient" && !isRespawning) {
-            const mPos = toWorld(mousePos());
-            let moveDir = 0;
+        if (window.controlMode === "ambient" && !isRespawning && isPhysicsActive) {
+            if (player.grounded && player.currentRail) {
+                const rail = player.currentRail;
+                const safeMargin = 25;
+                const safeMinX = rail.xLeft + safeMargin;
+                const safeMaxX = rail.xRight - safeMargin;
 
-            // Idle Timer
-            if (mPos.dist(lastMousePos) < 2) {
-                idleTimer += dt();
-            } else {
-                idleTimer = 0;
-                aiState = "seek";
-                targetCTA = null;
-            }
-            lastMousePos = mPos.clone();
-
-            // Trigger Sales Pitch if idle > 5s
-            if (idleTimer > 5 && aiState !== "sales_pitch") {
-                // Find nearest CTA
-                const ctas = get("platform").filter(p => p.trap === "cta");
-                if (ctas.length > 0) {
-                    targetCTA = ctas.reduce((nearest, p) => 
-                        player.pos.dist(p.pos) < player.pos.dist(nearest.pos) ? p : nearest
-                    );
-                    aiState = "sales_pitch";
-                    console.log("AI switching to sales pitch mode!");
-                } else {
-                    aiState = "wander"; // No CTA found, just wander
-                }
-            }
-            
-            if (aiState === "sales_pitch" && targetCTA) {
-                // Navigate to the CTA
-                const targetX = targetCTA.pos.x + targetCTA.width / 2;
-                if (Math.abs(player.pos.x - targetX) > 20) {
-                    moveDir = Math.sign(targetX - player.pos.x);
-                } else {
-                    // We arrived at the CTA!
-                    if (player.isGrounded() && chance(0.05)) {
-                        player.jump(JUMP_FORCE); // Jump to get attention
-                        if (window.Player3D) {
-                            // Make them scale up to get attention
-                            window.Player3D.root.scaling.x *= 1.2;
-                            window.Player3D.root.scaling.y *= 1.2;
-                            tween(1.2, 1, 0.5, (v) => {
-                                window.Player3D.root.scaling.x = (player.facingLeft ? -1 : 1) * v;
-                                window.Player3D.root.scaling.y = v;
-                            }, easings.easeOutElastic);
+                // If rail is wide enough to pace:
+                if (safeMaxX > safeMinX) {
+                    const mWorld = toWorld(mousePos());
+                    // Gently pace towards mouse ONLY if mouse is on the same platform horizontally
+                    if (mWorld.x >= safeMinX && mWorld.x <= safeMaxX && Math.abs(mWorld.y - rail.y) < 150) {
+                        const targetX = mWorld.x;
+                        if (Math.abs(player.pos.x - targetX) > 15) {
+                            const dir = Math.sign(targetX - player.pos.x);
+                            player.move(dir * SPEED * 0.4, 0);
+                            player.facingLeft = dir < 0;
+                            player.isMovingThisFrame = true;
                         }
-                    }
-                }
-            } else if (aiState === "seek") {
-                if (Math.abs(player.pos.x - mPos.x) > 20) {
-                    moveDir = Math.sign(mPos.x - player.pos.x);
-                }
-            } else if (aiState === "wander") {
-                moveDir = aiWanderDir;
-                if (chance(0.02) || Math.abs(player.pos.x - mPos.x) < 50) {
-                    aiState = "seek";
-                }
-            }
-
-            // Stuck Detection
-            if (moveDir !== 0 && Math.abs(player.pos.x - lastX) < 0.5) {
-                stuckTimer++;
-            } else {
-                stuckTimer = 0;
-            }
-            lastX = player.pos.x;
-
-            if (stuckTimer > 15 && player.isGrounded()) {
-                const checkTargetY = aiState === "sales_pitch" && targetCTA ? targetCTA.pos.y : mPos.y;
-                if (checkTargetY < player.pos.y) {
-                    player.jump(JUMP_FORCE); 
-                } else {
-                    aiState = "wander";
-                    aiWanderDir = -moveDir;
-                    stuckTimer = 0;
-                }
-            }
-
-            // Gap Detection (Look ahead 50px)
-            let isGapAhead = true;
-            const lookX = player.pos.x + (moveDir * 50);
-            
-            for (const plat of get("platform")) {
-                // If there is a platform directly below our future X position
-                if (lookX >= plat.pos.x && lookX <= plat.pos.x + plat.width) {
-                    if (plat.pos.y >= player.pos.y - 10 && plat.pos.y <= player.pos.y + 150) {
-                        isGapAhead = false;
-                        break;
-                    }
-                }
-            }
-
-            // If there's a gap ahead, think like a human!
-            if (isGapAhead && player.isGrounded() && moveDir !== 0) {
-                if (mPos.y > player.pos.y + 50) {
-                    // Mouse is below us, we WANT to fall. Proceed.
-                } else {
-                    // Mouse is above or level. We shouldn't fall!
-                    // Is there a platform across the gap we can jump to?
-                    let platformAcrossGap = false;
-                    const jumpTargetX = player.pos.x + (moveDir * 150);
-                    for (const plat of get("platform")) {
-                        if (jumpTargetX >= plat.pos.x && jumpTargetX <= plat.pos.x + plat.width) {
-                            if (plat.pos.y >= player.pos.y - 50 && plat.pos.y <= player.pos.y + 50) {
-                                platformAcrossGap = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (platformAcrossGap) {
-                        player.jump(JUMP_FORCE); // Leap of faith!
                     } else {
-                        // Dead end! Nothing to jump to. Turn around and use the other side.
-                        aiState = "wander";
-                        aiWanderDir = -moveDir;
-                        moveDir = aiWanderDir;
+                        // Safe idle perching: clamp within safe platform bounds, never suicidal jump
+                        if (player.pos.x < safeMinX) {
+                            player.pos.x = safeMinX;
+                        } else if (player.pos.x > safeMaxX) {
+                            player.pos.x = safeMaxX;
+                        }
                     }
                 }
             }
-
-            // Apply Movement
-            if (moveDir !== 0) {
-                player.move(moveDir * SPEED * 0.8, 0);
-                player.facingLeft = moveDir < 0;
-                player.isMovingThisFrame = true; // Tell player.js to play run cycle
-            }
         }
-    });
-
-    // --- TRAPS ---
-    player.onCollide("platform", (plat) => {
-        if (plat.trap === "drop") {
-            plat.domElement.style.transition = "transform 0.1s";
-            plat.domElement.style.transform = "translateX(5px)";
-            setTimeout(() => plat.domElement.style.transform = "translateX(-5px)", 50);
-            setTimeout(() => plat.domElement.style.transform = "translateX(0)", 100);
-            
-            setTimeout(() => {
-                plat.isStatic = false; 
-                plat.domElement.style.transition = "transform 1s ease-in";
-                plat.domElement.style.transform = "translateY(1000px)"; 
-            }, 500);
-        }
-        
-        if (plat.trap === "spikes") {
-            add([
-                rect(plat.width, 10),
-                color(255, 0, 0),
-                pos(plat.pos.x, plat.pos.y - 10),
-                area(),
-                "spike"
-            ]);
-            plat.domElement.style.borderTop = "5px solid var(--danger)"; 
-        }
-
-        if (plat.trap === "bounce") {
-            player.jump(JUMP_FORCE * 1.35);
-            if (plat.domElement) {
-                plat.domElement.style.transition = "transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
-                plat.domElement.style.transform = "scale(0.97) translateY(4px)";
-                setTimeout(() => {
-                    plat.domElement.style.transform = "scale(1) translateY(0)";
-                }, 150);
-            }
-            if (window.SFX && window.SFX.playJump) window.SFX.playJump();
-        }
-    });
-
-    player.onCollide("spike", () => {
-        shake(10);
-        player.pos = vec2(window.innerWidth / 2, window.scrollY + 50);
-        player.vel.y = 0;
     });
 });

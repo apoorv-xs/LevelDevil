@@ -18,49 +18,49 @@
         isCreated: false,
         blinkTimer: 0,
         isShocked: false,
-    isSmashing: false,
+        isSmashing: false,
 
-    smashIntoCamera() {
-        if (!this.isCreated || this.isSmashing) return;
-        this.isSmashing = true;
+        smashIntoCamera() {
+            if (!this.isCreated || this.isSmashing) return;
+            this.isSmashing = true;
 
-        // Animate towards the camera (Z-axis is -25, so -20 hits the camera lens glass)
-        const smashZ = -20; 
-        const originalZ = 0;
-        const originalY = this.root.position.y;
-        const originalScale = this.root.scaling.clone();
-        
-        // Babylon Animation
-        BABYLON.Animation.CreateAndStartAnimation(
-            "smashMove", this.root, "position.z", 60, 15, 
-            originalZ, smashZ, 2, new BABYLON.SineEase()
-        );
-        
-        BABYLON.Animation.CreateAndStartAnimation(
-            "smashScale", this.root, "scaling", 60, 15, 
-            originalScale, new BABYLON.Vector3(3, 3, 3), 2, new BABYLON.SineEase()
-        );
-
-        // Screen Shake Effect
-        setTimeout(() => {
-            if (typeof shake === 'function') shake(15);
+            // Animate towards the camera (Z-axis is -80, so -70 hits the camera lens glass)
+            const smashZ = (window.Engine3D && window.Engine3D.camera) ? (window.Engine3D.camera.position.z + 10) : -70; 
+            const originalZ = 0;
+            const originalY = this.root.position.y;
+            const originalScale = this.root.scaling.clone();
             
-            // Slide slightly down
+            // Babylon Animation
             BABYLON.Animation.CreateAndStartAnimation(
-                "slideDown", this.root, "position.y", 60, 20, 
-                this.root.position.y, this.root.position.y - 4, 2, new BABYLON.CubicEase()
+                "smashMove", this.root, "position.z", 60, 15, 
+                originalZ, smashZ, 2, new BABYLON.SineEase()
+            );
+            
+            BABYLON.Animation.CreateAndStartAnimation(
+                "smashScale", this.root, "scaling", 60, 15, 
+                originalScale, new BABYLON.Vector3(3, 3, 3), 2, new BABYLON.SineEase()
             );
 
-            // Reset after slide
+            // Screen Shake Effect
             setTimeout(() => {
-                this.isSmashing = false;
-                this.root.position.z = originalZ;
-                this.root.position.y = originalY;
-                this.root.scaling = originalScale;
-            }, 600);
-            
-        }, 250);
-    },
+                if (typeof shake === 'function') shake(15);
+                
+                // Slide slightly down
+                BABYLON.Animation.CreateAndStartAnimation(
+                    "slideDown", this.root, "position.y", 60, 20, 
+                    this.root.position.y, this.root.position.y - 4, 2, new BABYLON.CubicEase()
+                );
+
+                // Reset after slide
+                setTimeout(() => {
+                    this.isSmashing = false;
+                    this.root.position.z = originalZ;
+                    this.root.position.y = originalY;
+                    this.root.scaling = originalScale;
+                }, 600);
+                
+            }, 250);
+        },
 
         create(scene) {
             if (!scene || this.isCreated) return;
@@ -105,27 +105,27 @@
             this.head.parent = this.root;
             if (window.Engine3D) Engine3D.addShadowCaster(this.head);
 
-            // Left Eye
+            // Left Eye - parented to head for companion tracking
             this.leftEye = BABYLON.MeshBuilder.CreatePlane("heroEyeL", { width: 0.18, height: 0.22 }, scene);
-            this.leftEye.position = new BABYLON.Vector3(-0.2, 1.98, 0.38);
+            this.leftEye.position = new BABYLON.Vector3(-0.2, 0.03, 0.38);
             this.leftEye.material = eyeMat;
-            this.leftEye.parent = this.root;
+            this.leftEye.parent = this.head;
 
             this.leftPupil = BABYLON.MeshBuilder.CreatePlane("heroPupilL", { width: 0.08, height: 0.1 }, scene);
-            this.leftPupil.position = new BABYLON.Vector3(-0.2, 1.98, 0.39);
+            this.leftPupil.position = new BABYLON.Vector3(-0.2, 0.03, 0.39);
             this.leftPupil.material = pupilMat;
-            this.leftPupil.parent = this.root;
+            this.leftPupil.parent = this.head;
 
-            // Right Eye
+            // Right Eye - parented to head for companion tracking
             this.rightEye = BABYLON.MeshBuilder.CreatePlane("heroEyeR", { width: 0.18, height: 0.22 }, scene);
-            this.rightEye.position = new BABYLON.Vector3(0.2, 1.98, 0.38);
+            this.rightEye.position = new BABYLON.Vector3(0.2, 0.03, 0.38);
             this.rightEye.material = eyeMat;
-            this.rightEye.parent = this.root;
+            this.rightEye.parent = this.head;
 
             this.rightPupil = BABYLON.MeshBuilder.CreatePlane("heroPupilR", { width: 0.08, height: 0.1 }, scene);
-            this.rightPupil.position = new BABYLON.Vector3(0.2, 1.98, 0.39);
+            this.rightPupil.position = new BABYLON.Vector3(0.2, 0.03, 0.39);
             this.rightPupil.material = pupilMat;
-            this.rightPupil.parent = this.root;
+            this.rightPupil.parent = this.head;
 
             // Left Arm
             this.leftArm = BABYLON.MeshBuilder.CreateBox("heroArmL", { width: 0.24, height: 0.75, depth: 0.28 }, scene);
@@ -143,18 +143,18 @@
             this.rightArm.parent = this.root;
             if (window.Engine3D) Engine3D.addShadowCaster(this.rightArm);
 
-            // Left Leg
+            // Left Leg - Pillar 6: Lower position by 0.142 from 0.5 to 0.358 to lock shoe soles to Y = 0
             this.leftLeg = BABYLON.MeshBuilder.CreateBox("heroLegL", { width: 0.28, height: 0.75, depth: 0.3 }, scene);
             this.leftLeg.setPivotPoint(new BABYLON.Vector3(0, 0.35, 0));
-            this.leftLeg.position = new BABYLON.Vector3(-0.24, 0.5, 0);
+            this.leftLeg.position = new BABYLON.Vector3(-0.24, 0.358, 0);
             this.leftLeg.material = clayMat;
             this.leftLeg.parent = this.root;
             if (window.Engine3D) Engine3D.addShadowCaster(this.leftLeg);
 
-            // Right Leg
+            // Right Leg - Pillar 6: Lower position by 0.142 from 0.5 to 0.358 to lock shoe soles to Y = 0
             this.rightLeg = BABYLON.MeshBuilder.CreateBox("heroLegR", { width: 0.28, height: 0.75, depth: 0.3 }, scene);
             this.rightLeg.setPivotPoint(new BABYLON.Vector3(0, 0.35, 0));
-            this.rightLeg.position = new BABYLON.Vector3(0.24, 0.5, 0);
+            this.rightLeg.position = new BABYLON.Vector3(0.24, 0.358, 0);
             this.rightLeg.material = clayMat;
             this.rightLeg.parent = this.root;
             if (window.Engine3D) Engine3D.addShadowCaster(this.rightLeg);
@@ -199,7 +199,7 @@
             // 3. Animation State
             const t = (typeof time === "function") ? time() : performance.now() * 0.001;
             const isGrounded = (typeof guy.isGrounded === "function") ? guy.isGrounded() : true;
-            const isMoving = (typeof isKeyDown === "function") && (isKeyDown("left") || isKeyDown("right"));
+            const isMoving = (typeof isKeyDown === "function" && (isKeyDown("left") || isKeyDown("right") || isKeyDown("a") || isKeyDown("d"))) || Boolean(guy.isMovingThisFrame);
 
             // Eye Blinking Logic
             this.blinkTimer += 0.016;
@@ -217,6 +217,27 @@
                 }
             }
 
+            // Pillar 6: Companion Head/Eye Tracking
+            let targetPitch = 0;
+            let targetYaw = 0;
+            let targetRoll = 0;
+
+            if (window.mousePos2D && window.Engine3D) {
+                const mouse3D = window.Engine3D.to3DVec(window.mousePos2D.x, window.mousePos2D.y, 0);
+                const dx = mouse3D.x - this.root.position.x;
+                const dy = mouse3D.y - (this.root.position.y + 1.95);
+
+                const facingMult = isFacingLeft ? -1 : 1;
+                const localForward = dx * facingMult;
+
+                // Pitch (look up / down)
+                targetPitch = -Math.max(-0.4, Math.min(0.4, dy * 0.08));
+                // Yaw (turn towards cursor)
+                targetYaw = Math.max(-0.55, Math.min(0.55, localForward * 0.05));
+                // Roll
+                targetRoll = Math.max(-0.15, Math.min(0.15, -dx * 0.02));
+            }
+
             if (!isGrounded) {
                 // Airborne Cheer Pose
                 this.leftArm.rotation.z = 2.4;
@@ -227,6 +248,10 @@
                 // Wide Excited Eyes
                 this.leftEye.scaling.set(1.2, 1.2, 1.2);
                 this.rightEye.scaling.set(1.2, 1.2, 1.2);
+
+                this.head.rotation.x += (targetPitch - this.head.rotation.x) * 0.1;
+                this.head.rotation.y += (targetYaw - this.head.rotation.y) * 0.1;
+                this.head.rotation.z += (targetRoll - this.head.rotation.z) * 0.1;
             } else if (isMoving) {
                 // Running Walk Cycle with Dynamic Forward Lean (12 degrees)
                 const runCycle = Math.sin(t * 15);
@@ -244,8 +269,12 @@
                 // Determined squint
                 this.leftEye.scaling.set(1.0, 0.85, 1.0);
                 this.rightEye.scaling.set(1.0, 0.85, 1.0);
+
+                this.head.rotation.x += (targetPitch - this.head.rotation.x) * 0.1;
+                this.head.rotation.y += (targetYaw - this.head.rotation.y) * 0.1;
+                this.head.rotation.z += (targetRoll - this.head.rotation.z) * 0.1;
             } else {
-                // Idle Breathing
+                // Idle Breathing & Companion Perch
                 this.leftLeg.rotation.x = 0;
                 this.rightLeg.rotation.x = 0;
                 this.leftArm.rotation.x = 0;
@@ -256,6 +285,10 @@
                 this.head.position.y = 1.95 + Math.sin(t * 2.5) * 0.03;
                 this.leftEye.scaling.set(1.0, 1.0, 1.0);
                 this.rightEye.scaling.set(1.0, 1.0, 1.0);
+
+                this.head.rotation.x += (targetPitch - this.head.rotation.x) * 0.1;
+                this.head.rotation.y += (targetYaw - this.head.rotation.y) * 0.1;
+                this.head.rotation.z += (targetRoll - this.head.rotation.z) * 0.1;
             }
 
             // 4. Recruiter Mode Gold Halo
