@@ -3,3 +3,9 @@ dist/
 .vite/
 .DS_Store
 Thumbs.db
+.hermes/
+local_preview.png
+take_screenshot.js
+test-results/
+tests/results/
+v2/
