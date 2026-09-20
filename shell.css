@@ -9,7 +9,9 @@
 .site-nav {
   position: fixed;
   top: 18px;
-  right: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  right: auto;
   z-index: 250;
   display: flex;
   gap: 0;
@@ -20,6 +22,7 @@
   background: var(--shell-paper);
   box-shadow: 5px 5px 0 var(--shell-line);
   font-family: "Press Start 2P", monospace;
+  white-space: nowrap;
 }
 
 .site-nav a {
@@ -30,6 +33,7 @@
   text-decoration: none;
   font-size: 12px;
   line-height: 1;
+  white-space: nowrap;
 }
 
 .site-nav a:hover,
@@ -44,7 +48,9 @@
 @media (max-width: 640px) {
   .site-nav {
     top: 10px;
-    right: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
     padding: 2px;
   }
   .site-nav a {
