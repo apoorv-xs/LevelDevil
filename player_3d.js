@@ -18,12 +18,55 @@
         isCreated: false,
         blinkTimer: 0,
         isShocked: false,
+    isSmashing: false,
+
+    smashIntoCamera() {
+        if (!this.isCreated || this.isSmashing) return;
+        this.isSmashing = true;
+
+        // Animate towards the camera (Z-axis) and scale up
+        const smashZ = -150; 
+        const originalZ = 0;
+        const originalScale = this.root.scaling.clone();
+        
+        // Babylon Animation
+        BABYLON.Animation.CreateAndStartAnimation(
+            "smashMove", this.root, "position.z", 60, 20, 
+            originalZ, smashZ, 2, new BABYLON.SineEase()
+        );
+        
+        BABYLON.Animation.CreateAndStartAnimation(
+            "smashScale", this.root, "scaling", 60, 20, 
+            originalScale, new BABYLON.Vector3(5, 5, 5), 2, new BABYLON.SineEase()
+        );
+
+        // Screen Shake Effect (Requires camera access, but we can fake it by shaking the root or relying on Kaboom shake)
+        setTimeout(() => {
+            if (typeof shake === 'function') shake(20); // Kaboom screen shake
+            
+            // Slide down the glass
+            BABYLON.Animation.CreateAndStartAnimation(
+                "slideDown", this.root, "position.y", 60, 30, 
+                this.root.position.y, this.root.position.y - 100, 2, new BABYLON.CubicEase()
+            );
+
+            // Reset after slide
+            setTimeout(() => {
+                this.isSmashing = false;
+                this.root.position.z = originalZ;
+                this.root.scaling = originalScale;
+            }, 1000);
+            
+        }, 300); // 300ms to hit the glass
+    },
 
         create(scene) {
             if (!scene || this.isCreated) return;
 
             // 1. Root Node
-            this.root = new BABYLON.TransformNode("player3DRoot", scene);
+            this.root = new BABYLON.TransformNode("heroRoot", scene);
+            // Rotate the root 90 degrees so the character faces the side (+X axis) instead of the camera!
+            this.root.rotation.y = Math.PI / 2;
 
             // 2. Tactile Materials
             // Character Body: Dark Clay Charcoal with soft bevel specular highlights
@@ -134,6 +177,9 @@
 
             this.root.setEnabled(true);
 
+            // Skip XY and Scale sync if we are doing a Z-axis smash animation!
+            if (this.isSmashing) return;
+
             // 1. Coordinate Sync
             const targetPos = Engine3D.to3DVec(guy.pos.x, guy.pos.y, 0);
             this.root.position.x = targetPos.x;
@@ -144,7 +190,8 @@
             const scaleY = (guy.scale && guy.scale.y) ? guy.scale.y : 1.0;
             const scaleX = (guy.scale && guy.scale.x) ? Math.abs(guy.scale.x) : 1.0;
 
-            this.root.scaling.x = (isFacingLeft ? -1 : 1) * scaleX;
+            this.root.rotation.y = isFacingLeft ? -Math.PI / 2 : Math.PI / 2;
+            this.root.scaling.x = scaleX;
             this.root.scaling.y = scaleY;
 
             // 3. Animation State
