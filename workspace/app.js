@@ -300,7 +300,7 @@ function initVercelAndPwaSync() {
   // Register PWA Service Worker for standalone install
   if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
+      navigator.serviceWorker.register('sw.js').catch(() => {});
     });
   }
 

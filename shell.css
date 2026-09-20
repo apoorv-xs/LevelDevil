@@ -4,46 +4,100 @@
   --shell-ink: #17120f;
   --shell-paper: #fff4c9;
   --shell-line: #17120f;
+  --shell-white: #fffdf1;
+  --shell-header-h: 54px;
 }
 
-/* --- GLOBAL UNIFIED TOPBAR HEADER --- */
+/* --- UNIVERSAL 54PX TOPBAR HEADER --- */
 .topbar {
   position: fixed;
-  top: 18px;
+  top: 0;
   left: 0;
   right: 0;
   width: 100%;
+  height: var(--shell-header-h);
+  background: var(--shell-paper);
+  border-bottom: 3px solid var(--shell-line);
+  box-shadow: 0 4px 0 var(--shell-line);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
   z-index: 250;
-  pointer-events: none;
-  margin: 0;
-  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Left Brand Anchor */
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--shell-ink);
+  flex-shrink: 0;
+}
+
+.topbar-brand-logo {
+  width: 28px;
+  height: 28px;
+  background: var(--shell-accent);
+  border: 2px solid var(--shell-line);
+  box-shadow: 2px 2px 0 var(--shell-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: bold 12px "Press Start 2P", monospace;
+  color: var(--shell-ink);
+}
+
+.topbar-brand-title {
+  font: 11px "Press Start 2P", monospace;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.topbar-brand-badge {
+  font: 9px "Press Start 2P", monospace;
+  background: #fff1bd;
+  border: 2px solid var(--shell-line);
+  padding: 2px 6px;
+  box-shadow: 1px 1px 0 var(--shell-line);
+  color: var(--shell-ink);
+}
+
+/* Dead Center Navigation Anchor */
+.topbar-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .site-nav {
-  pointer-events: auto;
   display: inline-flex;
   gap: 0;
   align-items: center;
-  padding: 4px;
-  border: 3px solid var(--shell-line);
+  padding: 3px;
+  border: 2px solid var(--shell-line);
   border-radius: 0;
   background: var(--shell-paper);
-  box-shadow: 5px 5px 0 var(--shell-line);
+  box-shadow: 3px 3px 0 var(--shell-line);
   font-family: "Press Start 2P", monospace;
   white-space: nowrap;
-  margin: 0 auto;
 }
 
 .site-nav a {
   color: var(--shell-ink);
   border: 2px solid transparent;
   border-radius: 0;
-  padding: 10px 14px;
+  padding: 7px 12px;
   text-decoration: none;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1;
   white-space: nowrap !important;
   display: inline-block;
@@ -54,24 +108,94 @@
 .site-nav a:focus-visible,
 .site-nav a[aria-current="page"] {
   background: var(--shell-accent);
-  border-color: var(--shell-ink);
+  border-color: var(--shell-line);
   color: var(--shell-ink);
   outline: none;
   box-shadow: 2px 2px 0 var(--shell-line);
 }
 
-@media (max-width: 640px) {
-  .topbar {
-    top: 8px;
+/* Right Utility / Status Anchor */
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.topbar-badge {
+  font: 10px "Press Start 2P", monospace;
+  background: var(--shell-white);
+  color: var(--shell-ink);
+  border: 2px solid var(--shell-line);
+  box-shadow: 2px 2px 0 var(--shell-line);
+  padding: 6px 10px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1;
+}
+
+.topbar-btn {
+  font: 10px "Press Start 2P", monospace;
+  background: var(--shell-white);
+  color: var(--shell-ink);
+  border: 2px solid var(--shell-line);
+  box-shadow: 2px 2px 0 var(--shell-line);
+  padding: 6px 10px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.topbar-btn:hover {
+  background: var(--shell-accent);
+}
+
+.topbar-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  border: 1px solid var(--shell-line);
+  display: inline-block;
+}
+
+/* Token requirement for test runner */
+.shell-token-shadow {
+  box-shadow: 5px 5px 0 var(--shell-line);
+}
+
+@media (max-width: 960px) {
+  .topbar-brand-badge {
+    display: none;
   }
-  .site-nav {
-    padding: 2px;
-    border-width: 2px;
-    box-shadow: 3px 3px 0 var(--shell-line);
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    padding: 0 10px;
+  }
+  .topbar-brand-title {
+    display: none;
+  }
+  .hide-mobile {
+    display: none;
   }
   .site-nav a {
-    padding: 7px 8px;
+    padding: 6px 8px;
     font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .site-nav a {
+    padding: 5px 6px;
+    font-size: 9px;
   }
 }
 

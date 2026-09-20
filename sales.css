@@ -23,31 +23,22 @@ body {
   font: 16px/1.5 "Courier Prime", "Courier New", monospace;
 }
 
-body::before,
 body::after {
   position: fixed;
   left: 0;
   width: 100%;
   content: "";
   pointer-events: none;
-}
-
-body::before {
-  top: 0;
-  height: 14px;
-  background: var(--ink);
-}
-
-body::after {
   bottom: 0;
   height: 14px;
   background: var(--purple);
+  z-index: 200;
 }
 
 .shell {
   width: min(1160px, calc(100% - 32px));
   margin: 0 auto;
-  padding: 42px 0 72px;
+  padding: 78px 0 72px;
 }
 
 .workspace-head {
