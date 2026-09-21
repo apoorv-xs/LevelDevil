@@ -28,61 +28,61 @@
     }
 
     const DEFAULT_RAILS = [
-        {"xLeft":192,"xRight":802,"width":610,"y":222,"trap":"normal","name":"DIV.role-badge"},
-        {"xLeft":192,"xRight":976,"width":784,"y":312,"trap":"normal","name":"H1"},
-        {"xLeft":192,"xRight":976,"width":784,"y":428,"trap":"normal","name":"P.hero-hook"},
-        {"xLeft":192,"xRight":668,"width":476,"y":492,"trap":"normal","name":"DIV.controls-pill"},
-        {"xLeft":192,"xRight":366,"width":174,"y":532,"trap":"normal","name":"A.topbar-btn"},
-        {"xLeft":376,"xRight":587,"width":211,"y":532,"trap":"normal","name":"A.topbar-btn"},
-        {"xLeft":1008,"xRight":1328,"width":320,"y":492,"trap":"normal","name":"ASIDE.hero-aside-status"},
-        {"xLeft":1031,"xRight":1305,"width":274,"y":280,"trap":"normal","name":"P"},
-        {"xLeft":1031,"xRight":1305,"width":274,"y":354,"trap":"normal","name":"LI"},
-        {"xLeft":1031,"xRight":1305,"width":274,"y":376,"trap":"normal","name":"LI"},
-        {"xLeft":1031,"xRight":1305,"width":274,"y":398,"trap":"normal","name":"LI"},
-        {"xLeft":1031,"xRight":1305,"width":274,"y":421,"trap":"normal","name":"LI"},
-        {"xLeft":1031,"xRight":1305,"width":274,"y":443,"trap":"normal","name":"LI"},
-        {"xLeft":192,"xRight":1328,"width":1136,"y":696,"trap":"normal","name":"DIV#selected-work"},
-        {"xLeft":192,"xRight":1328,"width":1136,"y":1176,"trap":"normal","name":"ARTICLE.featured-project-card"},
-        {"xLeft":231,"xRight":591,"width":360,"y":1073,"trap":"normal","name":"DIV"},
-        {"xLeft":231,"xRight":376,"width":145,"y":1123,"trap":"normal","name":"A.tech-pill"},
-        {"xLeft":631,"xRight":1289,"width":658,"y":910,"trap":"normal","name":"P"},
-        {"xLeft":631,"xRight":1289,"width":658,"y":1000,"trap":"normal","name":"DIV"},
-        {"xLeft":631,"xRight":1289,"width":658,"y":1056,"trap":"normal","name":"DIV"},
-        {"xLeft":631,"xRight":1289,"width":658,"y":1137,"trap":"normal","name":"DIV"},
-        {"xLeft":192,"xRight":744,"width":552,"y":1583,"trap":"normal","name":"ARTICLE.standard-project-card"},
-        {"xLeft":228,"xRight":708,"width":480,"y":1458,"trap":"normal","name":"P"},
-        {"xLeft":228,"xRight":342,"width":114,"y":1499,"trap":"normal","name":"A.tech-pill"},
-        {"xLeft":776,"xRight":1328,"width":552,"y":1583,"trap":"normal","name":"ARTICLE.standard-project-card"},
-        {"xLeft":812,"xRight":1292,"width":480,"y":1506,"trap":"normal","name":"P"},
-        {"xLeft":812,"xRight":1032,"width":220,"y":1547,"trap":"normal","name":"SPAN.tech-pill"},
-        {"xLeft":192,"xRight":1328,"width":1136,"y":1901,"trap":"normal","name":"ARTICLE.standard-project-card"},
-        {"xLeft":620,"xRight":1292,"width":672,"y":1804,"trap":"normal","name":"P"},
-        {"xLeft":620,"xRight":893,"width":273,"y":1850,"trap":"normal","name":"SPAN.tech-pill"},
-        {"xLeft":192,"xRight":1328,"width":1136,"y":2032,"trap":"normal","name":"DIV.section-header"},
-        {"xLeft":192,"xRight":555,"width":363,"y":2304,"trap":"normal","name":"DIV.capability-card"},
-        {"xLeft":225,"xRight":522,"width":297,"y":2271,"trap":"normal","name":"P"},
-        {"xLeft":579,"xRight":941,"width":363,"y":2304,"trap":"normal","name":"DIV.capability-card"},
-        {"xLeft":611,"xRight":909,"width":297,"y":2271,"trap":"normal","name":"P"},
-        {"xLeft":965,"xRight":1328,"width":363,"y":2304,"trap":"normal","name":"DIV.capability-card"},
-        {"xLeft":998,"xRight":1295,"width":297,"y":2271,"trap":"normal","name":"P"},
-        {"xLeft":192,"xRight":1328,"width":1136,"y":2434,"trap":"normal","name":"DIV.section-header"},
-        {"xLeft":192,"xRight":748,"width":556,"y":2646,"trap":"bounce","name":"ARTICLE.note-card"},
-        {"xLeft":217,"xRight":723,"width":505,"y":2621,"trap":"bounce","name":"P"},
-        {"xLeft":772,"xRight":1328,"width":556,"y":2646,"trap":"bounce","name":"ARTICLE.note-card"},
-        {"xLeft":797,"xRight":1303,"width":505,"y":2598,"trap":"bounce","name":"P"},
-        {"xLeft":192,"xRight":1328,"width":1136,"y":2782,"trap":"bounce","name":"ARTICLE.note-card"},
-        {"xLeft":217,"xRight":1303,"width":1085,"y":2756,"trap":"bounce","name":"P"},
-        {"xLeft":192,"xRight":1328,"width":1136,"y":2912,"trap":"normal","name":"DIV.section-header"},
-        {"xLeft":192,"xRight":1328,"width":1136,"y":3235,"trap":"normal","name":"SECTION.contact-card"},
-        {"xLeft":237,"xRight":875,"width":638,"y":3069,"trap":"normal","name":"H2"},
-        {"xLeft":237,"xRight":875,"width":638,"y":3144,"trap":"normal","name":"P"},
-        {"xLeft":907,"xRight":1283,"width":376,"y":3073,"trap":"cta","name":"A.cta-btn-primary"},
-        {"xLeft":907,"xRight":1090,"width":183,"y":3174,"trap":"normal","name":"A.cta-btn-secondary"},
-        {"xLeft":1100,"xRight":1283,"width":183,"y":3174,"trap":"normal","name":"A.cta-btn-secondary"}
+        {"xLeft":152,"xRight":762,"width":610,"y":222,"trap":"normal","name":"DIV.role-badge"},
+        {"xLeft":152,"xRight":936,"width":784,"y":312,"trap":"normal","name":"H1"},
+        {"xLeft":152,"xRight":936,"width":784,"y":428,"trap":"normal","name":"P.hero-hook"},
+        {"xLeft":152,"xRight":628,"width":476,"y":492,"trap":"normal","name":"DIV.controls-pill"},
+        {"xLeft":152,"xRight":326,"width":174,"y":532,"trap":"normal","name":"A.topbar-btn"},
+        {"xLeft":336,"xRight":547,"width":211,"y":532,"trap":"normal","name":"A.topbar-btn"},
+        {"xLeft":968,"xRight":1288,"width":320,"y":492,"trap":"normal","name":"ASIDE.hero-aside-status"},
+        {"xLeft":991,"xRight":1265,"width":274,"y":280,"trap":"normal","name":"P"},
+        {"xLeft":991,"xRight":1265,"width":274,"y":354,"trap":"normal","name":"LI"},
+        {"xLeft":991,"xRight":1265,"width":274,"y":376,"trap":"normal","name":"LI"},
+        {"xLeft":991,"xRight":1265,"width":274,"y":398,"trap":"normal","name":"LI"},
+        {"xLeft":991,"xRight":1265,"width":274,"y":421,"trap":"normal","name":"LI"},
+        {"xLeft":991,"xRight":1265,"width":274,"y":443,"trap":"normal","name":"LI"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":711,"trap":"normal","name":"DIV#selected-work"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":1192,"trap":"normal","name":"ARTICLE.featured-project-card"},
+        {"xLeft":191,"xRight":551,"width":360,"y":1089,"trap":"normal","name":"DIV"},
+        {"xLeft":191,"xRight":336,"width":145,"y":1138,"trap":"normal","name":"A.tech-pill"},
+        {"xLeft":591,"xRight":1249,"width":658,"y":925,"trap":"normal","name":"P"},
+        {"xLeft":591,"xRight":1249,"width":658,"y":1015,"trap":"normal","name":"DIV"},
+        {"xLeft":591,"xRight":1249,"width":658,"y":1072,"trap":"normal","name":"DIV"},
+        {"xLeft":591,"xRight":1249,"width":658,"y":1153,"trap":"normal","name":"DIV"},
+        {"xLeft":152,"xRight":704,"width":552,"y":1598,"trap":"normal","name":"ARTICLE.standard-project-card"},
+        {"xLeft":188,"xRight":668,"width":480,"y":1473,"trap":"normal","name":"P"},
+        {"xLeft":188,"xRight":302,"width":114,"y":1514,"trap":"normal","name":"A.tech-pill"},
+        {"xLeft":736,"xRight":1288,"width":552,"y":1598,"trap":"normal","name":"ARTICLE.standard-project-card"},
+        {"xLeft":772,"xRight":1252,"width":480,"y":1521,"trap":"normal","name":"P"},
+        {"xLeft":772,"xRight":992,"width":220,"y":1562,"trap":"normal","name":"SPAN.tech-pill"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":1917,"trap":"normal","name":"ARTICLE.standard-project-card"},
+        {"xLeft":580,"xRight":1252,"width":672,"y":1820,"trap":"normal","name":"P"},
+        {"xLeft":580,"xRight":853,"width":273,"y":1865,"trap":"normal","name":"SPAN.tech-pill"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":2063,"trap":"normal","name":"DIV.section-header"},
+        {"xLeft":152,"xRight":515,"width":363,"y":2334,"trap":"normal","name":"DIV.capability-card"},
+        {"xLeft":185,"xRight":482,"width":297,"y":2301,"trap":"normal","name":"P"},
+        {"xLeft":539,"xRight":901,"width":363,"y":2334,"trap":"normal","name":"DIV.capability-card"},
+        {"xLeft":571,"xRight":869,"width":297,"y":2301,"trap":"normal","name":"P"},
+        {"xLeft":925,"xRight":1288,"width":363,"y":2334,"trap":"normal","name":"DIV.capability-card"},
+        {"xLeft":958,"xRight":1255,"width":297,"y":2301,"trap":"normal","name":"P"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":2480,"trap":"normal","name":"DIV.section-header"},
+        {"xLeft":152,"xRight":708,"width":556,"y":2692,"trap":"bounce","name":"ARTICLE.note-card"},
+        {"xLeft":177,"xRight":683,"width":505,"y":2667,"trap":"bounce","name":"P"},
+        {"xLeft":732,"xRight":1288,"width":556,"y":2692,"trap":"bounce","name":"ARTICLE.note-card"},
+        {"xLeft":757,"xRight":1263,"width":505,"y":2644,"trap":"bounce","name":"P"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":2828,"trap":"bounce","name":"ARTICLE.note-card"},
+        {"xLeft":177,"xRight":1263,"width":1085,"y":2802,"trap":"bounce","name":"P"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":2974,"trap":"normal","name":"DIV.section-header"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":3297,"trap":"normal","name":"SECTION.contact-card"},
+        {"xLeft":197,"xRight":835,"width":638,"y":3131,"trap":"normal","name":"H2"},
+        {"xLeft":197,"xRight":835,"width":638,"y":3206,"trap":"normal","name":"P"},
+        {"xLeft":867,"xRight":1243,"width":376,"y":3135,"trap":"cta","name":"A.cta-btn-primary"},
+        {"xLeft":867,"xRight":1243,"width":376,"y":3236,"trap":"normal","name":"DIV.secondary-cta-rack"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":3488,"trap":"normal","name":"DIV.touchdown-zone"}
     ];
 
     function getDefaultRails() {
-        const BASE_SHELL_LEFT = 192;
+        const BASE_SHELL_LEFT = 152;
         const shell = document.querySelector('main.portfolio-shell');
         const currentShellLeft = shell ? (shell.getBoundingClientRect().left + 32) : BASE_SHELL_LEFT;
         const deltaX = Math.round(currentShellLeft - BASE_SHELL_LEFT);
@@ -150,8 +150,8 @@
                 trap: r.trap || "normal",
                 name: r.name || (r.domElement ? (r.domElement.tagName + (r.domElement.className ? '.' + r.domElement.className.split(' ')[0] : '')) : "custom_rail")
             }));
-            localStorage.setItem("apoorv_custom_rails_v3", JSON.stringify(clean));
-            console.log("💾 Saved custom rails v3 to localStorage:", clean.length);
+            localStorage.setItem("apoorv_custom_rails_v4", JSON.stringify(clean));
+            console.log("💾 Saved custom rails v4 to localStorage:", clean.length);
         } catch(e) {
             console.warn("Could not save to localStorage", e);
         }
@@ -162,13 +162,14 @@
         try {
             localStorage.removeItem("apoorv_custom_rails");
             localStorage.removeItem("apoorv_custom_rails_v2");
+            localStorage.removeItem("apoorv_custom_rails_v3");
         } catch (e) {}
 
         // Toggle Button in bottom-right corner
         const toggleBtn = document.createElement("button");
         toggleBtn.id = "collision-editor-toggle-btn";
-        toggleBtn.innerHTML = "🛠 MAP (E)";
-        toggleBtn.title = "Toggle Visual Ground/Collision Mapper [Hotkey: E]";
+        toggleBtn.innerHTML = "🛠 MAP (E / \\)";
+        toggleBtn.title = "Toggle Visual Ground/Collision Mapper [Hotkey: E or \\]";
         toggleBtn.style.cssText = `
             position: fixed;
             bottom: 20px;
@@ -188,11 +189,11 @@
         toggleBtn.addEventListener("click", toggleEditor);
         document.body.appendChild(toggleBtn);
 
-        // Global hotkey: 'E'
+        // Global hotkeys: 'E' and '\'
         window.addEventListener("keydown", (e) => {
             // Ignore when typing inside input or textarea
             if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
-            if (e.key === "e" || e.key === "E") {
+            if (e.key === "e" || e.key === "E" || e.key === "\\" || e.code === "Backslash") {
                 toggleEditor();
             } else if (isEditorOpen) {
                 handleEditorKeydown(e);
@@ -215,11 +216,11 @@
         if (toggleBtn) {
             toggleBtn.style.background = "#fce566";
             toggleBtn.style.color = "#17120f";
-            toggleBtn.innerHTML = "✕ CLOSE (E)";
+            toggleBtn.innerHTML = "✕ CLOSE (E / \\)";
         }
 
-        // Ensure clean bottom rails on first open if no v3 edits exist
-        if (!localStorage.getItem("apoorv_custom_rails_v3") || getRails().length === 0) {
+        // Ensure clean bottom rails on first open if no v4 edits exist
+        if (!localStorage.getItem("apoorv_custom_rails_v4") || getRails().length === 0) {
             window.landingRails = getDefaultRails();
         }
 
@@ -240,7 +241,7 @@
         if (toggleBtn) {
             toggleBtn.style.background = "#17120f";
             toggleBtn.style.color = "#fce566";
-            toggleBtn.innerHTML = "🛠 MAP (E)";
+            toggleBtn.innerHTML = "🛠 MAP (E / \\)";
         }
 
         if (window.setPhysicsActive) window.setPhysicsActive(true);

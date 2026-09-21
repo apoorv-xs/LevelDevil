@@ -1,11 +1,12 @@
 const portfolioScripts = [
-  "sky_engine.js?v=1010",
-  "kaboom.js?v=1010",
-  "system1_brain.js?v=1010",
-  "three_engine.js?v=1010",
-  "player_3d.js?v=1010",
-  "player.js?v=1010",
-  "portfolio_engine.js?v=1010"
+  "sky_engine.js?v=1011",
+  "kaboom.js?v=1011",
+  "system1_brain.js?v=1011",
+  "three_engine.js?v=1011",
+  "player_3d.js?v=1011",
+  "player.js?v=1011",
+  "portfolio_engine.js?v=1011",
+  "collision_editor.js?v=1011"
 ];
 
 function isSalesRoute(pathname = window.location.pathname) {
