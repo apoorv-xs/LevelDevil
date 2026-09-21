@@ -157,6 +157,22 @@
         mountainCanvas: null,
 
         init() {
+            // Guard: SkyEngine atmospheric flight engine is strictly for the Home platformer route ("/")
+            const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+            const isNonHome = pathname.includes("sales") || 
+                              pathname.includes("workspace") || 
+                              (typeof document !== "undefined" && (
+                                document.body.classList.contains("sales-page") || 
+                                document.body.classList.contains("retro-workspace")
+                              ));
+
+            if (isNonHome) {
+                console.log("SkyEngine: Inactive on non-home route (" + pathname + ").");
+                const existing = document.getElementById("sky-canvas");
+                if (existing) existing.remove();
+                return;
+            }
+
             this.canvas = document.getElementById("sky-canvas");
             if (!this.canvas) {
                 this.canvas = document.createElement("canvas");
@@ -501,6 +517,10 @@
             if (this._rAF) {
                 cancelAnimationFrame(this._rAF);
                 this._rAF = null;
+            }
+            if (this.canvas && this.canvas.parentNode) {
+                this.canvas.parentNode.removeChild(this.canvas);
+                this.canvas = null;
             }
             this.isRunning = false;
             this.clouds = [];

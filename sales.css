@@ -39,6 +39,8 @@ body::after {
   width: min(1160px, calc(100% - 32px));
   margin: 0 auto;
   padding: 78px 0 72px;
+  position: relative;
+  z-index: 10;
 }
 
 .workspace-head {

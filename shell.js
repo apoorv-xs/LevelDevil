@@ -16,6 +16,10 @@ function isWorkspaceRoute(pathname = window.location.pathname) {
   return pathname === "/workspace" || pathname.startsWith("/workspace/") || pathname.endsWith("/workspace/index.html");
 }
 
+function isHomeRoute(pathname = window.location.pathname) {
+  return !isSalesRoute(pathname) && !isWorkspaceRoute(pathname);
+}
+
 function setActiveNavigation(root = document) {
   const sales = isSalesRoute();
   const workspace = isWorkspaceRoute();
@@ -55,11 +59,19 @@ async function loadPortfolio() {
   if (portfolioLoadPromise) return portfolioLoadPromise;
 
   portfolioLoadPromise = (async () => {
-    // Ensure Sky canvas, Three.js canvas and game container exist
-    if (!document.getElementById("sky-canvas")) {
-      const sCanvas = document.createElement("canvas");
-      sCanvas.id = "sky-canvas";
-      document.body.insertBefore(sCanvas, document.body.firstChild);
+    // Sky canvas is exclusively for the main portfolio platformer route
+    if (isHomeRoute()) {
+      if (!document.getElementById("sky-canvas")) {
+        const sCanvas = document.createElement("canvas");
+        sCanvas.id = "sky-canvas";
+        document.body.insertBefore(sCanvas, document.body.firstChild);
+      }
+    } else {
+      const existingSky = document.getElementById("sky-canvas");
+      if (existingSky) existingSky.remove();
+      if (window.SkyEngine && typeof window.SkyEngine.dispose === "function") {
+        window.SkyEngine.dispose();
+      }
     }
     if (!document.getElementById("three-canvas")) {
       const canvas = document.createElement("canvas");
@@ -79,7 +91,11 @@ async function loadPortfolio() {
       await loadScript(resolveScriptPath("three.min.js"));
     }
 
-    for (const script of portfolioScripts) {
+    const scriptsToLoad = isHomeRoute()
+      ? portfolioScripts
+      : portfolioScripts.filter(s => !s.includes("sky_engine"));
+
+    for (const script of scriptsToLoad) {
       await loadScript(resolveScriptPath(script));
     }
     window.showUIButtons?.();
@@ -96,6 +112,8 @@ async function loadSalesRoute() {
   if (window.SkyEngine && typeof window.SkyEngine.dispose === "function") {
     window.SkyEngine.dispose();
   }
+  const existingSky = document.getElementById("sky-canvas");
+  if (existingSky) existingSky.remove();
   portfolioLoadPromise = null;
   const response = await fetch("/sales.html");
   if (!response.ok) throw new Error("Sales view unavailable");
