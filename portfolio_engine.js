@@ -1,3 +1,6 @@
+// Preserve native browser window.Event to prevent any library from clobbering DOM Event interface
+const _NativeDOMEvent = typeof window !== "undefined" ? window.Event : null;
+
 // Initialize Kaboom with mobile DPR clamp (PERF-02)
 const k = kaboom({
     width: window.innerWidth,
@@ -7,6 +10,11 @@ const k = kaboom({
     global: true,
     pixelDensity: Math.min(window.devicePixelRatio || 1, 2),
 });
+
+// Enforce native DOM Event restoration for Web3 wallet standards and extensions
+if (_NativeDOMEvent && typeof window !== "undefined") {
+    window.Event = _NativeDOMEvent;
+}
 
 const SPEED = 200;
 const JUMP_FORCE = 550;
