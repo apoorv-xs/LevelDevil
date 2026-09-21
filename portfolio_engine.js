@@ -90,7 +90,7 @@ onLoad(() => {
         {"xLeft":192,"xRight":668,"width":476,"y":492,"trap":"normal","name":"DIV.controls-pill"},
         {"xLeft":192,"xRight":366,"width":174,"y":532,"trap":"normal","name":"A.topbar-btn"},
         {"xLeft":376,"xRight":587,"width":211,"y":532,"trap":"normal","name":"A.topbar-btn"},
-        {"xLeft":1008,"xRight":1328,"width":320,"y":492,"trap":"drop","name":"ASIDE.hero-aside-status"},
+        {"xLeft":1008,"xRight":1328,"width":320,"y":492,"trap":"normal","name":"ASIDE.hero-aside-status"},
         {"xLeft":1031,"xRight":1305,"width":274,"y":280,"trap":"normal","name":"P"},
         {"xLeft":1031,"xRight":1305,"width":274,"y":354,"trap":"normal","name":"LI"},
         {"xLeft":1031,"xRight":1305,"width":274,"y":376,"trap":"normal","name":"LI"},
@@ -107,7 +107,7 @@ onLoad(() => {
         {"xLeft":631,"xRight":1289,"width":658,"y":1137,"trap":"normal","name":"DIV"},
         {"xLeft":192,"xRight":744,"width":552,"y":1583,"trap":"normal","name":"ARTICLE.standard-project-card"},
         {"xLeft":228,"xRight":708,"width":480,"y":1458,"trap":"normal","name":"P"},
-        {"xLeft":228,"xRight":342,"width":114,"y":1499,"trap":"spikes","name":"A.tech-pill"},
+        {"xLeft":228,"xRight":342,"width":114,"y":1499,"trap":"normal","name":"A.tech-pill"},
         {"xLeft":776,"xRight":1328,"width":552,"y":1583,"trap":"normal","name":"ARTICLE.standard-project-card"},
         {"xLeft":812,"xRight":1292,"width":480,"y":1506,"trap":"normal","name":"P"},
         {"xLeft":812,"xRight":1032,"width":220,"y":1547,"trap":"normal","name":"SPAN.tech-pill"},
@@ -117,7 +117,7 @@ onLoad(() => {
         {"xLeft":192,"xRight":1328,"width":1136,"y":2032,"trap":"normal","name":"DIV.section-header"},
         {"xLeft":192,"xRight":555,"width":363,"y":2304,"trap":"normal","name":"DIV.capability-card"},
         {"xLeft":225,"xRight":522,"width":297,"y":2271,"trap":"normal","name":"P"},
-        {"xLeft":579,"xRight":941,"width":363,"y":2304,"trap":"glitch","name":"DIV.capability-card"},
+        {"xLeft":579,"xRight":941,"width":363,"y":2304,"trap":"normal","name":"DIV.capability-card"},
         {"xLeft":611,"xRight":909,"width":297,"y":2271,"trap":"normal","name":"P"},
         {"xLeft":965,"xRight":1328,"width":363,"y":2304,"trap":"normal","name":"DIV.capability-card"},
         {"xLeft":998,"xRight":1295,"width":297,"y":2271,"trap":"normal","name":"P"},
@@ -132,9 +132,10 @@ onLoad(() => {
         {"xLeft":192,"xRight":1328,"width":1136,"y":3235,"trap":"normal","name":"SECTION.contact-card"},
         {"xLeft":237,"xRight":875,"width":638,"y":3069,"trap":"normal","name":"H2"},
         {"xLeft":237,"xRight":875,"width":638,"y":3144,"trap":"normal","name":"P"},
-        {"xLeft":907,"xRight":1283,"width":376,"y":3073,"trap":"bounce","name":"A.cta-btn-primary"},
+        {"xLeft":907,"xRight":1283,"width":376,"y":3073,"trap":"cta","name":"A.cta-btn-primary"},
         {"xLeft":907,"xRight":1090,"width":183,"y":3174,"trap":"normal","name":"A.cta-btn-secondary"},
-        {"xLeft":1100,"xRight":1283,"width":183,"y":3174,"trap":"normal","name":"A.cta-btn-secondary"}
+        {"xLeft":1100,"xRight":1283,"width":183,"y":3174,"trap":"normal","name":"A.cta-btn-secondary"},
+        {"xLeft":192,"xRight":1328,"width":1136,"y":3420,"trap":"normal","name":"DIV.touchdown-zone"}
     ];
 
     let landingRails = [];
@@ -215,146 +216,6 @@ onLoad(() => {
         return uniqueRails;
     }
 
-    // --- 5 STRATA KYBER DATA CORES (COLLECTIBLE REWARD SYSTEM) ---
-    const DATA_CORES = [
-        { id: "core-1", name: "Cirrus Telemetry Core", relX: 980, y: 190, sector: "S-01", collected: false, obj: null },
-        { id: "core-2", name: "Cloudbreak Barometric Core", relX: 560, y: 1360, sector: "S-02", collected: false, obj: null },
-        { id: "core-3", name: "Sky-Girder Structural Core", relX: 560, y: 2120, sector: "S-03", collected: false, obj: null },
-        { id: "core-4", name: "Rooftop Signal Core", relX: 460, y: 2520, sector: "S-04", collected: false, obj: null },
-        { id: "core-5", name: "Terra Firma Touchdown Core", relX: 900, y: 2980, sector: "S-05", collected: false, obj: null }
-    ];
-
-    let collectedCoresCount = 0;
-
-    function spawnDataCores() {
-        const BASE_SHELL_LEFT = 192;
-        const shell = document.querySelector('main.portfolio-shell');
-        const currentShellLeft = shell ? (shell.getBoundingClientRect().left + 32) : BASE_SHELL_LEFT;
-        const deltaX = Math.round(currentShellLeft - BASE_SHELL_LEFT);
-
-        DATA_CORES.forEach((core) => {
-            if (core.obj) {
-                try { destroy(core.obj); } catch(e) {}
-                core.obj = null;
-            }
-            if (core.collected) return;
-
-            const coreX = BASE_SHELL_LEFT + core.relX + deltaX;
-
-            const coreObj = add([
-                pos(coreX, core.y),
-                rect(22, 22),
-                rotate(45),
-                anchor("center"),
-                color(0, 229, 255),
-                outline(3, rgb(23, 18, 15)),
-                area(),
-                z(30),
-                "data_core"
-            ]);
-
-            core.obj = coreObj;
-        });
-    }
-
-    function collectDataCore(core) {
-        if (core.collected) return;
-        core.collected = true;
-        collectedCoresCount++;
-
-        // SFX
-        if (window.SFX && window.SFX.playPickup) window.SFX.playPickup();
-
-        // Animate core collection burst
-        if (core.obj) {
-            tween(core.obj.scale, vec2(2.0, 2.0), 0.2, (v) => core.obj.scale = v);
-            tween(core.obj.opacity, 0, 0.25, (v) => core.obj.opacity = v, easings.easeOutQuad).onEnd(() => {
-                try { destroy(core.obj); } catch(e) {}
-                core.obj = null;
-            });
-        }
-
-        // Particle sparkle burst
-        const originX = core.obj ? core.obj.pos.x : player.pos.x;
-        const originY = core.obj ? core.obj.pos.y : player.pos.y - 35;
-        for (let i = 0; i < 14; i++) {
-            const pAngle = (Math.PI * 2 * i) / 14;
-            const pSpeed = 120 + Math.random() * 80;
-            const p = add([
-                pos(originX, originY),
-                rect(5, 5),
-                rotate(45),
-                anchor("center"),
-                color(0, 229, 255),
-                outline(1, rgb(23, 18, 15)),
-                opacity(1),
-                z(35)
-            ]);
-            tween(p.pos.x, p.pos.x + Math.cos(pAngle) * pSpeed * 0.35, 0.35, (v) => p.pos.x = v);
-            tween(p.pos.y, p.pos.y + Math.sin(pAngle) * pSpeed * 0.35, 0.35, (v) => p.pos.y = v);
-            tween(p.opacity, 0, 0.35, (v) => p.opacity = v, easings.easeOutQuad).onEnd(() => {
-                try { destroy(p); } catch(e) {}
-            });
-        }
-
-        // Update HUD
-        const coresPill = document.getElementById("topbar-cores");
-        if (coresPill) {
-            coresPill.textContent = `💎 ${collectedCoresCount}/5 CORES`;
-            coresPill.style.background = "#fce566";
-            setTimeout(() => { if (coresPill) coresPill.style.background = ""; }, 300);
-        }
-
-        // Check for 5/5 Grand Reward: Golden Astromech Overcharge Mode
-        if (collectedCoresCount >= 5) {
-            triggerGoldenOvercharge();
-        }
-    }
-
-    function triggerGoldenOvercharge() {
-        console.log("5/5 DATA CORES COLLECTED! UNLOCKING GOLDEN ASTROMECH OVERCHARGE!");
-        if (window.SFX && window.SFX.playVictory) window.SFX.playVictory();
-
-        if (window.Player3D && window.Player3D.setGoldenMode) {
-            window.Player3D.setGoldenMode(true);
-        }
-
-        const coresPill = document.getElementById("topbar-cores");
-        if (coresPill) {
-            coresPill.textContent = "★ 5/5 GOLDEN DROID ★";
-            coresPill.style.background = "#ffd700";
-            coresPill.style.color = "#17120f";
-            coresPill.style.borderColor = "#17120f";
-            coresPill.style.boxShadow = "0 0 12px #ffd700, 2px 2px 0 #17120f";
-        }
-
-        // Overcharge jump celebration
-        if (player) {
-            player.jump(JUMP_FORCE * 1.25);
-        }
-
-        // Confetti celebration
-        for (let i = 0; i < 35; i++) {
-            const cx = player ? player.pos.x + (Math.random() - 0.5) * 400 : window.innerWidth / 2;
-            const cy = (player ? player.pos.y : window.scrollY + 300) - Math.random() * 200;
-            const colors = [rgb(255, 215, 0), rgb(0, 229, 255), rgb(235, 94, 40), rgb(255, 255, 255)];
-            const conf = add([
-                pos(cx, cy),
-                rect(8, 8),
-                rotate(Math.random() * 360),
-                color(colors[i % colors.length]),
-                outline(1, rgb(23, 18, 15)),
-                opacity(1),
-                z(40)
-            ]);
-            tween(conf.pos.y, conf.pos.y + 150 + Math.random() * 100, 0.8 + Math.random() * 0.4, (v) => conf.pos.y = v);
-            tween(conf.angle, conf.angle + 360, 1.2, (v) => conf.angle = v);
-            tween(conf.opacity, 0, 1.2, (v) => conf.opacity = v).onEnd(() => {
-                try { destroy(conf); } catch(e) {}
-            });
-        }
-    }
-
     function syncDOM(force = false) {
         if (!force && localStorage.getItem("apoorv_custom_rails_v3")) {
             if (loadSavedRails()) return;
@@ -364,7 +225,6 @@ onLoad(() => {
         landingRails = getCalibratedRails();
         window.landingRails = landingRails;
         console.log("Master calibrated bottom ground rails loaded as default:", landingRails.length);
-        spawnDataCores();
     }
 
     window.landingRails = landingRails;
@@ -436,28 +296,26 @@ onLoad(() => {
         if (!rail) return;
 
         if (rail.trap === "bounce") {
-            p.jump(JUMP_FORCE * 1.45);
+            p.jump(JUMP_FORCE * 1.35);
             if (rail.domElement) {
                 rail.domElement.style.transition = "transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
-                rail.domElement.style.transform = "scale(0.95) translateY(6px)";
+                rail.domElement.style.transform = "scale(0.97) translateY(4px)";
                 setTimeout(() => {
                     if (rail.domElement) rail.domElement.style.transform = "scale(1) translateY(0)";
                 }, 150);
             }
             if (window.SFX && window.SFX.playJump) window.SFX.playJump();
         } else if (rail.trap === "drop") {
-            // Level Devil Quicksand / Collapsing Platform Trap (0.1s warning)
             if (rail.domElement) {
-                rail.domElement.style.transition = "transform 0.08s";
-                rail.domElement.style.transform = "translateX(4px)";
-                setTimeout(() => { if (rail.domElement) rail.domElement.style.transform = "translateX(-4px)"; }, 35);
-                setTimeout(() => { if (rail.domElement) rail.domElement.style.transform = "translateX(0)"; }, 70);
+                rail.domElement.style.transition = "transform 0.1s";
+                rail.domElement.style.transform = "translateX(5px)";
+                setTimeout(() => { if (rail.domElement) rail.domElement.style.transform = "translateX(-5px)"; }, 50);
+                setTimeout(() => { if (rail.domElement) rail.domElement.style.transform = "translateX(0)"; }, 100);
 
                 setTimeout(() => {
                     if (rail.domElement) {
-                        rail.domElement.style.transition = "transform 0.6s ease-in, opacity 0.6s";
-                        rail.domElement.style.transform = "translateY(600px)";
-                        rail.domElement.style.opacity = "0.2";
+                        rail.domElement.style.transition = "transform 1s ease-in";
+                        rail.domElement.style.transform = "translateY(1000px)";
                     }
                     const idx = landingRails.indexOf(rail);
                     if (idx !== -1) landingRails.splice(idx, 1);
@@ -465,13 +323,10 @@ onLoad(() => {
                         p.grounded = false;
                         p.currentRail = null;
                     }
-                }, 100);
+                }, 500);
             }
-            if (window.SFX && window.SFX.playTrap) window.SFX.playTrap();
         } else if (rail.trap === "spikes") {
-            if (window.SFX && window.SFX.playTrap) window.SFX.playTrap();
-            if (window.Player3D && window.Player3D.smashIntoCamera) window.Player3D.smashIntoCamera();
-            if (typeof shake === "function") shake(12);
+            if (typeof shake === "function") shake(10);
             respawnPlayer();
         }
     }
@@ -520,50 +375,6 @@ onLoad(() => {
         }, 200);
     }
 
-    // --- TOUCHDOWN CELEBRATORY SEQUENCE ---
-    let touchdownCelebrated = false;
-    function triggerTouchdownCelebration() {
-        if (touchdownCelebrated) return;
-        touchdownCelebrated = true;
-        console.log("TOUCHDOWN CONFIRMED: 0m REACHED AT TERRA FIRMA RUNWAY!");
-
-        // 8-bit celebratory chime
-        if (window.SFX && window.SFX.playVictory) {
-            window.SFX.playVictory();
-        }
-
-        // Illuminate runway strip lights on Contact Card
-        const contactCard = document.querySelector('.contact-card');
-        if (contactCard) {
-            contactCard.style.transition = "box-shadow 0.4s ease, border-color 0.4s ease";
-            contactCard.style.boxShadow = "0 0 35px #fce566, 10px 10px 0 var(--purple-dark)";
-            contactCard.style.borderColor = "#fce566";
-            setTimeout(() => {
-                if (contactCard) {
-                    contactCard.style.boxShadow = "10px 10px 0 var(--purple-dark)";
-                    contactCard.style.borderColor = "var(--ink)";
-                }
-            }, 2000);
-        }
-
-        // Flashing runway strobe on topbar badge
-        const sectorPill = document.getElementById("topbar-sector");
-        if (sectorPill) {
-            sectorPill.style.background = "#fce566";
-            sectorPill.style.color = "#17120f";
-            sectorPill.style.borderColor = "#17120f";
-            sectorPill.style.boxShadow = "0 0 14px #fce566, 2px 2px 0 var(--shell-line)";
-            setTimeout(() => {
-                if (sectorPill) {
-                    sectorPill.style.background = "";
-                    sectorPill.style.color = "";
-                    sectorPill.style.borderColor = "";
-                    sectorPill.style.boxShadow = "";
-                }
-            }, 1500);
-        }
-    }
-
     onUpdate(() => {
         const dtTotal = dt();
         const currentScrollY = window.scrollY || window.pageYOffset || 0;
@@ -609,18 +420,6 @@ onLoad(() => {
 
                     for (const rail of landingRails) {
                         if (player.pos.x >= rail.xLeft - 10 && player.pos.x <= rail.xRight + 10) {
-                            // Glitch platform: intangible when phasing out
-                            if (rail.trap === "glitch") {
-                                const t = (typeof time === "function") ? time() : performance.now() * 0.001;
-                                const isGlitchSolid = Math.sin(t * 2) > -0.25;
-                                if (!isGlitchSolid) {
-                                    if (rail.domElement) rail.domElement.style.opacity = "0.35";
-                                    continue;
-                                } else {
-                                    if (rail.domElement) rail.domElement.style.opacity = "1.0";
-                                }
-                            }
-
                             // Swept interval check: yPrev <= rail.y <= yNext
                             if (yPrev <= rail.y + 0.1 && rail.y <= yNext + 0.5) {
                                 if (rail.y < bestY) {
@@ -648,6 +447,56 @@ onLoad(() => {
             }
         }
 
+        // Dual-Driven Camera Tracking:
+        // As player actively moves/falls downwards, auto-scroll when entering bottom 65% of viewport
+        if (isPhysicsActive && !isRespawning && player) {
+            const vh = window.innerHeight;
+            const playerScreenY = player.pos.y - currentScrollY;
+            const maxScroll = Math.max(0, document.documentElement.scrollHeight - vh);
+
+            const isMovingDown = player.vy > 10 || player.isMovingThisFrame || (window.controlMode === "manual" && (typeof isKeyDown === "function" && (isKeyDown("s") || isKeyDown("down"))));
+            if (isMovingDown && playerScreenY > vh * 0.65) {
+                const targetScroll = player.pos.y - vh * 0.45;
+                const clampedTarget = Math.min(maxScroll, Math.max(0, targetScroll));
+                if (clampedTarget > currentScrollY) {
+                    const diff = clampedTarget - currentScrollY;
+                    const scrollStep = Math.max(1, Math.min(diff * 0.12, 28));
+                    window.scrollBy(0, scrollStep);
+                }
+            } else if (player.vy < -10 && playerScreenY < vh * 0.25 && currentScrollY > 0) {
+                const targetScroll = player.pos.y - vh * 0.45;
+                const clampedTarget = Math.max(0, targetScroll);
+                if (clampedTarget < currentScrollY) {
+                    const diff = clampedTarget - currentScrollY;
+                    const scrollStep = Math.min(-1, Math.max(diff * 0.12, -28));
+                    window.scrollBy(0, scrollStep);
+                }
+            }
+        }
+
+        // Altimeter Telemetry HUD (from 10,000 FT at stratosphere to 0 FT / TOUCHDOWN at bedrock)
+        const altimeterPill = document.getElementById("altimeter-pill");
+        if (altimeterPill) {
+            const vh = window.innerHeight;
+            const maxScroll = Math.max(1, document.documentElement.scrollHeight - vh);
+            const scrollProgress = Math.min(1, Math.max(0, currentScrollY / maxScroll));
+            const touchdownEl = document.querySelector('.touchdown-zone') || document.querySelector('.contact-card');
+            const bottomY = touchdownEl ? (touchdownEl.getBoundingClientRect().top + currentScrollY) : 3200;
+            const heroBaseline = 550;
+            const playerProgress = player ? Math.min(1, Math.max(0, (player.pos.y - heroBaseline) / (bottomY - heroBaseline))) : 0;
+            let progress = Math.min(1, Math.max(scrollProgress, playerProgress));
+            if (currentScrollY <= 10 && (!player || player.pos.y <= heroBaseline)) {
+                progress = 0;
+            }
+
+            if (progress >= 0.98 || currentScrollY >= maxScroll - 20 || (player && player.pos.y >= bottomY - 60)) {
+                altimeterPill.textContent = "ALT: 0 FT / TOUCHDOWN";
+            } else {
+                const alt = Math.max(0, Math.round((1 - progress) * 10000));
+                altimeterPill.textContent = `ALT: ${alt.toLocaleString()} FT`;
+            }
+        }
+
         const scrollDelta = currentScrollY - lastScrollY;
         lastScrollY = currentScrollY;
 
@@ -660,107 +509,19 @@ onLoad(() => {
             }
         }
 
-        // --- DUAL-MODE CAMERA TRACKING ---
-        // When the player is active (WASD/arrows/touch), smoothly scroll the page down/up to follow BB-8 across the sections
-        const isPlayerActive = (typeof isKeyDown === "function" && (isKeyDown("left") || isKeyDown("right") || isKeyDown("up") || isKeyDown("down") || isKeyDown("a") || isKeyDown("d") || isKeyDown("w") || isKeyDown("s") || isKeyDown("space"))) || Boolean(window.mobileLeftDown || window.mobileRightDown || window.mobileJumpPressed || player.isMovingThisFrame);
-
-        if (isPlayerActive && isPhysicsActive && !isRespawning) {
-            const lowerComfortZone = currentScrollY + window.innerHeight * 0.60;
-            const upperComfortZone = currentScrollY + window.innerHeight * 0.25;
-
-            if (player.pos.y > lowerComfortZone) {
-                const targetScrollY = Math.min(
-                    document.documentElement.scrollHeight - window.innerHeight,
-                    player.pos.y - window.innerHeight * 0.45
-                );
-                const diff = targetScrollY - currentScrollY;
-                if (diff > 1) {
-                    window.scrollBy(0, Math.min(diff * 0.12, 25));
-                }
-            } else if (player.pos.y < upperComfortZone && currentScrollY > 0) {
-                const targetScrollY = Math.max(0, player.pos.y - window.innerHeight * 0.35);
-                const diff = targetScrollY - currentScrollY;
-                if (diff < -1) {
-                    window.scrollBy(0, Math.max(diff * 0.12, -25));
-                }
-            }
-        }
-
         camPos(window.innerWidth / 2, currentScrollY + window.innerHeight / 2);
 
         const viewTop = currentScrollY;
         const viewBottom = currentScrollY + window.innerHeight;
 
-        // Out of bounds Recovery: generous threshold (650px below viewport or past bottom boundary)
-        const docBottom = Math.max(document.body.scrollHeight, 3450);
-        if ((player.pos.y > docBottom + 100 || player.pos.y > viewBottom + 650 || player.pos.y < viewTop - 400) && !isRespawning && isPhysicsActive) {
+        // Out of bounds Recovery (relaxed kill plane to allow inter-section leaps)
+        const isFarBelowView = player.pos.y > viewBottom + 900;
+        const isPastBedrockVoid = player.pos.y > 3650;
+        const isAboveCeiling = player.pos.y < -300;
+
+        if ((isFarBelowView || isPastBedrockVoid || isAboveCeiling) && !isRespawning && isPhysicsActive) {
             respawnPlayer();
         }
-
-        // --- REAL-TIME AVIATION ALTIMETER & 5-STRATA CALCULATION ---
-        const docMax = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-        const playerDescent = (player && player.pos) ? Math.max(0, player.pos.y - currentScrollY - 312) : 0;
-        const effectiveDepth = Math.min(docMax, Math.max(0, currentScrollY + playerDescent));
-        const altitudeMeters = Math.max(0, Math.round(10000 - (effectiveDepth / docMax) * 10000));
-
-        let hudText = "";
-        let sectorClass = "sector-1";
-
-        if (altitudeMeters >= 7500) {
-            hudText = `ALT: ${altitudeMeters.toLocaleString()}m • CIRRUS`;
-            sectorClass = "sector-1";
-        } else if (altitudeMeters >= 4500) {
-            hudText = `ALT: ${altitudeMeters.toLocaleString()}m • CLOUDBREAK`;
-            sectorClass = "sector-2";
-        } else if (altitudeMeters >= 2000) {
-            hudText = `ALT: ${altitudeMeters.toLocaleString()}m • GIRDERS`;
-            sectorClass = "sector-3";
-        } else if (altitudeMeters >= 350) {
-            hudText = `ALT: ${altitudeMeters.toLocaleString()}m • ROOFTOPS`;
-            sectorClass = "sector-4";
-        } else {
-            hudText = "ALT: 0m • TOUCHDOWN";
-            sectorClass = "sector-5";
-            triggerTouchdownCelebration();
-        }
-
-        if (altitudeMeters >= 1000) {
-            touchdownCelebrated = false;
-        }
-
-        const prevSectorClass = window.currentSectorClass;
-        window.currentSector = hudText;
-        window.currentSectorClass = sectorClass;
-        window.currentAltitude = altitudeMeters;
-
-        const sectorPill = document.getElementById("topbar-sector");
-        if (sectorPill && sectorPill.textContent !== hudText) {
-            sectorPill.textContent = hudText;
-        }
-
-        if (prevSectorClass && prevSectorClass !== sectorClass) {
-            if (window.SFX && window.SFX.playSectorChange) {
-                window.SFX.playSectorChange();
-            }
-        }
-
-        if (window.Engine3D && window.Engine3D.setSectorDepth) {
-            window.Engine3D.setSectorDepth(effectiveDepth, sectorClass);
-        }
-
-        // --- DATA CORES FLOATING ANIMATION & COLLISION ---
-        DATA_CORES.forEach((core, idx) => {
-            if (!core.collected && core.obj) {
-                const t = (typeof time === "function") ? time() : performance.now() * 0.001;
-                core.obj.pos.y = core.y + Math.sin(t * 4 + idx) * 8;
-                core.obj.angle = 45 + Math.sin(t * 2 + idx) * 15;
-
-                // Check collision with player (hitbox center around y - 35)
-                if (player && Math.hypot(player.pos.x - core.obj.pos.x, (player.pos.y - 35) - core.obj.pos.y) < 38) {
-                    collectDataCore(core);
-                }
-            }
-        });
 
         // Initialize 3D Player if engine is ready
         if (window.Engine3D && window.Engine3D.isReady && !is3DReady) {

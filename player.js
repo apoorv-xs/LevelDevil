@@ -94,6 +94,8 @@ function createPlayer(x, y) {
             window.mobileJumpPressed = false;
         }
 
+        guy.isMovingThisFrame = isMoving;
+
         // 4. Directional Flipping
         const currentScaleX = Math.abs(guy.scale.x);
         guy.scale.x = guy.facingLeft ? -currentScaleX : currentScaleX;
