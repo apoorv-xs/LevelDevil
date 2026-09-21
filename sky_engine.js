@@ -21,19 +21,18 @@
         return `rgb(${r}, ${g}, ${b})`;
     }
 
-    // 5 Distinct Atmospheric Strata Palettes (10,000 FT -> 0 FT)
-    // Each stratum defines [topSkyColor, bottomSkyColor, hazeColor]
+    // 5 Cohesive Warm Golden-Amber Strata (100% Brand-Locked to Level Devil --amber #e6a83b)
     const STRATA_PALETTES = [
-        // Stratum 1 (0 - 650px / 10,000 - 8,000 FT): Cosmic Stratosphere Twilight into Amber
-        { y: 0, top: hexToRgb("#3d226b"), mid: hexToRgb("#6d3bb8"), bot: hexToRgb("#e6a83b") },
-        // Stratum 2 (650 - 1450px / 8,000 - 5,500 FT): Cloudbreak Amber Flight Corridor
-        { y: 700, top: hexToRgb("#6d3bb8"), mid: hexToRgb("#e6a83b"), bot: hexToRgb("#f6c962") },
-        // Stratum 3 (1450 - 2250px / 5,500 - 3,000 FT): Golden Daylight Troposphere
-        { y: 1500, top: hexToRgb("#e6a83b"), mid: hexToRgb("#f6c962"), bot: hexToRgb("#fff4c9") },
-        // Stratum 4 (2250 - 3050px / 3,000 - 1,000 FT): Mountain Approach & Ochre Haze
-        { y: 2300, top: hexToRgb("#d9822b"), mid: hexToRgb("#c27a29"), bot: hexToRgb("#663c1a") },
-        // Stratum 5 (3050 - 3700px / 1,000 - 0 FT): Bedrock Slate & Runway Asphalt
-        { y: 3200, top: hexToRgb("#3a2b22"), mid: hexToRgb("#241c17"), bot: hexToRgb("#17120f") }
+        // Stratum 1 (0 - 650px / 10,000 - 8,000 FT): Bright Golden Dawn Stratosphere
+        { y: 0, top: hexToRgb("#f6c962"), mid: hexToRgb("#f0b849"), bot: hexToRgb("#e6a83b") },
+        // Stratum 2 (650 - 1450px / 8,000 - 5,500 FT): Signature Level Devil Amber Flight Corridor
+        { y: 700, top: hexToRgb("#f0b849"), mid: hexToRgb("#e6a83b"), bot: hexToRgb("#e6a83b") },
+        // Stratum 3 (1450 - 2250px / 5,500 - 3,000 FT): Warm Troposphere Sunlight & Contours
+        { y: 1500, top: hexToRgb("#e6a83b"), mid: hexToRgb("#f6c962"), bot: hexToRgb("#fff1bd") },
+        // Stratum 4 (2250 - 3050px / 3,000 - 1,000 FT): Mountain Approach Warm Golden Ochre
+        { y: 2300, top: hexToRgb("#f6c962"), mid: hexToRgb("#e6a83b"), bot: hexToRgb("#d98f2d") },
+        // Stratum 5 (3050 - 3700px / 1,000 - 0 FT): Bedrock Touchdown Warm Terra Amber
+        { y: 3200, top: hexToRgb("#e6a83b"), mid: hexToRgb("#d98f2d"), bot: hexToRgb("#c87a22") }
     ];
 
     function getStrataGradient(scrollY, maxScroll, h) {
