@@ -19,13 +19,17 @@
     <link rel="stylesheet" href="shell.css">
     <link rel="stylesheet" href="sales.css">
     <style>
+        body:not(.sales-page) {
+            background: transparent !important;
+        }
+
         /* --- ASYMMETRIC BRUTALIST & EDITORIAL PLATFORMING LAYOUT --- */
         main.portfolio-shell {
             max-width: 1200px;
             margin: 0 auto;
             padding: calc(54px + 2rem) 2rem 6rem;
             position: relative;
-            z-index: 1;
+            z-index: 10;
         }
 
         /* --- HERO SECTION (LEFT-ALIGNED & ASYMMETRIC) --- */
@@ -110,11 +114,13 @@
         /* --- FAMILIAR SECTION HEADINGS --- */
         .section-header {
             font-family: "Press Start 2P", monospace;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             color: var(--ink);
             margin: 5rem 0 2rem 0;
-            padding-bottom: 14px;
-            border-bottom: 3px solid var(--ink);
+            padding: 14px 20px;
+            background: var(--cream);
+            border: 3px solid var(--ink);
+            box-shadow: 5px 5px 0 var(--ink);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -415,6 +421,18 @@
         }
 
         /* --- CANVAS OVERLAYS --- */
+        #sky-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            outline: none;
+            background: transparent;
+        }
+
         #three-canvas, #babylon-canvas {
             position: fixed;
             top: 0;
@@ -764,6 +782,9 @@
             requestAnimationFrame(updateFPS);
         })();
     </script>
+
+    <!-- 5-STRATA ATMOSPHERIC SKY CANVAS -->
+    <canvas id="sky-canvas"></canvas>
 
     <!-- THREE.JS 3D CANVAS -->
     <canvas id="three-canvas"></canvas>

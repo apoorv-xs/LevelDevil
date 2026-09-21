@@ -1,10 +1,11 @@
 const portfolioScripts = [
-  "kaboom.js?v=1009",
-  "system1_brain.js?v=1009",
-  "three_engine.js?v=1009",
-  "player_3d.js?v=1009",
-  "player.js?v=1009",
-  "portfolio_engine.js?v=1009"
+  "sky_engine.js?v=1010",
+  "kaboom.js?v=1010",
+  "system1_brain.js?v=1010",
+  "three_engine.js?v=1010",
+  "player_3d.js?v=1010",
+  "player.js?v=1010",
+  "portfolio_engine.js?v=1010"
 ];
 
 function isSalesRoute(pathname = window.location.pathname) {
@@ -54,7 +55,12 @@ async function loadPortfolio() {
   if (portfolioLoadPromise) return portfolioLoadPromise;
 
   portfolioLoadPromise = (async () => {
-    // Ensure Three.js canvas and game container exist
+    // Ensure Sky canvas, Three.js canvas and game container exist
+    if (!document.getElementById("sky-canvas")) {
+      const sCanvas = document.createElement("canvas");
+      sCanvas.id = "sky-canvas";
+      document.body.insertBefore(sCanvas, document.body.firstChild);
+    }
     if (!document.getElementById("three-canvas")) {
       const canvas = document.createElement("canvas");
       canvas.id = "three-canvas";
@@ -86,6 +92,9 @@ async function loadSalesRoute() {
   if (document.body?.classList?.contains("sales-page") || window.location.pathname.endsWith("/sales.html")) return;
   if (window.Engine3D && typeof window.Engine3D.destroy === "function") {
     window.Engine3D.destroy();
+  }
+  if (window.SkyEngine && typeof window.SkyEngine.dispose === "function") {
+    window.SkyEngine.dispose();
   }
   portfolioLoadPromise = null;
   const response = await fetch("/sales.html");
