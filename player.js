@@ -73,7 +73,10 @@ function createPlayer(x, y) {
         // Safety: Prevent sticky keys running when window loses focus
         if (!document.hasFocus()) return;
 
-        if (window.controlMode === 'manual') {
+        const activeEl = document.activeElement;
+        const isTyping = activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA" || activeEl.tagName === "SELECT" || activeEl.isContentEditable);
+
+        if (window.controlMode === 'manual' && !isTyping) {
             if (isKeyDown("left") || isKeyDown("a") || window.mobileLeftDown) {
                 guy.move(-SPEED, 0);
                 isMoving = true;

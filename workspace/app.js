@@ -850,9 +850,11 @@ function renderQueue() {
       </div>
     `;
 
+    item.setAttribute('data-kaboom-body', 'true');
     item.onclick = () => selectProspect(p.id);
     listEl.appendChild(item);
   });
+  window.syncDOM?.();
 }
 
 function selectProspect(id) {

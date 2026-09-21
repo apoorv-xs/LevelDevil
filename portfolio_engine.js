@@ -12,8 +12,33 @@ const JUMP_FORCE = 550;
 const GRAVITY = 1600;
 setGravity(GRAVITY);
 
-window.controlMode = "idle"; // Idle on spawn so character stays grounded on hero header
+window.controlMode = "autonomous"; // Naturally autonomous AI companion across every page
 let manualTimeout = null;
+
+function isTypingInForm() {
+    if (typeof document === "undefined") return false;
+    const el = document.activeElement;
+    if (!el) return false;
+    const tag = el.tagName;
+    return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || Boolean(el.isContentEditable);
+}
+
+function resetToAutonomous() {
+    if (manualTimeout) clearTimeout(manualTimeout);
+    manualTimeout = setTimeout(() => {
+        window.controlMode = "autonomous";
+        manualTimeout = null;
+    }, 2600); // 2.5 - 3.0 seconds idle time
+}
+
+function triggerManualControl() {
+    if (isTypingInForm()) return;
+    window.controlMode = "manual";
+    if (manualTimeout) {
+        clearTimeout(manualTimeout);
+        manualTimeout = null;
+    }
+}
 
 // Track mouse position for companion 3D head/eye gaze
 window.mousePos2D = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
@@ -35,12 +60,13 @@ const btnJump = document.getElementById("btn-jump");
 if (btnLeft) {
     const startLeft = (e) => {
         if (e.cancelable) e.preventDefault();
-        window.controlMode = "manual";
+        triggerManualControl();
         window.mobileLeftDown = true;
     };
     const endLeft = (e) => {
         if (e.cancelable) e.preventDefault();
         window.mobileLeftDown = false;
+        resetToAutonomous();
     };
     btnLeft.addEventListener("touchstart", startLeft, { passive: false });
     btnLeft.addEventListener("touchend", endLeft, { passive: false });
@@ -52,12 +78,13 @@ if (btnLeft) {
 if (btnRight) {
     const startRight = (e) => {
         if (e.cancelable) e.preventDefault();
-        window.controlMode = "manual";
+        triggerManualControl();
         window.mobileRightDown = true;
     };
     const endRight = (e) => {
         if (e.cancelable) e.preventDefault();
         window.mobileRightDown = false;
+        resetToAutonomous();
     };
     btnRight.addEventListener("touchstart", startRight, { passive: false });
     btnRight.addEventListener("touchend", endRight, { passive: false });
@@ -69,8 +96,9 @@ if (btnRight) {
 if (btnJump) {
     const doJump = (e) => {
         if (e.cancelable) e.preventDefault();
-        window.controlMode = "manual";
+        triggerManualControl();
         window.mobileJumpPressed = true;
+        resetToAutonomous();
     };
     btnJump.addEventListener("touchstart", doJump, { passive: false });
     btnJump.addEventListener("mousedown", doJump);
@@ -133,13 +161,19 @@ onLoad(() => {
         {"xLeft":237,"xRight":875,"width":638,"y":3069,"trap":"normal","name":"H2"},
         {"xLeft":237,"xRight":875,"width":638,"y":3144,"trap":"normal","name":"P"},
         {"xLeft":907,"xRight":1283,"width":376,"y":3073,"trap":"cta","name":"A.cta-btn-primary"},
-        {"xLeft":907,"xRight":1090,"width":183,"y":3174,"trap":"normal","name":"A.cta-btn-secondary"},
-        {"xLeft":1100,"xRight":1283,"width":183,"y":3174,"trap":"normal","name":"A.cta-btn-secondary"},
+        {"xLeft":907,"xRight":1283,"width":376,"y":3174,"trap":"normal","name":"DIV.secondary-cta-rack"},
         {"xLeft":192,"xRight":1328,"width":1136,"y":3420,"trap":"normal","name":"DIV.touchdown-zone"}
     ];
 
     let landingRails = [];
     let isPhysicsActive = false;
+
+    function getCurrentPage() {
+        const p = (window.location.pathname || "").toLowerCase();
+        if (p.includes("sales") || document.body?.classList?.contains("sales-page")) return "sales";
+        if (p.includes("workspace") || document.body?.classList?.contains("retro-workspace")) return "workspace";
+        return "home";
+    }
 
     function getCalibratedRails() {
         const BASE_SHELL_LEFT = 192;
@@ -173,22 +207,68 @@ onLoad(() => {
         return false;
     }
 
-    // Dynamic DOM Bottom Landing Rail Detection
-    function detectDOMBottomRails() {
-        const elements = document.querySelectorAll('[data-kaboom-body="true"], [data-rail="true"]');
+    // Dynamic Multi-Page DOM Bottom Landing Rail Scanner
+    function generatePageRails() {
+        const page = getCurrentPage();
+        if (page === "home") {
+            return getCalibratedRails();
+        }
+
         const scrollY = window.scrollY || window.pageYOffset || 0;
+        let selectors = [];
+        if (page === "sales") {
+            selectors = [
+                '.hero',
+                '.hero h1',
+                '.hero .lede',
+                '.hero a',
+                '.action-rail a',
+                '#form-google-auth-box',
+                '#inquiry-card',
+                '#inquiry-card h2',
+                '#inquiry-form label',
+                '#inquiry-form input',
+                '#inquiry-form select',
+                '#inquiry-form textarea',
+                '#inquiry-form button[type="submit"]',
+                '#engagement-card',
+                '#engagement-card h2',
+                '#engagement-card div[style*="padding:10px 12px"]',
+                '[data-kaboom-body="true"]',
+                '[data-rail="true"]'
+            ];
+        } else if (page === "workspace") {
+            selectors = [
+                'header.topbar',
+                '.site-nav',
+                '.city-tab',
+                '#queueSearchInput',
+                '#queueList > div',
+                '.studio-panel',
+                '#activeName',
+                '#whatsappActionBtn',
+                '#btnPrevLeadHero',
+                '#btnNextLeadHero',
+                '.obj-btn',
+                '#objectionBox',
+                '#flawsContainer',
+                '#flawsContainer > div',
+                '#dossierPane .grid > div',
+                '#dossierPane > div.bg-\\[\\#15161B\\]',
+                '[data-kaboom-body="true"]',
+                '[data-rail="true"]'
+            ];
+        }
+
+        const elements = document.querySelectorAll(selectors.join(', '));
         const detected = [];
 
         elements.forEach(el => {
             const rect = el.getBoundingClientRect();
-            // Disregard collapsed or non-visible elements
             if (rect.width < 10 || rect.height < 4) return;
-
-            // Restructure detection: Landing rail is computed at the BOTTOM edge/baseline of the DOM element
             const yRail = Math.round(rect.bottom + scrollY);
             const rawTrap = el.getAttribute("data-trap");
-            const trapType = (rawTrap && rawTrap !== "false" && rawTrap !== "none") ? rawTrap : "normal";
-
+            const trapType = (rawTrap && rawTrap !== "false" && rawTrap !== "none") ? rawTrap : (el.type === "submit" ? "cta" : "normal");
             const tag = el.tagName;
             const cls = el.className && typeof el.className === "string" ? '.' + el.className.split(' ')[0] : '';
             const name = el.id ? `${tag}#${el.id}` : `${tag}${cls}`;
@@ -204,41 +284,46 @@ onLoad(() => {
             });
         });
 
-        // Deduplicate any identical overlapping rails (within 2px Y and 4px X)
+        // Deduplicate overlapping rails (within 3px Y and 6px X)
         const uniqueRails = [];
         for (const r of detected) {
-            const dup = uniqueRails.find(u => Math.abs(u.y - r.y) <= 2 && Math.abs(u.xLeft - r.xLeft) <= 4 && Math.abs(u.xRight - r.xRight) <= 4);
-            if (!dup) {
-                uniqueRails.push(r);
-            }
+            const dup = uniqueRails.find(u => Math.abs(u.y - r.y) <= 3 && Math.abs(u.xLeft - r.xLeft) <= 6 && Math.abs(u.xRight - r.xRight) <= 6);
+            if (!dup) uniqueRails.push(r);
         }
-
         return uniqueRails;
     }
 
     function syncDOM(force = false) {
-        if (!force && localStorage.getItem("apoorv_custom_rails_v3")) {
+        if (!force && getCurrentPage() === "home" && localStorage.getItem("apoorv_custom_rails_v3")) {
             if (loadSavedRails()) return;
         }
 
-        // Master default: Use the hardcoded master calibrated bottom landing rails
-        landingRails = getCalibratedRails();
+        landingRails = generatePageRails();
         window.landingRails = landingRails;
-        console.log("Master calibrated bottom ground rails loaded as default:", landingRails.length);
+        console.log(`Landing rails loaded for [${getCurrentPage()}]:`, landingRails.length);
     }
 
     window.landingRails = landingRails;
     window.syncDOM = () => syncDOM(true);
     window.setPhysicsActive = (val) => { isPhysicsActive = val; };
 
-    // Pillar 6: Spawn player perched on the bottom baseline of H1 "APOORV"
-    function placePlayerOnHero() {
-        const h1 = document.querySelector('h1[data-kaboom-body="true"]') || document.querySelector('h1');
-        if (h1 && player) {
-            const r = h1.getBoundingClientRect();
+    // Initial placement of BB-8 across any page
+    function placePlayerInitial() {
+        const page = getCurrentPage();
+        let targetEl = null;
+        if (page === "home") {
+            targetEl = document.querySelector('h1[data-kaboom-body="true"]') || document.querySelector('h1');
+        } else if (page === "sales") {
+            targetEl = document.querySelector('.hero h1') || document.querySelector('h1');
+        } else if (page === "workspace") {
+            targetEl = document.querySelector('header.topbar') || document.querySelector('.city-tab') || document.querySelector('#queueSearchInput');
+        }
+
+        if (targetEl && player) {
+            const r = targetEl.getBoundingClientRect();
             const scrollY = window.scrollY || window.pageYOffset || 0;
             const targetY = Math.round(r.bottom + scrollY);
-            player.pos.x = Math.round(r.left + 120);
+            player.pos.x = Math.round(r.left + Math.min(120, r.width / 2));
             player.pos.y = targetY;
             player.vy = 0;
             if (player.vel) {
@@ -246,24 +331,22 @@ onLoad(() => {
                 player.vel.y = 0;
             }
             player.grounded = true;
-            const matchingRail = landingRails.find(rail => rail.domElement === h1 || rail.name === "H1" || (rail.xLeft <= player.pos.x && rail.xRight >= player.pos.x && Math.abs(rail.y - targetY) <= 5));
+            const matchingRail = landingRails.find(rail => rail.domElement === targetEl || (rail.xLeft <= player.pos.x && rail.xRight >= player.pos.x && Math.abs(rail.y - targetY) <= 8));
             player.currentRail = matchingRail || null;
-            console.log("placePlayerOnHero perched player on H1 bottom:", player.pos.x, player.pos.y);
+            console.log(`Placed BB-8 on initial rail for [${page}]:`, player.pos.x, player.pos.y);
         }
     }
 
     // Initial DOM sync and placement
     syncDOM();
-    placePlayerOnHero();
+    placePlayerInitial();
 
-    // Pillar 5: Ensure initial physics sleep until document.fonts.ready finishes
+    // Ensure initial physics sleep until document.fonts.ready finishes
     const activatePhysics = () => {
         syncDOM();
-        if (window.controlMode === "idle") {
-            placePlayerOnHero();
-        }
+        placePlayerInitial();
         isPhysicsActive = true;
-        console.log("Fonts ready: physics activated with Frame 0 stability.");
+        console.log("Fonts ready: physics activated with Frame 0 stability across page.");
     };
 
     if (document.fonts && document.fonts.ready) {
@@ -285,7 +368,9 @@ onLoad(() => {
 
     // --- SCROLL-WIND PHYSICS & CAMERA SYNC ---
     debug.inspect = false;
-    let lastScrollY = window.scrollY;
+    let lastScrollY = window.scrollY || 0;
+    let lastDwellY = window.scrollY || 0;
+    let dwellDuration = 0;
     let isRespawning = false;
 
     function handleLanding(p, rail) {
@@ -390,10 +475,17 @@ onLoad(() => {
                 if (player.grounded && player.currentRail) {
                     const rail = player.currentRail;
                     const onRailX = (player.pos.x >= rail.xLeft - 10 && player.pos.x <= rail.xRight + 10);
-                    if (!onRailX) {
-                        // Stepped off the edge
+                    const isDroppingDown = window.controlMode === "manual" && !isTypingInForm() &&
+                        (typeof isKeyDown === "function" && (isKeyDown("s") || isKeyDown("down")));
+
+                    if (!onRailX || isDroppingDown) {
+                        // Stepped off the edge or intentionally dropped through
                         player.grounded = false;
                         player.currentRail = null;
+                        if (isDroppingDown) {
+                            player.pos.y += 3;
+                            player.vy = 120;
+                        }
                     } else {
                         // Maintain vertical lock on rail
                         player.pos.y = rail.y;
@@ -509,14 +601,58 @@ onLoad(() => {
             }
         }
 
+        // Track reading dwell on current viewport Y
+        if (Math.abs(currentScrollY - lastDwellY) < 25) {
+            dwellDuration += dtTotal;
+        } else {
+            lastDwellY = currentScrollY;
+            dwellDuration = 0;
+        }
+
+        // Autonomous System 1 Decision Brain Execution
+        if (window.controlMode === "autonomous" && isPhysicsActive && !isRespawning && player) {
+            const telemetry = {
+                scrollY: currentScrollY,
+                viewportFocusY: currentScrollY + window.innerHeight * 0.45,
+                viewportHeight: window.innerHeight,
+                userScrollSpeed: (dtTotal > 0) ? (scrollDelta / dtTotal) : 0,
+                dwellTime: dwellDuration,
+                currentRail: player.currentRail,
+                allRails: landingRails,
+                playerPos: { x: player.pos.x, y: player.pos.y },
+                activeElement: document.activeElement,
+                page: getCurrentPage(),
+                isGrounded: player.grounded
+            };
+
+            if (window.System1Brain && window.System1Brain.evaluate) {
+                const cmd = window.System1Brain.evaluate(dtTotal, telemetry);
+                if (cmd.moveX !== 0) {
+                    player.move(cmd.moveX * SPEED * 0.75, 0);
+                    player.facingLeft = cmd.moveX < 0;
+                    player.isMovingThisFrame = true;
+                }
+                if (cmd.wantsJump && player.grounded) {
+                    player.jump(cmd.jumpForce || JUMP_FORCE);
+                    if (window.SFX && window.SFX.playJump) window.SFX.playJump();
+                }
+            }
+        }
+
+        // Keep companion thought bubble synced with player position
+        if (window.System1Brain && window.System1Brain.updateBubblePosition && player) {
+            window.System1Brain.updateBubblePosition(player);
+        }
+
         camPos(window.innerWidth / 2, currentScrollY + window.innerHeight / 2);
 
         const viewTop = currentScrollY;
         const viewBottom = currentScrollY + window.innerHeight;
 
         // Out of bounds Recovery (relaxed kill plane to allow inter-section leaps)
+        const pageMaxY = Math.max(document.documentElement.scrollHeight + 300, 3650);
         const isFarBelowView = player.pos.y > viewBottom + 900;
-        const isPastBedrockVoid = player.pos.y > 3650;
+        const isPastBedrockVoid = player.pos.y > pageMaxY;
         const isAboveCeiling = player.pos.y < -300;
 
         if ((isFarBelowView || isPastBedrockVoid || isAboveCeiling) && !isRespawning && isPhysicsActive) {
@@ -535,55 +671,33 @@ onLoad(() => {
         if (is3DReady && window.Player3D) {
             window.Player3D.syncWith2D(player);
         }
-    });
 
-    // --- HYBRID CONTROLS ---
-    window.addEventListener("dblclick", () => {
-        if (window.controlMode !== "ambient") {
-            window.controlMode = "ambient";
-            console.log("Switched to Ambient Control");
+        // Continually detect if manual movement keys are actively held
+        const isMovementActive = !isTypingInForm() && (
+            (typeof isKeyDown === "function" && (
+                isKeyDown("left") || isKeyDown("right") || isKeyDown("a") || isKeyDown("d") ||
+                isKeyDown("up") || isKeyDown("w") || isKeyDown("down") || isKeyDown("s") ||
+                isKeyDown("space")
+            )) || window.mobileLeftDown || window.mobileRightDown || window.mobileJumpPressed
+        );
+
+        if (isMovementActive) {
+            triggerManualControl();
+        } else if (window.controlMode === "manual" && !manualTimeout) {
+            resetToAutonomous();
         }
     });
 
-    onKeyDown(() => {
-        window.controlMode = "manual";
-        if (manualTimeout) clearTimeout(manualTimeout);
-        manualTimeout = setTimeout(() => {
-            window.controlMode = "ambient";
-        }, 4000);
+    const MOVEMENT_KEYS = ["a", "d", "w", "s", "left", "right", "up", "down", "space"];
+    onKeyDown((key) => {
+        if (MOVEMENT_KEYS.includes(key) && !isTypingInForm()) {
+            triggerManualControl();
+        }
     });
 
-    // Pillar 6: Refactored Ambient AI: safe idle perching and attentive companion gaze
-    onUpdate(() => {
-        if (window.controlMode === "ambient" && !isRespawning && isPhysicsActive) {
-            if (player.grounded && player.currentRail) {
-                const rail = player.currentRail;
-                const safeMargin = 25;
-                const safeMinX = rail.xLeft + safeMargin;
-                const safeMaxX = rail.xRight - safeMargin;
-
-                // If rail is wide enough to pace:
-                if (safeMaxX > safeMinX) {
-                    const mWorld = toWorld(mousePos());
-                    // Gently pace towards mouse ONLY if mouse is on the same platform horizontally
-                    if (mWorld.x >= safeMinX && mWorld.x <= safeMaxX && Math.abs(mWorld.y - rail.y) < 150) {
-                        const targetX = mWorld.x;
-                        if (Math.abs(player.pos.x - targetX) > 15) {
-                            const dir = Math.sign(targetX - player.pos.x);
-                            player.move(dir * SPEED * 0.4, 0);
-                            player.facingLeft = dir < 0;
-                            player.isMovingThisFrame = true;
-                        }
-                    } else {
-                        // Safe idle perching: clamp within safe platform bounds, never suicidal jump
-                        if (player.pos.x < safeMinX) {
-                            player.pos.x = safeMinX;
-                        } else if (player.pos.x > safeMaxX) {
-                            player.pos.x = safeMaxX;
-                        }
-                    }
-                }
-            }
+    onKeyRelease((key) => {
+        if (MOVEMENT_KEYS.includes(key) && !isTypingInForm()) {
+            resetToAutonomous();
         }
     });
 });

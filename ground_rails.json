@@ -393,18 +393,18 @@
   },
   {
     "xLeft": 907,
-    "xRight": 1090,
-    "width": 183,
+    "xRight": 1283,
+    "width": 376,
     "y": 3174,
     "trap": "normal",
-    "name": "A.cta-btn-secondary"
+    "name": "DIV.secondary-cta-rack"
   },
   {
-    "xLeft": 1100,
-    "xRight": 1283,
-    "width": 183,
-    "y": 3174,
+    "xLeft": 192,
+    "xRight": 1328,
+    "width": 1136,
+    "y": 3420,
     "trap": "normal",
-    "name": "A.cta-btn-secondary"
+    "name": "DIV.touchdown-zone"
   }
 ]

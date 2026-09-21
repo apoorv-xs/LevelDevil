@@ -83,6 +83,10 @@ async function submitPublicForm(event, path, successMessage) {
   form.setAttribute("aria-busy", "true");
   if (submit) submit.disabled = true;
 
+  if (window.System1Brain?.onFormSubmit) {
+    window.System1Brain.onFormSubmit();
+  }
+
   if (path === "/inquiry") {
     saveInquiryLocally(values);
   }

@@ -184,9 +184,50 @@
         shortAntenna: null,
         isCreated: false,
         isSmashing: false,
+        isCelebrating: false,
+        celebrateStartTime: 0,
+        isNodding: false,
+        nodStartTime: 0,
+        isCurious: false,
+        curiousStartTime: 0,
+        gazeTargetWorld: null,
         lastX: 0,
         currentRollZ: 0,
         headTiltZ: 0,
+
+        celebrateVictory() {
+            if (!this.isCreated) return;
+            this.isCelebrating = true;
+            this.celebrateStartTime = performance.now();
+            if (this.antennaLed) {
+                this.antennaLed.material.color.setHex(0xffd700);
+            }
+        },
+
+        curiousInspect() {
+            if (!this.isCreated) return;
+            this.isCurious = true;
+            this.curiousStartTime = performance.now();
+            if (this.secondarySensor) {
+                this.secondarySensor.material.color.setHex(0x00ffff);
+            }
+        },
+
+        nod() {
+            if (!this.isCreated) return;
+            this.isNodding = true;
+            this.nodStartTime = performance.now();
+        },
+
+        pointAt(worldX, worldY, duration = 3000) {
+            this.gazeTargetWorld = { x: worldX, y: worldY };
+            if (this._gazeTimeout) clearTimeout(this._gazeTimeout);
+            if (duration > 0) {
+                this._gazeTimeout = setTimeout(() => {
+                    this.gazeTargetWorld = null;
+                }, duration);
+            }
+        },
 
         smashIntoCamera() {
             if (!this.isCreated || this.isSmashing) return;
@@ -475,19 +516,61 @@
                 this.bodyBall.rotation.z = this.currentRollZ;
             }
 
-            // 4. Momentum Tilt (The BB-8 Lean)
+            // 4. Momentum Tilt & Emotive Gestures
             let targetTiltZ = 0;
-            if (isMoving) {
+            if (this.isCelebrating) {
+                const elapsed = (performance.now() - this.celebrateStartTime) / 1000;
+                if (elapsed < 1.6) {
+                    const leapHeight = Math.sin((elapsed / 1.6) * Math.PI) * 2.2;
+                    this.root.position.y = targetPos.y + leapHeight;
+                    this.bodyBall.rotation.y += 0.25;
+                    this.headGroup.rotation.y += 0.28;
+                    targetTiltZ = Math.sin(elapsed * 12) * 0.25;
+                    if (this.antennaLed) {
+                        const strobe = Math.sin(elapsed * 24) > 0 ? 0xffd700 : 0x00ffff;
+                        this.antennaLed.material.color.setHex(strobe);
+                        this.antennaLed.scale.set(1.8, 1.8, 1.8);
+                    }
+                } else {
+                    this.isCelebrating = false;
+                    this.bodyBall.rotation.y = 0;
+                    this.headGroup.rotation.y = 0;
+                    if (this.antennaLed) {
+                        this.antennaLed.material.color.setHex(0x00ffff);
+                        this.antennaLed.scale.set(1, 1, 1);
+                    }
+                }
+            } else if (this.isCurious) {
+                const elapsedCurious = (performance.now() - this.curiousStartTime) / 1000;
+                if (elapsedCurious < 2.0) {
+                    targetTiltZ = isFacingLeft ? -0.32 : 0.32; // Inquisitive 18 deg lean
+                } else {
+                    this.isCurious = false;
+                }
+            } else if (isMoving) {
                 targetTiltZ = isFacingLeft ? 0.22 : -0.22; // ~12 degrees forward sprint lean
             }
             this.headTiltZ += (targetTiltZ - this.headTiltZ) * 0.15;
             this.headGroup.rotation.z = this.headTiltZ;
 
-            // 5. Inquisitive Head Tracking (Mouse cursor companion)
+            // 5. Inquisitive Head Tracking (Mouse cursor / active target companion)
             let targetPitch = 0;
             let targetYaw = 0;
 
-            if (window.mousePos2D && window.Engine3D) {
+            if (this.isNodding) {
+                const elapsedNod = (performance.now() - this.nodStartTime) / 1000;
+                if (elapsedNod < 0.8) {
+                    targetPitch = Math.sin(elapsedNod * Math.PI * 4) * 0.3;
+                } else {
+                    this.isNodding = false;
+                }
+            } else if (this.gazeTargetWorld && window.Engine3D) {
+                const target3D = window.Engine3D.to3DVec(this.gazeTargetWorld.x, this.gazeTargetWorld.y, 0);
+                const dx = target3D.x - this.root.position.x;
+                const dy = target3D.y - (this.root.position.y + 1.28);
+                targetPitch = Math.max(-0.35, Math.min(0.35, -dy * 0.06));
+                targetYaw = Math.max(-0.55, Math.min(0.55, dx * 0.04));
+            } else if (window.mousePos2D && window.Engine3D) {
                 const mouse3D = window.Engine3D.to3DVec(window.mousePos2D.x, window.mousePos2D.y, 0);
                 const dx = mouse3D.x - this.root.position.x;
                 const dy = mouse3D.y - (this.root.position.y + 1.28);

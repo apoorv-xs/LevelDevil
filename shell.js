@@ -1,5 +1,6 @@
 const portfolioScripts = [
   "kaboom.js?v=1009",
+  "system1_brain.js?v=1009",
   "three_engine.js?v=1009",
   "player_3d.js?v=1009",
   "player.js?v=1009",
@@ -32,6 +33,11 @@ function setActiveNavigation(root = document) {
   });
 }
 
+function resolveScriptPath(src) {
+  if (src.startsWith("/") || src.startsWith("http")) return src;
+  return "/" + src;
+}
+
 function loadScript(src) {
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
@@ -42,9 +48,38 @@ function loadScript(src) {
   });
 }
 
+let portfolioLoadPromise = null;
+
 async function loadPortfolio() {
-  for (const script of portfolioScripts) await loadScript(script);
-  window.showUIButtons?.();
+  if (portfolioLoadPromise) return portfolioLoadPromise;
+
+  portfolioLoadPromise = (async () => {
+    // Ensure Three.js canvas and game container exist
+    if (!document.getElementById("three-canvas")) {
+      const canvas = document.createElement("canvas");
+      canvas.id = "three-canvas";
+      document.body.appendChild(canvas);
+    }
+    if (!document.getElementById("game-container")) {
+      const container = document.createElement("div");
+      container.id = "game-container";
+      const gCanvas = document.createElement("canvas");
+      gCanvas.id = "game-canvas";
+      container.appendChild(gCanvas);
+      document.body.appendChild(container);
+    }
+
+    if (typeof THREE === "undefined") {
+      await loadScript(resolveScriptPath("three.min.js"));
+    }
+
+    for (const script of portfolioScripts) {
+      await loadScript(resolveScriptPath(script));
+    }
+    window.showUIButtons?.();
+  })();
+
+  return portfolioLoadPromise;
 }
 
 async function loadSalesRoute() {
@@ -131,7 +166,9 @@ window.APP_SHELL.session = {
 
 setActiveNavigation();
 if (isSalesRoute()) {
-  loadSalesRoute().catch((error) => {
+  loadSalesRoute().then(() => {
+    return loadPortfolio();
+  }).catch((error) => {
     document.body.textContent = "Sales view unavailable.";
     console.error(error);
   });
@@ -143,3 +180,4 @@ if (isSalesRoute()) {
     document.body.appendChild(status);
   });
 }
+

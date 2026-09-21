@@ -536,7 +536,7 @@
 <body class="retro-workspace h-full flex flex-col font-sans antialiased select-none overflow-x-hidden overflow-y-hidden">
 
   <!-- TOP APP BAR (54px Retro Brutalist Navigation) -->
-  <header class="topbar relative h-[54px] bg-[#fff4c9] border-b-[3px] border-[#17120f] px-3 sm:px-5 flex items-center justify-between shrink-0 z-30 overflow-hidden shadow-[0_4px_0_#17120f]">
+  <header class="topbar relative h-[54px] bg-[#fff4c9] border-b-[3px] border-[#17120f] px-3 sm:px-5 flex items-center justify-between shrink-0 z-30 overflow-hidden shadow-[0_4px_0_#17120f]" data-kaboom-body="true">
     <!-- Left: Studio Brand -->
     <div class="flex items-center gap-3">
       <a href="/" class="topbar-brand flex items-center hover:opacity-90 transition" aria-label="Apoorv">
@@ -612,20 +612,20 @@
     <!-- ================================================================= -->
     <!-- COLUMN 1: PROSPECT QUEUE (Sidebar: 300px - 320px)                 -->
     <!-- ================================================================= -->
-    <div id="queuePane" class="w-full md:w-80 lg:w-88 border-r-2 border-[#17120f] bg-[#fff4c9] flex flex-col shrink-0 overflow-hidden">
+    <div id="queuePane" class="w-full md:w-80 lg:w-88 border-r-2 border-[#17120f] bg-[#fff4c9] flex flex-col shrink-0 overflow-hidden" data-kaboom-body="true">
       <!-- Territory Filter Segmented Control -->
-      <div class="p-2 border-b-2 border-[#17120f] flex items-center justify-between gap-1.5 bg-[#fff1bd]">
+      <div class="p-2 border-b-2 border-[#17120f] flex items-center justify-between gap-1.5 bg-[#fff1bd]" data-kaboom-body="true">
         <div class="flex bg-[#fffdf1] p-0.5 text-xs border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade">
-          <button onclick="filterCity('All')" class="city-tab active px-1.5 sm:px-2 py-1 font-bold text-[#17120f] bg-[#fce566] transition">All</button>
-          <button onclick="filterCity('Kochi')" class="city-tab px-1.5 sm:px-2 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition">Kochi</button>
-          <button onclick="filterCity('Bangalore')" class="city-tab px-1.5 sm:px-2 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition">BLR</button>
-          <button onclick="filterCity('Hyderabad')" class="city-tab px-1.5 sm:px-2 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition">HYD</button>
+          <button onclick="filterCity('All')" class="city-tab active px-1.5 sm:px-2 py-1 font-bold text-[#17120f] bg-[#fce566] transition" data-kaboom-body="true">All</button>
+          <button onclick="filterCity('Kochi')" class="city-tab px-1.5 sm:px-2 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition" data-kaboom-body="true">Kochi</button>
+          <button onclick="filterCity('Bangalore')" class="city-tab px-1.5 sm:px-2 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition" data-kaboom-body="true">BLR</button>
+          <button onclick="filterCity('Hyderabad')" class="city-tab px-1.5 sm:px-2 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition" data-kaboom-body="true">HYD</button>
         </div>
         <span id="leadCountBadge" class="text-[9px] sm:text-[10px] font-arcade text-[#17120f] bg-[#fffdf1] px-1.5 py-1 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] shrink-0 whitespace-nowrap">60 Leads</span>
       </div>
 
       <!-- Search Input -->
-      <div class="p-2.5 border-b-2 border-[#17120f] bg-[#fff4c9]">
+      <div class="p-2.5 border-b-2 border-[#17120f] bg-[#fff4c9]" data-kaboom-body="true">
         <div class="relative">
           <input 
             type="text" 
@@ -633,6 +633,7 @@
             oninput="handleSearch(this.value)" 
             placeholder="Search prospect or hub (/)..." 
             class="w-full bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] pl-8 pr-3 py-1.5 text-xs text-[#17120f] placeholder-[#17120f]/50 focus:outline-none focus:bg-[#fce566] transition font-mono"
+            data-kaboom-body="true"
           />
           <span class="absolute left-2.5 top-2 text-[#17120f]">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1392,12 +1393,19 @@
     </div>
   </div>
 
+  <!-- THREE.JS 3D CANVAS & COMPANION ENGINE OVERLAYS -->
+  <canvas id="three-canvas"></canvas>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+  </div>
+
   <script src="prospects_data.js"></script>
   <script src="custom_prospects.js"></script>
   <script src="app.js"></script>
-
-
+  <script src="/three.min.js"></script>
+  <script src="/shell.js"></script>
 </body>
 </html>
+
 
 
