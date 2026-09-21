@@ -623,6 +623,37 @@
                 const pulse = 0.5 + 0.5 * Math.sin(t * 6);
                 this.antennaLed.scale.set(1 + pulse * 0.3, 1 + pulse * 0.3, 1 + pulse * 0.3);
             }
+        },
+
+        dispose() {
+            if (this.root && this.root.parent) {
+                this.root.parent.remove(this.root);
+            }
+            if (this.root) {
+                this.root.traverse((child) => {
+                    if (child.geometry) child.geometry.dispose();
+                    if (child.material) {
+                        if (Array.isArray(child.material)) {
+                            child.material.forEach(m => {
+                                if (m.map) m.map.dispose();
+                                m.dispose();
+                            });
+                        } else {
+                            if (child.material.map) child.material.map.dispose();
+                            child.material.dispose();
+                        }
+                    }
+                });
+            }
+            this.root = null;
+            this.bodyContainer = null;
+            this.bodyBall = null;
+            this.headGroup = null;
+            this.groundShadow = null;
+            this.antennaLed = null;
+            this.tallAntenna = null;
+            this.shortAntenna = null;
+            this.isCreated = false;
         }
     };
 

@@ -95,7 +95,7 @@
             // 7. Start Render Loop
             let lastRenderTime = performance.now();
             const render = (time) => {
-                requestAnimationFrame(render);
+                this._rAF = requestAnimationFrame(render);
                 const dt = Math.min(Math.max((time - lastRenderTime) / 1000, 0.001), 0.1);
                 lastRenderTime = time;
                 if (this.parallaxManager) {
@@ -105,11 +105,38 @@
                     this.renderer.render(this.scene, this.camera);
                 }
             };
-            requestAnimationFrame(render);
+            this._rAF = requestAnimationFrame(render);
 
             this.isReady = true;
             this._isInitializing = false;
             console.log("Three.js 2.5D Engine & PBR Lighting Pipeline Initialized with Parallax Layers.");
+        },
+
+        dispose() {
+            if (this._rAF) {
+                cancelAnimationFrame(this._rAF);
+                this._rAF = null;
+            }
+            if (this.parallaxManager && typeof this.parallaxManager.dispose === "function") {
+                this.parallaxManager.dispose();
+            }
+            if (this.scene) {
+                this.scene.traverse((child) => {
+                    if (child.geometry) child.geometry.dispose();
+                    if (child.material) {
+                        if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
+                        else child.material.dispose();
+                    }
+                });
+            }
+            if (this.renderer) {
+                this.renderer.dispose();
+                if (typeof this.renderer.forceContextLoss === "function") {
+                    this.renderer.forceContextLoss();
+                }
+            }
+            this.isReady = false;
+            this._isInitializing = false;
         },
 
         // Scale factor calibrated to camera distance Z = 80 and fov = 16.04 deg (0.28 rad)
@@ -133,8 +160,16 @@
             return -(screenY - screenH / 2) * this.getScale();
         },
 
-        to3DVec(x2d, y2d, z = 0) {
-            return new THREE.Vector3(this.to3DX(x2d), this.to3DY(y2d), z);
+        destroy() {
+            this.dispose();
+        },
+
+        _to3DScratch: null,
+
+        to3DVec(x2d, y2d, z = 0, target = null) {
+            const dest = target || (this._to3DScratch || (this._to3DScratch = new THREE.Vector3()));
+            dest.set(this.to3DX(x2d), this.to3DY(y2d), z);
+            return dest;
         },
 
         // Helper to register shadow casters
@@ -446,6 +481,28 @@
 
                 item.mesh.position.set(x3D, y3D, item.z);
             }
+        },
+
+        dispose() {
+            for (const item of this.layers) {
+                if (item.mesh && item.mesh.parent) {
+                    item.mesh.parent.remove(item.mesh);
+                }
+                if (item.mat) {
+                    if (item.mat.map) item.mat.map.dispose();
+                    item.mat.dispose();
+                }
+            }
+            if (this.mountainMaterial) {
+                if (this.mountainMaterial.map) this.mountainMaterial.map.dispose();
+                this.mountainMaterial.dispose();
+                this.mountainMaterial = null;
+            }
+            if (this.planeGeometry) {
+                this.planeGeometry.dispose();
+                this.planeGeometry = null;
+            }
+            this.layers = [];
         }
     };
 

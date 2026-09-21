@@ -1,10 +1,11 @@
-// Initialize Kaboom
+// Initialize Kaboom with mobile DPR clamp (PERF-02)
 const k = kaboom({
     width: window.innerWidth,
     height: window.innerHeight,
     canvas: document.getElementById("game-canvas"),
     background: [0, 0, 0, 0], // Transparent
     global: true,
+    pixelDensity: Math.min(window.devicePixelRatio || 1, 2),
 });
 
 const SPEED = 200;
@@ -14,6 +15,12 @@ setGravity(GRAVITY);
 
 window.controlMode = "autonomous"; // Naturally autonomous AI companion across every page
 let manualTimeout = null;
+
+// Track window-level active keys to prevent canvas focus starvation (DEF-01)
+const activeKeys = new Set();
+window.isPhysicalKeyDown = function (k) {
+    return activeKeys.has(k.toLowerCase());
+};
 
 function isTypingInForm() {
     if (typeof document === "undefined") return false;
@@ -39,6 +46,36 @@ function triggerManualControl() {
         manualTimeout = null;
     }
 }
+
+// Window-level key listeners ensuring manual keyboard input works everywhere (DEF-01)
+window.addEventListener("keydown", (e) => {
+    if (isTypingInForm()) return;
+    const key = e.key.toLowerCase();
+    activeKeys.add(key);
+    if (key === "arrowleft") activeKeys.add("left");
+    if (key === "arrowright") activeKeys.add("right");
+    if (key === "arrowup") activeKeys.add("up");
+    if (key === "arrowdown") activeKeys.add("down");
+    if (key === " ") activeKeys.add("space");
+
+    if (["a", "d", "w", "s", "left", "right", "up", "down", "space"].some(k => activeKeys.has(k))) {
+        triggerManualControl();
+    }
+});
+
+window.addEventListener("keyup", (e) => {
+    const key = e.key.toLowerCase();
+    activeKeys.delete(key);
+    if (key === "arrowleft") activeKeys.delete("left");
+    if (key === "arrowright") activeKeys.delete("right");
+    if (key === "arrowup") activeKeys.delete("up");
+    if (key === "arrowdown") activeKeys.delete("down");
+    if (key === " ") activeKeys.delete("space");
+
+    if (!["a", "d", "w", "s", "left", "right", "up", "down", "space"].some(k => activeKeys.has(k))) {
+        resetToAutonomous();
+    }
+});
 
 // Track mouse position for companion 3D head/eye gaze
 window.mousePos2D = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
@@ -475,8 +512,11 @@ onLoad(() => {
                 if (player.grounded && player.currentRail) {
                     const rail = player.currentRail;
                     const onRailX = (player.pos.x >= rail.xLeft - 10 && player.pos.x <= rail.xRight + 10);
-                    const isDroppingDown = window.controlMode === "manual" && !isTypingInForm() &&
-                        (typeof isKeyDown === "function" && (isKeyDown("s") || isKeyDown("down")));
+                    const isManualDrop = window.controlMode === "manual" && !isTypingInForm() &&
+                        ((typeof isKeyDown === "function" && (isKeyDown("s") || isKeyDown("down"))) ||
+                         (typeof window.isPhysicalKeyDown === "function" && (window.isPhysicalKeyDown("s") || window.isPhysicalKeyDown("down"))));
+                    const isAutonomousDrop = window.controlMode === "autonomous" && Boolean(window.System1Brain && window.System1Brain.wantsDrop);
+                    const isDroppingDown = isManualDrop || isAutonomousDrop;
 
                     if (!onRailX || isDroppingDown) {
                         // Stepped off the edge or intentionally dropped through
@@ -541,12 +581,13 @@ onLoad(() => {
 
         // Dual-Driven Camera Tracking:
         // As player actively moves/falls downwards, auto-scroll when entering bottom 65% of viewport
-        if (isPhysicsActive && !isRespawning && player) {
+        // Guarded against scrolling when typing in form inputs (DEF-03)
+        if (isPhysicsActive && !isRespawning && player && !isTypingInForm()) {
             const vh = window.innerHeight;
             const playerScreenY = player.pos.y - currentScrollY;
             const maxScroll = Math.max(0, document.documentElement.scrollHeight - vh);
 
-            const isMovingDown = player.vy > 10 || player.isMovingThisFrame || (window.controlMode === "manual" && (typeof isKeyDown === "function" && (isKeyDown("s") || isKeyDown("down"))));
+            const isMovingDown = player.vy > 10 || player.isMovingThisFrame || (window.controlMode === "manual" && ((typeof isKeyDown === "function" && (isKeyDown("s") || isKeyDown("down"))) || (typeof window.isPhysicalKeyDown === "function" && (window.isPhysicalKeyDown("s") || window.isPhysicalKeyDown("down")))));
             if (isMovingDown && playerScreenY > vh * 0.65) {
                 const targetScroll = player.pos.y - vh * 0.45;
                 const clampedTarget = Math.min(maxScroll, Math.max(0, targetScroll));
@@ -592,11 +633,11 @@ onLoad(() => {
         const scrollDelta = currentScrollY - lastScrollY;
         lastScrollY = currentScrollY;
 
-        // Apply Scroll Wind Force if scrolling fast
-        if (Math.abs(scrollDelta) > 15 && !isRespawning && player.isGrounded && player.isGrounded()) {
-            player.move(0, scrollDelta * 20);
+        // Apply Scroll Wind Force tilt dynamically (without tunneling through rails) (DEF-04)
+        if (Math.abs(scrollDelta) > 15 && !isRespawning) {
             if (window.Player3D && window.Player3D.root) {
-                window.Player3D.root.rotation.z = scrollDelta * 0.05;
+                const targetRotZ = Math.max(-0.25, Math.min(scrollDelta * 0.04, 0.25));
+                window.Player3D.root.rotation.z = targetRotZ;
                 tween(window.Player3D.root.rotation.z, 0, 0.5, (v) => window.Player3D.root.rotation.z = v, easings.easeOutQuad);
             }
         }
@@ -627,6 +668,17 @@ onLoad(() => {
 
             if (window.System1Brain && window.System1Brain.evaluate) {
                 const cmd = window.System1Brain.evaluate(dtTotal, telemetry);
+                if (cmd.action === "celebrate") {
+                    if (window.Player3D && typeof window.Player3D.celebrateVictory === "function") {
+                        window.Player3D.celebrateVictory();
+                    }
+                }
+                if (cmd.wantsDrop && player.grounded && player.currentRail) {
+                    player.grounded = false;
+                    player.currentRail = null;
+                    player.pos.y += 3;
+                    player.vy = 120;
+                }
                 if (cmd.moveX !== 0) {
                     player.move(cmd.moveX * SPEED * 0.75, 0);
                     player.facingLeft = cmd.moveX < 0;

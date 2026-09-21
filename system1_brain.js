@@ -246,10 +246,13 @@
                 isGrounded = true
             } = telemetry;
 
+            this.wantsDrop = false;
+
             const result = {
                 intent: intent,
                 moveX: 0,
                 wantsJump: false,
+                wantsDrop: false,
                 jumpForce: null,
                 targetRail: null,
                 targetX: null,
@@ -300,6 +303,8 @@
                         if (Math.abs(playerPos.x - targetX) > 15) {
                             result.moveX = Math.sign(targetX - playerPos.x);
                         }
+
+                        // Hop up to higher input card or hop down to lower input card
                         if (currentRail && rail && isGrounded) {
                             if (rail.y > currentRail.y + 15) {
                                 if (Math.abs(playerPos.x - targetX) < 120) {
@@ -308,7 +313,7 @@
                                 }
                             } else if (rail.y < currentRail.y - 15) {
                                 result.wantsJump = true;
-                                result.jumpForce = 550;
+                                result.jumpForce = Math.min(650, Math.max(480, (currentRail.y - rail.y) * 1.6 + 320));
                             }
                         }
                     }
@@ -338,8 +343,15 @@
                             result.targetX = chosenX;
 
                             const dx = chosenX - playerPos.x;
-                            if (Math.abs(dx) > 25) {
+                            const isHorizontallyAligned = Math.abs(dx) <= 30;
+                            const isDirectlyUnderneath = isHorizontallyAligned && (target.xLeft <= playerPos.x + 25 && target.xRight >= playerPos.x - 25);
+
+                            if (!isHorizontallyAligned) {
                                 result.moveX = Math.sign(dx);
+                            } else if (isDirectlyUnderneath && isGrounded) {
+                                // Direct drop-through platform descent to prevent infinite jump loops (DEF-02)
+                                result.wantsDrop = true;
+                                this.wantsDrop = true;
                             } else {
                                 const distY = target.y - currentRail.y;
                                 if (isGrounded) {

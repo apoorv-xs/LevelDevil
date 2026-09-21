@@ -8,17 +8,32 @@ const __dirname = path.dirname(__filename);
 const srcDir = __dirname;
 const distDir = path.join(__dirname, 'dist');
 
-console.log("Starting Build...");
+console.log("Starting Production Build Pipeline...");
 
-// Ensure dist exists
-if (!fs.existsSync(distDir)) {
-    fs.mkdirSync(distDir);
-    console.log("Created dist directory");
+// 1. Wipe stale dist directory completely to eliminate orphan ghost files (BUNDLE-01)
+if (fs.existsSync(distDir)) {
+    fs.rmSync(distDir, { recursive: true, force: true });
+    console.log("Purged stale dist directory");
 }
+fs.mkdirSync(distDir, { recursive: true });
+console.log("Created clean dist directory");
 
-// Files to copy
+// 2. Strict exclusion filters for production security & bundle size (BUNDLE-02)
+const EXCLUDED_FILES = new Set([
+    'build.js',
+    'playwright.config.js',
+    'vitest.config.js',
+    'vite.config.js',
+    'collision_editor.js',
+    'take_screenshot.js',
+    'local_preview.png',
+    'package.json',
+    'package-lock.json'
+]);
+
+const validExtensions = ['.html', '.js', '.png', '.pdf', '.css', '.json', '.svg', '.ico'];
+
 const files = fs.readdirSync(srcDir);
-const validExtensions = ['.html', '.js', '.png', '.pdf', '.css'];
 
 files.forEach(file => {
     const srcPath = path.join(srcDir, file);
@@ -26,17 +41,24 @@ files.forEach(file => {
 
     if (stats.isFile()) {
         const ext = path.extname(file).toLowerCase();
-        if (validExtensions.includes(ext)) {
-            if (file === 'vite.config.js') return;
+        
+        // Skip non-production extensions
+        if (!validExtensions.includes(ext)) return;
 
-            const destPath = path.join(distDir, file);
-            fs.copyFileSync(srcPath, destPath);
-            console.log(`Copied: ${file}`);
-        }
+        // Skip explicitly excluded developer tools and configs
+        if (EXCLUDED_FILES.has(file)) return;
+
+        // Skip test scripts, verify scripts, and test screenshots
+        if (file.startsWith('test_') || file.startsWith('verify_') || file.endsWith('.test.js') || file.endsWith('.spec.js')) return;
+        if (file.endsWith('_preview.png') || file.startsWith('stratum')) return;
+
+        const destPath = path.join(distDir, file);
+        fs.copyFileSync(srcPath, destPath);
+        console.log(`Copied: ${file}`);
     }
 });
 
-// Copy fonts directory
+// 3. Copy fonts directory
 const fontsSrcDir = path.join(srcDir, 'fonts');
 const fontsDistDir = path.join(distDir, 'fonts');
 if (fs.existsSync(fontsSrcDir)) {
@@ -44,7 +66,7 @@ if (fs.existsSync(fontsSrcDir)) {
     console.log('Copied: fonts directory');
 }
 
-// Copy workspace directory
+// 4. Copy workspace directory
 const workspaceSrcDir = path.join(srcDir, 'workspace');
 const workspaceDistDir = path.join(distDir, 'workspace');
 if (fs.existsSync(workspaceSrcDir)) {
@@ -52,25 +74,23 @@ if (fs.existsSync(workspaceSrcDir)) {
     console.log('Copied: workspace directory');
 }
 
-// Static Web Apps reads routing and security headers from the deployed output.
+// 5. Config files
 const staticWebAppConfig = path.join(srcDir, 'staticwebapp.config.json');
 if (fs.existsSync(staticWebAppConfig)) {
     fs.copyFileSync(staticWebAppConfig, path.join(distDir, 'staticwebapp.config.json'));
     console.log('Copied: staticwebapp.config.json');
 }
 
-// Vercel reads routing configuration from output directory if present
 const vercelConfig = path.join(srcDir, 'vercel.json');
 if (fs.existsSync(vercelConfig)) {
     fs.copyFileSync(vercelConfig, path.join(distDir, 'vercel.json'));
     console.log('Copied: vercel.json');
 }
 
-// Master calibrated ground rails map
 const groundRails = path.join(srcDir, 'ground_rails.json');
 if (fs.existsSync(groundRails)) {
     fs.copyFileSync(groundRails, path.join(distDir, 'ground_rails.json'));
     console.log('Copied: ground_rails.json');
 }
 
-console.log("Build Complete. Assets ready in /dist");
+console.log("Build Complete. Pure 60 FPS production assets ready in /dist");

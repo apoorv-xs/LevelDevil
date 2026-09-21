@@ -77,18 +77,28 @@ function createPlayer(x, y) {
         const isTyping = activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA" || activeEl.tagName === "SELECT" || activeEl.isContentEditable);
 
         if (window.controlMode === 'manual' && !isTyping) {
-            if (isKeyDown("left") || isKeyDown("a") || window.mobileLeftDown) {
+            const hasLeft = (typeof isKeyDown === "function" && (isKeyDown("left") || isKeyDown("a"))) ||
+                (typeof window.isPhysicalKeyDown === "function" && (window.isPhysicalKeyDown("left") || window.isPhysicalKeyDown("a"))) ||
+                Boolean(window.mobileLeftDown);
+            const hasRight = (typeof isKeyDown === "function" && (isKeyDown("right") || isKeyDown("d"))) ||
+                (typeof window.isPhysicalKeyDown === "function" && (window.isPhysicalKeyDown("right") || window.isPhysicalKeyDown("d"))) ||
+                Boolean(window.mobileRightDown);
+            const hasJump = (typeof isKeyPressed === "function" && (isKeyPressed("space") || isKeyPressed("w") || isKeyPressed("up"))) ||
+                (typeof window.isPhysicalKeyDown === "function" && (window.isPhysicalKeyDown("space") || window.isPhysicalKeyDown("w") || window.isPhysicalKeyDown("up"))) ||
+                Boolean(window.mobileJumpPressed);
+
+            if (hasLeft) {
                 guy.move(-SPEED, 0);
                 isMoving = true;
                 guy.facingLeft = true;
             }
-            if (isKeyDown("right") || isKeyDown("d") || window.mobileRightDown) {
+            if (hasRight) {
                 guy.move(SPEED, 0);
                 isMoving = true;
                 guy.facingLeft = false;
             }
 
-            if ((isKeyPressed("space") || isKeyPressed("w") || isKeyPressed("up") || window.mobileJumpPressed) && guy.isGrounded()) {
+            if (hasJump && guy.isGrounded()) {
                 guy.jump(JUMP);
                 if (window.SFX && window.SFX.playJump) window.SFX.playJump();
                 guy.scale = vec2(0.8, 1.2);
