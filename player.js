@@ -142,9 +142,13 @@ function createPlayer(x, y) {
         // SQUASH: Short and Wide
         guy.scale = vec2(1.2, 0.8);
         tween(guy.scale, vec2(1, 1), 0.2, (val) => guy.scale = val, easings.easeOutElastic);
-        if (typeof shake === "function") shake(1); // Tiny thud feeling
         if (window.SFX && typeof window.SFX.playLand === "function") {
             window.SFX.playLand(guy.pos.x);
+        }
+        if (typeof window !== "undefined" && window.Engine3D && typeof window.Engine3D.triggerImpact === "function") {
+            const fallSpeed = Math.abs(guy.vy || 0);
+            const intensity = fallSpeed > 300 ? Math.min(2.0, fallSpeed / 350) : 0.65;
+            window.Engine3D.triggerImpact(intensity);
         }
     });
 

@@ -100,6 +100,7 @@
                 const dt = Math.min(Math.max((time - lastRenderTime) / 1000, 0.001), 0.1);
                 lastRenderTime = time;
                 if (this.renderer && this.scene && this.camera) {
+                    this.updateCameraSpring(dt);
                     this.renderer.render(this.scene, this.camera);
                 }
             };
@@ -165,6 +166,58 @@
             const fovRad = this.camera ? (this.camera.fov * Math.PI / 180) : 0.28;
             const visibleHeight = 2 * 80 * Math.tan(fovRad / 2);
             return visibleHeight / screenH;
+        },
+
+        // --- VISCERAL CAMERA IMPACT SPRING PHYSICS ---
+        cameraShake: {
+            springY: 0,
+            springVelY: 0,
+            springRotZ: 0,
+            springVelRotZ: 0,
+            isSettled: true
+        },
+
+        triggerImpact(intensity = 1.0) {
+            if (!this.camera) return;
+            const clamped = Math.min(Math.max(intensity, 0.15), 2.2);
+            // Downward impulse
+            this.cameraShake.springVelY = -0.45 * clamped;
+            // Alternating roll wobble
+            const dir = Math.random() > 0.5 ? 1 : -1;
+            this.cameraShake.springVelRotZ = 0.012 * clamped * dir;
+            this.cameraShake.isSettled = false;
+        },
+
+        updateCameraSpring(dt) {
+            if (!this.camera || this.cameraShake.isSettled) return;
+            const cs = this.cameraShake;
+
+            // Critically damped spring: F = -k * x - c * v
+            const stiffness = 220; // Snappy retro spring
+            const damping = 22;    // Fast critical settle (~140ms)
+
+            const forceY = -stiffness * cs.springY - damping * cs.springVelY;
+            cs.springVelY += forceY * dt;
+            cs.springY += cs.springVelY * dt;
+
+            const forceRot = -stiffness * cs.springRotZ - damping * cs.springVelRotZ;
+            cs.springVelRotZ += forceRot * dt;
+            cs.springRotZ += cs.springVelRotZ * dt;
+
+            // Check if settled
+            if (Math.abs(cs.springY) < 0.0005 && Math.abs(cs.springVelY) < 0.0005 &&
+                Math.abs(cs.springRotZ) < 0.0001 && Math.abs(cs.springVelRotZ) < 0.0001) {
+                cs.springY = 0;
+                cs.springVelY = 0;
+                cs.springRotZ = 0;
+                cs.springVelRotZ = 0;
+                cs.isSettled = true;
+                this.camera.position.y = 0;
+                this.camera.rotation.z = 0;
+            } else {
+                this.camera.position.y = cs.springY;
+                this.camera.rotation.z = cs.springRotZ;
+            }
         },
 
         // --- 2D to 3D COORDINATE CONVERSION UTILITIES ---

@@ -234,6 +234,41 @@
             }
         },
 
+        pulseAntenna(colorHex = 0xffd700, duration = 220) {
+            if (!this.isCreated || !this.antennaLed) return;
+            this.antennaLed.material.color.setHex(colorHex);
+            this.antennaLed.scale.set(1.85, 1.85, 1.85);
+            if (this._antennaPulseTimeout) clearTimeout(this._antennaPulseTimeout);
+            this._antennaPulseTimeout = setTimeout(() => {
+                if (this.antennaLed) {
+                    this.antennaLed.material.color.setHex(0x00ffff);
+                    this.antennaLed.scale.set(1.0, 1.0, 1.0);
+                }
+            }, duration);
+        },
+
+        initPointerInteractions() {
+            if (typeof window === "undefined" || this._pointerBound) return;
+            this._pointerBound = true;
+
+            window.mousePos2D = window.mousePos2D || { x: window.innerWidth / 2, y: window.innerHeight / 2, active: false };
+
+            window.addEventListener("pointermove", (e) => {
+                const scrollY = window.scrollY || window.pageYOffset || 0;
+                window.mousePos2D.x = e.clientX;
+                window.mousePos2D.y = e.clientY + scrollY; // World coordinate
+                window.mousePos2D.active = true;
+                window.mousePos2D.lastMoveTime = performance.now();
+            }, { passive: true });
+
+            window.addEventListener("pointerdown", () => {
+                this.pulseAntenna(0xffd700, 220);
+                if (!this.isCelebrating && Math.random() > 0.6) {
+                    this.nod();
+                }
+            }, { passive: true });
+        },
+
         smashIntoCamera() {
             if (!this.isCreated || this.isSmashing) return;
             this.isSmashing = true;
@@ -483,6 +518,7 @@
             }
 
             this.isCreated = true;
+            this.initPointerInteractions();
             console.log("Cel-Shaded 3D BB-8 Astromech Droid with Flush Panels & Ink Outlines Created in Three.js.");
         },
 
@@ -563,17 +599,15 @@
             } else if (isMoving) {
                 targetTiltZ = isFacingLeft ? 0.22 : -0.22; // ~12 degrees forward sprint lean
             }
-            this.headTiltZ += (targetTiltZ - this.headTiltZ) * 0.15;
-            this.headGroup.rotation.z = this.headTiltZ;
-
             // 5. Inquisitive Head Tracking (Mouse cursor / active target companion)
             let targetPitch = 0;
             let targetYaw = 0;
+            let targetGazeRoll = 0;
 
             if (this.isNodding) {
                 const elapsedNod = (performance.now() - this.nodStartTime) / 1000;
                 if (elapsedNod < 0.8) {
-                    targetPitch = Math.sin(elapsedNod * Math.PI * 4) * 0.3;
+                    targetPitch = Math.sin(elapsedNod * Math.PI * 4) * 0.35;
                 } else {
                     this.isNodding = false;
                 }
@@ -581,21 +615,37 @@
                 const target3D = window.Engine3D.to3DVec(this.gazeTargetWorld.x, this.gazeTargetWorld.y, 0);
                 const dx = target3D.x - this.root.position.x;
                 const dy = target3D.y - (this.root.position.y + 1.28);
-                targetPitch = Math.max(-0.35, Math.min(0.35, -dy * 0.06));
-                targetYaw = Math.max(-0.55, Math.min(0.55, dx * 0.04));
+                targetPitch = Math.max(-0.45, Math.min(0.45, -dy * 0.08));
+                targetYaw = Math.max(-0.75, Math.min(0.75, dx * 0.05));
+                targetGazeRoll = -targetYaw * 0.18;
             } else if (window.mousePos2D && window.Engine3D) {
-                const mouse3D = window.Engine3D.to3DVec(window.mousePos2D.x, window.mousePos2D.y, 0);
-                const dx = mouse3D.x - this.root.position.x;
-                const dy = mouse3D.y - (this.root.position.y + 1.28);
+                const now = performance.now();
+                const isRecent = (now - (window.mousePos2D.lastMoveTime || now)) < 4500;
+                if (isRecent || window.mousePos2D.active) {
+                    const mouse3D = window.Engine3D.to3DVec(window.mousePos2D.x, window.mousePos2D.y, 0);
+                    const dx = mouse3D.x - this.root.position.x;
+                    const dy = mouse3D.y - (this.root.position.y + 1.28);
 
-                // Pitch (look up / down)
-                targetPitch = Math.max(-0.35, Math.min(0.35, -dy * 0.06));
-                // Yaw (turn towards cursor)
-                targetYaw = Math.max(-0.55, Math.min(0.55, dx * 0.04));
+                    // Anatomically natural clamped look angles (Pitch +/-26 deg, Yaw +/-43 deg)
+                    targetPitch = Math.max(-0.45, Math.min(0.45, -dy * 0.08));
+                    targetYaw = Math.max(-0.75, Math.min(0.75, dx * 0.05));
+                    targetGazeRoll = -targetYaw * 0.18;
+
+                    // Specular glint pupil shift (subtle life-like eye tracking)
+                    if (this.primaryLens) {
+                        const shiftX = Math.max(-0.015, Math.min(0.015, dx * 0.002));
+                        const shiftY = Math.max(-0.012, Math.min(0.012, dy * 0.002));
+                        this.primaryLens.position.x = shiftX;
+                        this.primaryLens.position.y = 0.25 + shiftY;
+                    }
+                }
             }
 
-            this.headGroup.rotation.x += (targetPitch - this.headGroup.rotation.x) * 0.1;
-            this.headGroup.rotation.y += (targetYaw - this.headGroup.rotation.y) * 0.1;
+            this.headTiltZ += ((targetTiltZ + targetGazeRoll) - this.headTiltZ) * 0.15;
+            this.headGroup.rotation.z = this.headTiltZ;
+
+            this.headGroup.rotation.x += (targetPitch - this.headGroup.rotation.x) * 0.12;
+            this.headGroup.rotation.y += (targetYaw - this.headGroup.rotation.y) * 0.12;
 
             // 6. Jump & Airborne Dynamics + Contact Shadow
             if (!isGrounded) {
