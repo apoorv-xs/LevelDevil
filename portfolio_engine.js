@@ -157,56 +157,56 @@ onLoad(() => {
 
     // Pillar 1 & 2 & 3: Master Calibrated 1D Continuous Swept Ground Rails Map
     const CALIBRATED_RAILS = [
+        {"xLeft":0,"xRight":1440,"width":1440,"y":54,"trap":"normal","name":"HEADER.topbar"},
         {"xLeft":152,"xRight":762,"width":610,"y":222,"trap":"normal","name":"DIV.role-badge"},
         {"xLeft":152,"xRight":936,"width":784,"y":312,"trap":"normal","name":"H1"},
         {"xLeft":152,"xRight":936,"width":784,"y":428,"trap":"normal","name":"P.hero-hook"},
         {"xLeft":152,"xRight":628,"width":476,"y":492,"trap":"normal","name":"DIV.controls-pill"},
-        {"xLeft":152,"xRight":326,"width":174,"y":532,"trap":"normal","name":"A.topbar-btn"},
-        {"xLeft":336,"xRight":547,"width":211,"y":532,"trap":"normal","name":"A.topbar-btn"},
-        {"xLeft":968,"xRight":1288,"width":320,"y":492,"trap":"normal","name":"ASIDE.hero-aside-status"},
-        {"xLeft":991,"xRight":1265,"width":274,"y":280,"trap":"normal","name":"P"},
-        {"xLeft":991,"xRight":1265,"width":274,"y":354,"trap":"normal","name":"LI"},
-        {"xLeft":991,"xRight":1265,"width":274,"y":376,"trap":"normal","name":"LI"},
-        {"xLeft":991,"xRight":1265,"width":274,"y":398,"trap":"normal","name":"LI"},
-        {"xLeft":991,"xRight":1265,"width":274,"y":421,"trap":"normal","name":"LI"},
-        {"xLeft":991,"xRight":1265,"width":274,"y":443,"trap":"normal","name":"LI"},
+        {"xLeft":152,"xRight":326,"width":174,"y":532,"trap":"normal","name":"A.topbar-btn#selected-work"},
+        {"xLeft":336,"xRight":547,"width":211,"y":532,"trap":"cta","name":"A.topbar-btn#contract"},
+        {"xLeft":968,"xRight":1288,"width":320,"y":176,"trap":"normal","name":"ASIDE.hero-aside-status::roof"},
+        {"xLeft":991,"xRight":1265,"width":274,"y":280,"trap":"normal","name":"P.hero-aside-p"},
+        {"xLeft":991,"xRight":1265,"width":274,"y":354,"trap":"normal","name":"LI.hero-aside-item-1"},
+        {"xLeft":991,"xRight":1265,"width":274,"y":376,"trap":"normal","name":"LI.hero-aside-item-2"},
+        {"xLeft":991,"xRight":1265,"width":274,"y":398,"trap":"normal","name":"LI.hero-aside-item-3"},
+        {"xLeft":991,"xRight":1265,"width":274,"y":421,"trap":"normal","name":"LI.hero-aside-item-4"},
+        {"xLeft":991,"xRight":1265,"width":274,"y":443,"trap":"normal","name":"LI.hero-aside-item-5"},
+        {"xLeft":968,"xRight":1288,"width":320,"y":492,"trap":"normal","name":"ASIDE.hero-aside-status::base"},
         {"xLeft":152,"xRight":1288,"width":1136,"y":711,"trap":"normal","name":"DIV#selected-work"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":1192,"trap":"normal","name":"ARTICLE.featured-project-card"},
-        {"xLeft":191,"xRight":551,"width":360,"y":1089,"trap":"normal","name":"DIV"},
-        {"xLeft":191,"xRight":336,"width":145,"y":1138,"trap":"normal","name":"A.tech-pill"},
-        {"xLeft":591,"xRight":1249,"width":658,"y":925,"trap":"normal","name":"P"},
-        {"xLeft":591,"xRight":1249,"width":658,"y":1015,"trap":"normal","name":"DIV"},
-        {"xLeft":591,"xRight":1249,"width":658,"y":1072,"trap":"normal","name":"DIV"},
-        {"xLeft":591,"xRight":1249,"width":658,"y":1153,"trap":"normal","name":"DIV"},
-        {"xLeft":152,"xRight":704,"width":552,"y":1598,"trap":"normal","name":"ARTICLE.standard-project-card"},
-        {"xLeft":188,"xRight":668,"width":480,"y":1473,"trap":"normal","name":"P"},
-        {"xLeft":188,"xRight":302,"width":114,"y":1514,"trap":"normal","name":"A.tech-pill"},
-        {"xLeft":736,"xRight":1288,"width":552,"y":1598,"trap":"normal","name":"ARTICLE.standard-project-card"},
-        {"xLeft":772,"xRight":1252,"width":480,"y":1521,"trap":"normal","name":"P"},
-        {"xLeft":772,"xRight":992,"width":220,"y":1562,"trap":"normal","name":"SPAN.tech-pill"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":1917,"trap":"normal","name":"ARTICLE.standard-project-card"},
-        {"xLeft":580,"xRight":1252,"width":672,"y":1820,"trap":"normal","name":"P"},
-        {"xLeft":580,"xRight":853,"width":273,"y":1865,"trap":"normal","name":"SPAN.tech-pill"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":2063,"trap":"normal","name":"DIV.section-header"},
-        {"xLeft":152,"xRight":515,"width":363,"y":2334,"trap":"normal","name":"DIV.capability-card"},
-        {"xLeft":185,"xRight":482,"width":297,"y":2301,"trap":"normal","name":"P"},
-        {"xLeft":539,"xRight":901,"width":363,"y":2334,"trap":"normal","name":"DIV.capability-card"},
-        {"xLeft":571,"xRight":869,"width":297,"y":2301,"trap":"normal","name":"P"},
-        {"xLeft":925,"xRight":1288,"width":363,"y":2334,"trap":"normal","name":"DIV.capability-card"},
-        {"xLeft":958,"xRight":1255,"width":297,"y":2301,"trap":"normal","name":"P"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":2480,"trap":"normal","name":"DIV.section-header"},
-        {"xLeft":152,"xRight":708,"width":556,"y":2692,"trap":"bounce","name":"ARTICLE.note-card"},
-        {"xLeft":177,"xRight":683,"width":505,"y":2667,"trap":"bounce","name":"P"},
-        {"xLeft":732,"xRight":1288,"width":556,"y":2692,"trap":"bounce","name":"ARTICLE.note-card"},
-        {"xLeft":757,"xRight":1263,"width":505,"y":2644,"trap":"bounce","name":"P"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":2828,"trap":"bounce","name":"ARTICLE.note-card"},
-        {"xLeft":177,"xRight":1263,"width":1085,"y":2802,"trap":"bounce","name":"P"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":2974,"trap":"normal","name":"DIV.section-header"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":3297,"trap":"normal","name":"SECTION.contact-card"},
-        {"xLeft":197,"xRight":835,"width":638,"y":3131,"trap":"normal","name":"H2"},
-        {"xLeft":197,"xRight":835,"width":638,"y":3206,"trap":"normal","name":"P"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":743,"trap":"normal","name":"ARTICLE.featured-project-card::roof"},
+        {"xLeft":191,"xRight":257,"width":66,"y":935,"trap":"normal","name":"SPAN.tech-pill.webgpu"},
+        {"xLeft":191,"xRight":551,"width":360,"y":1089,"trap":"normal","name":"DIV.featured-validation"},
+        {"xLeft":191,"xRight":336,"width":145,"y":1138,"trap":"cta","name":"A.tech-pill.launch-eravex"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":1192,"trap":"normal","name":"ARTICLE.featured-project-card::base"},
+        {"xLeft":152,"xRight":704,"width":552,"y":1224,"trap":"normal","name":"ARTICLE.standard-project-card.maison::roof"},
+        {"xLeft":188,"xRight":302,"width":114,"y":1514,"trap":"cta","name":"A.tech-pill.case-study"},
+        {"xLeft":152,"xRight":704,"width":552,"y":1598,"trap":"normal","name":"ARTICLE.standard-project-card.maison::base"},
+        {"xLeft":736,"xRight":1288,"width":552,"y":1224,"trap":"normal","name":"ARTICLE.standard-project-card.level-devil::roof"},
+        {"xLeft":772,"xRight":992,"width":220,"y":1562,"trap":"normal","name":"SPAN.tech-pill.active-canvas"},
+        {"xLeft":736,"xRight":1288,"width":552,"y":1598,"trap":"normal","name":"ARTICLE.standard-project-card.level-devil::base"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":1630,"trap":"normal","name":"ARTICLE.standard-project-card.jarvis::roof"},
+        {"xLeft":188,"xRight":308,"width":120,"y":1790,"trap":"normal","name":"SPAN.tech-pill.loopback"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":1917,"trap":"normal","name":"ARTICLE.standard-project-card.jarvis::base"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":2063,"trap":"normal","name":"DIV.section-header.capabilities"},
+        {"xLeft":152,"xRight":515,"width":363,"y":2095,"trap":"normal","name":"DIV.capability-card-1::roof"},
+        {"xLeft":152,"xRight":515,"width":363,"y":2334,"trap":"normal","name":"DIV.capability-card-1::base"},
+        {"xLeft":539,"xRight":901,"width":363,"y":2095,"trap":"normal","name":"DIV.capability-card-2::roof"},
+        {"xLeft":539,"xRight":901,"width":363,"y":2334,"trap":"normal","name":"DIV.capability-card-2::base"},
+        {"xLeft":925,"xRight":1288,"width":363,"y":2095,"trap":"normal","name":"DIV.capability-card-3::roof"},
+        {"xLeft":925,"xRight":1288,"width":363,"y":2334,"trap":"normal","name":"DIV.capability-card-3::base"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":2480,"trap":"normal","name":"DIV.section-header.dispatches"},
+        {"xLeft":152,"xRight":708,"width":556,"y":2512,"trap":"bounce","name":"ARTICLE.note-card-1::roof"},
+        {"xLeft":152,"xRight":708,"width":556,"y":2692,"trap":"bounce","name":"ARTICLE.note-card-1::base"},
+        {"xLeft":732,"xRight":1288,"width":556,"y":2512,"trap":"bounce","name":"ARTICLE.note-card-2::roof"},
+        {"xLeft":732,"xRight":1288,"width":556,"y":2692,"trap":"bounce","name":"ARTICLE.note-card-2::base"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":2716,"trap":"bounce","name":"ARTICLE.note-card-3::roof"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":2828,"trap":"bounce","name":"ARTICLE.note-card-3::base"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":2974,"trap":"normal","name":"DIV.section-header.contact"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":3006,"trap":"normal","name":"SECTION.contact-card::roof"},
+        {"xLeft":197,"xRight":835,"width":638,"y":3131,"trap":"normal","name":"H2.contact-heading"},
         {"xLeft":867,"xRight":1243,"width":376,"y":3135,"trap":"cta","name":"A.cta-btn-primary"},
         {"xLeft":867,"xRight":1243,"width":376,"y":3236,"trap":"normal","name":"DIV.secondary-cta-rack"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":3297,"trap":"normal","name":"SECTION.contact-card::base"},
         {"xLeft":152,"xRight":1288,"width":1136,"y":3488,"trap":"normal","name":"DIV.touchdown-zone"}
     ];
 
@@ -252,112 +252,201 @@ onLoad(() => {
         return false;
     }
 
-    // Dynamic Multi-Page DOM Bottom Landing Rail Scanner
+    // Dynamic Multi-Page DOM Landing Rail Scanner (Refined Dual-Surface Roof & Shelf Engine)
     function generatePageRails() {
         const page = getCurrentPage();
         const scrollY = window.scrollY || window.pageYOffset || 0;
 
         if (page === "home") {
-            const elements = document.querySelectorAll('[data-kaboom-body="true"]');
-            if (elements && elements.length > 0) {
-                const detected = [];
-                elements.forEach(el => {
-                    const rect = el.getBoundingClientRect();
-                    if (rect.width < 10 || rect.height < 4) return;
-                    const yRail = Math.round(rect.bottom + scrollY);
-                    const rawTrap = el.getAttribute("data-trap");
-                    const trapType = (rawTrap && rawTrap !== "false" && rawTrap !== "none") ? rawTrap : "normal";
-                    const tag = el.tagName;
-                    const cls = el.className && typeof el.className === "string" ? '.' + el.className.split(' ')[0] : '';
-                    const name = el.id ? `${tag}#${el.id}` : `${tag}${cls}`;
+            const topbar = { el: document.querySelector('header.topbar'), mode: 'bottom', name: 'HEADER.topbar' };
+            const heroBadge = { el: document.querySelector('.role-badge'), mode: 'bottom', name: 'DIV.role-badge' };
+            const heroH1 = { el: document.querySelector('h1'), mode: 'bottom', name: 'H1' };
+            const heroHook = { el: document.querySelector('.hero-hook'), mode: 'bottom', name: 'P.hero-hook' };
+            const heroControls = { el: document.querySelector('.controls-pill'), mode: 'bottom', name: 'DIV.controls-pill' };
+            const heroBtns = Array.from(document.querySelectorAll('.hero-section a.topbar-btn, .hero-main a.topbar-btn'));
+            const heroBtn1 = { el: heroBtns[0], mode: 'bottom', name: 'A.topbar-btn#selected-work' };
+            const heroBtn2 = { el: heroBtns[1], mode: 'bottom', name: 'A.topbar-btn#contract', trap: 'cta' };
+            const heroAside = document.querySelector('.hero-aside-status');
+            const heroAsideRoof = { el: heroAside, mode: 'top', name: 'ASIDE.hero-aside-status::roof' };
+            const heroAsideP = { el: heroAside ? heroAside.querySelector('p') : null, mode: 'bottom', name: 'P.hero-aside-p' };
+            const heroAsideLis = Array.from(document.querySelectorAll('.hero-aside-status li')).map((li, i) => ({ el: li, mode: 'bottom', name: `LI.hero-aside-item-${i+1}` }));
+            const heroAsideBase = { el: heroAside, mode: 'bottom', name: 'ASIDE.hero-aside-status::base' };
 
-                    detected.push({
-                        xLeft: Math.round(rect.left),
-                        xRight: Math.round(rect.right),
-                        width: Math.round(rect.width),
-                        y: yRail,
-                        domElement: el,
-                        trap: trapType,
-                        name: name
-                    });
+            const selectedWorkHeader = { el: document.querySelector('#selected-work'), mode: 'bottom', name: 'DIV#selected-work' };
+
+            const featuredCard = document.querySelector('.featured-project-card');
+            const featuredRoof = { el: featuredCard, mode: 'top', name: 'ARTICLE.featured-project-card::roof' };
+            const featuredPill = { el: featuredCard ? featuredCard.querySelector('.tech-pill') : null, mode: 'bottom', name: 'SPAN.tech-pill.webgpu' };
+            const featuredValidation = { el: featuredCard ? featuredCard.querySelector('div[style*="background: rgba(142, 68, 173"]') : null, mode: 'bottom', name: 'DIV.featured-validation' };
+            const featuredLaunchBtn = { el: featuredCard ? featuredCard.querySelector('a.tech-pill') : null, mode: 'bottom', name: 'A.tech-pill.launch-eravex', trap: 'cta' };
+            const featuredBase = { el: featuredCard, mode: 'bottom', name: 'ARTICLE.featured-project-card::base' };
+
+            const standardCards = Array.from(document.querySelectorAll('.standard-project-card'));
+            const maisonCard = standardCards[0];
+            const maisonRoof = { el: maisonCard, mode: 'top', name: 'ARTICLE.standard-project-card.maison::roof' };
+            const maisonBtn = { el: maisonCard ? maisonCard.querySelector('a.tech-pill') : null, mode: 'bottom', name: 'A.tech-pill.case-study', trap: 'cta' };
+            const maisonBase = { el: maisonCard, mode: 'bottom', name: 'ARTICLE.standard-project-card.maison::base' };
+
+            const levelDevilCard = standardCards[1];
+            const levelDevilRoof = { el: levelDevilCard, mode: 'top', name: 'ARTICLE.standard-project-card.level-devil::roof' };
+            const levelDevilPill = { el: levelDevilCard ? Array.from(levelDevilCard.querySelectorAll('span.tech-pill.accent')).pop() : null, mode: 'bottom', name: 'SPAN.tech-pill.active-canvas' };
+            const levelDevilBase = { el: levelDevilCard, mode: 'bottom', name: 'ARTICLE.standard-project-card.level-devil::base' };
+
+            const jarvisCard = standardCards[2];
+            const jarvisRoof = { el: jarvisCard, mode: 'top', name: 'ARTICLE.standard-project-card.jarvis::roof' };
+            const jarvisPill = { el: jarvisCard ? jarvisCard.querySelector('.tech-pill.accent') : null, mode: 'bottom', name: 'SPAN.tech-pill.loopback' };
+            const jarvisBase = { el: jarvisCard, mode: 'bottom', name: 'ARTICLE.standard-project-card.jarvis::base' };
+
+            const sectionHeaders = Array.from(document.querySelectorAll('.section-header'));
+            const capHeader = { el: sectionHeaders[1], mode: 'bottom', name: 'DIV.section-header.capabilities' };
+            const capCards = Array.from(document.querySelectorAll('.capability-card'));
+            const capItems = capCards.flatMap((card, i) => [
+                { el: card, mode: 'top', name: `DIV.capability-card-${i+1}::roof` },
+                { el: card, mode: 'bottom', name: `DIV.capability-card-${i+1}::base` }
+            ]);
+
+            const notesHeader = { el: sectionHeaders[2], mode: 'bottom', name: 'DIV.section-header.dispatches' };
+            const noteCards = Array.from(document.querySelectorAll('.note-card'));
+            const notesItems = noteCards.flatMap((card, i) => [
+                { el: card, mode: 'top', name: `ARTICLE.note-card-${i+1}::roof`, trap: 'bounce' },
+                { el: card, mode: 'bottom', name: `ARTICLE.note-card-${i+1}::base`, trap: 'bounce' }
+            ]);
+
+            const contactHeader = { el: sectionHeaders[3] || sectionHeaders[sectionHeaders.length - 1], mode: 'bottom', name: 'DIV.section-header.contact' };
+            const contactCard = document.querySelector('.contact-card');
+            const contactRoof = { el: contactCard, mode: 'top', name: 'SECTION.contact-card::roof' };
+            const contactH2 = { el: contactCard ? contactCard.querySelector('h2') : null, mode: 'bottom', name: 'H2.contact-heading' };
+            const contactPrimaryBtn = { el: contactCard ? contactCard.querySelector('.cta-btn-primary') : null, mode: 'bottom', name: 'A.cta-btn-primary', trap: 'cta' };
+            const secondaryRack = { el: document.querySelector('.secondary-cta-rack'), mode: 'bottom', name: 'DIV.secondary-cta-rack' };
+            const contactBase = { el: contactCard, mode: 'bottom', name: 'SECTION.contact-card::base' };
+            const touchdownZone = { el: document.querySelector('.touchdown-zone'), mode: 'bottom', name: 'DIV.touchdown-zone' };
+
+            const homeDefinitions = [
+                topbar,
+                heroBadge, heroH1, heroHook, heroControls, heroBtn1, heroBtn2,
+                heroAsideRoof, heroAsideP, ...heroAsideLis, heroAsideBase,
+                selectedWorkHeader,
+                featuredRoof, featuredPill, featuredValidation, featuredLaunchBtn, featuredBase,
+                maisonRoof, maisonBtn, maisonBase,
+                levelDevilRoof, levelDevilPill, levelDevilBase,
+                jarvisRoof, jarvisPill, jarvisBase,
+                capHeader, ...capItems,
+                notesHeader, ...notesItems,
+                contactHeader, contactRoof, contactH2, contactPrimaryBtn, secondaryRack, contactBase,
+                touchdownZone
+            ].filter(d => d.el);
+
+            if (homeDefinitions.length >= 45) {
+                return homeDefinitions.map(def => {
+                    const r = def.el.getBoundingClientRect();
+                    const y = def.mode === 'top' ? Math.round(r.top + scrollY) : Math.round(r.bottom + scrollY);
+                    return {
+                        xLeft: Math.round(r.left),
+                        xRight: Math.round(r.right),
+                        width: Math.round(r.width),
+                        y: y,
+                        domElement: def.el,
+                        trap: def.trap || 'normal',
+                        name: def.name,
+                        surface: def.mode
+                    };
                 });
-                if (detected.length >= 45) {
-                    return detected;
-                }
             }
             return getCalibratedRails();
         }
 
-        let selectors = [];
-        if (page === "sales") {
-            selectors = [
-                '.hero',
-                '.hero h1',
-                '.hero .lede',
-                '.hero a',
-                '.action-rail a',
-                '#form-google-auth-box',
-                '#inquiry-card',
-                '#inquiry-card h2',
-                '#inquiry-form label',
-                '#inquiry-form input',
-                '#inquiry-form select',
-                '#inquiry-form textarea',
-                '#inquiry-form button[type="submit"]',
-                '#engagement-card',
-                '#engagement-card h2',
-                '#engagement-card div[style*="padding:10px 12px"]',
-                '[data-kaboom-body="true"]',
-                '[data-rail="true"]'
-            ];
-        } else if (page === "workspace") {
-            selectors = [
-                'header.topbar',
-                '.site-nav',
-                '.city-tab',
-                '#queueSearchInput',
-                '#queueList > div',
-                '.studio-panel',
-                '#activeName',
-                '#whatsappActionBtn',
-                '#btnPrevLeadHero',
-                '#btnNextLeadHero',
-                '.obj-btn',
-                '#objectionBox',
-                '#flawsContainer',
-                '#flawsContainer > div',
-                '#dossierPane .grid > div',
-                '#dossierPane > div.bg-\\[\\#15161B\\]',
-                '[data-kaboom-body="true"]',
-                '[data-rail="true"]'
-            ];
-        }
-
-        const elements = document.querySelectorAll(selectors.join(', '));
         const detected = [];
 
-        elements.forEach(el => {
-            const rect = el.getBoundingClientRect();
-            if (rect.width < 10 || rect.height < 4) return;
-            const yRail = Math.round(rect.bottom + scrollY);
-            const rawTrap = el.getAttribute("data-trap");
-            const trapType = (rawTrap && rawTrap !== "false" && rawTrap !== "none") ? rawTrap : (el.type === "submit" ? "cta" : "normal");
-            const tag = el.tagName;
-            const cls = el.className && typeof el.className === "string" ? '.' + el.className.split(' ')[0] : '';
-            const name = el.id ? `${tag}#${el.id}` : `${tag}${cls}`;
+        if (page === "sales") {
+            const topbar = { el: document.querySelector('header.topbar'), mode: 'bottom', name: 'HEADER.topbar' };
+            const heroH1 = { el: document.querySelector('.hero h1'), mode: 'bottom', name: 'H1.hero-heading' };
+            const contactChips = Array.from(document.querySelectorAll('.hero div a')).map((a, i) => ({ el: a, mode: 'bottom', name: `A.hero-chip-${i+1}` }));
+            const actionRails = Array.from(document.querySelectorAll('.action-rail a')).map((a, i) => ({ el: a, mode: 'bottom', name: `A.action-rail-${i+1}` }));
 
-            detected.push({
-                xLeft: Math.round(rect.left),
-                xRight: Math.round(rect.right),
-                width: Math.round(rect.width),
-                y: yRail,
-                domElement: el,
-                trap: trapType,
-                name: name
+            const inquiryCard = document.querySelector('#inquiry-card');
+            const inquiryRoof = { el: inquiryCard, mode: 'top', name: 'ARTICLE#inquiry-card::roof' };
+            const googleBtn = { el: document.querySelector('#sign-in'), mode: 'bottom', name: 'BUTTON#sign-in' };
+            const nameInput = { el: document.querySelector('#inquiry-form input[name="name"]'), mode: 'bottom', name: 'INPUT#name' };
+            const emailInput = { el: document.querySelector('#inquiry-form input[name="email"]'), mode: 'bottom', name: 'INPUT#email' };
+            const scopeSelect = { el: document.querySelector('#inquiry-form select[name="scope"]'), mode: 'bottom', name: 'SELECT#scope' };
+            const budgetSelect = { el: document.querySelector('#inquiry-form select[name="budget"]'), mode: 'bottom', name: 'SELECT#budget' };
+            const msgTextarea = { el: document.querySelector('#inquiry-form textarea[name="message"]'), mode: 'bottom', name: 'TEXTAREA#message' };
+            const submitBtn = { el: document.querySelector('#inquiry-form button[type="submit"]'), mode: 'bottom', name: 'BUTTON#submit', trap: 'cta' };
+            const inquiryBase = { el: inquiryCard, mode: 'bottom', name: 'ARTICLE#inquiry-card::base' };
+
+            const engagementCard = document.querySelector('#engagement-card');
+            const engagementRoof = { el: engagementCard, mode: 'top', name: 'ARTICLE#engagement-card::roof' };
+            const engagementBoxes = Array.from(document.querySelectorAll('#engagement-card div[style*="padding:10px 12px"]')).map((b, i) => ({ el: b, mode: 'bottom', name: `DIV.standard-box-${i+1}` }));
+            const engagementBase = { el: engagementCard, mode: 'bottom', name: 'ARTICLE#engagement-card::base' };
+
+            const salesDefinitions = [
+                topbar, heroH1, ...contactChips, ...actionRails,
+                inquiryRoof, googleBtn, nameInput, emailInput, scopeSelect, budgetSelect, msgTextarea, submitBtn, inquiryBase,
+                engagementRoof, ...engagementBoxes, engagementBase
+            ].filter(d => d.el);
+
+            salesDefinitions.forEach(def => {
+                const r = def.el.getBoundingClientRect();
+                if (r.width < 10 || r.height < 4) return;
+                const y = def.mode === 'top' ? Math.round(r.top + scrollY) : Math.round(r.bottom + scrollY);
+                detected.push({
+                    xLeft: Math.round(r.left),
+                    xRight: Math.round(r.right),
+                    width: Math.round(r.width),
+                    y: y,
+                    domElement: def.el,
+                    trap: def.trap || 'normal',
+                    name: def.name,
+                    surface: def.mode
+                });
             });
-        });
+        } else if (page === "workspace") {
+            const topbar = { el: document.querySelector('header.topbar'), mode: 'bottom', name: 'HEADER.topbar' };
+            const cityTabs = Array.from(document.querySelectorAll('.city-tab')).map((b, i) => ({ el: b, mode: 'bottom', name: `BUTTON.city-tab-${i+1}`, trap: 'cta' }));
+            const searchInput = { el: document.querySelector('#queueSearchInput'), mode: 'bottom', name: 'INPUT#queueSearchInput' };
 
-        // Deduplicate overlapping rails (within 3px Y and 6px X)
+            const panels = Array.from(document.querySelectorAll('.studio-panel'));
+            const heroPanel = panels[0];
+            const flawsPanel = panels[1];
+            const notesPanel = panels[2];
+
+            const heroRoof = { el: heroPanel, mode: 'top', name: 'DIV.hero-panel::roof' };
+            const btnPrev = { el: document.querySelector('#btnPrevLeadHero'), mode: 'bottom', name: 'BUTTON#btnPrevLeadHero', trap: 'cta' };
+            const btnNext = { el: document.querySelector('#btnNextLeadHero'), mode: 'bottom', name: 'BUTTON#btnNextLeadHero', trap: 'cta' };
+            const activeName = { el: document.querySelector('#activeName'), mode: 'bottom', name: 'H1#activeName' };
+            const heroBase = { el: heroPanel, mode: 'bottom', name: 'DIV.hero-panel::base' };
+
+            const flawsRoof = { el: flawsPanel, mode: 'top', name: 'DIV.flaws-panel::roof' };
+            const flawsBase = { el: flawsPanel, mode: 'bottom', name: 'DIV.flaws-panel::base' };
+
+            const notesRoof = { el: notesPanel, mode: 'top', name: 'DIV.notes-panel::roof' };
+            const callNotes = { el: document.querySelector('#callNotesInput'), mode: 'bottom', name: 'TEXTAREA#callNotesInput' };
+            const saveBtn = { el: document.querySelector('#btnNextLeadHandoff'), mode: 'bottom', name: 'BUTTON#save-next', trap: 'cta' };
+            const notesBase = { el: notesPanel, mode: 'bottom', name: 'DIV.notes-panel::base' };
+
+            const wsDefinitions = [
+                topbar, ...cityTabs, searchInput,
+                heroRoof, btnPrev, btnNext, activeName, heroBase,
+                flawsRoof, flawsBase,
+                notesRoof, callNotes, saveBtn, notesBase
+            ].filter(d => d.el);
+
+            wsDefinitions.forEach(def => {
+                const r = def.el.getBoundingClientRect();
+                if (r.width < 10 || r.height < 4) return;
+                const y = def.mode === 'top' ? Math.round(r.top + scrollY) : Math.round(r.bottom + scrollY);
+                detected.push({
+                    xLeft: Math.round(r.left),
+                    xRight: Math.round(r.right),
+                    width: Math.round(r.width),
+                    y: y,
+                    domElement: def.el,
+                    trap: def.trap || 'normal',
+                    name: def.name,
+                    surface: def.mode
+                });
+            });
+        }
         const uniqueRails = [];
         for (const r of detected) {
             const dup = uniqueRails.find(u => Math.abs(u.y - r.y) <= 3 && Math.abs(u.xLeft - r.xLeft) <= 6 && Math.abs(u.xRight - r.xRight) <= 6);
@@ -383,7 +472,7 @@ onLoad(() => {
                     rail.xLeft = Math.round(r.left);
                     rail.xRight = Math.round(r.right);
                     rail.width = Math.round(r.width);
-                    rail.y = Math.round(r.bottom + scrollY);
+                    rail.y = (rail.surface === "top") ? Math.round(r.top + scrollY) : Math.round(r.bottom + scrollY);
                 } else {
                     needsRebuild = true;
                     break;
@@ -407,6 +496,7 @@ onLoad(() => {
     }
 
     window.landingRails = landingRails;
+    window.generatePageRails = generatePageRails;
     window.syncDOM = () => syncDOM(true);
     window.setPhysicsActive = (val) => { isPhysicsActive = val; };
 

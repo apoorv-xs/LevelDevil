@@ -19,24 +19,127 @@ async function calibrate() {
     await page.waitForTimeout(600);
 
     const measuredRails = await page.evaluate(() => {
-        const nodes = Array.from(document.querySelectorAll('[data-kaboom-body="true"]'));
         const scrollY = window.scrollY || window.pageYOffset || 0;
 
-        return nodes.map((el) => {
-            const r = el.getBoundingClientRect();
-            const tag = el.tagName;
-            const cls = el.className && typeof el.className === "string" ? '.' + el.className.split(' ')[0] : '';
-            const name = el.id ? `${tag}#${el.id}` : `${tag}${cls}`;
-            const rawTrap = el.getAttribute("data-trap");
-            const trap = (rawTrap && rawTrap !== "false" && rawTrap !== "none") ? rawTrap : "normal";
+        // 0. Stratosphere Topbar Header
+        const topbar = { el: document.querySelector('header.topbar'), mode: 'bottom', name: 'HEADER.topbar' };
 
+        // 1. Hero launchpad
+        const heroItems = [
+            { el: document.querySelector('.role-badge'), mode: 'bottom', name: 'DIV.role-badge' },
+            { el: document.querySelector('h1'), mode: 'bottom', name: 'H1' },
+            { el: document.querySelector('.hero-hook'), mode: 'bottom', name: 'P.hero-hook' },
+            { el: document.querySelector('.controls-pill'), mode: 'bottom', name: 'DIV.controls-pill' },
+            { el: document.querySelectorAll('.hero-section a.topbar-btn')[0] || document.querySelectorAll('a.topbar-btn')[0], mode: 'bottom', name: 'A.topbar-btn#selected-work' },
+            { el: document.querySelectorAll('.hero-section a.topbar-btn')[1] || document.querySelectorAll('a.topbar-btn')[1], mode: 'bottom', name: 'A.topbar-btn#contract', trap: 'cta' },
+            { el: document.querySelector('.hero-aside-status'), mode: 'top', name: 'ASIDE.hero-aside-status::roof' },
+            { el: document.querySelector('.hero-aside-status p'), mode: 'bottom', name: 'P.hero-aside-p' },
+            ...Array.from(document.querySelectorAll('.hero-aside-status li')).map((li, i) => ({ el: li, mode: 'bottom', name: `LI.hero-aside-item-${i+1}` })),
+            { el: document.querySelector('.hero-aside-status'), mode: 'bottom', name: 'ASIDE.hero-aside-status::base' }
+        ];
+
+        // 2. Selected Work Runway Shelf
+        const selectedWorkHeader = { el: document.querySelector('#selected-work'), mode: 'bottom', name: 'DIV#selected-work' };
+
+        // 3. Flagship Card (ERAVEX)
+        const featuredCard = document.querySelector('.featured-project-card');
+        const featuredItems = [
+            { el: featuredCard, mode: 'top', name: 'ARTICLE.featured-project-card::roof' },
+            { el: featuredCard ? featuredCard.querySelector('.tech-pill') : null, mode: 'bottom', name: 'SPAN.tech-pill.webgpu' },
+            { el: featuredCard ? featuredCard.querySelector('div[style*="background: rgba(142, 68, 173"]') : null, mode: 'bottom', name: 'DIV.featured-validation' },
+            { el: featuredCard ? featuredCard.querySelector('a.tech-pill') : null, mode: 'bottom', name: 'A.tech-pill.launch-eravex', trap: 'cta' },
+            { el: featuredCard, mode: 'bottom', name: 'ARTICLE.featured-project-card::base' }
+        ];
+
+        // 4. Dual Columns (Maison Anima & Level Devil)
+        const standardCards = Array.from(document.querySelectorAll('.standard-project-card'));
+        const maisonCard = standardCards[0];
+        const levelDevilCard = standardCards[1];
+        const jarvisCard = standardCards[2];
+
+        const maisonItems = [
+            { el: maisonCard, mode: 'top', name: 'ARTICLE.standard-project-card.maison::roof' },
+            { el: maisonCard ? maisonCard.querySelector('a.tech-pill') : null, mode: 'bottom', name: 'A.tech-pill.case-study', trap: 'cta' },
+            { el: maisonCard, mode: 'bottom', name: 'ARTICLE.standard-project-card.maison::base' }
+        ];
+
+        const levelDevilItems = [
+            { el: levelDevilCard, mode: 'top', name: 'ARTICLE.standard-project-card.level-devil::roof' },
+            { el: levelDevilCard ? Array.from(levelDevilCard.querySelectorAll('span.tech-pill.accent')).pop() : null, mode: 'bottom', name: 'SPAN.tech-pill.active-canvas' },
+            { el: levelDevilCard, mode: 'bottom', name: 'ARTICLE.standard-project-card.level-devil::base' }
+        ];
+
+        // 5. Jarvis Card
+        const jarvisItems = [
+            { el: jarvisCard, mode: 'top', name: 'ARTICLE.standard-project-card.jarvis::roof' },
+            { el: jarvisCard ? jarvisCard.querySelector('.tech-pill.accent') : null, mode: 'bottom', name: 'SPAN.tech-pill.loopback' },
+            { el: jarvisCard, mode: 'bottom', name: 'ARTICLE.standard-project-card.jarvis::base' }
+        ];
+
+        // 6. Capabilities Section (Pillar Pedestals)
+        const sectionHeaders = Array.from(document.querySelectorAll('.section-header'));
+        const capHeader = sectionHeaders[1];
+        const capCards = Array.from(document.querySelectorAll('.capability-card'));
+        const capItems = [
+            { el: capHeader, mode: 'bottom', name: 'DIV.section-header.capabilities' },
+            ...capCards.flatMap((card, i) => [
+                { el: card, mode: 'top', name: `DIV.capability-card-${i+1}::roof` },
+                { el: card, mode: 'bottom', name: `DIV.capability-card-${i+1}::base` }
+            ])
+        ];
+
+        // 7. Recent Dispatches (Bounce Trampolines)
+        const notesHeader = sectionHeaders[2];
+        const noteCards = Array.from(document.querySelectorAll('.note-card'));
+        const notesItems = [
+            { el: notesHeader, mode: 'bottom', name: 'DIV.section-header.dispatches' },
+            ...noteCards.flatMap((card, i) => [
+                { el: card, mode: 'top', name: `ARTICLE.note-card-${i+1}::roof`, trap: 'bounce' },
+                { el: card, mode: 'bottom', name: `ARTICLE.note-card-${i+1}::base`, trap: 'bounce' }
+            ])
+        ];
+
+        // 8. Contact & Touchdown
+        const contactHeader = sectionHeaders[3] || sectionHeaders[sectionHeaders.length - 1];
+        const contactCard = document.querySelector('.contact-card');
+        const contactH2 = contactCard ? contactCard.querySelector('h2') : null;
+        const contactPrimaryBtn = contactCard ? contactCard.querySelector('.cta-btn-primary') : null;
+        const secondaryRack = document.querySelector('.secondary-cta-rack');
+        const touchdownZone = document.querySelector('.touchdown-zone');
+
+        const contactItems = [
+            { el: contactHeader, mode: 'bottom', name: 'DIV.section-header.contact' },
+            { el: contactCard, mode: 'top', name: 'SECTION.contact-card::roof' },
+            { el: contactH2, mode: 'bottom', name: 'H2.contact-heading' },
+            { el: contactPrimaryBtn, mode: 'bottom', name: 'A.cta-btn-primary', trap: 'cta' },
+            { el: secondaryRack, mode: 'bottom', name: 'DIV.secondary-cta-rack' },
+            { el: contactCard, mode: 'bottom', name: 'SECTION.contact-card::base' },
+            { el: touchdownZone, mode: 'bottom', name: 'DIV.touchdown-zone' }
+        ];
+
+        const allDefinitions = [
+            topbar,
+            ...heroItems,
+            selectedWorkHeader,
+            ...featuredItems,
+            ...maisonItems,
+            ...levelDevilItems,
+            ...jarvisItems,
+            ...capItems,
+            ...notesItems,
+            ...contactItems
+        ].filter(item => item.el);
+
+        return allDefinitions.map(def => {
+            const r = def.el.getBoundingClientRect();
+            const y = def.mode === 'top' ? Math.round(r.top + scrollY) : Math.round(r.bottom + scrollY);
             return {
                 xLeft: Math.round(r.left),
                 xRight: Math.round(r.right),
                 width: Math.round(r.width),
-                y: Math.round(r.bottom + scrollY),
-                trap: trap,
-                name: name
+                y: y,
+                trap: def.trap || 'normal',
+                name: def.name
             };
         });
     });

@@ -28,56 +28,56 @@
     }
 
     const DEFAULT_RAILS = [
+        {"xLeft":0,"xRight":1440,"width":1440,"y":54,"trap":"normal","name":"HEADER.topbar"},
         {"xLeft":152,"xRight":762,"width":610,"y":222,"trap":"normal","name":"DIV.role-badge"},
         {"xLeft":152,"xRight":936,"width":784,"y":312,"trap":"normal","name":"H1"},
         {"xLeft":152,"xRight":936,"width":784,"y":428,"trap":"normal","name":"P.hero-hook"},
         {"xLeft":152,"xRight":628,"width":476,"y":492,"trap":"normal","name":"DIV.controls-pill"},
-        {"xLeft":152,"xRight":326,"width":174,"y":532,"trap":"normal","name":"A.topbar-btn"},
-        {"xLeft":336,"xRight":547,"width":211,"y":532,"trap":"normal","name":"A.topbar-btn"},
-        {"xLeft":968,"xRight":1288,"width":320,"y":492,"trap":"normal","name":"ASIDE.hero-aside-status"},
-        {"xLeft":991,"xRight":1265,"width":274,"y":280,"trap":"normal","name":"P"},
-        {"xLeft":991,"xRight":1265,"width":274,"y":354,"trap":"normal","name":"LI"},
-        {"xLeft":991,"xRight":1265,"width":274,"y":376,"trap":"normal","name":"LI"},
-        {"xLeft":991,"xRight":1265,"width":274,"y":398,"trap":"normal","name":"LI"},
-        {"xLeft":991,"xRight":1265,"width":274,"y":421,"trap":"normal","name":"LI"},
-        {"xLeft":991,"xRight":1265,"width":274,"y":443,"trap":"normal","name":"LI"},
+        {"xLeft":152,"xRight":326,"width":174,"y":532,"trap":"normal","name":"A.topbar-btn#selected-work"},
+        {"xLeft":336,"xRight":547,"width":211,"y":532,"trap":"cta","name":"A.topbar-btn#contract"},
+        {"xLeft":968,"xRight":1288,"width":320,"y":176,"trap":"normal","name":"ASIDE.hero-aside-status::roof"},
+        {"xLeft":991,"xRight":1265,"width":274,"y":280,"trap":"normal","name":"P.hero-aside-p"},
+        {"xLeft":991,"xRight":1265,"width":274,"y":354,"trap":"normal","name":"LI.hero-aside-item-1"},
+        {"xLeft":991,"xRight":1265,"width":274,"y":376,"trap":"normal","name":"LI.hero-aside-item-2"},
+        {"xLeft":991,"xRight":1265,"width":274,"y":398,"trap":"normal","name":"LI.hero-aside-item-3"},
+        {"xLeft":991,"xRight":1265,"width":274,"y":421,"trap":"normal","name":"LI.hero-aside-item-4"},
+        {"xLeft":991,"xRight":1265,"width":274,"y":443,"trap":"normal","name":"LI.hero-aside-item-5"},
+        {"xLeft":968,"xRight":1288,"width":320,"y":492,"trap":"normal","name":"ASIDE.hero-aside-status::base"},
         {"xLeft":152,"xRight":1288,"width":1136,"y":711,"trap":"normal","name":"DIV#selected-work"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":1192,"trap":"normal","name":"ARTICLE.featured-project-card"},
-        {"xLeft":191,"xRight":551,"width":360,"y":1089,"trap":"normal","name":"DIV"},
-        {"xLeft":191,"xRight":336,"width":145,"y":1138,"trap":"normal","name":"A.tech-pill"},
-        {"xLeft":591,"xRight":1249,"width":658,"y":925,"trap":"normal","name":"P"},
-        {"xLeft":591,"xRight":1249,"width":658,"y":1015,"trap":"normal","name":"DIV"},
-        {"xLeft":591,"xRight":1249,"width":658,"y":1072,"trap":"normal","name":"DIV"},
-        {"xLeft":591,"xRight":1249,"width":658,"y":1153,"trap":"normal","name":"DIV"},
-        {"xLeft":152,"xRight":704,"width":552,"y":1598,"trap":"normal","name":"ARTICLE.standard-project-card"},
-        {"xLeft":188,"xRight":668,"width":480,"y":1473,"trap":"normal","name":"P"},
-        {"xLeft":188,"xRight":302,"width":114,"y":1514,"trap":"normal","name":"A.tech-pill"},
-        {"xLeft":736,"xRight":1288,"width":552,"y":1598,"trap":"normal","name":"ARTICLE.standard-project-card"},
-        {"xLeft":772,"xRight":1252,"width":480,"y":1521,"trap":"normal","name":"P"},
-        {"xLeft":772,"xRight":992,"width":220,"y":1562,"trap":"normal","name":"SPAN.tech-pill"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":1917,"trap":"normal","name":"ARTICLE.standard-project-card"},
-        {"xLeft":580,"xRight":1252,"width":672,"y":1820,"trap":"normal","name":"P"},
-        {"xLeft":580,"xRight":853,"width":273,"y":1865,"trap":"normal","name":"SPAN.tech-pill"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":2063,"trap":"normal","name":"DIV.section-header"},
-        {"xLeft":152,"xRight":515,"width":363,"y":2334,"trap":"normal","name":"DIV.capability-card"},
-        {"xLeft":185,"xRight":482,"width":297,"y":2301,"trap":"normal","name":"P"},
-        {"xLeft":539,"xRight":901,"width":363,"y":2334,"trap":"normal","name":"DIV.capability-card"},
-        {"xLeft":571,"xRight":869,"width":297,"y":2301,"trap":"normal","name":"P"},
-        {"xLeft":925,"xRight":1288,"width":363,"y":2334,"trap":"normal","name":"DIV.capability-card"},
-        {"xLeft":958,"xRight":1255,"width":297,"y":2301,"trap":"normal","name":"P"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":2480,"trap":"normal","name":"DIV.section-header"},
-        {"xLeft":152,"xRight":708,"width":556,"y":2692,"trap":"bounce","name":"ARTICLE.note-card"},
-        {"xLeft":177,"xRight":683,"width":505,"y":2667,"trap":"bounce","name":"P"},
-        {"xLeft":732,"xRight":1288,"width":556,"y":2692,"trap":"bounce","name":"ARTICLE.note-card"},
-        {"xLeft":757,"xRight":1263,"width":505,"y":2644,"trap":"bounce","name":"P"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":2828,"trap":"bounce","name":"ARTICLE.note-card"},
-        {"xLeft":177,"xRight":1263,"width":1085,"y":2802,"trap":"bounce","name":"P"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":2974,"trap":"normal","name":"DIV.section-header"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":3297,"trap":"normal","name":"SECTION.contact-card"},
-        {"xLeft":197,"xRight":835,"width":638,"y":3131,"trap":"normal","name":"H2"},
-        {"xLeft":197,"xRight":835,"width":638,"y":3206,"trap":"normal","name":"P"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":743,"trap":"normal","name":"ARTICLE.featured-project-card::roof"},
+        {"xLeft":191,"xRight":257,"width":66,"y":935,"trap":"normal","name":"SPAN.tech-pill.webgpu"},
+        {"xLeft":191,"xRight":551,"width":360,"y":1089,"trap":"normal","name":"DIV.featured-validation"},
+        {"xLeft":191,"xRight":336,"width":145,"y":1138,"trap":"cta","name":"A.tech-pill.launch-eravex"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":1192,"trap":"normal","name":"ARTICLE.featured-project-card::base"},
+        {"xLeft":152,"xRight":704,"width":552,"y":1224,"trap":"normal","name":"ARTICLE.standard-project-card.maison::roof"},
+        {"xLeft":188,"xRight":302,"width":114,"y":1514,"trap":"cta","name":"A.tech-pill.case-study"},
+        {"xLeft":152,"xRight":704,"width":552,"y":1598,"trap":"normal","name":"ARTICLE.standard-project-card.maison::base"},
+        {"xLeft":736,"xRight":1288,"width":552,"y":1224,"trap":"normal","name":"ARTICLE.standard-project-card.level-devil::roof"},
+        {"xLeft":772,"xRight":992,"width":220,"y":1562,"trap":"normal","name":"SPAN.tech-pill.active-canvas"},
+        {"xLeft":736,"xRight":1288,"width":552,"y":1598,"trap":"normal","name":"ARTICLE.standard-project-card.level-devil::base"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":1630,"trap":"normal","name":"ARTICLE.standard-project-card.jarvis::roof"},
+        {"xLeft":188,"xRight":308,"width":120,"y":1790,"trap":"normal","name":"SPAN.tech-pill.loopback"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":1917,"trap":"normal","name":"ARTICLE.standard-project-card.jarvis::base"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":2063,"trap":"normal","name":"DIV.section-header.capabilities"},
+        {"xLeft":152,"xRight":515,"width":363,"y":2095,"trap":"normal","name":"DIV.capability-card-1::roof"},
+        {"xLeft":152,"xRight":515,"width":363,"y":2334,"trap":"normal","name":"DIV.capability-card-1::base"},
+        {"xLeft":539,"xRight":901,"width":363,"y":2095,"trap":"normal","name":"DIV.capability-card-2::roof"},
+        {"xLeft":539,"xRight":901,"width":363,"y":2334,"trap":"normal","name":"DIV.capability-card-2::base"},
+        {"xLeft":925,"xRight":1288,"width":363,"y":2095,"trap":"normal","name":"DIV.capability-card-3::roof"},
+        {"xLeft":925,"xRight":1288,"width":363,"y":2334,"trap":"normal","name":"DIV.capability-card-3::base"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":2480,"trap":"normal","name":"DIV.section-header.dispatches"},
+        {"xLeft":152,"xRight":708,"width":556,"y":2512,"trap":"bounce","name":"ARTICLE.note-card-1::roof"},
+        {"xLeft":152,"xRight":708,"width":556,"y":2692,"trap":"bounce","name":"ARTICLE.note-card-1::base"},
+        {"xLeft":732,"xRight":1288,"width":556,"y":2512,"trap":"bounce","name":"ARTICLE.note-card-2::roof"},
+        {"xLeft":732,"xRight":1288,"width":556,"y":2692,"trap":"bounce","name":"ARTICLE.note-card-2::base"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":2716,"trap":"bounce","name":"ARTICLE.note-card-3::roof"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":2828,"trap":"bounce","name":"ARTICLE.note-card-3::base"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":2974,"trap":"normal","name":"DIV.section-header.contact"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":3006,"trap":"normal","name":"SECTION.contact-card::roof"},
+        {"xLeft":197,"xRight":835,"width":638,"y":3131,"trap":"normal","name":"H2.contact-heading"},
         {"xLeft":867,"xRight":1243,"width":376,"y":3135,"trap":"cta","name":"A.cta-btn-primary"},
         {"xLeft":867,"xRight":1243,"width":376,"y":3236,"trap":"normal","name":"DIV.secondary-cta-rack"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":3297,"trap":"normal","name":"SECTION.contact-card::base"},
         {"xLeft":152,"xRight":1288,"width":1136,"y":3488,"trap":"normal","name":"DIV.touchdown-zone"}
     ];
 
@@ -95,8 +95,20 @@
         }));
     }
 
-    // Direct DOM Bottom Snapping Engine for Visual Mapper
+    // Direct DOM Bottom & Roof Snapping Engine for Visual Mapper
     function snapFromDOM() {
+        if (typeof window.generatePageRails === "function") {
+            const refined = window.generatePageRails();
+            if (refined && refined.length > 0) {
+                window.landingRails = refined;
+                saveToLocal();
+                renderOverlay();
+                updateHudContent();
+                console.log("🛠 Visual Collision Mapper snapped from Refined Engine:", refined.length);
+                return refined;
+            }
+        }
+
         const elements = document.querySelectorAll('[data-kaboom-body="true"], [data-rail="true"]');
         const scrollY = window.scrollY || window.pageYOffset || 0;
         const newRails = [];
@@ -219,9 +231,11 @@
             toggleBtn.innerHTML = "✕ CLOSE (E / \\)";
         }
 
-        // Ensure clean bottom rails on first open if no v4 edits exist
+        // Ensure clean rails on first open if no v4 edits exist
         if (!localStorage.getItem("apoorv_custom_rails_v4") || getRails().length === 0) {
-            window.landingRails = getDefaultRails();
+            window.landingRails = (typeof window.generatePageRails === "function")
+                ? window.generatePageRails()
+                : getDefaultRails();
         }
 
         createOverlay();
@@ -459,7 +473,10 @@
                     localStorage.removeItem("apoorv_custom_rails");
                     localStorage.removeItem("apoorv_custom_rails_v2");
                     localStorage.removeItem("apoorv_custom_rails_v3");
-                    window.landingRails = getDefaultRails();
+                    localStorage.removeItem("apoorv_custom_rails_v4");
+                    window.landingRails = (typeof window.generatePageRails === "function")
+                        ? window.generatePageRails()
+                        : getDefaultRails();
                     selectedRailIndex = -1;
                     renderOverlay();
                     updateHudContent();
