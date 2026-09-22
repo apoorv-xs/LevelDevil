@@ -13,6 +13,12 @@
       this.muted = false;
       this.initialized = false;
       this._firstGestureBound = false;
+      this.ambientOsc1 = null;
+      this.ambientOsc2 = null;
+      this.ambientFilter = null;
+      this.ambientGain = null;
+      this.ambientActive = false;
+      this.currentAltitude = 10000;
 
       // Load initial mute state from localStorage
       if (typeof window !== "undefined" && window.localStorage) {
@@ -31,7 +37,10 @@
       this._firstGestureBound = true;
 
       const unlock = () => {
-        this.getAudioContext();
+        const ctx = this.getAudioContext();
+        if (ctx && !this.muted && !this.ambientActive) {
+          this.startAmbient();
+        }
         window.removeEventListener("pointerdown", unlock);
         window.removeEventListener("keydown", unlock);
         window.removeEventListener("touchstart", unlock);
@@ -81,6 +90,25 @@
           window.localStorage.setItem(STORAGE_KEY, String(this.muted));
         } catch (e) {}
       }
+      if (this.muted) {
+        if (this.ambientGain && this.ctx) {
+          try {
+            const now = this.ctx.currentTime;
+            this.ambientGain.gain.cancelScheduledValues(now);
+            this.ambientGain.gain.linearRampToValueAtTime(0.0001, now + 0.1);
+          } catch (e) {}
+        }
+      } else {
+        if (this.ambientActive && this.ambientGain && this.ctx) {
+          try {
+            const now = this.ctx.currentTime;
+            this.ambientGain.gain.cancelScheduledValues(now);
+            this.ambientGain.gain.linearRampToValueAtTime(0.018, now + 0.3);
+          } catch (e) {}
+        } else if (!this.ambientActive && this.ctx) {
+          this.startAmbient();
+        }
+      }
       this.updateUI();
     }
 
@@ -122,6 +150,134 @@
           });
         }
       });
+    }
+
+    // --- PROCEDURAL ATMOSPHERIC ALTITUDE DRONE (0 KB PAYLOAD) ---
+
+    /**
+     * Starts dual-oscillator sub-bass drone with resonant altitude-reactive biquad filtering
+     */
+    startAmbient() {
+      if (this.ambientActive || this.muted) return;
+      const ctx = this.getAudioContext();
+      if (!ctx || ctx.state !== "running" || this.ambientActive) return;
+
+      try {
+        const now = ctx.currentTime;
+
+        // Sub-bass fundamental oscillator (45Hz base)
+        const osc1 = ctx.createOscillator();
+        osc1.type = "sine";
+        osc1.frequency.setValueAtTime(45, now);
+
+        // Harmonic overtone (67.5Hz - perfect 5th)
+        const osc2 = ctx.createOscillator();
+        osc2.type = "triangle";
+        osc2.frequency.setValueAtTime(67.5, now);
+
+        // Sub-overtone balance gain
+        const overtoneGain = ctx.createGain();
+        overtoneGain.gain.setValueAtTime(0.22, now);
+        osc2.connect(overtoneGain);
+
+        // Atmospheric Biquad Filter (dynamic altitude resonance)
+        const filter = ctx.createBiquadFilter();
+        filter.type = "lowpass";
+        filter.Q.setValueAtTime(1.4, now);
+
+        // Ambient Master Gain (subtle, non-fatiguing bed: 0.018 target)
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.linearRampToValueAtTime(0.018, now + 1.2);
+
+        // Routing
+        osc1.connect(filter);
+        overtoneGain.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.masterGain);
+
+        osc1.start(now);
+        osc2.start(now);
+
+        this.ambientOsc1 = osc1;
+        this.ambientOsc2 = osc2;
+        this.ambientFilter = filter;
+        this.ambientGain = gain;
+        this.ambientActive = true;
+
+        // Apply initial altitude modulation
+        this.updateAltitude(this.currentAltitude);
+      } catch (e) {
+        this.ambientActive = false;
+      }
+    }
+
+    /**
+     * Smoothly stops and cleans up ambient drone nodes to guarantee zero memory leaks
+     */
+    stopAmbient() {
+      if (!this.ambientActive) return;
+      const ctx = this.ctx;
+      const now = ctx ? ctx.currentTime : 0;
+
+      if (this.ambientGain && ctx) {
+        try {
+          this.ambientGain.gain.cancelScheduledValues(now);
+          this.ambientGain.gain.linearRampToValueAtTime(0.0001, now + 0.15);
+        } catch (e) {}
+      }
+
+      const osc1 = this.ambientOsc1;
+      const osc2 = this.ambientOsc2;
+      const filter = this.ambientFilter;
+      const gain = this.ambientGain;
+
+      setTimeout(() => {
+        try { if (osc1) { osc1.stop(); osc1.disconnect(); } } catch (e) {}
+        try { if (osc2) { osc2.stop(); osc2.disconnect(); } } catch (e) {}
+        try { if (filter) { filter.disconnect(); } } catch (e) {}
+        try { if (gain) { gain.disconnect(); } } catch (e) {}
+      }, 200);
+
+      this.ambientOsc1 = null;
+      this.ambientOsc2 = null;
+      this.ambientFilter = null;
+      this.ambientGain = null;
+      this.ambientActive = false;
+    }
+
+    /**
+     * Dynamically shifts drone filter resonance and base pitch based on vertical descent (10,000 FT -> 0 FT)
+     */
+    updateAltitude(altitudeFt) {
+      if (typeof altitudeFt !== "number" || isNaN(altitudeFt)) return;
+      this.currentAltitude = Math.max(0, Math.min(10000, altitudeFt));
+
+      if (!this.ambientActive || !this.ambientFilter || !this.ctx) return;
+
+      try {
+        const now = this.ctx.currentTime;
+        // Altitude ratio: 1.0 at 10,000 FT (stratosphere), 0.0 at 0 FT (Terra Firma)
+        const ratio = this.currentAltitude / 10000;
+
+        // Stratosphere (10k FT): 380Hz cutoff (airy, thin wind hiss)
+        // Terra Firma (0 FT): 75Hz cutoff (dense, deep grounded reactor drone)
+        const cutoff = 75 + ratio * 305;
+        this.ambientFilter.frequency.cancelScheduledValues(now);
+        this.ambientFilter.frequency.linearRampToValueAtTime(cutoff, now + 0.15);
+
+        // Base frequency subtly deepens as air density increases on descent
+        if (this.ambientOsc1) {
+          const baseFreq = 42 + ratio * 6; // 48Hz at 10,000 FT -> 42Hz at 0 FT
+          this.ambientOsc1.frequency.cancelScheduledValues(now);
+          this.ambientOsc1.frequency.linearRampToValueAtTime(baseFreq, now + 0.15);
+        }
+        if (this.ambientOsc2) {
+          const harmFreq = (42 + ratio * 6) * 1.5;
+          this.ambientOsc2.frequency.cancelScheduledValues(now);
+          this.ambientOsc2.frequency.linearRampToValueAtTime(harmFreq, now + 0.15);
+        }
+      } catch (e) {}
     }
 
     getPanX(worldX) {

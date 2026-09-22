@@ -908,9 +908,15 @@ onLoad(() => {
 
             if (progress >= 0.98 || currentScrollY >= maxScroll - 20 || (player && player.pos.y >= bottomY - 60)) {
                 altimeterPill.textContent = "ALT: 0 FT / TOUCHDOWN";
+                if (window.SFX && typeof window.SFX.updateAltitude === "function") {
+                    window.SFX.updateAltitude(0);
+                }
             } else {
                 const alt = Math.max(0, Math.round((1 - progress) * 10000));
                 altimeterPill.textContent = `ALT: ${alt.toLocaleString()} FT`;
+                if (window.SFX && typeof window.SFX.updateAltitude === "function") {
+                    window.SFX.updateAltitude(alt);
+                }
             }
         }
 

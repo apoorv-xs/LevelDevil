@@ -102,6 +102,9 @@ describe("Procedural Droid Synth Sound Engine (0 KB Audio Payload)", () => {
     expect(typeof SFX.toggle).toBe("function");
     expect(typeof SFX.setMuted).toBe("function");
     expect(typeof SFX.isMuted).toBe("function");
+    expect(typeof SFX.startAmbient).toBe("function");
+    expect(typeof SFX.stopAmbient).toBe("function");
+    expect(typeof SFX.updateAltitude).toBe("function");
   });
 
   it("initializes mute state and persists changes to localStorage", () => {
@@ -502,6 +505,181 @@ describe("Procedural Droid Synth Sound Engine (0 KB Audio Payload)", () => {
 
       // Gain connects directly to masterGain
       expect(capturedGain.connect).toHaveBeenCalledWith(engine.masterGain);
+    });
+  });
+
+  describe("Atmospheric Altitude Ambient Hum Engine (0 KB Payload)", () => {
+    let mockOsc1, mockOsc2, mockGain, mockFilter, mockCtx;
+
+    beforeEach(() => {
+      mockOsc1 = {
+        type: "sine",
+        frequency: {
+          setValueAtTime: vi.fn(),
+          linearRampToValueAtTime: vi.fn(),
+          cancelScheduledValues: vi.fn()
+        },
+        connect: vi.fn(),
+        disconnect: vi.fn(),
+        start: vi.fn(),
+        stop: vi.fn()
+      };
+
+      mockOsc2 = {
+        type: "triangle",
+        frequency: {
+          setValueAtTime: vi.fn(),
+          linearRampToValueAtTime: vi.fn(),
+          cancelScheduledValues: vi.fn()
+        },
+        connect: vi.fn(),
+        disconnect: vi.fn(),
+        start: vi.fn(),
+        stop: vi.fn()
+      };
+
+      mockGain = {
+        gain: {
+          setValueAtTime: vi.fn(),
+          linearRampToValueAtTime: vi.fn(),
+          cancelScheduledValues: vi.fn()
+        },
+        connect: vi.fn(),
+        disconnect: vi.fn()
+      };
+
+      mockFilter = {
+        type: "lowpass",
+        frequency: {
+          setValueAtTime: vi.fn(),
+          linearRampToValueAtTime: vi.fn(),
+          cancelScheduledValues: vi.fn()
+        },
+        Q: { setValueAtTime: vi.fn() },
+        connect: vi.fn(),
+        disconnect: vi.fn()
+      };
+
+      let oscCount = 0;
+      mockCtx = {
+        state: "running",
+        currentTime: 0,
+        destination: {},
+        createOscillator: vi.fn(() => {
+          oscCount++;
+          return oscCount % 2 === 1 ? { ...mockOsc1 } : { ...mockOsc2 };
+        }),
+        createGain: vi.fn(() => ({
+          gain: {
+            setValueAtTime: vi.fn(),
+            linearRampToValueAtTime: vi.fn(),
+            cancelScheduledValues: vi.fn()
+          },
+          connect: vi.fn(),
+          disconnect: vi.fn()
+        })),
+        createBiquadFilter: vi.fn(() => ({
+          type: "lowpass",
+          frequency: {
+            setValueAtTime: vi.fn(),
+            linearRampToValueAtTime: vi.fn(),
+            cancelScheduledValues: vi.fn()
+          },
+          Q: { setValueAtTime: vi.fn() },
+          connect: vi.fn(),
+          disconnect: vi.fn()
+        })),
+        resume: vi.fn().mockResolvedValue()
+      };
+
+      global.window.AudioContext = vi.fn(function () {
+        return mockCtx;
+      });
+    });
+
+    it("spawns dual-oscillator resonant filter ambient hum connected to masterGain", () => {
+      const engine = new DroidSynthEngine();
+      engine.setMuted(false);
+      engine.startAmbient();
+
+      expect(engine.ambientActive).toBe(true);
+      expect(mockCtx.createOscillator).toHaveBeenCalledTimes(2);
+      expect(mockCtx.createBiquadFilter).toHaveBeenCalled();
+      expect(mockCtx.createGain).toHaveBeenCalled();
+      expect(engine.ambientFilter).not.toBeNull();
+      expect(engine.ambientGain).not.toBeNull();
+    });
+
+    it("modulates filter cutoff and sub-bass fundamental based on altitude (10,000 FT -> 0 FT)", () => {
+      const engine = new DroidSynthEngine();
+      engine.setMuted(false);
+      engine.startAmbient();
+
+      // At 10,000 FT (stratosphere): airy wind hiss (cutoff = 75 + 1.0 * 305 = 380Hz, osc1 = 48Hz)
+      engine.updateAltitude(10000);
+      expect(engine.ambientFilter.frequency.linearRampToValueAtTime).toHaveBeenCalledWith(
+        expect.closeTo(380, 1),
+        expect.any(Number)
+      );
+      expect(engine.ambientOsc1.frequency.linearRampToValueAtTime).toHaveBeenCalledWith(
+        expect.closeTo(48, 1),
+        expect.any(Number)
+      );
+
+      // At 0 FT (Terra Firma): dense low-pass reactor drone (cutoff = 75Hz, osc1 = 42Hz)
+      engine.updateAltitude(0);
+      expect(engine.ambientFilter.frequency.linearRampToValueAtTime).toHaveBeenCalledWith(
+        expect.closeTo(75, 1),
+        expect.any(Number)
+      );
+      expect(engine.ambientOsc1.frequency.linearRampToValueAtTime).toHaveBeenCalledWith(
+        expect.closeTo(42, 1),
+        expect.any(Number)
+      );
+    });
+
+    it("smoothly ramps gain down when muted and restores gain when unmuted", () => {
+      const engine = new DroidSynthEngine();
+      engine.setMuted(false);
+      engine.startAmbient();
+
+      // Mute should ramp down to ~0.0001
+      engine.setMuted(true);
+      expect(engine.ambientGain.gain.linearRampToValueAtTime).toHaveBeenCalledWith(
+        0.0001,
+        expect.any(Number)
+      );
+
+      // Unmute should ramp back up to ~0.018
+      engine.setMuted(false);
+      expect(engine.ambientGain.gain.linearRampToValueAtTime).toHaveBeenCalledWith(
+        0.018,
+        expect.any(Number)
+      );
+    });
+
+    it("cleans up ambient oscillators and filters upon stopAmbient to prevent memory leaks", () => {
+      vi.useFakeTimers();
+      const engine = new DroidSynthEngine();
+      engine.setMuted(false);
+      engine.startAmbient();
+
+      const osc1 = engine.ambientOsc1;
+      const osc2 = engine.ambientOsc2;
+      const filter = engine.ambientFilter;
+      const gain = engine.ambientGain;
+
+      engine.stopAmbient();
+      expect(engine.ambientActive).toBe(false);
+
+      vi.advanceTimersByTime(300);
+      expect(osc1.stop).toHaveBeenCalled();
+      expect(osc1.disconnect).toHaveBeenCalled();
+      expect(osc2.stop).toHaveBeenCalled();
+      expect(osc2.disconnect).toHaveBeenCalled();
+      expect(filter.disconnect).toHaveBeenCalled();
+      expect(gain.disconnect).toHaveBeenCalled();
+      vi.useRealTimers();
     });
   });
 
