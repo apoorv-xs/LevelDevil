@@ -716,7 +716,7 @@
             if (typeof window !== "undefined" && window.Engine3D && typeof window.Engine3D.to3DVec === "function") {
                 const target = (typeof THREE !== "undefined") ? new THREE.Vector3() : null;
                 const v = window.Engine3D.to3DVec(x2d, y2d, z, target);
-                return (v && typeof v.clone === "function") ? v.clone() : v;
+                return v;
             }
             if (typeof THREE !== "undefined") {
                 return new THREE.Vector3(x2d * 0.05, -y2d * 0.05, z);

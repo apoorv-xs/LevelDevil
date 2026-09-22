@@ -30,7 +30,7 @@ const EXCLUDED_FILES = new Set([
     'package-lock.json'
 ]);
 
-const validExtensions = ['.html', '.js', '.png', '.pdf', '.css', '.json', '.svg', '.ico'];
+const validExtensions = ['.html', '.js', '.png', '.pdf', '.css', '.json', '.svg', '.ico', '.txt', '.xml'];
 
 const files = fs.readdirSync(srcDir);
 

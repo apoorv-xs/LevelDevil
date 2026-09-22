@@ -209,26 +209,16 @@
                 }
             });
 
-            // Listen for prospect card clicks, city tabs, objections in workspace
+            // Listen for tactical rebuttal button clicks and call trigger in workspace
             document.addEventListener("click", (e) => {
-                const prospectItem = e.target.closest("#queueList > div");
-                if (prospectItem) {
-                    this.onWorkspaceInteract(prospectItem);
-                    return;
-                }
                 const objBtn = e.target.closest(".obj-btn, .objection-btn");
                 if (objBtn) {
                     this.onWorkspaceInteract(objBtn);
                     return;
                 }
-                const cityTab = e.target.closest(".city-tab");
-                if (cityTab) {
-                    this.onWorkspaceInteract(cityTab);
-                    return;
-                }
                 const callBtn = e.target.closest("#callActionBtn");
                 if (callBtn) {
-                    this.onWorkspaceInteract(callBtn);
+                    this.onCallStateChange(true);
                 }
             });
         },
@@ -403,12 +393,6 @@
             if (el.classList?.contains("obj-btn") || el.classList?.contains("objection-btn")) {
                 const title = el.textContent?.trim() || "Rebuttal";
                 this.emitThought(`Deploying tactical rebuttal: "${title.slice(0, 30)}..."`, 2400);
-            } else if (el.id === "callActionBtn") {
-                this.onCallStateChange(true);
-            } else if (el.classList?.contains("city-tab")) {
-                this.onRadarFilter(el.textContent?.trim());
-            } else {
-                this.emitThought("Inspecting lead dossier telemetry.", 2000);
             }
         },
 

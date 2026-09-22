@@ -237,13 +237,6 @@ inquiryForm?.addEventListener("submit", (event) => {
   submitPublicForm(event, "/inquiry", "Inquiry received. Apoorv will follow up within 24 hours.");
 });
 
-// System 1 Unified Brain Scope & Tier Hook
-document.querySelector('select[name="scope"]')?.addEventListener("change", (e) => {
-  window.System1Brain?.onScopeSelect?.(e.target.value);
-});
-document.querySelector('select[name="budget"]')?.addEventListener("change", (e) => {
-  window.System1Brain?.onTierSelect?.(e.target.value);
-});
 
 document.getElementById("application-form")?.addEventListener("submit", (event) => {
   submitPublicForm(event, "/application", "Application received for review.");
