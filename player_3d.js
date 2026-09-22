@@ -882,7 +882,7 @@
         // Player Construct Tool ('F' Hotkey / Laser Springboard)
         constructPlatform(player, landingRails) {
             const now = performance.now();
-            if (now - this.lastConstructTime < 350) return null;
+            if (this.lastConstructTime && (now - this.lastConstructTime < 350)) return null;
             this.lastConstructTime = now;
 
             const px = player ? player.pos.x : 0;

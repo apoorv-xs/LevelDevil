@@ -214,9 +214,37 @@ async function loadWorkspace() {
   }
 }
 
+inquiryForm?.addEventListener("invalid", (event) => {
+  const target = event.target;
+  const fieldName = target.getAttribute("name") || "contact";
+  window.System1Brain?.onValidationFail?.(fieldName.charAt(0).toUpperCase() + fieldName.slice(1));
+}, true);
+
 inquiryForm?.addEventListener("submit", (event) => {
+  const form = event.currentTarget;
+  const name = form.querySelector('input[name="name"]')?.value?.trim();
+  const email = form.querySelector('input[name="email"]')?.value?.trim();
+  const msg = form.querySelector('textarea[name="message"]')?.value?.trim();
+
+  if (!name) {
+    window.System1Brain?.onValidationFail?.("Name");
+  } else if (!email) {
+    window.System1Brain?.onValidationFail?.("Email");
+  } else if (!msg) {
+    window.System1Brain?.onValidationFail?.("Message");
+  }
+
   submitPublicForm(event, "/inquiry", "Inquiry received. Apoorv will follow up within 24 hours.");
 });
+
+// System 1 Unified Brain Scope & Tier Hook
+document.querySelector('select[name="scope"]')?.addEventListener("change", (e) => {
+  window.System1Brain?.onScopeSelect?.(e.target.value);
+});
+document.querySelector('select[name="budget"]')?.addEventListener("change", (e) => {
+  window.System1Brain?.onTierSelect?.(e.target.value);
+});
+
 document.getElementById("application-form")?.addEventListener("submit", (event) => {
   submitPublicForm(event, "/application", "Application received for review.");
 });

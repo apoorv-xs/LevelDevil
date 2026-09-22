@@ -236,4 +236,153 @@ describe("System 1 Decision Brain", () => {
     expect(cmd.wantsJump).toBe(true);
     expect(cmd.jumpForce).toBe(380);
   });
+
+  describe("Unified Multi-Page Trained Playbooks", () => {
+    it("exports all new typed intent states", () => {
+      expect(INTENTS.SHOWCASE_PROJECT).toBe("SHOWCASE_PROJECT");
+      expect(INTENTS.CALIBRATE_SCOPE).toBe("CALIBRATE_SCOPE");
+      expect(INTENTS.VALIDATE_TIER).toBe("VALIDATE_TIER");
+      expect(INTENTS.PROMPT_SUBMIT).toBe("PROMPT_SUBMIT");
+      expect(INTENTS.ALERT_VALIDATION).toBe("ALERT_VALIDATION");
+      expect(INTENTS.AUDIT_PROSPECT).toBe("AUDIT_PROSPECT");
+      expect(INTENTS.RADAR_SWEEP).toBe("RADAR_SWEEP");
+      expect(INTENTS.CALL_STANDBY).toBe("CALL_STANDBY");
+    });
+
+    it("classifies SHOWCASE_PROJECT when dwelling on Home flagship cards", () => {
+      const eravexRail = { name: "eravex-card-rail", y: 900, xLeft: 100, xRight: 800, width: 700 };
+      const telemetry = {
+        scrollY: 500,
+        viewportFocusY: 900,
+        viewportHeight: 800,
+        userScrollSpeed: 0,
+        dwellTime: 3.5,
+        currentRail: eravexRail,
+        playerPos: { x: 300, y: 900 },
+        page: "home",
+        isGrounded: true
+      };
+      expect(System1Brain.classifyIntent(telemetry)).toBe(INTENTS.SHOWCASE_PROJECT);
+    });
+
+    it("classifies CALIBRATE_SCOPE and executes calibrated jump force on Sales", () => {
+      System1Brain.onScopeSelect("WebGPU Shader Architecture");
+      const telemetry = {
+        scrollY: 0,
+        viewportFocusY: 300,
+        viewportHeight: 800,
+        userScrollSpeed: 0,
+        dwellTime: 0,
+        currentRail: { xLeft: 100, xRight: 300, y: 350, width: 200 },
+        playerPos: { x: 200, y: 350 },
+        page: "sales",
+        isGrounded: true
+      };
+      expect(System1Brain.classifyIntent(telemetry)).toBe(INTENTS.CALIBRATE_SCOPE);
+      const cmd = System1Brain.evaluate(0.016, telemetry);
+      expect(cmd.intent).toBe(INTENTS.CALIBRATE_SCOPE);
+      expect(cmd.jumpForce).toBe(450);
+    });
+
+    it("classifies VALIDATE_TIER and prompts high-value commitment thought on Sales", () => {
+      System1Brain.onTierSelect("$15k+");
+      const telemetry = {
+        scrollY: 0,
+        viewportFocusY: 400,
+        viewportHeight: 800,
+        userScrollSpeed: 0,
+        dwellTime: 0,
+        currentRail: { xLeft: 100, xRight: 300, y: 400, width: 200 },
+        playerPos: { x: 200, y: 400 },
+        page: "sales",
+        isGrounded: true
+      };
+      expect(System1Brain.classifyIntent(telemetry)).toBe(INTENTS.VALIDATE_TIER);
+      const cmd = System1Brain.evaluate(0.016, telemetry);
+      expect(cmd.intent).toBe(INTENTS.VALIDATE_TIER);
+      expect(cmd.jumpForce).toBe(460);
+    });
+
+    it("classifies ALERT_VALIDATION on submit with missing required inputs", () => {
+      System1Brain.onValidationFail("Email");
+      const telemetry = {
+        scrollY: 0,
+        viewportFocusY: 400,
+        viewportHeight: 800,
+        userScrollSpeed: 0,
+        dwellTime: 0,
+        currentRail: null,
+        playerPos: { x: 200, y: 400 },
+        page: "sales",
+        isGrounded: true
+      };
+      expect(System1Brain.classifyIntent(telemetry)).toBe(INTENTS.ALERT_VALIDATION);
+      const cmd = System1Brain.evaluate(0.016, telemetry);
+      expect(cmd.intent).toBe(INTENTS.ALERT_VALIDATION);
+      expect(cmd.wantsJump).toBe(true);
+    });
+
+    it("classifies AUDIT_PROSPECT on Workspace and targets prospect row", () => {
+      const mockProspect = {
+        id: "p-42",
+        name: "Acme Dental",
+        lcpTime: "4.8s",
+        techStack: "WordPress, Elementor",
+        flaws: ["High DOM clutter", "No consent form"]
+      };
+      System1Brain.onProspectSelect(mockProspect);
+      const telemetry = {
+        scrollY: 0,
+        viewportFocusY: 200,
+        viewportHeight: 800,
+        userScrollSpeed: 0,
+        dwellTime: 0,
+        currentRail: { xLeft: 50, xRight: 350, y: 200, width: 300 },
+        playerPos: { x: 100, y: 200 },
+        page: "workspace",
+        isGrounded: true
+      };
+      expect(System1Brain.classifyIntent(telemetry)).toBe(INTENTS.AUDIT_PROSPECT);
+      const cmd = System1Brain.evaluate(0.016, telemetry);
+      expect(cmd.intent).toBe(INTENTS.AUDIT_PROSPECT);
+    });
+
+    it("classifies CALL_STANDBY on Workspace when phone call is active", () => {
+      System1Brain.onCallStateChange(true, 15);
+      const telemetry = {
+        scrollY: 0,
+        viewportFocusY: 200,
+        viewportHeight: 800,
+        userScrollSpeed: 0,
+        dwellTime: 0,
+        currentRail: { xLeft: 50, xRight: 350, y: 200, width: 300 },
+        playerPos: { x: 100, y: 200 },
+        page: "workspace",
+        isGrounded: true
+      };
+      expect(System1Brain.classifyIntent(telemetry)).toBe(INTENTS.CALL_STANDBY);
+      const cmd = System1Brain.evaluate(0.016, telemetry);
+      expect(cmd.intent).toBe(INTENTS.CALL_STANDBY);
+      expect(cmd.moveX).toBe(0);
+
+      // Reset call
+      System1Brain.onCallStateChange(false);
+    });
+
+    it("classifies RADAR_SWEEP on Workspace when territory filter changes", () => {
+      System1Brain.onRadarFilter("SF / Bay", "", 24);
+      const telemetry = {
+        scrollY: 0,
+        viewportFocusY: 100,
+        viewportHeight: 800,
+        userScrollSpeed: 0,
+        dwellTime: 0,
+        currentRail: { xLeft: 50, xRight: 350, y: 100, width: 300 },
+        playerPos: { x: 100, y: 100 },
+        page: "workspace",
+        isGrounded: true
+      };
+      expect(System1Brain.classifyIntent(telemetry)).toBe(INTENTS.RADAR_SWEEP);
+    });
+  });
 });

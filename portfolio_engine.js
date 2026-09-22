@@ -862,8 +862,13 @@ onLoad(() => {
 
         // Dual-Driven Camera Tracking:
         // As player actively moves/falls downwards, auto-scroll when entering bottom 65% of viewport
-        // Guarded against scrolling when typing in form inputs (DEF-03)
-        if (isPhysicsActive && !isRespawning && player && !isTypingInForm()) {
+        // Guarded against scrolling when typing in form inputs or calibrating scope (DEF-03)
+        const isFormInteracting = isTypingInForm() || Boolean(window.System1Brain && (
+            window.System1Brain.currentIntent === "INSPECT_FORM_INPUT" ||
+            window.System1Brain.currentIntent === "CALIBRATE_SCOPE" ||
+            window.System1Brain.currentIntent === "ALERT_VALIDATION"
+        ));
+        if (isPhysicsActive && !isRespawning && player && !isFormInteracting) {
             const vh = window.innerHeight;
             const playerScreenY = player.pos.y - currentScrollY;
             const maxScroll = cachedMaxScroll || Math.max(0, document.documentElement.scrollHeight - vh);
@@ -951,6 +956,14 @@ onLoad(() => {
                 if (cmd.action === "celebrate") {
                     if (window.Player3D && typeof window.Player3D.celebrateVictory === "function") {
                         window.Player3D.celebrateVictory();
+                    }
+                } else if (cmd.action === "inspect") {
+                    if (window.Player3D && typeof window.Player3D.curiousInspect === "function") {
+                        window.Player3D.curiousInspect();
+                    }
+                } else if (cmd.action === "nod") {
+                    if (window.Player3D && typeof window.Player3D.nod === "function") {
+                        window.Player3D.nod();
                     }
                 }
                 if (cmd.wantsDrop && player.grounded && player.currentRail) {

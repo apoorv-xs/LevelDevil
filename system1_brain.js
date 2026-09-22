@@ -1,5 +1,5 @@
 // system1_brain.js - Non-Autoregressive Typed-State Autonomous AI Companion Brain
-// Inspired by the typed classification philosophy of Laya and Jev
+// Unified Multi-Page Cognitive Engine (Laya/Jev Architecture)
 (function () {
     "use strict";
 
@@ -10,7 +10,98 @@
         INSPECT_FORM_INPUT: "INSPECT_FORM_INPUT",
         EVADE_HAZARD: "EVADE_HAZARD",
         CATCH_UP_SPRINT: "CATCH_UP_SPRINT",
-        CELEBRATE: "CELEBRATE"
+        CELEBRATE: "CELEBRATE",
+        // Unified Multi-Page Trained Intents:
+        SHOWCASE_PROJECT: "SHOWCASE_PROJECT",
+        CALIBRATE_SCOPE: "CALIBRATE_SCOPE",
+        VALIDATE_TIER: "VALIDATE_TIER",
+        PROMPT_SUBMIT: "PROMPT_SUBMIT",
+        ALERT_VALIDATION: "ALERT_VALIDATION",
+        AUDIT_PROSPECT: "AUDIT_PROSPECT",
+        RADAR_SWEEP: "RADAR_SWEEP",
+        CALL_STANDBY: "CALL_STANDBY"
+    };
+
+    // --- EMBEDDED KNOWLEDGE MATRICES (< 1ms In-Memory Resolution) ---
+    const PROJECT_KNOWLEDGE = [
+        {
+            id: "eravex",
+            match: ["eravex", "webgpu", "flagship", "project-card-1", "featured-project-card", "featured"],
+            yRange: [600, 1350],
+            thought: "ERAVEX 3D Studio: WebGPU compute, procedural GLSL & raymarched SDFs.",
+            action: "inspect"
+        },
+        {
+            id: "maison",
+            match: ["maison", "luxury", "project-card-2"],
+            yRange: [1350, 2050],
+            thought: "Maison Anima: Luxury 3D digital showcase. Sub-5MB Draco delivery.",
+            action: "inspect"
+        },
+        {
+            id: "leveldevil",
+            match: ["level devil", "spatial", "portfolio", "project-card-3"],
+            yRange: [2050, 2700],
+            thought: "Level Devil Engine: 2.5D spatial physics with 60 FPS platforming.",
+            action: "nod"
+        },
+        {
+            id: "dispatches",
+            match: ["dispatches", "principles", "notes", "project-card-4"],
+            yRange: [2700, 3300],
+            thought: "Dispatches: Pure mathematical performance over agency bloat.",
+            action: "nod"
+        }
+    ];
+
+    const SCOPE_KNOWLEDGE = {
+        "Performance Sprint": {
+            title: "Performance Sprint",
+            thought: "Scope: Core Web Vitals audit, 60 FPS guarantee & DPR clamp.",
+            jumpForce: 400
+        },
+        "3D Web Feature": {
+            title: "3D Web Feature",
+            thought: "Scope: Procedural Three.js/WebGL scene with custom shaders.",
+            jumpForce: 430
+        },
+        "Product Configurator": {
+            title: "Product Configurator",
+            thought: "Scope: Bespoke 3D e-commerce viewer with KTX2 texture streaming.",
+            jumpForce: 450
+        },
+        "WebGPU Shader Architecture": {
+            title: "WebGPU Shader Architecture",
+            thought: "Scope: Custom WebGPU compute and procedural shader architecture.",
+            jumpForce: 450
+        },
+        "Full Interactive Site": {
+            title: "Full Interactive Site",
+            thought: "Scope: Complete 2.5D spatial physics & autonomous companion.",
+            jumpForce: 500
+        },
+        "Exploration / Other": {
+            title: "Creative Exploration",
+            thought: "Scope: Custom WebGPU compute and creative engineering R&D.",
+            jumpForce: 420
+        }
+    };
+
+    const TIER_KNOWLEDGE = {
+        "Flexible": { thought: "Flexible parameters: Scoping tailored deliverables." },
+        "Under $1k": { thought: "Micro-Sprint (<$1k): Laser-focused 48h site-speed patch." },
+        "$1k - $5k": { thought: "Mid-Sprint ($1k–$5k): Targeted 3D feature or shader rig." },
+        "$5k - $15k": { thought: "Flagship Build ($5k–$15k): Complete interactive 3D hero with 60 FPS floor." },
+        "$15k+": { thought: "Enterprise Tier ($15k+): Tier-0 proprietary graphics architecture reserved." }
+    };
+
+    const DEFECT_KNOWLEDGE = {
+        lcp: "LCP bottleneck (>3.5s). Front door jammed shut for mobile patients.",
+        dom: "WordPress DOM clutter (3,000+ nodes). Overheating mobile devices.",
+        dpdp: "DPDP 2023 compliance risk. Mandatory data consent armor required.",
+        tls: "Missing modern TLS encryption. Google Chrome flagging site warnings.",
+        ssl: "Missing modern TLS encryption. Google Chrome flagging site warnings.",
+        webgl: "Flat 2D layout. Adding 3D visual authority to 10x conversions."
     };
 
     const System1Brain = {
@@ -30,12 +121,27 @@
         lastIntentChange: 0,
         stepDownTimer: 0,
 
+        // Trained Workflow State
+        selectedScope: null,
+        selectedTier: null,
+        lastScopeTime: 0,
+        lastTierTime: 0,
+        validationAlertField: null,
+        lastValidationTime: 0,
+        isFormReady: false,
+        selectedProspect: null,
+        lastProspectTime: 0,
+        activeRadarFilter: null,
+        lastRadarTime: 0,
+        isCallActive: false,
+        callDuration: 0,
+
         init() {
             if (typeof document !== "undefined") {
                 this.setupBubble();
                 this.bindEvents();
             }
-            console.log("System 1 Decision Brain Initialized (Laya/Jev Architecture).");
+            console.log("System 1 Decision Brain Initialized (Unified Multi-Page Architecture).");
         },
 
         setupBubble() {
@@ -69,6 +175,32 @@
                 }
             });
 
+            // Listen for select inputs on /sales (Scope & Budget)
+            document.addEventListener("change", (e) => {
+                const target = e.target;
+                if (target && target.tagName === "SELECT") {
+                    if (target.name === "scope") {
+                        this.onScopeSelect(target.value);
+                    } else if (target.name === "budget") {
+                        this.onTierSelect(target.value);
+                    }
+                }
+            });
+
+            // Form inputs change check (form completion)
+            document.addEventListener("input", (e) => {
+                const target = e.target;
+                if (target && target.form && target.form.id === "inquiry-form") {
+                    const form = target.form;
+                    const name = form.querySelector('input[name="name"]')?.value?.trim();
+                    const email = form.querySelector('input[name="email"]')?.value?.trim();
+                    const msg = form.querySelector('textarea[name="message"]')?.value?.trim();
+                    if (name && email && msg && msg.length > 5 && !this.isFormReady) {
+                        this.onFormReady();
+                    }
+                }
+            });
+
             // Listen for form submit
             document.addEventListener("submit", (e) => {
                 const form = e.target;
@@ -77,11 +209,26 @@
                 }
             });
 
-            // Listen for prospect card clicks in workspace
+            // Listen for prospect card clicks, city tabs, objections in workspace
             document.addEventListener("click", (e) => {
-                const prospectItem = e.target.closest("#queueList > div, .obj-btn, #callActionBtn, #whatsappActionBtn, .city-tab");
+                const prospectItem = e.target.closest("#queueList > div");
                 if (prospectItem) {
                     this.onWorkspaceInteract(prospectItem);
+                    return;
+                }
+                const objBtn = e.target.closest(".obj-btn, .objection-btn");
+                if (objBtn) {
+                    this.onWorkspaceInteract(objBtn);
+                    return;
+                }
+                const cityTab = e.target.closest(".city-tab");
+                if (cityTab) {
+                    this.onWorkspaceInteract(cityTab);
+                    return;
+                }
+                const callBtn = e.target.closest("#callActionBtn");
+                if (callBtn) {
+                    this.onWorkspaceInteract(callBtn);
                 }
             });
         },
@@ -92,9 +239,8 @@
             if (!this.bubbleElement) return;
 
             const now = (typeof performance !== "undefined") ? performance.now() : Date.now();
-            // Minimum cooldown between spontaneous thoughts (unless celebrate / submit / touchdown / hard-light)
-            const isPriority = text.includes("dispatched") || text.includes("TOUCHDOWN") || text.includes("Terra Firma") || text.includes("HARD-LIGHT") || text.includes("⚡");
-            if (!isPriority && (now - this.lastThoughtTime < 5000)) {
+            const isPriority = text.includes("dispatched") || text.includes("TOUCHDOWN") || text.includes("Terra Firma") || text.includes("HARD-LIGHT") || text.includes("⚡") || text.includes("Missing") || text.includes("Scope:") || text.includes("Tier unlocked");
+            if (!isPriority && (now - this.lastThoughtTime < 4500)) {
                 return;
             }
 
@@ -124,7 +270,7 @@
             const screenY = player.pos.y - scrollY;
 
             // Clamp so bubble doesn't clip screen boundaries
-            const bubbleW = 200;
+            const bubbleW = 220;
             const left = Math.max(16, Math.min(window.innerWidth - bubbleW - 20, screenX - bubbleW / 2));
             const top = Math.max(64, screenY - 115);
 
@@ -132,6 +278,7 @@
             this.bubbleElement.style.top = `${Math.round(top)}px`;
         },
 
+        // --- TRAINED WORKFLOW HANDLERS ---
         onFormFocus(el) {
             this.currentIntent = INTENTS.INSPECT_FORM_INPUT;
             const name = (el.getAttribute("name") || el.getAttribute("placeholder") || "").toLowerCase();
@@ -147,6 +294,52 @@
             }
         },
 
+        onScopeSelect(scope) {
+            this.selectedScope = scope;
+            this.lastScopeTime = (typeof performance !== "undefined") ? performance.now() : Date.now();
+            this.currentIntent = INTENTS.CALIBRATE_SCOPE;
+            const intel = SCOPE_KNOWLEDGE[scope];
+            if (intel) {
+                this.emitThought(intel.thought, 3200);
+            } else {
+                this.emitThought(`Scope configured: ${scope}`, 2500);
+            }
+            if (typeof window !== "undefined" && window.Player3D && window.Player3D.curiousInspect) {
+                window.Player3D.curiousInspect();
+            }
+        },
+
+        onTierSelect(tier) {
+            this.selectedTier = tier;
+            this.lastTierTime = (typeof performance !== "undefined") ? performance.now() : Date.now();
+            this.currentIntent = INTENTS.VALIDATE_TIER;
+            const intel = TIER_KNOWLEDGE[tier];
+            if (intel) {
+                this.emitThought(intel.thought, 3200);
+            } else {
+                this.emitThought(`Budget parameter: ${tier}`, 2500);
+            }
+            if (typeof window !== "undefined" && window.Player3D && window.Player3D.nod) {
+                window.Player3D.nod();
+            }
+        },
+
+        onValidationFail(fieldName) {
+            this.validationAlertField = fieldName;
+            this.lastValidationTime = (typeof performance !== "undefined") ? performance.now() : Date.now();
+            this.currentIntent = INTENTS.ALERT_VALIDATION;
+            this.emitThought(`Missing ${fieldName || "contact"} coordinates above!`, 3000);
+            if (typeof window !== "undefined" && window.Player3D && window.Player3D.nod) {
+                window.Player3D.nod();
+            }
+        },
+
+        onFormReady() {
+            this.isFormReady = true;
+            this.currentIntent = INTENTS.PROMPT_SUBMIT;
+            this.emitThought("Brief locked. Transmit when ready ↗", 3500);
+        },
+
         onFormSubmit() {
             this.currentIntent = INTENTS.CELEBRATE;
             this.isCelebrating = true;
@@ -160,80 +353,188 @@
             }, 3500);
         },
 
+        onProspectSelect(prospect) {
+            if (!prospect) return;
+            this.selectedProspect = prospect;
+            this.lastProspectTime = (typeof performance !== "undefined") ? performance.now() : Date.now();
+            this.currentIntent = INTENTS.AUDIT_PROSPECT;
+            const lcp = prospect.lcpTime || "4.0s";
+            const flaw = (prospect.flaws && prospect.flaws[0]) || "";
+            let defectText = `Auditing ${prospect.name || "prospect"}: ${lcp} mobile latency.`;
+            if (flaw.toLowerCase().includes("dom") || (prospect.techStack && prospect.techStack.includes("WordPress"))) {
+                defectText = DEFECT_KNOWLEDGE.dom;
+            } else if (flaw.toLowerCase().includes("dpdp") || flaw.toLowerCase().includes("privacy")) {
+                defectText = DEFECT_KNOWLEDGE.dpdp;
+            } else if (parseFloat(lcp) > 3.0) {
+                defectText = DEFECT_KNOWLEDGE.lcp;
+            }
+            this.emitThought(defectText, 3200);
+            if (typeof window !== "undefined" && window.Player3D && window.Player3D.curiousInspect) {
+                window.Player3D.curiousInspect();
+            }
+        },
+
+        onRadarFilter(city, query, count) {
+            this.activeRadarFilter = { city, query, count };
+            this.lastRadarTime = (typeof performance !== "undefined") ? performance.now() : Date.now();
+            this.currentIntent = INTENTS.RADAR_SWEEP;
+            const countText = count !== undefined ? `${count} targets` : "Radar active";
+            this.emitThought(`Radar: [${city || "All"}] ${countText}.`, 2500);
+            if (typeof window !== "undefined" && window.Player3D && window.Player3D.nod) {
+                window.Player3D.nod();
+            }
+        },
+
+        onCallStateChange(isCalling, duration = 0) {
+            this.isCallActive = isCalling;
+            this.callDuration = duration;
+            if (isCalling) {
+                this.currentIntent = INTENTS.CALL_STANDBY;
+                this.emitThought("Live call in progress. Co-pilot standby active.", 2500);
+            } else {
+                this.currentIntent = INTENTS.IDLE_PERCH;
+            }
+        },
+
         onWorkspaceInteract(el) {
             if (typeof window !== "undefined" && window.Player3D && window.Player3D.nod) {
                 window.Player3D.nod();
             }
-            if (el.classList?.contains("obj-btn")) {
-                this.emitThought("Deploying direct client rebuttal...", 2200);
+            if (el.classList?.contains("obj-btn") || el.classList?.contains("objection-btn")) {
+                const title = el.textContent?.trim() || "Rebuttal";
+                this.emitThought(`Deploying tactical rebuttal: "${title.slice(0, 30)}..."`, 2400);
             } else if (el.id === "callActionBtn") {
-                this.emitThought("Initiating high-priority call sequence.", 2500);
+                this.onCallStateChange(true);
             } else if (el.classList?.contains("city-tab")) {
-                this.emitThought(`Filtering territory: ${el.textContent?.trim()}`, 2000);
+                this.onRadarFilter(el.textContent?.trim());
             } else {
                 this.emitThought("Inspecting lead dossier telemetry.", 2000);
             }
         },
 
+        // --- PAGE-SPECIFIC CLASSIFICATION ROUTINES ---
+        classifyHomeIntent(telemetry) {
+            const {
+                playerPos = { x: 0, y: 0 },
+                currentRail = null,
+                groundedRail = currentRail,
+                dwellTime = 0,
+                viewportFocusY = 0,
+                userScrollSpeed = 0
+            } = telemetry;
+
+            // Touchdown zone check on Home (ALT: 0 FT) - true bedrock landing
+            if ((playerPos.y >= 3470 && (groundedRail?.name?.includes("touchdown") || groundedRail?.y >= 3470)) ||
+                (playerPos.y >= 3350 && !groundedRail && !telemetry.allRails)) {
+                return INTENTS.CELEBRATE;
+            }
+
+            // Active user scroll navigation takes precedence over stationary showcase
+            if (viewportFocusY < playerPos.y - 180 || userScrollSpeed < -6) {
+                return INTENTS.LEAD_ASCENT;
+            }
+            if (viewportFocusY > playerPos.y + 120 || userScrollSpeed > 6) {
+                return INTENTS.LEAD_DESCENT;
+            }
+
+            // Flagship Project Showcase proximity check
+            const matchingProject = PROJECT_KNOWLEDGE.find(p => playerPos.y >= p.yRange[0] && playerPos.y < p.yRange[1]);
+            const isGroundedOnProject = groundedRail && (
+                (groundedRail.name && matchingProject?.match.some(m => groundedRail.name.toLowerCase().includes(m))) ||
+                (groundedRail.y >= (matchingProject?.yRange[0] || 0) && groundedRail.y < (matchingProject?.yRange[1] || 0))
+            );
+            if (matchingProject && (dwellTime > 1.5 || isGroundedOnProject)) {
+                return INTENTS.SHOWCASE_PROJECT;
+            }
+
+            if (dwellTime > 4.0) {
+                return INTENTS.LEAD_DESCENT;
+            }
+
+            return INTENTS.IDLE_PERCH;
+        },
+
+        classifySalesIntent(telemetry) {
+            const { activeElement = null } = telemetry;
+            const now = (typeof performance !== "undefined") ? performance.now() : Date.now();
+
+            if (this.validationAlertField && (now - this.lastValidationTime < 3500)) {
+                return INTENTS.ALERT_VALIDATION;
+            }
+            const isScopeActive = this.selectedScope && (now - (this.lastScopeTime || 0) < 3200);
+            const isTierActive = this.selectedTier && (now - (this.lastTierTime || 0) < 3200);
+            if (isScopeActive && isTierActive) {
+                return (this.lastTierTime || 0) > (this.lastScopeTime || 0) ? INTENTS.VALIDATE_TIER : INTENTS.CALIBRATE_SCOPE;
+            }
+            if (isScopeActive) {
+                return INTENTS.CALIBRATE_SCOPE;
+            }
+            if (isTierActive) {
+                return INTENTS.VALIDATE_TIER;
+            }
+            if (this.isFormReady) {
+                return INTENTS.PROMPT_SUBMIT;
+            }
+            if (activeElement && (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA" || activeElement.tagName === "SELECT")) {
+                return INTENTS.INSPECT_FORM_INPUT;
+            }
+            return INTENTS.IDLE_PERCH;
+        },
+
+        classifyWorkspaceIntent() {
+            const now = (typeof performance !== "undefined") ? performance.now() : Date.now();
+
+            if (this.isCallActive) {
+                return INTENTS.CALL_STANDBY;
+            }
+            if (this.activeRadarFilter && (now - this.lastRadarTime < 2500)) {
+                return INTENTS.RADAR_SWEEP;
+            }
+            if (this.selectedProspect && (now - this.lastProspectTime < 4000)) {
+                return INTENTS.AUDIT_PROSPECT;
+            }
+            return INTENTS.IDLE_PERCH;
+        },
+
         classifyIntent(telemetry) {
             const {
                 scrollY = 0,
-                viewportFocusY = 0,
                 viewportHeight = 800,
-                userScrollSpeed = 0,
-                dwellTime = 0,
                 currentRail = null,
                 playerPos = { x: 0, y: 0 },
-                activeElement = null,
                 page = "home"
             } = telemetry;
-            const groundedRail = telemetry.groundedRail !== undefined ? telemetry.groundedRail : currentRail;
 
             if (this.isCelebrating) {
                 return INTENTS.CELEBRATE;
             }
 
-            // Check if player is far away from viewport (catch up)
+            // Universal hazard evasion
+            if (currentRail && currentRail.trap === "spikes") {
+                return INTENTS.EVADE_HAZARD;
+            }
+
+            // Priority: Active route-specific workflows take precedence over passive catch-up
+            if (page === "sales") {
+                const salesIntent = this.classifySalesIntent(telemetry);
+                if (salesIntent !== INTENTS.IDLE_PERCH) return salesIntent;
+            } else if (page === "workspace") {
+                const wsIntent = this.classifyWorkspaceIntent(telemetry);
+                if (wsIntent !== INTENTS.IDLE_PERCH) return wsIntent;
+            }
+
+            // Universal catch up sprint if BB-8 is far off-screen
             const playerScreenY = playerPos.y - scrollY;
             if (playerScreenY < -200 || playerScreenY > viewportHeight + 450) {
                 return INTENTS.CATCH_UP_SPRINT;
             }
 
-            // If an input is actively focused on /sales
-            if (activeElement && (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA" || activeElement.tagName === "SELECT")) {
-                return INTENTS.INSPECT_FORM_INPUT;
+            if (page === "sales") {
+                return this.classifySalesIntent(telemetry);
+            } else if (page === "workspace") {
+                return this.classifyWorkspaceIntent(telemetry);
             }
-
-            // Check if current rail or target is hazard
-            if (currentRail && currentRail.trap === "spikes") {
-                return INTENTS.EVADE_HAZARD;
-            }
-
-            // Touchdown zone check on Home (ALT: 0 FT) - true bedrock landing
-            if (page === "home" && (
-                (playerPos.y >= 3470 && (groundedRail?.name?.includes("touchdown") || groundedRail?.y >= 3470)) ||
-                (playerPos.y >= 3350 && !groundedRail && !telemetry.allRails)
-            )) {
-                return INTENTS.CELEBRATE;
-            }
-
-            // Descent / Ascent guiding
-            // If visitor is scrolling down, or viewport focus is below player by > 100px
-            if (viewportFocusY > playerPos.y + 100 || userScrollSpeed > 6) {
-                return INTENTS.LEAD_DESCENT;
-            }
-
-            // If visitor is scrolling up, or viewport focus is above player by > 180px
-            if (viewportFocusY < playerPos.y - 180 || userScrollSpeed < -6) {
-                return INTENTS.LEAD_ASCENT;
-            }
-
-            // If dwelling on same section for a while, can periodically step down to guide visitor
-            if (dwellTime > 4.0 && page === "home") {
-                return INTENTS.LEAD_DESCENT;
-            }
-
-            return INTENTS.IDLE_PERCH;
+            return this.classifyHomeIntent(telemetry);
         },
 
         // Evaluate step and produce actuator commands (<1ms runtime)
@@ -242,7 +543,6 @@
             this.currentIntent = intent;
 
             const {
-                scrollY = 0,
                 viewportFocusY = 0,
                 currentRail = null,
                 allRails = [],
@@ -289,6 +589,116 @@
                             result.wantsJump = true;
                         }
                     }
+                    break;
+                }
+
+                case INTENTS.SHOWCASE_PROJECT: {
+                    const matchingProject = PROJECT_KNOWLEDGE.find(p => playerPos.y >= p.yRange[0] && playerPos.y < p.yRange[1]);
+                    if (matchingProject) {
+                        this.emitThought(matchingProject.thought, 3500);
+                        if (currentRail) {
+                            const midX = currentRail.xLeft + currentRail.width / 2;
+                            if (Math.abs(playerPos.x - midX) > 20) {
+                                result.moveX = Math.sign(midX - playerPos.x) * 0.5;
+                            }
+                        }
+                    }
+                    break;
+                }
+
+                case INTENTS.CALIBRATE_SCOPE: {
+                    const intel = SCOPE_KNOWLEDGE[this.selectedScope];
+                    const scopeEl = typeof document !== "undefined" ? document.querySelector('select[name="scope"], .scope-pill') : null;
+                    if (scopeEl) {
+                        const rect = scopeEl.getBoundingClientRect();
+                        const scrollYOffset = (typeof window !== "undefined") ? (window.scrollY || window.pageYOffset || 0) : 0;
+                        const targetX = Math.round(rect.left + rect.width / 2);
+                        const targetY = Math.round(rect.bottom + scrollYOffset);
+                        const rail = allRails.find(r => r.domElement === scopeEl || Math.abs(r.y - targetY) < 30);
+                        result.targetRail = rail || currentRail;
+                        result.targetX = targetX;
+                        if (Math.abs(playerPos.x - targetX) > 15) {
+                            result.moveX = Math.sign(targetX - playerPos.x);
+                        }
+                    }
+                    if (isGrounded) {
+                        result.wantsJump = true;
+                        result.jumpForce = (intel && intel.jumpForce) ? intel.jumpForce : 430;
+                    }
+                    break;
+                }
+
+                case INTENTS.VALIDATE_TIER: {
+                    const budgetEl = typeof document !== "undefined" ? document.querySelector('select[name="budget"], .tier-pill') : null;
+                    if (budgetEl) {
+                        const rect = budgetEl.getBoundingClientRect();
+                        const scrollYOffset = (typeof window !== "undefined") ? (window.scrollY || window.pageYOffset || 0) : 0;
+                        const targetX = Math.round(rect.left + rect.width / 2);
+                        result.targetX = targetX;
+                        if (Math.abs(playerPos.x - targetX) > 15) {
+                            result.moveX = Math.sign(targetX - playerPos.x);
+                        }
+                    }
+                    if (isGrounded) {
+                        result.wantsJump = true;
+                        result.jumpForce = 460;
+                    }
+                    break;
+                }
+
+                case INTENTS.PROMPT_SUBMIT: {
+                    const submitEl = typeof document !== "undefined" ? document.querySelector('#inquiry-form button[type="submit"]') : null;
+                    if (submitEl) {
+                        const rect = submitEl.getBoundingClientRect();
+                        const scrollYOffset = (typeof window !== "undefined") ? (window.scrollY || window.pageYOffset || 0) : 0;
+                        const targetX = Math.round(rect.left + rect.width / 2);
+                        const targetY = Math.round(rect.bottom + scrollYOffset);
+                        const rail = allRails.find(r => r.domElement === submitEl || Math.abs(r.y - targetY) < 25);
+                        result.targetRail = rail || currentRail;
+                        result.targetX = targetX;
+                        if (Math.abs(playerPos.x - targetX) > 20) {
+                            result.moveX = Math.sign(targetX - playerPos.x);
+                        }
+                    }
+                    break;
+                }
+
+                case INTENTS.ALERT_VALIDATION: {
+                    result.wantsJump = true;
+                    result.jumpForce = 440;
+                    break;
+                }
+
+                case INTENTS.AUDIT_PROSPECT: {
+                    const selectedEl = typeof document !== "undefined" ? document.querySelector('#queueList > div.bg-white\\/\\[0\\.08\\], #queueList > div') : null;
+                    if (selectedEl) {
+                        const rect = selectedEl.getBoundingClientRect();
+                        const scrollYOffset = (typeof window !== "undefined") ? (window.scrollY || window.pageYOffset || 0) : 0;
+                        const targetX = Math.round(rect.left + 80);
+                        const targetY = Math.round(rect.bottom + scrollYOffset);
+                        const rail = allRails.find(r => r.domElement === selectedEl || Math.abs(r.y - targetY) < 20);
+                        result.targetRail = rail || currentRail;
+                        result.targetX = targetX;
+                        if (Math.abs(playerPos.x - targetX) > 20) {
+                            result.moveX = Math.sign(targetX - playerPos.x);
+                        }
+                    }
+                    break;
+                }
+
+                case INTENTS.RADAR_SWEEP: {
+                    if (currentRail) {
+                        const midX = currentRail.xLeft + currentRail.width / 2;
+                        if (Math.abs(playerPos.x - midX) > 15) {
+                            result.moveX = Math.sign(midX - playerPos.x) * 0.6;
+                        }
+                    }
+                    break;
+                }
+
+                case INTENTS.CALL_STANDBY: {
+                    // Stay poised and silent on cockpit rail
+                    result.moveX = 0;
                     break;
                 }
 
@@ -463,6 +873,6 @@
     }
 
     if (typeof module !== "undefined" && module.exports) {
-        module.exports = { System1Brain, INTENTS };
+        module.exports = { System1Brain, INTENTS, PROJECT_KNOWLEDGE, SCOPE_KNOWLEDGE, TIER_KNOWLEDGE, DEFECT_KNOWLEDGE };
     }
 })();

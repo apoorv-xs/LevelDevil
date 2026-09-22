@@ -790,13 +790,21 @@ function filterCity(city) {
   else setLang('en');
 
   renderQueue();
-  const firstVisible = PROSPECTS.find(p => (city === 'All' || p.city === city) && matchSearch(p));
+  const filtered = PROSPECTS.filter(p => (city === 'All' || p.city === city) && matchSearch(p));
+  if (typeof window !== 'undefined' && window.System1Brain) {
+    window.System1Brain.onRadarFilter?.(city, searchQuery, filtered.length);
+  }
+  const firstVisible = filtered[0];
   if (firstVisible) selectProspect(firstVisible.id);
 }
 
 function handleSearch(val) {
   searchQuery = val.toLowerCase();
   renderQueue();
+  const filtered = PROSPECTS.filter(p => (activeCityFilter === 'All' || p.city === activeCityFilter) && matchSearch(p));
+  if (typeof window !== 'undefined' && window.System1Brain) {
+    window.System1Brain.onRadarFilter?.(activeCityFilter, val, filtered.length);
+  }
 }
 
 function matchSearch(p) {
@@ -862,6 +870,10 @@ function selectProspect(id) {
   selectedProspectId = id;
   renderQueue();
   renderActiveProspect();
+  const p = PROSPECTS.find(item => item.id === id);
+  if (p && typeof window !== 'undefined' && window.System1Brain) {
+    window.System1Brain.onProspectSelect?.(p);
+  }
   if (typeof window !== 'undefined' && window.innerWidth < 768) {
     showMobilePane('cockpit');
   }
@@ -1183,11 +1195,18 @@ function startCallTimer() {
   timerBox.classList.remove('hidden');
   timerBox.classList.add('flex');
 
+  if (typeof window !== 'undefined' && window.System1Brain) {
+    window.System1Brain.onCallStateChange?.(true, 0);
+  }
+
   callTimerInterval = setInterval(() => {
     callSeconds++;
     const mins = String(Math.floor(callSeconds / 60)).padStart(2, '0');
     const secs = String(callSeconds % 60).padStart(2, '0');
     timerDigits.innerText = `${mins}:${secs}`;
+    if (callSeconds % 15 === 0 && typeof window !== 'undefined' && window.System1Brain) {
+      window.System1Brain.callDuration = callSeconds;
+    }
   }, 1000);
 }
 
@@ -1196,6 +1215,9 @@ function stopCallTimer() {
   const timerBox = document.getElementById('callTimerBox');
   timerBox.classList.add('hidden');
   timerBox.classList.remove('flex');
+  if (typeof window !== 'undefined' && window.System1Brain) {
+    window.System1Brain.onCallStateChange?.(false, callSeconds);
+  }
 }
 
 // Teleprompter Angles
