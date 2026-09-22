@@ -1,12 +1,13 @@
 const portfolioScripts = [
-  "sky_engine.js?v=1011",
-  "kaboom.js?v=1011",
-  "system1_brain.js?v=1011",
-  "three_engine.js?v=1011",
-  "player_3d.js?v=1011",
-  "player.js?v=1011",
-  "portfolio_engine.js?v=1011",
-  "collision_editor.js?v=1011"
+  "sky_engine.js?v=1012",
+  "kaboom.js?v=1012",
+  "system1_brain.js?v=1012",
+  "three_engine.js?v=1012",
+  "player_3d.js?v=1012",
+  "player.js?v=1012",
+  "portfolio_engine.js?v=1012",
+  "collision_editor.js?v=1012",
+  "obsidian_graph.js?v=1012"
 ];
 
 function isSalesRoute(pathname = window.location.pathname) {
@@ -107,6 +108,9 @@ async function loadPortfolio() {
 
 async function loadSalesRoute() {
   if (document.body?.classList?.contains("sales-page") || window.location.pathname.endsWith("/sales.html")) return;
+  if (window.ObsidianGraph && typeof window.ObsidianGraph.close === "function") {
+    window.ObsidianGraph.close();
+  }
   if (window.Engine3D && typeof window.Engine3D.destroy === "function") {
     window.Engine3D.destroy();
   }
