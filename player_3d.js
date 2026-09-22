@@ -204,7 +204,8 @@
                 this.antennaLed.material.color.setHex(0xffd700);
             }
             if (typeof window !== "undefined" && window.SFX && typeof window.SFX.playCelebrate === "function") {
-                window.SFX.playCelebrate();
+                const bb8X = this.root ? (this.root.position.x / (typeof this.getScale === "function" ? this.getScale() : 0.05)) : null;
+                window.SFX.playCelebrate(bb8X);
             }
         },
 
@@ -849,7 +850,7 @@
             this.spawnSparkBurst(cx, rail.y, 14, 0x4deeea);
 
             if (typeof window !== "undefined" && window.SFX && typeof window.SFX.playWeld === "function") {
-                window.SFX.playWeld();
+                window.SFX.playWeld(cx);
             }
 
             const scene = this.getScene();
@@ -904,7 +905,7 @@
             this.spawnSparkBurst(px, platformY, 18, 0x4deeea);
 
             if (typeof window !== "undefined" && window.SFX && typeof window.SFX.playConstruct === "function") {
-                window.SFX.playConstruct();
+                window.SFX.playConstruct(px);
             }
 
             // 2. 3D holographic platform
@@ -939,45 +940,35 @@
                 const endcapMat = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 1.0 });
                 const leftCap = new THREE.Mesh(endcapGeo, endcapMat);
                 leftCap.position.x = -len3d / 2;
+                group.add(leftCap);
+
                 const rightCap = new THREE.Mesh(endcapGeo, endcapMat);
                 rightCap.position.x = len3d / 2;
-                group.add(leftCap);
                 group.add(rightCap);
 
-                // Holographic lattice shelf
-                const shelfGeo = new THREE.PlaneGeometry(len3d, 0.28);
-                shelfGeo.rotateX(-Math.PI / 2);
-                const shelfMat = new THREE.MeshBasicMaterial({ color: 0x4deeea, transparent: true, opacity: 0.45, side: THREE.DoubleSide });
-                const shelfMesh = new THREE.Mesh(shelfGeo, shelfMat);
-                group.add(shelfMesh);
-
-                const p3d = this.to3DVec(px, platformY, 0);
-                group.position.copy(p3d);
+                const pos3d = this.to3DVec(px, platformY, 0.2);
+                group.position.copy(pos3d);
                 scene.add(group);
 
-                geometries = [beamGeo, coreGeo, endcapGeo, shelfGeo];
-                materials = [beamMat, coreMat, endcapMat, shelfMat];
+                geometries.push(beamGeo, coreGeo, endcapGeo);
+                materials.push(beamMat, coreMat, endcapMat);
             }
 
-            // 3. Physical landing rail registered in Kaboom
+            // 3. Register physical landing rail in engine
             const rail = {
+                name: "HARD_LIGHT_PLATFORM",
                 xLeft,
                 xRight,
                 width,
                 y: platformY,
-                trap: "normal",
-                name: "HARD_LIGHT_PLATFORM",
+                trap: false,
                 isHardLight: true,
                 isBridge: false,
-                createdAt: now,
-                duration: 6000, // 6-second decay lifetime
                 group,
                 geometries,
                 materials,
-                cx: px,
-                y2d: platformY,
-                w2d: width,
-                len3d
+                createdAt: now,
+                duration: 6000 // 6-second platform lifetime
             };
 
             this.activeRails.push(rail);
@@ -1034,7 +1025,7 @@
             this.spawnSparkBurst(gapRight, bridgeY, 12, 0x4deeea);
 
             if (typeof window !== "undefined" && window.SFX && typeof window.SFX.playConstruct === "function") {
-                window.SFX.playConstruct();
+                window.SFX.playConstruct(cx);
             }
 
             // Three.js holographic laser bridge

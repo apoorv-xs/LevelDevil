@@ -241,7 +241,8 @@
             this.bubbleElement.style.opacity = "1";
 
             if (typeof window !== "undefined" && window.SFX && typeof window.SFX.playThought === "function") {
-                window.SFX.playThought();
+                const px = (window.player && window.player.pos) ? window.player.pos.x : null;
+                window.SFX.playThought(px);
             }
 
             if (this.bubbleTimeout) clearTimeout(this.bubbleTimeout);
@@ -324,7 +325,8 @@
             this.currentIntent = INTENTS.ALERT_VALIDATION;
             this.emitThought(`Missing ${fieldName || "contact"} coordinates above!`, 3000);
             if (typeof window !== "undefined" && window.SFX && typeof window.SFX.playAlert === "function") {
-                window.SFX.playAlert();
+                const px = (window.player && window.player.pos) ? window.player.pos.x : null;
+                window.SFX.playAlert(px);
             }
             if (typeof window !== "undefined" && window.Player3D && window.Player3D.nod) {
                 window.Player3D.nod();
@@ -342,7 +344,8 @@
             this.isCelebrating = true;
             this.emitThought("Deal inquiry dispatched! 360° victory spin!", 4000);
             if (typeof window !== "undefined" && window.SFX && typeof window.SFX.playCelebrate === "function") {
-                window.SFX.playCelebrate();
+                const px = (window.player && window.player.pos) ? window.player.pos.x : null;
+                window.SFX.playCelebrate(px);
             }
             if (typeof window !== "undefined" && window.Player3D && window.Player3D.celebrateVictory) {
                 window.Player3D.celebrateVictory();

@@ -805,11 +805,11 @@ function filterCity(city) {
 
   renderQueue();
   const filtered = PROSPECTS.filter(p => (city === 'All' || p.city === city) && matchSearch(p));
+  const firstVisible = filtered[0];
+  if (firstVisible) selectProspect(firstVisible.id);
   if (typeof window !== 'undefined' && window.System1Brain) {
     window.System1Brain.onRadarFilter?.(city, searchQuery, filtered.length);
   }
-  const firstVisible = filtered[0];
-  if (firstVisible) selectProspect(firstVisible.id);
 }
 
 function handleSearch(val) {

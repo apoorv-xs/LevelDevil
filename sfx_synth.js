@@ -124,6 +124,38 @@
       });
     }
 
+    getPanX(worldX) {
+      if (typeof window === "undefined") return 0;
+      let x = typeof worldX === "number" ? worldX : null;
+      if (x === null) {
+        if (window.player && window.player.pos && typeof window.player.pos.x === "number") {
+          x = window.player.pos.x;
+        } else if (window.guy && window.guy.pos && typeof window.guy.pos.x === "number") {
+          x = window.guy.pos.x;
+        }
+      }
+      if (typeof x !== "number" || isNaN(x)) return 0;
+
+      const screenWidth = window.innerWidth || 1200;
+      const normalized = (x / screenWidth) * 2 - 1;
+      return Math.max(-0.85, Math.min(0.85, normalized));
+    }
+
+    _createPanner(ctx, panX, now) {
+      if (!ctx || typeof ctx.createStereoPanner !== "function") {
+        return null;
+      }
+      try {
+        const panner = ctx.createStereoPanner();
+        const panVal = this.getPanX(panX);
+        panner.pan.setValueAtTime(panVal, now);
+        panner.connect(this.masterGain);
+        return panner;
+      } catch (e) {
+        return null;
+      }
+    }
+
     _autoDisconnect(osc, ...nodes) {
       if (!osc) return;
       osc.onended = () => {
@@ -143,7 +175,7 @@
     /**
      * Jump: Playful ascending BB-8 chirping whistle glide (520Hz -> 880Hz)
      */
-    playJump() {
+    playJump(panX) {
       if (this.muted) return;
       const ctx = this.getAudioContext();
       if (!ctx || ctx.state !== "running") return;
@@ -152,6 +184,8 @@
         const now = ctx.currentTime;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
+        const panner = this._createPanner(ctx, panX, now);
+        const dest = panner || this.masterGain;
 
         osc.type = "sine";
         osc.frequency.setValueAtTime(520, now);
@@ -163,9 +197,9 @@
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
 
         osc.connect(gain);
-        gain.connect(this.masterGain);
+        gain.connect(dest);
 
-        this._autoDisconnect(osc, gain);
+        this._autoDisconnect(osc, panner, gain);
         osc.start(now);
         osc.stop(now + 0.15);
       } catch (e) {}
@@ -174,7 +208,7 @@
     /**
      * Land: Low-pass cushioned mechanical contact thud (180Hz -> 80Hz)
      */
-    playLand() {
+    playLand(panX) {
       if (this.muted) return;
       const ctx = this.getAudioContext();
       if (!ctx || ctx.state !== "running") return;
@@ -184,6 +218,8 @@
         const osc = ctx.createOscillator();
         const filter = ctx.createBiquadFilter();
         const gain = ctx.createGain();
+        const panner = this._createPanner(ctx, panX, now);
+        const dest = panner || this.masterGain;
 
         osc.type = "triangle";
         osc.frequency.setValueAtTime(180, now);
@@ -197,9 +233,9 @@
 
         osc.connect(filter);
         filter.connect(gain);
-        gain.connect(this.masterGain);
+        gain.connect(dest);
 
-        this._autoDisconnect(osc, filter, gain);
+        this._autoDisconnect(osc, panner, filter, gain);
         osc.start(now);
         osc.stop(now + 0.10);
       } catch (e) {}
@@ -208,7 +244,7 @@
     /**
      * Construct: High-tech hard-light laser springboard deployment ping (1400Hz -> 450Hz)
      */
-    playConstruct() {
+    playConstruct(panX) {
       if (this.muted) return;
       const ctx = this.getAudioContext();
       if (!ctx || ctx.state !== "running") return;
@@ -218,6 +254,8 @@
         // Primary laser beam carrier
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
+        const panner = this._createPanner(ctx, panX, now);
+        const dest = panner || this.masterGain;
 
         osc.type = "sawtooth";
         osc.frequency.setValueAtTime(1400, now);
@@ -243,9 +281,9 @@
         osc.connect(filter);
         sub.connect(filter);
         filter.connect(gain);
-        gain.connect(this.masterGain);
+        gain.connect(dest);
 
-        this._autoDisconnect(osc, sub, filter, gain, subGain);
+        this._autoDisconnect(osc, panner, sub, filter, gain, subGain);
         osc.start(now);
         sub.start(now);
         osc.stop(now + 0.19);
@@ -256,7 +294,7 @@
     /**
      * Weld: Modulated electrical spark sizzle crackle
      */
-    playWeld() {
+    playWeld(panX) {
       if (this.muted) return;
       const ctx = this.getAudioContext();
       if (!ctx || ctx.state !== "running") return;
@@ -266,6 +304,8 @@
         const osc = ctx.createOscillator();
         const filter = ctx.createBiquadFilter();
         const gain = ctx.createGain();
+        const panner = this._createPanner(ctx, panX, now);
+        const dest = panner || this.masterGain;
 
         osc.type = "sawtooth";
         osc.frequency.setValueAtTime(1800, now);
@@ -280,9 +320,9 @@
 
         osc.connect(filter);
         filter.connect(gain);
-        gain.connect(this.masterGain);
+        gain.connect(dest);
 
-        this._autoDisconnect(osc, filter, gain);
+        this._autoDisconnect(osc, panner, filter, gain);
         osc.start(now);
         osc.stop(now + 0.11);
       } catch (e) {}
@@ -291,13 +331,15 @@
     /**
      * Thought: Inquisitive conversational droid double-warble
      */
-    playThought() {
+    playThought(panX) {
       if (this.muted) return;
       const ctx = this.getAudioContext();
       if (!ctx || ctx.state !== "running") return;
 
       try {
         const now = ctx.currentTime;
+        const panner = this._createPanner(ctx, panX, now);
+        const dest = panner || this.masterGain;
 
         // Tone 1
         const osc1 = ctx.createOscillator();
@@ -308,8 +350,8 @@
         gain1.gain.setValueAtTime(0.07, now);
         gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
         osc1.connect(gain1);
-        gain1.connect(this.masterGain);
-        this._autoDisconnect(osc1, gain1);
+        gain1.connect(dest);
+        this._autoDisconnect(osc1, panner, gain1);
         osc1.start(now);
         osc1.stop(now + 0.09);
 
@@ -322,8 +364,8 @@
         gain2.gain.setValueAtTime(0.08, now + 0.09);
         gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.19);
         osc2.connect(gain2);
-        gain2.connect(this.masterGain);
-        this._autoDisconnect(osc2, gain2);
+        gain2.connect(dest);
+        this._autoDisconnect(osc2, panner, gain2);
         osc2.start(now + 0.09);
         osc2.stop(now + 0.20);
       } catch (e) {}
@@ -332,13 +374,16 @@
     /**
      * Celebrate: Triumphant 4-tone ascending pentatonic fanfare (C5 -> E5 -> G5 -> C6)
      */
-    playCelebrate() {
+    playCelebrate(panX) {
       if (this.muted) return;
       const ctx = this.getAudioContext();
       if (!ctx || ctx.state !== "running") return;
 
       try {
         const notes = [523.25, 659.25, 783.99, 1046.50];
+        const panner = this._createPanner(ctx, panX, ctx.currentTime);
+        const dest = panner || this.masterGain;
+
         notes.forEach((freq, i) => {
           const now = ctx.currentTime + i * 0.075;
           const osc = ctx.createOscillator();
@@ -351,9 +396,9 @@
           gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
 
           osc.connect(gain);
-          gain.connect(this.masterGain);
+          gain.connect(dest);
 
-          this._autoDisconnect(osc, gain);
+          this._autoDisconnect(osc, panner, gain);
           osc.start(now);
           osc.stop(now + 0.30);
         });
@@ -363,7 +408,7 @@
     /**
      * Alert: Caution dual-tone warning boop
      */
-    playAlert() {
+    playAlert(panX) {
       if (this.muted) return;
       const ctx = this.getAudioContext();
       if (!ctx || ctx.state !== "running") return;
@@ -372,6 +417,8 @@
         const now = ctx.currentTime;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
+        const panner = this._createPanner(ctx, panX, now);
+        const dest = panner || this.masterGain;
 
         osc.type = "sawtooth";
         osc.frequency.setValueAtTime(260, now);
@@ -381,9 +428,9 @@
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
 
         osc.connect(gain);
-        gain.connect(this.masterGain);
+        gain.connect(dest);
 
-        this._autoDisconnect(osc, gain);
+        this._autoDisconnect(osc, panner, gain);
         osc.start(now);
         osc.stop(now + 0.19);
       } catch (e) {}
@@ -392,7 +439,7 @@
     /**
      * Click: Tactile retro mechanical switch click
      */
-    playClick() {
+    playClick(panX) {
       if (this.muted) return;
       const ctx = this.getAudioContext();
       if (!ctx || ctx.state !== "running") return;
@@ -401,6 +448,8 @@
         const now = ctx.currentTime;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
+        const panner = this._createPanner(ctx, panX, now);
+        const dest = panner || this.masterGain;
 
         osc.type = "sine";
         osc.frequency.setValueAtTime(680, now);
@@ -410,9 +459,9 @@
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
 
         osc.connect(gain);
-        gain.connect(this.masterGain);
+        gain.connect(dest);
 
-        this._autoDisconnect(osc, gain);
+        this._autoDisconnect(osc, panner, gain);
         osc.start(now);
         osc.stop(now + 0.045);
       } catch (e) {}

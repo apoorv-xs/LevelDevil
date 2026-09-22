@@ -326,6 +326,185 @@ describe("Procedural Droid Synth Sound Engine (0 KB Audio Payload)", () => {
     });
   });
 
+  describe("Spatial Audio Doppler Panning Engine (0 KB Payload)", () => {
+    let mockOsc, mockGain, mockPanner, mockCtx;
+
+    beforeEach(() => {
+      mockOsc = {
+        type: "sine",
+        frequency: {
+          setValueAtTime: vi.fn(),
+          exponentialRampToValueAtTime: vi.fn(),
+          linearRampToValueAtTime: vi.fn()
+        },
+        connect: vi.fn(),
+        disconnect: vi.fn(),
+        start: vi.fn(),
+        stop: vi.fn()
+      };
+
+      mockGain = {
+        gain: {
+          setValueAtTime: vi.fn(),
+          exponentialRampToValueAtTime: vi.fn(),
+          linearRampToValueAtTime: vi.fn()
+        },
+        connect: vi.fn(),
+        disconnect: vi.fn()
+      };
+
+      mockPanner = {
+        pan: {
+          setValueAtTime: vi.fn()
+        },
+        connect: vi.fn(),
+        disconnect: vi.fn()
+      };
+
+      mockCtx = {
+        state: "running",
+        currentTime: 10,
+        destination: {},
+        createOscillator: vi.fn(() => ({ ...mockOsc })),
+        createGain: vi.fn(() => ({ ...mockGain })),
+        createBiquadFilter: vi.fn(() => ({
+          type: "lowpass",
+          frequency: { setValueAtTime: vi.fn() },
+          Q: { setValueAtTime: vi.fn() },
+          connect: vi.fn(),
+          disconnect: vi.fn()
+        })),
+        createStereoPanner: vi.fn(() => ({ ...mockPanner, pan: { setValueAtTime: vi.fn() } })),
+        resume: vi.fn().mockResolvedValue()
+      };
+
+      global.window.AudioContext = vi.fn(function () {
+        return mockCtx;
+      });
+      global.window.innerWidth = 1000;
+    });
+
+    it("calculates normalized stereo pan between -0.85 and +0.85 based on screen width", () => {
+      const engine = new DroidSynthEngine();
+      global.window.innerWidth = 1000;
+
+      // Far left (0px) -> normalized -1.0 -> clamped to -0.85
+      expect(engine.getPanX(0)).toBeCloseTo(-0.85);
+
+      // Center (500px on 1000px screen) -> normalized 0
+      expect(engine.getPanX(500)).toBeCloseTo(0);
+
+      // Quarter left (250px) -> normalized -0.5
+      expect(engine.getPanX(250)).toBeCloseTo(-0.5);
+
+      // Quarter right (750px) -> normalized +0.5
+      expect(engine.getPanX(750)).toBeCloseTo(0.5);
+
+      // Far right (1000px) -> normalized +1.0 -> clamped to +0.85
+      expect(engine.getPanX(1000)).toBeCloseTo(0.85);
+
+      // Extreme out of bounds clamped strictly
+      expect(engine.getPanX(-500)).toBe(-0.85);
+      expect(engine.getPanX(2500)).toBe(0.85);
+    });
+
+    it("falls back to window.player.pos.x or window.guy.pos.x when coordinate is omitted", () => {
+      const engine = new DroidSynthEngine();
+      global.window.innerWidth = 1000;
+
+      // window.player fallback
+      global.window.player = { pos: { x: 250 } };
+      expect(engine.getPanX()).toBeCloseTo(-0.5);
+
+      // window.guy fallback
+      delete global.window.player;
+      global.window.guy = { pos: { x: 750 } };
+      expect(engine.getPanX()).toBeCloseTo(0.5);
+
+      // Neither present -> center (0)
+      delete global.window.guy;
+      expect(engine.getPanX()).toBe(0);
+      expect(engine.getPanX(NaN)).toBe(0);
+    });
+
+    it("routes sound through StereoPannerNode connected to masterGain", () => {
+      const engine = new DroidSynthEngine();
+      engine.setMuted(false);
+
+      let createdPanner = null;
+      mockCtx.createStereoPanner = vi.fn(() => {
+        createdPanner = {
+          pan: { setValueAtTime: vi.fn() },
+          connect: vi.fn(),
+          disconnect: vi.fn()
+        };
+        return createdPanner;
+      });
+
+      engine.playJump(250);
+
+      expect(mockCtx.createStereoPanner).toHaveBeenCalled();
+      expect(createdPanner).not.toBeNull();
+      // Pan value for 250px on 1000px screen is -0.5
+      expect(createdPanner.pan.setValueAtTime).toHaveBeenCalledWith(
+        expect.closeTo(-0.5, 2),
+        mockCtx.currentTime
+      );
+      expect(createdPanner.connect).toHaveBeenCalledWith(engine.masterGain);
+    });
+
+    it("cleans up StereoPannerNode in _autoDisconnect on osc.onended", () => {
+      const engine = new DroidSynthEngine();
+      engine.setMuted(false);
+
+      let capturedOsc = null;
+      let capturedPanner = null;
+
+      mockCtx.createOscillator = vi.fn(() => {
+        capturedOsc = { ...mockOsc, disconnect: vi.fn() };
+        return capturedOsc;
+      });
+      mockCtx.createStereoPanner = vi.fn(() => {
+        capturedPanner = {
+          pan: { setValueAtTime: vi.fn() },
+          connect: vi.fn(),
+          disconnect: vi.fn()
+        };
+        return capturedPanner;
+      });
+
+      engine.playLand(800);
+      expect(capturedOsc.onended).toBeDefined();
+
+      capturedOsc.onended();
+      expect(capturedOsc.disconnect).toHaveBeenCalled();
+      expect(capturedPanner.disconnect).toHaveBeenCalled();
+    });
+
+    it("gracefully falls back to masterGain when StereoPannerNode is unsupported", () => {
+      const engine = new DroidSynthEngine();
+      engine.setMuted(false);
+
+      // Browser lacks createStereoPanner
+      mockCtx.createStereoPanner = undefined;
+
+      let capturedGain = null;
+      mockCtx.createGain = vi.fn(() => {
+        capturedGain = { ...mockGain, connect: vi.fn(), disconnect: vi.fn() };
+        return capturedGain;
+      });
+
+      expect(() => {
+        engine.playJump(250);
+        engine.playConstruct(500);
+        engine.playCelebrate(900);
+      }).not.toThrow();
+
+      // Gain connects directly to masterGain
+      expect(capturedGain.connect).toHaveBeenCalledWith(engine.masterGain);
+    });
+  });
+
   describe("HTML & Shell Invariants", () => {
     it("includes sfx-toggle-btn in index.html, sales.html, and workspace/index.html", () => {
       const indexHtml = fs.readFileSync(new URL("../../index.html", import.meta.url), "utf8");

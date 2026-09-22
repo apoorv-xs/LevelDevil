@@ -109,7 +109,7 @@ function createPlayer(x, y) {
             if (hasJump) {
                 if (guy.isGrounded()) {
                     guy.jump(JUMP);
-                    if (window.SFX && window.SFX.playJump) window.SFX.playJump();
+                    if (window.SFX && window.SFX.playJump) window.SFX.playJump(guy.pos.x);
                     guy.scale = vec2(0.8, 1.2);
                     tween(guy.scale, vec2(1, 1), 0.2, (val) => guy.scale = val, easings.easeOutQuad);
                     lastAirJumpTime = 0;
@@ -144,7 +144,7 @@ function createPlayer(x, y) {
         tween(guy.scale, vec2(1, 1), 0.2, (val) => guy.scale = val, easings.easeOutElastic);
         if (typeof shake === "function") shake(1); // Tiny thud feeling
         if (window.SFX && typeof window.SFX.playLand === "function") {
-            window.SFX.playLand();
+            window.SFX.playLand(guy.pos.x);
         }
     });
 
