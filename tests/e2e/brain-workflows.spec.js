@@ -3,7 +3,9 @@ import { test, expect } from "@playwright/test";
 test.describe("System 1 Decision Brain - Multi-Page Workflows", () => {
   test("Home (/) initializes brain and showcases projects", async ({ page }) => {
     await page.goto("http://localhost:5173/", { waitUntil: "networkidle" });
-    await page.waitForTimeout(2000);
+    await page.waitForFunction(() => {
+      return Boolean(window.System1Brain && window.System1Brain.currentIntent !== undefined && window.player?.grounded);
+    }, { timeout: 15000 });
 
     const isBrainActive = await page.evaluate(() => {
       return !!window.System1Brain && window.System1Brain.currentIntent !== undefined;
@@ -22,9 +24,13 @@ test.describe("System 1 Decision Brain - Multi-Page Workflows", () => {
         window.player.pos.y = 1100;
         window.player.grounded = true;
       }
-      window.scrollTo(0, 900);
+      window.scrollTo(0, Math.max(0, 1100 - window.innerHeight * 0.45));
     });
-    await page.waitForTimeout(2500);
+
+    await page.waitForFunction(() => {
+      const el = document.getElementById("companion-bubble");
+      return Boolean((el && el.textContent) || window.System1Brain?.currentThought);
+    }, { timeout: 10000 });
 
     const thought = await page.evaluate(() => {
       const el = document.getElementById("companion-bubble");

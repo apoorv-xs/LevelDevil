@@ -71,8 +71,15 @@ function createPlayer(x, y) {
         let isMoving = guy.isMovingThisFrame;
         guy.isMovingThisFrame = false; // Reset for next frame
 
-        // Safety: Prevent sticky keys running when window loses focus
-        if (!document.hasFocus()) return;
+        // Safety: Prevent sticky keys running when window loses focus, but allow active key presses and touch controls
+        const hasFocus = typeof document !== "undefined" && typeof document.hasFocus === "function" ? document.hasFocus() : true;
+        const hasActiveKeys = (typeof window !== "undefined" && typeof window.isPhysicalKeyDown === "function") && (
+            window.isPhysicalKeyDown("left") || window.isPhysicalKeyDown("right") ||
+            window.isPhysicalKeyDown("up") || window.isPhysicalKeyDown("down") ||
+            window.isPhysicalKeyDown("space") ||
+            window.isPhysicalKeyDown("a") || window.isPhysicalKeyDown("d") || window.isPhysicalKeyDown("w") || window.isPhysicalKeyDown("s")
+        );
+        if (!hasFocus && !hasActiveKeys && !window.mobileLeftDown && !window.mobileRightDown && !window.mobileJumpPressed) return;
 
         const activeEl = document.activeElement;
         const isTyping = activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA" || activeEl.tagName === "SELECT" || activeEl.isContentEditable);

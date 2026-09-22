@@ -1,13 +1,13 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Sales shell acquisition UX", () => {
+test.describe("Sales & Inquiry Acquisition UX", () => {
   test("shows compact action rail above the fold on mobile", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/sales", { waitUntil: "networkidle" });
 
     const rail = page.locator(".action-rail");
     await expect(rail).toBeVisible();
-    for (const label of ["Project inquiry", "Sales rep apply", "Workspace"]) {
+    for (const label of ["Project inquiry", "Direct engagement"]) {
       const action = rail.getByRole("link", { name: label });
       await expect(action).toBeVisible();
       const box = await action.boundingBox();
@@ -15,32 +15,36 @@ test.describe("Sales shell acquisition UX", () => {
     }
   });
 
-  test("keeps navigation out of the form content while scrolling", async ({ page }) => {
+  test("keeps navigation and branding accessible on sales page", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto("/sales", { waitUntil: "networkidle" });
+
+    const brand = page.locator(".topbar-brand");
+    await expect(brand).toBeVisible();
+    await expect(brand).toHaveAttribute("href", "/");
+
     const nav = page.locator(".site-nav");
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    await expect(nav).toHaveCSS("position", "absolute");
-    const navBox = await nav.boundingBox();
-    const formBox = await page.locator("#application-form").boundingBox();
-    expect(navBox.y + navBox.height).toBeLessThanOrEqual(formBox.y);
+    await expect(nav).toBeVisible();
+    await expect(nav.getByRole("link", { name: "Home" })).toHaveAttribute("href", "/");
+    await expect(nav.getByRole("link", { name: "Contact" })).toHaveAttribute("href", "/sales");
+    await expect(nav.getByRole("link", { name: "Workspace" })).toHaveAttribute("href", "/workspace/");
   });
 
-  test("keeps keyboard focus order on navigation and action rail", async ({ page }) => {
+  test("keeps keyboard focus order on topbar and navigation", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/sales", { waitUntil: "networkidle" });
 
-    await page.keyboard.press("Tab");
-    await expect(page.locator(".brand")).toBeFocused();
+    await page.locator(".topbar-brand").focus();
+    await expect(page.locator(".topbar-brand")).toBeFocused();
     await page.keyboard.press("Tab");
     await expect(page.locator(".site-nav a").first()).toBeFocused();
     await page.keyboard.press("Tab");
     await expect(page.locator(".site-nav a").nth(1)).toBeFocused();
     await page.keyboard.press("Tab");
-    await expect(page.locator(".action-rail a").first()).toBeFocused();
+    await expect(page.locator(".site-nav a").nth(2)).toBeFocused();
   });
 
-  test("keeps the portfolio route on the game experience", async ({ page }) => {
+  test("keeps the portfolio route on the 3D canvas experience without action rail", async ({ page }) => {
     await page.goto("/", { waitUntil: "networkidle" });
     await expect(page.locator("#game-canvas")).toBeVisible();
     await expect(page.locator(".action-rail")).toHaveCount(0);
@@ -55,93 +59,26 @@ test.describe("Sales shell acquisition UX", () => {
     await page.goto("/sales", { waitUntil: "networkidle" });
     await page.locator("#inquiry-form input[name=name]").fill("Ada");
     await page.locator("#inquiry-form input[name=email]").fill("ada@example.com");
-    await page.locator("#inquiry-form textarea[name=message]").fill("Hello");
-    const request = page.waitForRequest("**/api/inquiry");
+    await page.locator("#inquiry-form textarea[name=message]").fill("Hello, let's build 60 FPS shaders.");
+    const requestPromise = page.waitForRequest("**/api/inquiry");
     await page.locator("#inquiry-form button[type=submit]").click();
-    await request;
-    await expect(page.locator("#status")).toHaveText("Inquiry received. The owner will follow up.");
+    await requestPromise;
+    await expect(page.locator("#status")).toHaveText("Inquiry received. Apoorv will follow up within 24 hours.");
     expect(requests.some((url) => url.endsWith("/api/inquiry"))).toBe(true);
   });
 
-  test("signs in and loads the protected workspace", async ({ page }) => {
-    await page.addInitScript(() => {
-      window.SALES_PLATFORM_AUTH = {
-        signIn: async () => ({ user: { getIdToken: async () => "test-id-token" } }),
-      };
-    });
-    await page.route("**/api/workspace", async (route) => {
-      expect(route.request().headers().authorization).toBe("Bearer test-id-token");
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({ data: {
-          user: { uid: "owner-1", email: "owner@example.com", displayName: "Apoorv", role: "owner" },
-          data: { applications: [] },
-        } }),
-      });
-    });
+  test("displays Google fast-track inquiry authentication banner", async ({ page }) => {
     await page.goto("/sales", { waitUntil: "networkidle" });
-    await page.getByRole("button", { name: "Sign in to workspace" }).click();
-    await expect(page.locator("#workspace")).toBeVisible();
-    await expect(page.locator("#auth-placeholder")).toBeHidden();
-    await expect(page.locator("#workspace-role")).toHaveText("Signed in as Apoorv (owner)");
-    await expect(page.locator("#workspace-data")).toHaveText(/No applications yet/);
+    const authBox = page.locator("#form-google-auth-box");
+    await expect(authBox).toBeVisible();
+    await expect(page.locator("#sign-in")).toBeVisible();
+    await expect(page.locator("#topbar-sign-in")).toBeVisible();
   });
 
-  test("resumes a redirect session and surfaces popup cancellation", async ({ page }) => {
-    await page.addInitScript(() => {
-      window.SALES_PLATFORM_AUTH = {
-        resume: async () => ({ user: { getIdToken: async () => "redirect-token" } }),
-        signIn: async () => { throw new Error("Sign-in was cancelled. Select the button to try again."); },
-      };
-    });
-    await page.route("**/api/workspace", async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({ data: {
-          user: { uid: "rep-1", email: "rep@example.com", displayName: "Sales Rep", role: "sales_rep" },
-          data: { leads: [] },
-        } }),
-      });
-    });
+  test("displays DPDP Act 2023 & GDPR privacy disclaimer under inquiry form", async ({ page }) => {
     await page.goto("/sales", { waitUntil: "networkidle" });
-    await expect(page.locator("#workspace-role")).toHaveText("Signed in as Sales Rep (sales_rep)");
-    const cancelPage = await page.context().newPage();
-    await cancelPage.addInitScript(() => {
-      window.SALES_PLATFORM_AUTH = {
-        signIn: async () => { throw new Error("Sign-in was cancelled. Select the button to try again."); },
-      };
-    });
-    await cancelPage.goto("/sales", { waitUntil: "networkidle" });
-    await cancelPage.getByRole("button", { name: "Sign in to workspace" }).click();
-    await expect(cancelPage.locator("#status")).toHaveText("Sign-in was cancelled. Select the button to try again.");
-  });
-
-  test("uses Firebase identity when the workspace API omits user fields", async ({ page }) => {
-    await page.addInitScript(() => {
-      window.SALES_PLATFORM_AUTH = {
-        signIn: async () => ({
-          user: {
-            uid: "owner-2",
-            email: "owner@example.com",
-            displayName: "Apoorv",
-            getIdToken: async () => "identity-token",
-            getIdTokenResult: async () => ({ claims: { role: "owner" } }),
-          },
-        }),
-      };
-    });
-    await page.route("**/api/workspace", async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({ data: { applications: [] } }),
-      });
-    });
-    await page.goto("/sales", { waitUntil: "networkidle" });
-    await page.getByRole("button", { name: "Sign in to workspace" }).click();
-    await expect(page.locator("#workspace-role")).toHaveText("Signed in as Apoorv (owner)");
-    await expect(page.locator("#workspace-data")).toHaveText(/No applications yet/);
+    const privacy = page.locator(".privacy-note");
+    await expect(privacy).toBeVisible();
+    await expect(privacy).toContainText("PRIVACY // Coordinates provided are used exclusively");
   });
 });

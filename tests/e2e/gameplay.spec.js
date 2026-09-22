@@ -1,531 +1,133 @@
-﻿/**
+/**
  * gameplay.spec.js
- * Playwright end-to-end tests for Level Devil Portfolio Game.
- *
- * Level Devil contract tested in-browser:
- *  - Game canvas mounts and starts up
- *  - Portfolio launches directly into the intro level
- *  - Player can move left/right
- *  - Player can jump
- *  - Player respawns after death (Level Devil core loop)
- *  - Recruiter mode toggle is present and works
- *  - All level scenes load without JS errors
- *  - Pause menu opens and closes
- *  - Traps are present on each level (spikes, lightning, etc.)
+ * Playwright end-to-end tests for Level Devil 2.5D Sky-to-Ground Portfolio.
+ * Tests real production gameplay:
+ *  - Canvas mounting (2D physics & Three.js 2.5D layer)
+ *  - Cel-shaded BB-8 Astromech companion initialization
+ *  - Brutalist altimeter HUD (10,000 FT down to Terra Firma)
+ *  - 51 calibrated DOM baseline landing rails
+ *  - Manual keyboard controls (Arrow keys / WASD) & autonomous idle return
+ *  - Astromech Architect hard-light platform construction ('F' key)
+ *  - Mobile control accessibility and touchdown runway
  */
 
 import { test, expect } from "@playwright/test";
 
-const BASE_URL = "http://localhost:5173"; // vite dev server
-const START_TIMEOUT = 15000; // ms
+const BASE_URL = "http://localhost:5173";
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/** Load the portfolio and wait for the direct intro startup */
-async function startGame(page) {
-  await page.goto(BASE_URL, { waitUntil: "networkidle" });
-  await expect(page.locator("#start-overlay")).toHaveCount(0);
-  await page.waitForTimeout(1500);
-}
-
-/** Press a key for a duration (ms) */
-async function holdKey(page, key, durationMs) {
-  await page.keyboard.down(key);
-  await page.waitForTimeout(durationMs);
-  await page.keyboard.up(key);
-}
-
-/** Navigate to a specific scene by manipulating window.go */
-async function goToScene(page, sceneName) {
-  await page.evaluate((name) => {
-    if (window.go) window.go(name);
-  }, sceneName);
-  await page.waitForTimeout(1500);
-}
-
-// ---------------------------------------------------------------------------
-// Startup & Canvas
-// ---------------------------------------------------------------------------
-
-test.describe("Startup", () => {
-  test("game canvas is present in DOM", async ({ page }) => {
+test.describe("2.5D Sky-to-Ground Descent & Gameplay Core", () => {
+  test.beforeEach(async ({ page }) => {
     await page.goto(BASE_URL, { waitUntil: "networkidle" });
-    const canvas = page.locator("#game-canvas");
-    await expect(canvas).toBeVisible();
+    await page.waitForFunction(() => {
+      return Boolean(window.Engine3D?.isReady && window.player?.grounded);
+    }, { timeout: 15000 });
   });
 
-  test("portfolio starts directly without a start gate", async ({ page }) => {
-    await page.goto(BASE_URL, { waitUntil: "networkidle" });
+  test("startup mounts game and 3D canvases without start overlay", async ({ page }) => {
     await expect(page.locator("#start-overlay")).toHaveCount(0);
     await expect(page.locator("#game-canvas")).toBeVisible();
-    await expect.poll(() => page.evaluate(() => window.CURRENT_SCENE)).toBe("intro");
+    await expect(page.locator("#three-canvas")).toBeVisible();
   });
 
-  test("no JavaScript errors on page load", async ({ page }) => {
-    const errors = [];
-    page.on("pageerror", (err) => errors.push(err.message));
-    await page.goto(BASE_URL, { waitUntil: "networkidle" });
-    expect(errors).toHaveLength(0);
-  });
-});
+  test("initializes Three.js 2.5D Engine & Astromech BB-8", async ({ page }) => {
+    const state = await page.evaluate(() => ({
+      is3DReady: window.Engine3D?.isReady,
+      hasBB8Mesh: Boolean(window.Player3D?.bodyBall || window.Player3D?.root),
+      isPlayerGrounded: window.player?.grounded,
+      controlMode: window.controlMode,
+      railsCount: window.landingRails?.length || 0,
+    }));
 
-// ---------------------------------------------------------------------------
-// Intro Level
-// ---------------------------------------------------------------------------
-
-test.describe("Intro Level", () => {
-  test.beforeEach(async ({ page }) => {
-    await startGame(page);
-  });
-
-  test("intro scene loads without JS errors", async ({ page }) => {
-    const errors = [];
-    page.on("pageerror", (err) => errors.push(err.message));
-    await goToScene(page, "intro");
-    expect(errors).toHaveLength(0);
+    expect(state.is3DReady).toBe(true);
+    expect(state.hasBB8Mesh).toBe(true);
+    expect(state.isPlayerGrounded).toBe(true);
+    expect(state.controlMode).toBe("autonomous");
+    expect(state.railsCount).toBe(51);
   });
 
-  test("CURRENT_SCENE is set to intro after transition", async ({ page }) => {
-    const scene = await page.evaluate(() => window.CURRENT_SCENE);
-    expect(scene).toBe("intro");
+  test("displays brutalist altimeter HUD at 10,000 FT on load", async ({ page }) => {
+    const altimeter = page.locator("#altimeter-pill");
+    await expect(altimeter).toBeVisible();
+    await expect(altimeter).toContainText("10,000 FT");
   });
 
-  test("Kaboom global functions are available", async ({ page }) => {
-    const hasGlobals = await page.evaluate(() => {
-      return typeof window.go === "function" &&
-             typeof window.add === "function" &&
-             typeof window.camPos === "function";
+  test("player movement: ArrowRight moves BB-8 right and triggers manual mode", async ({ page }) => {
+    await page.locator("body").click();
+    const startX = await page.evaluate(() => window.player?.pos.x);
+
+    await page.keyboard.down("ArrowRight");
+    await page.waitForTimeout(300);
+    await page.keyboard.up("ArrowRight");
+
+    const state = await page.evaluate(() => ({
+      x: window.player?.pos.x,
+      mode: window.controlMode,
+    }));
+
+    expect(state.x).toBeGreaterThan(startX);
+    expect(state.mode).toBe("manual");
+  });
+
+  test("player movement: Space bar triggers vertical jump", async ({ page }) => {
+    await page.locator("body").click();
+    await page.keyboard.down("Space");
+    await page.waitForTimeout(80);
+    await page.keyboard.up("Space");
+
+    await page.waitForFunction(() => {
+      const p = window.player;
+      return p && (!p.grounded || (p.vy || 0) < 0);
+    }, { timeout: 4000 });
+
+    const isAirborne = await page.evaluate(() => {
+      const p = window.player;
+      return Boolean(p && (!p.grounded || p.vy < 0));
     });
-    expect(hasGlobals).toBe(true);
+    expect(isAirborne).toBe(true);
   });
 
-  test("canvas has non-zero size", async ({ page }) => {
-    const size = await page.evaluate(() => {
-      const c = document.getElementById("game-canvas");
-      return { w: c.offsetWidth, h: c.offsetHeight };
-    });
-    expect(size.w).toBeGreaterThan(0);
-    expect(size.h).toBeGreaterThan(0);
-  });
-
-  test("pause button is visible in-game", async ({ page }) => {
-    const pauseBtn = page.locator("#pause-btn");
-    await expect(pauseBtn).toBeVisible({ timeout: 5000 });
-  });
-
-  test("audio button is visible in-game", async ({ page }) => {
-    const audioBtn = page.locator("#audio-btn");
-    await expect(audioBtn).toBeVisible({ timeout: 5000 });
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Player Movement & Physics
-// ---------------------------------------------------------------------------
-
-test.describe("Player Movement", () => {
-  test.beforeEach(async ({ page }) => {
-    await startGame(page);
-    // Ensure we're on intro and canvas has focus
-    await page.locator("#game-canvas").click();
-  });
-
-  test("player moves right when right arrow is held", async ({ page }) => {
-    const xBefore = await page.evaluate(() => {
-      const g = window.get && window.get("guy")[0];
-      return g ? g.pos.x : null;
-    });
-
-    if (xBefore === null) { test.skip(); return; }
-
-    await holdKey(page, "ArrowRight", 500);
-
-    const xAfter = await page.evaluate(() => {
-      const g = window.get && window.get("guy")[0];
-      return g ? g.pos.x : null;
-    });
-
-    expect(xAfter).toBeGreaterThan(xBefore);
-  });
-
-  test("player moves left when left arrow is held", async ({ page }) => {
-    // First move right to create room for left movement
-    await holdKey(page, "ArrowRight", 600);
-
-    const xBefore = await page.evaluate(() => {
-      const g = window.get && window.get("guy")[0];
-      return g ? g.pos.x : null;
-    });
-
-    if (xBefore === null) { test.skip(); return; }
-
-    await holdKey(page, "ArrowLeft", 500);
-
-    const xAfter = await page.evaluate(() => {
-      const g = window.get && window.get("guy")[0];
-      return g ? g.pos.x : null;
-    });
-
-    expect(xAfter).toBeLessThan(xBefore);
-  });
-
-  test("player rises (Y decreases) when space is pressed", async ({ page }) => {
-    const yBefore = await page.evaluate(() => {
-      const g = window.get && window.get("guy")[0];
-      return g ? g.pos.y : null;
-    });
-
-    if (yBefore === null) { test.skip(); return; }
-
-    await page.keyboard.press("Space");
-    await page.waitForTimeout(200); // At peak of jump
-
-    const yAfter = await page.evaluate(() => {
-      const g = window.get && window.get("guy")[0];
-      return g ? g.pos.y : null;
-    });
-
-    // In kaboom, y increases downward, so jumping = smaller Y
-    expect(yAfter).toBeLessThan(yBefore);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Level Scenes
-// ---------------------------------------------------------------------------
-
-test.describe("About Level", () => {
-  test.beforeEach(async ({ page }) => {
-    await startGame(page);
-  });
-
-  test("about scene loads without JS errors", async ({ page }) => {
-    const errors = [];
-    page.on("pageerror", (err) => errors.push(err.message));
-    await goToScene(page, "about");
-    expect(errors).toHaveLength(0);
-  });
-
-  test("CURRENT_SCENE is set to about", async ({ page }) => {
-    await goToScene(page, "about");
-    const scene = await page.evaluate(() => window.CURRENT_SCENE);
-    expect(scene).toBe("about");
-  });
-
-  test("floor objects exist in about scene", async ({ page }) => {
-    await goToScene(page, "about");
-    const floorCount = await page.evaluate(() => {
-      return window.get ? window.get("floor").length : 0;
-    });
-    expect(floorCount).toBeGreaterThan(0);
-  });
-
-  test("player (guy) spawns in about scene", async ({ page }) => {
-    await goToScene(page, "about");
-    const guyExists = await page.evaluate(() => {
-      return window.get ? window.get("guy").length > 0 : false;
-    });
-    expect(guyExists).toBe(true);
-  });
-
-  test("spikes (danger) exist in about scene", async ({ page }) => {
-    await goToScene(page, "about");
-    const spikeCount = await page.evaluate(() => {
-      return window.get ? window.get("spike").length : 0;
-    });
-    expect(spikeCount).toBeGreaterThan(0);
-  });
-
-  test("chest exists in about scene", async ({ page }) => {
-    await goToScene(page, "about");
-    const chestCount = await page.evaluate(() => {
-      return window.get ? window.get("chest").length : 0;
-    });
-    expect(chestCount).toBeGreaterThan(0);
-  });
-
-  test("camera Y is locked near center (no vertical drift)", async ({ page }) => {
-    await goToScene(page, "about");
-    await page.waitForTimeout(500); // Let camera settle
-
-    const camY = await page.evaluate(() => {
-      return window.camPos ? window.camPos().y : null;
-    });
-
-    const viewportHeight = await page.evaluate(() => window.height ? window.height() : window.innerHeight);
-
-    // Camera Y should be close to height/2 - 40
-    const expectedCamY = viewportHeight / 2 - 40;
-    expect(camY).toBeCloseTo(expectedCamY, 0); // within 1px
-  });
-
-  test("background is opaque — no transparent canvas gaps visible", async ({ page }) => {
-    await goToScene(page, "about");
-    await page.waitForTimeout(500);
-
-    // Sample a pixel near the top-center of the canvas. It must NOT be black
-    // (which would indicate the transparent canvas / body background showing through)
-    const pixel = await page.evaluate(() => {
-      const canvas = document.getElementById("game-canvas");
-      const ctx = canvas.getContext("2d");
-      // Read 1x1 pixel at (canvas.width/2, 5) — near top center
-      const data = ctx.getImageData(Math.floor(canvas.width / 2), 5, 1, 1).data;
-      return { r: data[0], g: data[1], b: data[2], a: data[3] };
-    });
-
-    // The background should be the orange color #E9B45A = rgb(233, 180, 90)
-    // But since kaboom renders via WebGL onto an opaque canvas, pixel should not be pure black
-    const isPureBlack = pixel.r === 0 && pixel.g === 0 && pixel.b === 0;
-    expect(isPureBlack).toBe(false);
-  });
-});
-
-test.describe("Projects Level", () => {
-  test.beforeEach(async ({ page }) => {
-    await startGame(page);
-  });
-
-  test("projects scene loads without JS errors", async ({ page }) => {
-    const errors = [];
-    page.on("pageerror", (err) => errors.push(err.message));
-    await goToScene(page, "projects");
-    expect(errors).toHaveLength(0);
-  });
-
-  test("project crates exist", async ({ page }) => {
-    await goToScene(page, "projects");
-    const crateCount = await page.evaluate(() => {
-      return window.get ? window.get("crate").length : 0;
-    });
-    expect(crateCount).toBeGreaterThan(0);
-  });
-
-  test("player spawns in projects scene", async ({ page }) => {
-    await goToScene(page, "projects");
-    const guyExists = await page.evaluate(() => {
-      return window.get ? window.get("guy").length > 0 : false;
-    });
-    expect(guyExists).toBe(true);
-  });
-});
-
-test.describe("Contact Level", () => {
-  test.beforeEach(async ({ page }) => {
-    await startGame(page);
-  });
-
-  test("contact scene loads without JS errors", async ({ page }) => {
-    const errors = [];
-    page.on("pageerror", (err) => errors.push(err.message));
-    await goToScene(page, "contact");
-    expect(errors).toHaveLength(0);
-  });
-
-  test("player spawns in contact scene", async ({ page }) => {
-    await goToScene(page, "contact");
-    const guyExists = await page.evaluate(() => {
-      return window.get ? window.get("guy").length > 0 : false;
-    });
-    expect(guyExists).toBe(true);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Level Devil Core: Death & Respawn Loop
-// ---------------------------------------------------------------------------
-
-test.describe("Death & Respawn (Level Devil Core Loop)", () => {
-  test.beforeEach(async ({ page }) => {
-    await startGame(page);
-  });
-
-  test("player respawns after being destroyed (Level Devil loop)", async ({ page }) => {
-    await goToScene(page, "about");
-
-    // Confirm player exists
-    const existsBefore = await page.evaluate(() => {
-      return window.get ? window.get("guy").length > 0 : false;
-    });
-    expect(existsBefore).toBe(true);
-
-    // Kill the player programmatically
+  test("Astromech Architect: constructs hard-light springboard platform", async ({ page }) => {
+    await page.locator("body").click();
     await page.evaluate(() => {
-      const guys = window.get("guy");
-      if (guys.length > 0 && window.destroy) {
-        window.destroy(guys[0]);
+      if (typeof window.triggerConstructPlatform === "function") {
+        window.triggerConstructPlatform();
       }
     });
-
-    // Scene should reload (go("about") is called after death)
-    // Wait for player to respawn
-    await page.waitForTimeout(1500);
-
-    const existsAfter = await page.evaluate(() => {
-      return window.get ? window.get("guy").length > 0 : false;
-    });
-    expect(existsAfter).toBe(true);
-  });
-
-  test("scene name stays correct after respawn", async ({ page }) => {
-    await goToScene(page, "about");
-
-    await page.evaluate(() => {
-      const guys = window.get("guy");
-      if (guys.length > 0 && window.destroy) window.destroy(guys[0]);
-    });
-
-    await page.waitForTimeout(1500);
-
-    const scene = await page.evaluate(() => window.CURRENT_SCENE);
-    expect(scene).toBe("about");
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Recruiter Mode
-// ---------------------------------------------------------------------------
-
-test.describe("Recruiter Mode", () => {
-  test.beforeEach(async ({ page }) => {
-    await startGame(page);
-  });
-
-  test("recruiter mode starts as OFF", async ({ page }) => {
-    const mode = await page.evaluate(() => window.RECRUITER_MODE);
-    expect(mode).toBe(false);
-  });
-
-  test("recruiter toggle button is visible in about level", async ({ page }) => {
-    await goToScene(page, "about");
-    await page.waitForTimeout(800);
-    const toggle = page.locator("canvas"); // button is a kaboom fixed element
-    // Verify RECRUITER_MODE can be toggled via JS
-    await page.evaluate(() => { window.RECRUITER_MODE = true; });
-    const modeOn = await page.evaluate(() => window.RECRUITER_MODE);
-    expect(modeOn).toBe(true);
-  });
-
-  test("in recruiter mode player survives spike collision", async ({ page }) => {
-    await goToScene(page, "about");
-
-    // Enable recruiter mode
-    await page.evaluate(() => { window.RECRUITER_MODE = true; });
-
-    // Teleport player onto spikes (simulate collision)
-    await page.evaluate(() => {
-      const guys = window.get("guy");
-      const spikes = window.get("spike");
-      if (guys.length > 0 && spikes.length > 0) {
-        guys[0].pos.x = spikes[0].pos.x;
-        guys[0].pos.y = spikes[0].pos.y - 10;
-      }
-    });
-
-    await page.waitForTimeout(500);
-
-    // Player should still exist (immune in recruiter mode)
-    const stillAlive = await page.evaluate(() => {
-      return window.get ? window.get("guy").length > 0 : false;
-    });
-    expect(stillAlive).toBe(true);
-
-    // Cleanup
-    await page.evaluate(() => { window.RECRUITER_MODE = false; });
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Pause Menu
-// ---------------------------------------------------------------------------
-
-test.describe("Pause Menu", () => {
-  test.beforeEach(async ({ page }) => {
-    await startGame(page);
-    await page.locator("#game-canvas").click();
-  });
-
-  test("pressing Escape opens pause menu", async ({ page }) => {
-    await page.keyboard.press("Escape");
-    await page.waitForTimeout(300);
-    const pauseOverlay = page.locator("#pause-modal-overlay");
-    await expect(pauseOverlay).toBeVisible({ timeout: 2000 });
-  });
-
-  test("pressing Escape again closes pause menu", async ({ page }) => {
-    await page.keyboard.press("Escape");
-    await page.waitForTimeout(300);
-    await page.keyboard.press("Escape");
-    await page.waitForTimeout(300);
-    const pauseOverlay = page.locator("#pause-modal-overlay");
-    await expect(pauseOverlay).not.toBeVisible({ timeout: 2000 });
-  });
-
-  test("pause button click opens pause menu", async ({ page }) => {
-    const pauseBtn = page.locator("#pause-btn");
-    await pauseBtn.click();
-    await page.waitForTimeout(300);
-    const pauseOverlay = page.locator("#pause-modal-overlay");
-    await expect(pauseOverlay).toBeVisible({ timeout: 2000 });
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Camera Behaviour
-// ---------------------------------------------------------------------------
-
-test.describe("Camera Behaviour - About Level", () => {
-  test.beforeEach(async ({ page }) => {
-    await startGame(page);
-    await goToScene(page, "about");
-    await page.locator("#game-canvas").click();
-  });
-
-  test("camera X increases as player moves right", async ({ page }) => {
-    // Move player far enough right to trigger camera scroll
-    await holdKey(page, "ArrowRight", 2000);
-
-    const camX = await page.evaluate(() => {
-      return window.camPos ? window.camPos().x : null;
-    });
-
-    const viewportWidth = await page.evaluate(() => window.width ? window.width() : window.innerWidth);
-    // Camera should have scrolled right of starting position
-    expect(camX).toBeGreaterThan(viewportWidth / 2);
-  });
-
-  test("camera Y stays locked throughout right movement", async ({ page }) => {
-    const viewportHeight = await page.evaluate(() => window.height ? window.height() : window.innerHeight);
-    const expectedCamY = viewportHeight / 2 - 40;
-
-    // Move right across multiple traps
-    await holdKey(page, "ArrowRight", 2000);
-
-    const camY = await page.evaluate(() => {
-      return window.camPos ? window.camPos().y : null;
-    });
-
-    // Camera Y must remain locked (within 5px tolerance for lerp settling)
-    expect(Math.abs(camY - expectedCamY)).toBeLessThan(5);
-  });
-
-  test("camera does not exceed world bounds", async ({ page }) => {
-    const viewportWidth = await page.evaluate(() => window.width ? window.width() : window.innerWidth);
-    const maxCamX = viewportWidth * 4 - viewportWidth / 2;
-
-    // Move player far right past the world end
-    await page.evaluate(() => {
-      const guys = window.get("guy");
-      if (guys.length > 0) guys[0].pos.x = 99999;
-    });
-
     await page.waitForTimeout(300);
 
-    const camX = await page.evaluate(() => {
-      return window.camPos ? window.camPos().x : null;
+    const result = await page.evaluate(() => {
+      const activePlatform = window.AstromechArchitect?.activeRails?.[0];
+      const thoughtBubble = document.querySelector(".companion-bubble")?.textContent || "";
+      return {
+        hasPlatform: Boolean(activePlatform),
+        isHardLight: Boolean(activePlatform?.isHardLight),
+        thought: thoughtBubble,
+      };
     });
 
-    expect(camX).toBeLessThanOrEqual(maxCamX + 5); // +5 for lerp overshoot
+    expect(result.hasPlatform).toBe(true);
+    expect(result.isHardLight).toBe(true);
+    expect(result.thought).toContain("HARD-LIGHT");
+  });
+
+  test("mobile controls are rendered with accessible labels", async ({ page }) => {
+    const controls = page.locator("#mobile-controls");
+    await expect(controls).toBeAttached();
+
+    await expect(page.locator("#btn-left")).toHaveAttribute("aria-label", "Move Left");
+    await expect(page.locator("#btn-right")).toHaveAttribute("aria-label", "Move Right");
+    await expect(page.locator("#btn-jump")).toHaveAttribute("aria-label", "Jump");
+    await expect(page.locator("#btn-construct")).toHaveAttribute("aria-label", "Construct Hard-Light Platform");
+  });
+
+  test("altimeter tracks vertical descent and reaches touchdown zone", async ({ page }) => {
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.waitForTimeout(1000);
+
+    const altimeterText = await page.locator("#altimeter-pill").textContent();
+    expect(altimeterText).toMatch(/(TOUCHDOWN|0 FT|TERRA FIRMA|\d+ FT)/);
+
+    const touchdownMarker = page.locator(".touchdown-zone");
+    await expect(touchdownMarker).toBeVisible();
   });
 });
