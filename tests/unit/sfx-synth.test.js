@@ -180,6 +180,7 @@ describe("Procedural Droid Synth Sound Engine (0 KB Audio Payload)", () => {
           linearRampToValueAtTime: vi.fn()
         },
         connect: vi.fn(),
+        disconnect: vi.fn(),
         start: vi.fn(),
         stop: vi.fn()
       };
@@ -190,14 +191,16 @@ describe("Procedural Droid Synth Sound Engine (0 KB Audio Payload)", () => {
           exponentialRampToValueAtTime: vi.fn(),
           linearRampToValueAtTime: vi.fn()
         },
-        connect: vi.fn()
+        connect: vi.fn(),
+        disconnect: vi.fn()
       };
 
       mockFilter = {
         type: "lowpass",
         frequency: { setValueAtTime: vi.fn() },
         Q: { setValueAtTime: vi.fn() },
-        connect: vi.fn()
+        connect: vi.fn(),
+        disconnect: vi.fn()
       };
 
       mockCtx = {
@@ -281,6 +284,29 @@ describe("Procedural Droid Synth Sound Engine (0 KB Audio Payload)", () => {
       engine.playClick();
 
       expect(mockCtx.createOscillator).toHaveBeenCalled();
+    });
+
+    it("attaches onended lifecycle hook to cleanly disconnect nodes and prevent memory leaks", () => {
+      const engine = new DroidSynthEngine();
+      engine.setMuted(false);
+      let capturedOsc = null;
+      let capturedGain = null;
+      mockCtx.createOscillator = vi.fn(() => {
+        capturedOsc = { ...mockOsc, disconnect: vi.fn() };
+        return capturedOsc;
+      });
+      mockCtx.createGain = vi.fn(() => {
+        capturedGain = { ...mockGain, disconnect: vi.fn() };
+        return capturedGain;
+      });
+
+      engine.playJump();
+      expect(capturedOsc.onended).toBeDefined();
+
+      // Trigger onended callback
+      capturedOsc.onended();
+      expect(capturedOsc.disconnect).toHaveBeenCalled();
+      expect(capturedGain.disconnect).toHaveBeenCalled();
     });
 
     it("suppresses all audio when muted is true", () => {

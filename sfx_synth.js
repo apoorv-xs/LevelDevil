@@ -124,6 +124,20 @@
       });
     }
 
+    _autoDisconnect(osc, ...nodes) {
+      if (!osc) return;
+      osc.onended = () => {
+        try { osc.disconnect(); } catch (e) {}
+        for (let i = 0; i < nodes.length; i++) {
+          try {
+            if (nodes[i] && typeof nodes[i].disconnect === "function") {
+              nodes[i].disconnect();
+            }
+          } catch (e) {}
+        }
+      };
+    }
+
     // --- PROCEDURAL DROID SFX SYNTHESIS PRESETS ---
 
     /**
@@ -151,6 +165,7 @@
         osc.connect(gain);
         gain.connect(this.masterGain);
 
+        this._autoDisconnect(osc, gain);
         osc.start(now);
         osc.stop(now + 0.15);
       } catch (e) {}
@@ -184,6 +199,7 @@
         filter.connect(gain);
         gain.connect(this.masterGain);
 
+        this._autoDisconnect(osc, filter, gain);
         osc.start(now);
         osc.stop(now + 0.10);
       } catch (e) {}
@@ -229,6 +245,7 @@
         filter.connect(gain);
         gain.connect(this.masterGain);
 
+        this._autoDisconnect(osc, sub, filter, gain, subGain);
         osc.start(now);
         sub.start(now);
         osc.stop(now + 0.19);
@@ -265,6 +282,7 @@
         filter.connect(gain);
         gain.connect(this.masterGain);
 
+        this._autoDisconnect(osc, filter, gain);
         osc.start(now);
         osc.stop(now + 0.11);
       } catch (e) {}
@@ -291,6 +309,7 @@
         gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
         osc1.connect(gain1);
         gain1.connect(this.masterGain);
+        this._autoDisconnect(osc1, gain1);
         osc1.start(now);
         osc1.stop(now + 0.09);
 
@@ -304,6 +323,7 @@
         gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.19);
         osc2.connect(gain2);
         gain2.connect(this.masterGain);
+        this._autoDisconnect(osc2, gain2);
         osc2.start(now + 0.09);
         osc2.stop(now + 0.20);
       } catch (e) {}
@@ -333,6 +353,7 @@
           osc.connect(gain);
           gain.connect(this.masterGain);
 
+          this._autoDisconnect(osc, gain);
           osc.start(now);
           osc.stop(now + 0.30);
         });
@@ -362,6 +383,7 @@
         osc.connect(gain);
         gain.connect(this.masterGain);
 
+        this._autoDisconnect(osc, gain);
         osc.start(now);
         osc.stop(now + 0.19);
       } catch (e) {}
@@ -390,6 +412,7 @@
         osc.connect(gain);
         gain.connect(this.masterGain);
 
+        this._autoDisconnect(osc, gain);
         osc.start(now);
         osc.stop(now + 0.045);
       } catch (e) {}
@@ -399,7 +422,7 @@
   // Instantiate singleton
   const sfxInstance = new DroidSynthEngine();
 
-  // Expose to window and CommonJS / ES modules
+  // Expose to window, globalThis, and CommonJS / ES modules
   if (typeof window !== "undefined") {
     window.SFX = sfxInstance;
     if (document.readyState === "loading") {
@@ -407,6 +430,11 @@
     } else {
       sfxInstance.initUI();
     }
+  }
+
+  if (typeof globalThis !== "undefined") {
+    globalThis.DroidSynthEngine = DroidSynthEngine;
+    globalThis.SFX = sfxInstance;
   }
 
   if (typeof module !== "undefined" && module.exports) {
