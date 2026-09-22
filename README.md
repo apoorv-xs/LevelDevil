@@ -71,10 +71,11 @@ The companion acts autonomously via a deterministic, sub-millisecond evaluation 
 - **Reflow-Free Altimeter Telemetry**: Document scroll height and touchdown anchor bounding rectangles are cached during initialization, `syncDOM()`, and resize events. Zero synchronous layout recalculation or `getBoundingClientRect()` thrashing in the 60 FPS update loop.
 - **Separation of Concerns**: Horizontal walking ($v_y = 0$) does not trigger downward auto-scrolling. Downward auto-scrolling strictly requires downward vertical velocity ($v_y > 10$) or intentional keyboard/touch down inputs.
 
-### 2.4 3D Holographic Obsidian Knowledge Graph (`obsidian_graph.js`)
-- **Architectural Projection**: When activated via the terminal or BB-8 interaction, BB-8 tilts its head upward and projects a glowing cyan holographic frustum emitting an interactive 3D force-directed node graph.
-- **Topology**: Interconnects Apoorv's creative tech universe—core nodes (`APOORV`), flagship repositories (`ERAVEX`, `LEVEL DEVIL`, `MAISON ANIMA`, `JARVIS LINK`), shader architectures (`WEBGPU`, `GLSL`, `RAYMARCHING`, `CURL NOISE`, `LYGIA`), spatial engines (`THREE.JS`, `KABOOM`, `DUAL RAILS`), and AI systems (`SYSTEM 1 BRAIN`, `HTTP 402 PAY`).
-- **Zero-Allocation Raycasting**: Raycasting and pointer projection utilize pre-allocated module scratch vectors (`_scratchRaycaster`, `_scratchMouse`), maintaining 60 FPS performance without heap churn during graph manipulation.
+### 2.4 Astromech Architect Engine (`player_3d.js` & `portfolio_engine.js`)
+- **Player Construct Tool ('F' Hotkey / Laser Springboard)**: Materializes a floating hard-light platform (`width: ~160px`) directly beneath BB-8 with a 6-second decay lifetime, pulsed fade-out, laser audio-visual feedback, and retro thought bubble (`⚡ HARD-LIGHT RAIL DEPLOYED`).
+- **Autonomous Chasm Laser Bridging**: Scans for voids between DOM cards (e.g. Maison Anima to Level Devil) and projects an emergency hard-light bridge with a 16px ledge overlap.
+- **Autonomous LiDaR Surface Welding**: High-velocity neon spark bursts fire as BB-8 lands on un-scanned DOM elements, welding and locking physical landing rails into the active collision engine.
+- **Zero-Leak Disposal**: Comprehensive Three.js mesh, material, and particle pool disposal lifecycles on despawn and route transitions.
 
 ---
 
@@ -99,9 +100,8 @@ B:\MAIN PORTFOLIO\
 ├── shell.css                    # Canonical retro terminal visual tokens & styling
 ├── portfolio_engine.js          # 2D Kaboom physics loop, 51 rails & input orchestration
 ├── three_engine.js              # Three.js 3D scene, lighting & camera projection bridge
-├── player_3d.js                 # Procedural cel-shaded BB-8 mesh & animation controller
+├── player_3d.js                 # Procedural cel-shaded BB-8 mesh, architect & animation controller
 ├── system1_brain.js             # Non-autoregressive 7-intent autonomous companion brain
-├── obsidian_graph.js            # 3D Holographic Obsidian Knowledge Graph projection
 ├── ground_rails.json            # Calibrated rail coordinates and DOM element bindings
 ├── fonts.css                    # Local font declarations (Press Start 2P, Courier Prime)
 ├── fonts/                       # Local preloaded WOFF2 binary fonts
