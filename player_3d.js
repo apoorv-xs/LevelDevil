@@ -203,6 +203,9 @@
             if (this.antennaLed) {
                 this.antennaLed.material.color.setHex(0xffd700);
             }
+            if (typeof window !== "undefined" && window.SFX && typeof window.SFX.playCelebrate === "function") {
+                window.SFX.playCelebrate();
+            }
         },
 
         curiousInspect() {
@@ -845,6 +848,10 @@
             const cx = (typeof contactX === "number") ? contactX : (rail.xLeft + rail.xRight) / 2;
             this.spawnSparkBurst(cx, rail.y, 14, 0x4deeea);
 
+            if (typeof window !== "undefined" && window.SFX && typeof window.SFX.playWeld === "function") {
+                window.SFX.playWeld();
+            }
+
             const scene = this.getScene();
             if (!scene || typeof THREE === "undefined") return;
 
@@ -895,6 +902,10 @@
             // 1. Downward laser beam & spark particles
             this.fireDownwardBeam(px, py - 35, platformY);
             this.spawnSparkBurst(px, platformY, 18, 0x4deeea);
+
+            if (typeof window !== "undefined" && window.SFX && typeof window.SFX.playConstruct === "function") {
+                window.SFX.playConstruct();
+            }
 
             // 2. 3D holographic platform
             let group = null;
@@ -1021,6 +1032,10 @@
             // Laser sparks at both bridge endcaps
             this.spawnSparkBurst(gapLeft, bridgeY, 12, 0x4deeea);
             this.spawnSparkBurst(gapRight, bridgeY, 12, 0x4deeea);
+
+            if (typeof window !== "undefined" && window.SFX && typeof window.SFX.playConstruct === "function") {
+                window.SFX.playConstruct();
+            }
 
             // Three.js holographic laser bridge
             let group = null;

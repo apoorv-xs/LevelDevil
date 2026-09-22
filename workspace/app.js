@@ -132,6 +132,11 @@ function getAudioContext() {
 }
 
 function playSound(type) {
+  if (window.SFX) {
+    if (window.SFX.isMuted()) return;
+    if (type === 'click') { window.SFX.playClick(); return; }
+    if (type === 'chime') { window.SFX.playCelebrate(); return; }
+  }
   if (!soundEnabled) return;
   try {
     const ctx = getAudioContext();
@@ -175,8 +180,17 @@ function playSound(type) {
 }
 
 function toggleAudioSFX() {
-  soundEnabled = !soundEnabled;
-  document.getElementById('sfxToggleBtn').innerText = soundEnabled ? '🔊' : '🔇';
+  if (window.SFX) {
+    const unmuted = window.SFX.toggle();
+    soundEnabled = unmuted;
+  } else {
+    soundEnabled = !soundEnabled;
+  }
+  const btn = document.getElementById('sfx-toggle-btn') || document.getElementById('sfxToggleBtn');
+  if (btn) {
+    btn.innerText = soundEnabled ? '[ 🔊 SFX ]' : '[ 🔇 SFX ]';
+    btn.classList.toggle('sfx-muted', !soundEnabled);
+  }
   showNotification(soundEnabled ? 'UI Sound Effects Enabled' : 'UI Sound Effects Muted');
 }
 

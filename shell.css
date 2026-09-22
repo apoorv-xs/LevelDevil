@@ -181,6 +181,17 @@
   box-shadow: 1px 1px 0 var(--shell-line);
 }
 
+.sfx-btn {
+  letter-spacing: 0.5px;
+  user-select: none;
+}
+
+.sfx-btn.sfx-muted {
+  background: #f1efea;
+  color: #7c766e;
+  border-style: dashed;
+}
+
 .topbar-dot {
   width: 8px;
   height: 8px;

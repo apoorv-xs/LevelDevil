@@ -240,6 +240,10 @@
             this.bubbleElement.style.display = "block";
             this.bubbleElement.style.opacity = "1";
 
+            if (typeof window !== "undefined" && window.SFX && typeof window.SFX.playThought === "function") {
+                window.SFX.playThought();
+            }
+
             if (this.bubbleTimeout) clearTimeout(this.bubbleTimeout);
             this.bubbleTimeout = setTimeout(() => {
                 if (this.bubbleElement) {
@@ -319,6 +323,9 @@
             this.lastValidationTime = (typeof performance !== "undefined") ? performance.now() : Date.now();
             this.currentIntent = INTENTS.ALERT_VALIDATION;
             this.emitThought(`Missing ${fieldName || "contact"} coordinates above!`, 3000);
+            if (typeof window !== "undefined" && window.SFX && typeof window.SFX.playAlert === "function") {
+                window.SFX.playAlert();
+            }
             if (typeof window !== "undefined" && window.Player3D && window.Player3D.nod) {
                 window.Player3D.nod();
             }
@@ -334,6 +341,9 @@
             this.currentIntent = INTENTS.CELEBRATE;
             this.isCelebrating = true;
             this.emitThought("Deal inquiry dispatched! 360° victory spin!", 4000);
+            if (typeof window !== "undefined" && window.SFX && typeof window.SFX.playCelebrate === "function") {
+                window.SFX.playCelebrate();
+            }
             if (typeof window !== "undefined" && window.Player3D && window.Player3D.celebrateVictory) {
                 window.Player3D.celebrateVictory();
             }

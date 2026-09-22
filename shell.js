@@ -1,12 +1,13 @@
 const portfolioScripts = [
-  "sky_engine.js?v=1013",
-  "kaboom.js?v=1013",
-  "system1_brain.js?v=1013",
-  "three_engine.js?v=1013",
-  "player_3d.js?v=1013",
-  "player.js?v=1013",
-  "portfolio_engine.js?v=1013",
-  "collision_editor.js?v=1013"
+  "sfx_synth.js?v=1014",
+  "sky_engine.js?v=1014",
+  "kaboom.js?v=1014",
+  "system1_brain.js?v=1014",
+  "three_engine.js?v=1014",
+  "player_3d.js?v=1014",
+  "player.js?v=1014",
+  "portfolio_engine.js?v=1014",
+  "collision_editor.js?v=1014"
 ];
 
 function isSalesRoute(pathname = window.location.pathname) {
@@ -105,6 +106,7 @@ async function loadPortfolio() {
         await loadScript(resolveScriptPath(script));
       }
     }
+    window.SFX?.initUI?.();
     window.showUIButtons?.();
   })();
 

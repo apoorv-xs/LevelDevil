@@ -143,6 +143,9 @@ function createPlayer(x, y) {
         guy.scale = vec2(1.2, 0.8);
         tween(guy.scale, vec2(1, 1), 0.2, (val) => guy.scale = val, easings.easeOutElastic);
         if (typeof shake === "function") shake(1); // Tiny thud feeling
+        if (window.SFX && typeof window.SFX.playLand === "function") {
+            window.SFX.playLand();
+        }
     });
 
     return guy;
