@@ -98,7 +98,13 @@ async function loadPortfolio() {
       : portfolioScripts.filter(s => !s.includes("sky_engine"));
 
     for (const script of scriptsToLoad) {
-      await loadScript(resolveScriptPath(script));
+      if (script.includes("collision_editor")) {
+        await loadScript(resolveScriptPath(script)).catch((err) => {
+          console.warn(`Optional module failed to load: ${script}`, err);
+        });
+      } else {
+        await loadScript(resolveScriptPath(script));
+      }
     }
     window.showUIButtons?.();
   })();
@@ -108,15 +114,11 @@ async function loadPortfolio() {
 
 async function loadSalesRoute() {
   if (document.body?.classList?.contains("sales-page") || window.location.pathname.endsWith("/sales.html")) return;
-  if (window.ObsidianGraph && typeof window.ObsidianGraph.close === "function") {
-    window.ObsidianGraph.close();
-  }
-  if (window.Engine3D && typeof window.Engine3D.destroy === "function") {
-    window.Engine3D.destroy();
-  }
-  if (window.SkyEngine && typeof window.SkyEngine.dispose === "function") {
-    window.SkyEngine.dispose();
-  }
+  window.Player3D?.dispose?.();
+  window.ObsidianGraph?.close?.();
+  window.ObsidianGraph?.dispose?.();
+  window.Engine3D?.destroy?.();
+  window.SkyEngine?.dispose?.();
   const existingSky = document.getElementById("sky-canvas");
   if (existingSky) existingSky.remove();
   portfolioLoadPromise = null;

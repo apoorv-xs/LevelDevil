@@ -2,6 +2,10 @@
 (function () {
     "use strict";
 
+    // Module-level scratch instances for zero-allocation raycasting (DEF-06)
+    let _scratchRaycaster = null;
+    let _scratchMouse = null;
+
     // --- GRAPH TOPOLOGY: APOORV'S CREATIVE TECH UNIVERSE ---
     const GRAPH_DATA = {
         nodes: [
@@ -218,7 +222,9 @@
         },
 
         setupHotkeys() {
-            window.addEventListener("keydown", (e) => {
+            this._removeEventListeners();
+
+            this._onKeyDown = (e) => {
                 if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
                 if (e.key === "h" || e.key === "H" || e.key === "g" || e.key === "G") {
                     this.toggle();
@@ -226,16 +232,18 @@
                 } else if (e.key === "Escape" && this.isOpen) {
                     this.close();
                 }
-            });
+            };
+            window.addEventListener("keydown", this._onKeyDown);
 
             // Pointer interaction for 3D Orbit & Hover
-            window.addEventListener("mousedown", (e) => {
+            this._onMouseDown = (e) => {
                 if (!this.isOpen) return;
                 this.isDragging = true;
                 this.previousMouseX = e.clientX;
-            });
+            };
+            window.addEventListener("mousedown", this._onMouseDown);
 
-            window.addEventListener("mousemove", (e) => {
+            this._onMouseMove = (e) => {
                 if (!this.isOpen) return;
                 if (this.isDragging) {
                     const deltaX = e.clientX - this.previousMouseX;
@@ -243,16 +251,42 @@
                     this.previousMouseX = e.clientX;
                 }
                 this.handleRaycast(e);
-            });
+            };
+            window.addEventListener("mousemove", this._onMouseMove);
 
-            window.addEventListener("mouseup", () => {
+            this._onMouseUp = () => {
                 this.isDragging = false;
-            });
+            };
+            window.addEventListener("mouseup", this._onMouseUp);
 
-            window.addEventListener("click", (e) => {
+            this._onClick = (e) => {
                 if (!this.isOpen || !this.hoveredNode) return;
                 this.handleNodeClick(this.hoveredNode);
-            });
+            };
+            window.addEventListener("click", this._onClick);
+        },
+
+        _removeEventListeners() {
+            if (this._onKeyDown) {
+                window.removeEventListener("keydown", this._onKeyDown);
+                this._onKeyDown = null;
+            }
+            if (this._onMouseDown) {
+                window.removeEventListener("mousedown", this._onMouseDown);
+                this._onMouseDown = null;
+            }
+            if (this._onMouseMove) {
+                window.removeEventListener("mousemove", this._onMouseMove);
+                this._onMouseMove = null;
+            }
+            if (this._onMouseUp) {
+                window.removeEventListener("mouseup", this._onMouseUp);
+                this._onMouseUp = null;
+            }
+            if (this._onClick) {
+                window.removeEventListener("click", this._onClick);
+                this._onClick = null;
+            }
         },
 
         toggle() {
@@ -262,6 +296,9 @@
 
         open() {
             if (this.isOpen || !window.Engine3D || !window.Engine3D.scene) return;
+            if (!this._onKeyDown) {
+                this.setupHotkeys();
+            }
             this.isOpen = true;
 
             const btn = document.getElementById("btn-holo-graph");
@@ -272,27 +309,37 @@
             }
 
             // Cinematic Hologram Backdrop Dimming
-            if (!this.backdropEl) {
-                const bd = document.createElement("div");
-                bd.id = "holo-graph-backdrop";
-                bd.style.position = "fixed";
-                bd.style.top = "0";
-                bd.style.left = "0";
-                bd.style.width = "100vw";
-                bd.style.height = "100vh";
-                bd.style.zIndex = "40"; // Sits between DOM (10) and Three.js canvas (50)
-                bd.style.background = "rgba(23, 18, 15, 0.72)";
-                bd.style.backdropFilter = "blur(4px)";
-                bd.style.webkitBackdropFilter = "blur(4px)";
-                bd.style.pointerEvents = "auto";
-                bd.addEventListener("click", () => this.close());
-                document.body.appendChild(bd);
+            if (!this.backdropEl || !document.getElementById("holo-graph-backdrop")) {
+                let bd = document.getElementById("holo-graph-backdrop");
+                if (!bd) {
+                    bd = document.createElement("div");
+                    bd.id = "holo-graph-backdrop";
+                    bd.style.position = "fixed";
+                    bd.style.top = "0";
+                    bd.style.left = "0";
+                    bd.style.width = "100vw";
+                    bd.style.height = "100vh";
+                    bd.style.zIndex = "40"; // Sits between DOM (10) and Three.js canvas (50)
+                    bd.style.background = "rgba(23, 18, 15, 0.72)";
+                    bd.style.backdropFilter = "blur(4px)";
+                    bd.style.webkitBackdropFilter = "blur(4px)";
+                    bd.style.pointerEvents = "auto";
+                    bd.addEventListener("click", () => this.close());
+                    document.body.appendChild(bd);
+                }
                 this.backdropEl = bd;
             }
             this.backdropEl.style.display = "block";
 
+            if (!this.bannerEl || !document.getElementById("holo-graph-banner")) {
+                this.createBanner();
+            }
             if (this.bannerEl) {
                 this.bannerEl.style.display = "block";
+            }
+
+            if (!this.tooltipEl || !document.getElementById("holo-graph-tooltip")) {
+                this.createTooltip();
             }
 
             this.buildHologram3D();
@@ -323,7 +370,7 @@
                 this.tooltipEl.style.display = "none";
             }
 
-            this.dispose();
+            this.disposeHologram3D();
             console.log("🌐 BB-8 Holographic Obsidian Graph Collapsed.");
         },
 
@@ -545,15 +592,20 @@
         handleRaycast(event) {
             if (!this.isOpen || !window.Engine3D || !window.Engine3D.camera) return;
 
-            const mouse = new THREE.Vector2(
+            if (!_scratchMouse) {
+                _scratchMouse = new THREE.Vector2();
+            }
+            _scratchMouse.set(
                 (event.clientX / window.innerWidth) * 2 - 1,
                 -(event.clientY / window.innerHeight) * 2 + 1
             );
 
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(mouse, window.Engine3D.camera);
+            if (!_scratchRaycaster) {
+                _scratchRaycaster = new THREE.Raycaster();
+            }
+            _scratchRaycaster.setFromCamera(_scratchMouse, window.Engine3D.camera);
 
-            const intersects = raycaster.intersectObjects(this.nodeMeshes, true);
+            const intersects = _scratchRaycaster.intersectObjects(this.nodeMeshes, true);
 
             if (intersects.length > 0) {
                 let hitMesh = intersects[0].object;
@@ -608,7 +660,7 @@
             }
         },
 
-        dispose() {
+        disposeHologram3D() {
             if (this.rootGroup && this.rootGroup.parent) {
                 this.rootGroup.parent.remove(this.rootGroup);
             }
@@ -636,6 +688,38 @@
             this.edgeIndices = [];
             this.simNodes = [];
             this._tickActive = false;
+        },
+
+        dispose() {
+            if (this.isOpen) {
+                this.close();
+            } else {
+                this.disposeHologram3D();
+            }
+            this._removeEventListeners();
+
+            const bd = this.backdropEl || document.getElementById("holo-graph-backdrop");
+            if (bd && bd.parentNode) {
+                bd.parentNode.removeChild(bd);
+            }
+            this.backdropEl = null;
+
+            const b = this.bannerEl || document.getElementById("holo-graph-banner");
+            if (b && b.parentNode) {
+                b.parentNode.removeChild(b);
+            }
+            this.bannerEl = null;
+
+            const t = this.tooltipEl || document.getElementById("holo-graph-tooltip");
+            if (t && t.parentNode) {
+                t.parentNode.removeChild(t);
+            }
+            this.tooltipEl = null;
+
+            const btn = document.getElementById("btn-holo-graph");
+            if (btn && btn.parentNode) {
+                btn.parentNode.removeChild(btn);
+            }
         }
     };
 

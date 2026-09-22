@@ -867,7 +867,14 @@ onLoad(() => {
             respawnPlayer();
         }
 
-        // Initialize 3D Player if engine is ready
+        if (!window.Engine3D || !window.Engine3D.isReady || !window.Player3D || !window.Player3D.isCreated) {
+            is3DReady = false;
+        } else if (window.Player3D.root && window.Engine3D.scene && window.Player3D.root.parent !== window.Engine3D.scene) {
+            if (typeof window.Player3D.dispose === "function") {
+                window.Player3D.dispose();
+            }
+            is3DReady = false;
+        }
         if (window.Engine3D && window.Engine3D.isReady && !is3DReady) {
             if (window.Player3D && window.Engine3D.scene) {
                 window.Player3D.create(window.Engine3D.scene);

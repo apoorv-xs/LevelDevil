@@ -29,8 +29,9 @@
 
             this.canvas = document.getElementById("three-canvas") || document.getElementById("babylon-canvas");
             if (!this.canvas) {
-                this._isInitializing = false;
-                return;
+                this.canvas = document.createElement("canvas");
+                this.canvas.id = "three-canvas";
+                document.body.appendChild(this.canvas);
             }
 
             // 1. Create WebGL Renderer with alpha transparency & high performance
@@ -77,7 +78,10 @@
             this.scene.add(this.sunLight);
 
             // 5. Window Resize Handler
-            window.addEventListener("resize", () => {
+            if (this._onResize) {
+                window.removeEventListener("resize", this._onResize);
+            }
+            this._onResize = () => {
                 if (this.renderer && this.camera) {
                     const width = window.innerWidth;
                     const height = window.innerHeight;
@@ -86,7 +90,8 @@
                     this.renderer.setSize(width, height);
                     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
                 }
-            });
+            };
+            window.addEventListener("resize", this._onResize);
 
             // 6. Start Render Loop
             let lastRenderTime = performance.now();
@@ -110,21 +115,46 @@
                 cancelAnimationFrame(this._rAF);
                 this._rAF = null;
             }
+            if (this._onResize) {
+                window.removeEventListener("resize", this._onResize);
+                this._onResize = null;
+            }
             if (this.scene) {
                 this.scene.traverse((child) => {
                     if (child.geometry) child.geometry.dispose();
                     if (child.material) {
-                        if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
-                        else child.material.dispose();
+                        const mats = Array.isArray(child.material) ? child.material : [child.material];
+                        mats.forEach((m) => {
+                            if (m.map) m.map.dispose();
+                            if (m.lightMap) m.lightMap.dispose();
+                            if (m.bumpMap) m.bumpMap.dispose();
+                            if (m.normalMap) m.normalMap.dispose();
+                            if (m.specularMap) m.specularMap.dispose();
+                            if (m.envMap) m.envMap.dispose();
+                            if (m.alphaMap) m.alphaMap.dispose();
+                            if (m.roughnessMap) m.roughnessMap.dispose();
+                            if (m.metalnessMap) m.metalnessMap.dispose();
+                            m.dispose();
+                        });
                     }
                 });
+                this.scene = null;
             }
             if (this.renderer) {
+                const gl = typeof this.renderer.getContext === "function" ? this.renderer.getContext() : null;
+                const isContextLost = gl && typeof gl.isContextLost === "function" ? gl.isContextLost() : false;
                 this.renderer.dispose();
-                if (typeof this.renderer.forceContextLoss === "function") {
-                    this.renderer.forceContextLoss();
+                if (isContextLost && this.canvas && this.canvas.parentNode) {
+                    this.canvas.parentNode.removeChild(this.canvas);
                 }
+                this.canvas = null;
+                this.renderer = null;
+            } else {
+                this.canvas = null;
             }
+            this.camera = null;
+            this.sunLight = null;
+            this.ambientLight = null;
             this.isReady = false;
             this._isInitializing = false;
         },

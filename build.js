@@ -24,7 +24,6 @@ const EXCLUDED_FILES = new Set([
     'playwright.config.js',
     'vitest.config.js',
     'vite.config.js',
-    'collision_editor.js',
     'take_screenshot.js',
     'local_preview.png',
     'package.json',

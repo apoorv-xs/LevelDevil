@@ -184,7 +184,11 @@
             if (!this.ctx) return;
 
             this.resize();
-            window.addEventListener("resize", () => this.resize());
+            if (this._onResize) {
+                window.removeEventListener("resize", this._onResize);
+            }
+            this._onResize = () => this.resize();
+            window.addEventListener("resize", this._onResize);
 
             this.initClouds();
             this.initStars();
@@ -514,6 +518,10 @@
         },
 
         dispose() {
+            if (this._onResize) {
+                window.removeEventListener("resize", this._onResize);
+                this._onResize = null;
+            }
             if (this._rAF) {
                 cancelAnimationFrame(this._rAF);
                 this._rAF = null;
