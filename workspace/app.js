@@ -283,8 +283,8 @@ function dispatchCloudEvent(eventData) {
     } catch(e) {}
   }
 
-  // 2. Dual dispatch to native Vercel serverless /api/sync endpoint
-  if (typeof fetch !== 'undefined') {
+  // 2. Optional dispatch to /api/sync if endpoint is explicitly enabled
+  if (typeof fetch !== 'undefined' && window.__enableApiSync) {
     try {
       fetch('/api/sync', {
         method: 'POST',
@@ -304,8 +304,8 @@ function initVercelAndPwaSync() {
     });
   }
 
-  // Poll /api/sync every 4 seconds if on Vercel/web server to catch remote caller locks
-  if (typeof window !== 'undefined' && window.location && window.location.protocol.startsWith('http')) {
+  // Poll /api/sync if explicitly enabled (guarded against phantom 404 console error flood)
+  if (typeof window !== 'undefined' && window.__enableApiSync && window.location && window.location.protocol.startsWith('http')) {
     let lastSeenTimestamp = 0;
     setInterval(async () => {
       try {
@@ -801,7 +801,7 @@ function handleSearch(val) {
 
 function matchSearch(p) {
   if (!searchQuery) return true;
-  return p.name.toLowerCase().includes(searchQuery) || p.dm.toLowerCase().includes(searchQuery);
+  return (p.name || "").toLowerCase().includes(searchQuery) || (p.dm || "").toLowerCase().includes(searchQuery);
 }
 
 function renderQueue() {

@@ -149,6 +149,19 @@ if (btnJump) {
     btnJump.addEventListener("mousedown", doJump);
 }
 
+// Window-level release listeners to prevent mobile sticky drag lockout outside button boundary
+const releaseMobileControls = () => {
+    if (window.mobileLeftDown || window.mobileRightDown) {
+        window.mobileLeftDown = false;
+        window.mobileRightDown = false;
+        resetToAutonomous();
+    }
+};
+window.addEventListener("pointerup", releaseMobileControls);
+window.addEventListener("mouseup", releaseMobileControls);
+window.addEventListener("touchend", releaseMobileControls);
+window.addEventListener("touchcancel", releaseMobileControls);
+
 // Wait for next frame so player.js is loaded
 onLoad(() => {
     // --- THE PLAYER ---
@@ -493,6 +506,25 @@ onLoad(() => {
         }
 
         console.log(`Landing rails loaded for [${getCurrentPage()}]:`, landingRails.length);
+        updateCachedDimensions();
+    }
+
+    let cachedMaxScroll = 0;
+    let cachedBottomY = 3488;
+
+    function updateCachedDimensions() {
+        if (typeof window === "undefined" || typeof document === "undefined") return;
+        const vh = window.innerHeight || 800;
+        const scrollY = window.scrollY || window.pageYOffset || 0;
+        const docH = document.documentElement ? document.documentElement.scrollHeight : 4000;
+        cachedMaxScroll = Math.max(1, docH - vh);
+
+        const touchdownEl = document.querySelector('.touchdown-zone') || document.querySelector('.contact-card');
+        if (touchdownEl) {
+            cachedBottomY = touchdownEl.getBoundingClientRect().top + scrollY;
+        } else {
+            cachedBottomY = 3488;
+        }
     }
 
     window.landingRails = landingRails;
@@ -532,11 +564,13 @@ onLoad(() => {
 
     // Initial DOM sync and placement
     syncDOM();
+    updateCachedDimensions();
     placePlayerInitial();
 
     // Ensure initial physics sleep until document.fonts.ready finishes
     const activatePhysics = () => {
         syncDOM();
+        updateCachedDimensions();
         placePlayerInitial();
         isPhysicsActive = true;
         console.log("Fonts ready: physics activated with Frame 0 stability across page.");
@@ -550,10 +584,14 @@ onLoad(() => {
 
     const resizeObserver = new ResizeObserver(() => {
         syncDOM();
+        updateCachedDimensions();
     });
     document.querySelectorAll('[data-kaboom-body="true"]').forEach(el => { resizeObserver.observe(el); });
     resizeObserver.observe(document.body);
-    window.addEventListener("resize", () => { syncDOM(); });
+    window.addEventListener("resize", () => {
+        syncDOM();
+        updateCachedDimensions();
+    });
 
     // Note: Pillar 5 removes duplicate window.Engine3D.init() call.
     // Engine3D auto-initializes itself in babylon_engine.js.
@@ -741,9 +779,9 @@ onLoad(() => {
         if (isPhysicsActive && !isRespawning && player && !isTypingInForm()) {
             const vh = window.innerHeight;
             const playerScreenY = player.pos.y - currentScrollY;
-            const maxScroll = Math.max(0, document.documentElement.scrollHeight - vh);
+            const maxScroll = cachedMaxScroll || Math.max(0, document.documentElement.scrollHeight - vh);
 
-            const isMovingDown = player.vy > 10 || player.isMovingThisFrame || (window.controlMode === "manual" && ((typeof isKeyDown === "function" && (isKeyDown("s") || isKeyDown("down"))) || (typeof window.isPhysicalKeyDown === "function" && (window.isPhysicalKeyDown("s") || window.isPhysicalKeyDown("down")))));
+            const isMovingDown = player.vy > 10 || (window.isPhysicalKeyDown && (window.isPhysicalKeyDown("down") || window.isPhysicalKeyDown("s"))) || (typeof isKeyDown === "function" && (isKeyDown("down") || isKeyDown("s")));
             if (isMovingDown && playerScreenY > vh * 0.65) {
                 const targetScroll = player.pos.y - vh * 0.45;
                 const clampedTarget = Math.min(maxScroll, Math.max(0, targetScroll));
@@ -766,11 +804,9 @@ onLoad(() => {
         // Altimeter Telemetry HUD (from 10,000 FT at stratosphere to 0 FT / TOUCHDOWN at bedrock)
         const altimeterPill = document.getElementById("altimeter-pill");
         if (altimeterPill) {
-            const vh = window.innerHeight;
-            const maxScroll = Math.max(1, document.documentElement.scrollHeight - vh);
+            const maxScroll = cachedMaxScroll || Math.max(1, (document.documentElement?.scrollHeight || 4000) - window.innerHeight);
             const scrollProgress = Math.min(1, Math.max(0, currentScrollY / maxScroll));
-            const touchdownEl = document.querySelector('.touchdown-zone') || document.querySelector('.contact-card');
-            const bottomY = touchdownEl ? (touchdownEl.getBoundingClientRect().top + currentScrollY) : 3200;
+            const bottomY = cachedBottomY;
             const heroBaseline = 550;
             const playerProgress = player ? Math.min(1, Math.max(0, (player.pos.y - heroBaseline) / (bottomY - heroBaseline))) : 0;
             let progress = Math.min(1, Math.max(scrollProgress, playerProgress));
@@ -815,6 +851,7 @@ onLoad(() => {
                 userScrollSpeed: (dtTotal > 0) ? (scrollDelta / dtTotal) : 0,
                 dwellTime: dwellDuration,
                 currentRail: player.currentRail,
+                groundedRail: player.currentRail,
                 allRails: landingRails,
                 playerPos: { x: player.pos.x, y: player.pos.y },
                 activeElement: document.activeElement,

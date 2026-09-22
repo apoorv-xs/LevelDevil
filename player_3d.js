@@ -197,6 +197,7 @@
 
         celebrateVictory() {
             if (!this.isCreated) return;
+            if (this.isCelebrating) return;
             this.isCelebrating = true;
             this.celebrateStartTime = performance.now();
             if (this.antennaLed) {

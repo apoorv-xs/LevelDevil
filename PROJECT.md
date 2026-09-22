@@ -32,7 +32,7 @@ The **Level Devil 2.5D Spatial Portfolio** is an interactive, hybrid WebGL/DOM w
 |    - 51 Calibrated Landing Rails mapped to DOM elements                           |
 +-----------------------------------------------------------------------------------+
 |  Layer 4: System 1 Autonomous Companion Brain (system1_brain.js)                 |
-|    - Non-autoregressive reactive state machine: 12 intent states                   |
+|    - Non-autoregressive reactive state machine: 7 intent states                    |
 |    - Telemetry evaluation loop at 60 FPS: pathfinding, jump force, thought bubbles |
 +-----------------------------------------------------------------------------------+
 ```
@@ -64,7 +64,7 @@ The **Level Devil 2.5D Spatial Portfolio** is an interactive, hybrid WebGL/DOM w
   - `LEAD_ASCENT`: Climbing back up when user scrolls toward the top.
   - `INSPECT_FORM_INPUT`: Interacting with input labels on the `/sales` inquiry form.
   - `EVADE_HAZARD`: Avoiding trap zones.
-  - `CELEBRATE`: Victory emote upon reaching the ground stratum ($y \ge 3350$).
+  - `CELEBRATE`: Victory emote upon reaching the true bedrock touchdown zone ($y \ge 3470$).
   - `CATCH_UP_SPRINT`: High-speed sprint when lagging behind viewport scroll.
 
 ### 2.4 Application Shell & Client Routes

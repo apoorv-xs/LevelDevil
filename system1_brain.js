@@ -187,6 +187,7 @@
                 activeElement = null,
                 page = "home"
             } = telemetry;
+            const groundedRail = telemetry.groundedRail !== undefined ? telemetry.groundedRail : currentRail;
 
             if (this.isCelebrating) {
                 return INTENTS.CELEBRATE;
@@ -208,8 +209,11 @@
                 return INTENTS.EVADE_HAZARD;
             }
 
-            // Touchdown zone check on Home (ALT: 0 FT)
-            if (page === "home" && playerPos.y >= 3350) {
+            // Touchdown zone check on Home (ALT: 0 FT) - true bedrock landing
+            if (page === "home" && (
+                (playerPos.y >= 3470 && (groundedRail?.name?.includes("touchdown") || groundedRail?.y >= 3470)) ||
+                (playerPos.y >= 3350 && !groundedRail && !telemetry.allRails)
+            )) {
                 return INTENTS.CELEBRATE;
             }
 
