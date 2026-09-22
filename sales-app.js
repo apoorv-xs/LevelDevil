@@ -81,7 +81,11 @@ async function submitPublicForm(event, path, successMessage) {
   const submit = form.querySelector('button[type="submit"]');
   setStatus("Dispatching inquiry...");
   form.setAttribute("aria-busy", "true");
-  if (submit) submit.disabled = true;
+  if (submit) {
+    submit.disabled = true;
+    submit.dataset.origText = submit.textContent;
+    submit.textContent = "[ ⚡ DISPATCHING... ]";
+  }
 
   if (path === "/inquiry") {
     saveInquiryLocally(values);
@@ -96,14 +100,36 @@ async function submitPublicForm(event, path, successMessage) {
     await request(path, { method: "POST", body: JSON.stringify(values) });
     form.reset();
     setStatus(successMessage);
+    if (submit) {
+      submit.classList.add("success");
+      submit.textContent = "[ ✓ INQUIRY DISPATCHED ]";
+      setTimeout(() => {
+        submit.classList.remove("success");
+        submit.textContent = submit.dataset.origText || "Send inquiry";
+      }, 4000);
+    }
+    // Reset field feedbacks
+    document.querySelectorAll(".field-feedback").forEach(el => { el.textContent = ""; el.className = "field-feedback"; });
+    document.querySelectorAll("#inquiry-form input, #inquiry-form textarea").forEach(el => el.classList.remove("is-valid", "is-invalid"));
     const fallbackBox = form.querySelector(".inquiry-fallback-box");
     if (fallbackBox) fallbackBox.remove();
   } catch (error) {
     if (webhookDelivered) {
       form.reset();
       setStatus("Inquiry dispatched via notification rail! Apoorv will follow up within 24 hours.");
+      if (submit) {
+        submit.classList.add("success");
+        submit.textContent = "[ ✓ INQUIRY DISPATCHED ]";
+        setTimeout(() => {
+          submit.classList.remove("success");
+          submit.textContent = submit.dataset.origText || "Send inquiry";
+        }, 4000);
+      }
     } else {
       setStatus(error instanceof Error ? error.message : "Unable to submit the form.", true);
+      if (submit) {
+        submit.textContent = submit.dataset.origText || "Send inquiry";
+      }
       if (path === "/inquiry") {
         const subject = encodeURIComponent(`Project Inquiry: ${values.scope || "Creative Engineering"} - ${values.name || "Client"}`);
         const body = encodeURIComponent(`Hi Apoorv,\n\nName: ${values.name || ""}\nEmail: ${values.email || ""}\nScope: ${values.scope || ""}\nBudget: ${values.budget || ""}\n\nMessage:\n${values.message || ""}\n`);
@@ -155,9 +181,11 @@ async function syncAuthState() {
       const emailInput = inquiryForm.querySelector('input[name="email"]');
       if (nameInput && (!nameInput.value || nameInput.value === "") && name) {
         nameInput.value = name;
+        nameInput.dispatchEvent(new Event("input"));
       }
       if (emailInput && (!emailInput.value || emailInput.value === "") && email) {
         emailInput.value = email;
+        emailInput.dispatchEvent(new Event("input"));
       }
     }
   } else {
@@ -265,6 +293,119 @@ if (shell?.session?.resumeRedirect) {
     .catch((error) => setStatus(error instanceof Error ? error.message : "Unable to resume sign-in.", true));
 }
 
-// Initial sync
+// --- 1-CLICK CHIP GROUPS & LIVE VALIDATION WORKFLOWS ---
+function initChipGroups() {
+  // Scope chips
+  const scopeSelect = document.getElementById("inquiry-scope");
+  const scopeChips = document.querySelectorAll("#scope-chips .tier-chip");
+  scopeChips.forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const val = chip.dataset.val;
+      scopeChips.forEach((c) => c.classList.remove("active"));
+      chip.classList.add("active");
+      if (scopeSelect) {
+        scopeSelect.value = val;
+        scopeSelect.dispatchEvent(new Event("change"));
+      }
+    });
+  });
+  if (scopeSelect) {
+    scopeSelect.addEventListener("change", () => {
+      scopeChips.forEach((c) => {
+        c.classList.toggle("active", c.dataset.val === scopeSelect.value);
+      });
+    });
+  }
+
+  // Budget chips
+  const budgetSelect = document.getElementById("inquiry-budget");
+  const budgetChips = document.querySelectorAll("#budget-chips .tier-chip");
+  budgetChips.forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const val = chip.dataset.val;
+      budgetChips.forEach((c) => c.classList.remove("active"));
+      chip.classList.add("active");
+      if (budgetSelect) {
+        budgetSelect.value = val;
+        budgetSelect.dispatchEvent(new Event("change"));
+      }
+    });
+  });
+  if (budgetSelect) {
+    budgetSelect.addEventListener("change", () => {
+      budgetChips.forEach((c) => {
+        c.classList.toggle("active", c.dataset.val === budgetSelect.value);
+      });
+    });
+  }
+}
+
+function initLiveValidation() {
+  const nameInp = document.getElementById("inquiry-name");
+  const emailInp = document.getElementById("inquiry-email");
+  const msgInp = document.getElementById("inquiry-message");
+  const fbName = document.getElementById("feedback-name");
+  const fbEmail = document.getElementById("feedback-email");
+  const fbMsg = document.getElementById("feedback-message");
+
+  const validateName = () => {
+    if (!nameInp) return;
+    const val = nameInp.value.trim();
+    if (!val) {
+      nameInp.classList.remove("is-valid", "is-invalid");
+      if (fbName) { fbName.textContent = ""; fbName.className = "field-feedback"; }
+    } else if (val.length >= 2) {
+      nameInp.classList.remove("is-invalid");
+      nameInp.classList.add("is-valid");
+      if (fbName) { fbName.textContent = "✓ READY"; fbName.className = "field-feedback valid"; }
+    }
+  };
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const validateEmail = () => {
+    if (!emailInp) return;
+    const val = emailInp.value.trim();
+    if (!val) {
+      emailInp.classList.remove("is-valid", "is-invalid");
+      if (fbEmail) { fbEmail.textContent = ""; fbEmail.className = "field-feedback"; }
+    } else if (emailRegex.test(val)) {
+      emailInp.classList.remove("is-invalid");
+      emailInp.classList.add("is-valid");
+      if (fbEmail) { fbEmail.textContent = "✓ VERIFIED"; fbEmail.className = "field-feedback valid"; }
+    } else {
+      emailInp.classList.remove("is-valid");
+      emailInp.classList.add("is-invalid");
+      if (fbEmail) { fbEmail.textContent = "INVALID EMAIL"; fbEmail.className = "field-feedback invalid"; }
+    }
+  };
+
+  const validateMessage = () => {
+    if (!msgInp) return;
+    const val = msgInp.value.trim();
+    if (!val) {
+      msgInp.classList.remove("is-valid", "is-invalid");
+      if (fbMsg) { fbMsg.textContent = ""; fbMsg.className = "field-feedback"; }
+    } else if (val.length >= 10) {
+      msgInp.classList.remove("is-invalid");
+      msgInp.classList.add("is-valid");
+      if (fbMsg) { fbMsg.textContent = `✓ ${val.length} CHARS`; fbMsg.className = "field-feedback valid"; }
+    } else {
+      msgInp.classList.remove("is-valid");
+      if (fbMsg) { fbMsg.textContent = `${val.length}/10 MIN`; fbMsg.className = "field-feedback"; }
+    }
+  };
+
+  nameInp?.addEventListener("input", validateName);
+  emailInp?.addEventListener("input", validateEmail);
+  msgInp?.addEventListener("input", validateMessage);
+  nameInp?.addEventListener("blur", validateName);
+  emailInp?.addEventListener("blur", validateEmail);
+  msgInp?.addEventListener("blur", validateMessage);
+}
+
+// Initial initialization
+initChipGroups();
+initLiveValidation();
 syncAuthState();
+
 

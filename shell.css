@@ -8,6 +8,12 @@
   --shell-header-h: 54px;
 }
 
+/* --- UNIVERSAL HIGH-CONTRAST FOCUS ACCESSIBILITY --- */
+:focus-visible {
+  outline: 3px solid var(--shell-purple, #6d3bb8) !important;
+  outline-offset: 2px !important;
+}
+
 /* --- UNIVERSAL 54PX TOPBAR HEADER --- */
 .topbar {
   position: fixed;
@@ -184,12 +190,20 @@
 .sfx-btn {
   letter-spacing: 0.5px;
   user-select: none;
+  background: var(--shell-accent);
+  color: var(--shell-ink);
+  font-weight: 700;
+}
+
+.sfx-btn:hover {
+  background: #f6c962;
 }
 
 .sfx-btn.sfx-muted {
   background: #f1efea;
   color: #7c766e;
   border-style: dashed;
+  font-weight: normal;
 }
 
 .topbar-dot {

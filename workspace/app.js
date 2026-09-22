@@ -750,14 +750,18 @@ function signOutGoogle() {
   signOut();
 }
 
-// Minimal Keyboard Helpers (Escape to dismiss, / to search)
+// Minimal Keyboard Helpers (Escape to dismiss, / or Ctrl+K to search)
 function setupKeyboardShortcuts() {
   window.addEventListener('keydown', (e) => {
     if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
 
-    if (e.key === '/') {
+    if (e.key === '/' || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k')) {
       e.preventDefault();
-      document.getElementById('queueSearchInput')?.focus();
+      const searchInp = document.getElementById('queueSearchInput');
+      if (searchInp) {
+        searchInp.focus();
+        searchInp.select();
+      }
     } else if (e.key === 'Escape') {
       closeAdminModal();
       closeProposalModal();

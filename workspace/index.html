@@ -328,6 +328,13 @@
       color: #fff !important;
       font-family: "Press Start 2P", monospace !important;
       font-size: 11px !important;
+      transition: all 0.1s ease !important;
+    }
+    .retro-workspace #callActionBtn:hover,
+    .retro-workspace #mobileCallBtn:hover {
+      background: #1b5e20 !important;
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0 var(--ink) !important;
     }
     .retro-workspace #whatsappActionBtn,
     .retro-workspace #mobileWaBtn {
@@ -338,10 +345,14 @@
       color: var(--ink) !important;
       font-family: "Press Start 2P", monospace !important;
       font-size: 11px !important;
+      transition: all 0.1s ease !important;
     }
     .retro-workspace #whatsappActionBtn:hover,
     .retro-workspace #mobileWaBtn:hover {
-      background: var(--accent) !important;
+      background: #25D366 !important;
+      color: #fff !important;
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0 var(--ink) !important;
     }
     .retro-workspace #btnPrevLeadHero,
     .retro-workspace #btnNextLeadHero,
@@ -628,8 +639,8 @@
             type="text" 
             id="queueSearchInput" 
             oninput="handleSearch(this.value)" 
-            placeholder="Search prospect or hub (/)..." 
-            class="w-full bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] pl-8 pr-3 py-1.5 text-xs text-[#17120f] placeholder-[#17120f]/50 focus:outline-none focus:bg-[#fce566] transition font-mono"
+            placeholder="Search prospect or hub..." 
+            class="w-full bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] pl-8 pr-8 py-1.5 text-xs text-[#17120f] placeholder-[#17120f]/50 focus:outline-none focus:bg-[#fce566] transition font-mono"
             data-kaboom-body="true"
           />
           <span class="absolute left-2.5 top-2 text-[#17120f]">
@@ -638,6 +649,7 @@
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
           </span>
+          <span class="absolute right-2 top-1.5 px-1 py-0.5 text-[9px] font-arcade bg-[#fff4c9] border border-[#17120f] shadow-[1px_1px_0_#17120f] text-[#17120f] pointer-events-none select-none">/</span>
         </div>
       </div>
 

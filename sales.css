@@ -135,18 +135,21 @@ label {
 
 input,
 textarea,
+select,
 button {
   font: inherit;
 }
 
 input,
-textarea {
+textarea,
+select {
   width: 100%;
   border: 3px solid var(--ink);
   border-radius: 0;
   background: var(--cream);
   color: var(--ink);
   padding: 11px;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 textarea {
@@ -154,12 +157,101 @@ textarea {
   resize: vertical;
 }
 
+input:focus,
+textarea:focus,
+select:focus {
+  background: var(--white);
+  border-color: var(--purple-dark);
+  box-shadow: inset 4px 0 0 var(--purple), 3px 3px 0 var(--ink);
+  outline: none;
+}
+
 input:focus-visible,
 textarea:focus-visible,
+select:focus-visible,
 button:focus-visible,
 a:focus-visible {
-  outline: 4px solid var(--purple);
-  outline-offset: 3px;
+  outline: 3px solid var(--purple);
+  outline-offset: 2px;
+}
+
+/* Form Field Visual Headers & Validation Affordances */
+.field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.field-hint {
+  font-size: 10px;
+  font-family: 'Press Start 2P', monospace;
+  color: var(--purple-dark);
+  font-weight: normal;
+}
+
+.field-feedback {
+  font-family: 'Courier Prime', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  transition: all 0.15s ease;
+}
+
+.field-feedback.valid {
+  color: #155724;
+}
+
+.field-feedback.invalid {
+  color: var(--danger);
+}
+
+input.is-valid,
+textarea.is-valid {
+  border-color: var(--ink);
+  box-shadow: inset 4px 0 0 #2e7d32, 2px 2px 0 var(--ink);
+}
+
+input.is-invalid,
+textarea.is-invalid {
+  border-color: var(--danger);
+  background: #fff2f2;
+  box-shadow: inset 4px 0 0 var(--danger), 2px 2px 0 var(--ink);
+}
+
+/* 1-Click Interactive Scope & Budget Chips */
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0 6px;
+}
+
+.tier-chip {
+  background: var(--white);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  padding: 6px 10px;
+  font-family: 'Courier Prime', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: all 0.1s ease;
+}
+
+.tier-chip:hover {
+  background: var(--amber-light);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.tier-chip.active {
+  background: var(--purple);
+  color: var(--white);
+  border-color: var(--ink);
+  box-shadow: inset 2px 2px 0 var(--purple-dark), 1px 1px 0 var(--ink);
+  transform: translate(1px, 1px);
 }
 
 button {
@@ -174,11 +266,52 @@ button {
   font-size: 11px;
   line-height: 1.5;
   box-shadow: 4px 4px 0 var(--ink);
+  transition: all 0.1s ease;
 }
 
 button:hover {
   transform: translate(2px, 2px);
   box-shadow: 2px 2px 0 var(--ink);
+}
+
+button[type="submit"] {
+  width: 100%;
+  border: 3px solid var(--ink);
+  border-radius: 0;
+  background: var(--purple);
+  color: var(--white);
+  cursor: pointer;
+  padding: 14px 20px;
+  font-family: "Press Start 2P", monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  box-shadow: 5px 5px 0 var(--ink);
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+button[type="submit"]:hover:not(:disabled) {
+  background: var(--purple-dark);
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 var(--ink);
+}
+
+button[type="submit"]:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+button[type="submit"]:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+  background: #555;
+  transform: none;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+button[type="submit"].success {
+  background: #2e7d32;
+  border-color: var(--ink);
 }
 
 button.secondary {
