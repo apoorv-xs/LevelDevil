@@ -23,6 +23,7 @@ function createPlayer(x, y) {
     guy.currentRail = null;
     guy.facingLeft = false;
     guy.isMovingThisFrame = false; // Expose to engine
+    let lastAirJumpTime = 0;
 
     guy.isGrounded = () => guy.grounded;
 
@@ -98,11 +99,25 @@ function createPlayer(x, y) {
                 guy.facingLeft = false;
             }
 
-            if (hasJump && guy.isGrounded()) {
-                guy.jump(JUMP);
-                if (window.SFX && window.SFX.playJump) window.SFX.playJump();
-                guy.scale = vec2(0.8, 1.2);
-                tween(guy.scale, vec2(1, 1), 0.2, (val) => guy.scale = val, easings.easeOutQuad);
+            if (hasJump) {
+                if (guy.isGrounded()) {
+                    guy.jump(JUMP);
+                    if (window.SFX && window.SFX.playJump) window.SFX.playJump();
+                    guy.scale = vec2(0.8, 1.2);
+                    tween(guy.scale, vec2(1, 1), 0.2, (val) => guy.scale = val, easings.easeOutQuad);
+                    lastAirJumpTime = 0;
+                } else {
+                    const now = (typeof performance !== "undefined") ? performance.now() : Date.now();
+                    if (lastAirJumpTime > 0 && (now - lastAirJumpTime < 450)) {
+                        const arch = window.AstromechArchitect || (window.Player3D && window.Player3D.architect);
+                        if (arch && typeof arch.constructPlatform === "function") {
+                            arch.constructPlatform(guy, window.landingRails);
+                        }
+                        lastAirJumpTime = 0;
+                    } else {
+                        lastAirJumpTime = now;
+                    }
+                }
             }
             window.mobileJumpPressed = false;
         }

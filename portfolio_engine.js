@@ -59,6 +59,12 @@ function triggerManualControl() {
 window.addEventListener("keydown", (e) => {
     if (isTypingInForm()) return;
     const key = e.key.toLowerCase();
+    if (key === "f") {
+        if (typeof window.triggerConstructPlatform === "function") {
+            window.triggerConstructPlatform();
+        }
+        return;
+    }
     activeKeys.add(key);
     if (key === "arrowleft") activeKeys.add("left");
     if (key === "arrowright") activeKeys.add("right");
@@ -147,6 +153,19 @@ if (btnJump) {
     };
     btnJump.addEventListener("touchstart", doJump, { passive: false });
     btnJump.addEventListener("mousedown", doJump);
+}
+
+const btnConstruct = document.getElementById("btn-construct");
+if (btnConstruct) {
+    const doConstruct = (e) => {
+        if (e.cancelable) e.preventDefault();
+        triggerManualControl();
+        if (typeof window.triggerConstructPlatform === "function") {
+            window.triggerConstructPlatform();
+        }
+    };
+    btnConstruct.addEventListener("touchstart", doConstruct, { passive: false });
+    btnConstruct.addEventListener("mousedown", doConstruct);
 }
 
 // Window-level release listeners to prevent mobile sticky drag lockout outside button boundary
@@ -480,6 +499,9 @@ onLoad(() => {
         if (!force && landingRails && landingRails.length > 0) {
             for (let i = 0; i < landingRails.length; i++) {
                 const rail = landingRails[i];
+                if (rail && rail.isHardLight) {
+                    continue; // Hard-light holographic rails are not bound to DOM elements
+                }
                 if (rail.domElement && document.body.contains(rail.domElement)) {
                     const r = rail.domElement.getBoundingClientRect();
                     rail.xLeft = Math.round(r.left);
@@ -496,7 +518,8 @@ onLoad(() => {
         }
 
         if (needsRebuild || force) {
-            landingRails = generatePageRails();
+            const hardLightRails = (landingRails || []).filter(r => r && r.isHardLight);
+            landingRails = generatePageRails().concat(hardLightRails);
             window.landingRails = landingRails;
         }
 
@@ -604,12 +627,76 @@ onLoad(() => {
     let dwellDuration = 0;
     let isRespawning = false;
 
+    // --- ASTROMECH ARCHITECT INTEGRATION (Hard-Light Laser Bridging & Construct Tool) ---
+    function triggerConstructPlatform() {
+        if (!player) return;
+        const arch = window.AstromechArchitect || (window.Player3D && window.Player3D.architect);
+        if (arch && typeof arch.constructPlatform === "function") {
+            arch.constructPlatform(player, landingRails);
+        }
+    }
+    window.triggerConstructPlatform = triggerConstructPlatform;
+
+    // Autonomous Chasm Bridging: Deploy glowing laser bridge across ledge gaps
+    function checkChasmBridging(p, rails) {
+        if (!p || !rails || rails.length === 0) return;
+        const arch = window.AstromechArchitect || (window.Player3D && window.Player3D.architect);
+        if (!arch || typeof arch.deployLaserBridge !== "function") return;
+
+        const px = p.pos.x;
+        const py = p.pos.y;
+
+        const baseRails = rails.filter(r => !r.isHardLight && typeof r.xLeft === "number" && typeof r.xRight === "number");
+
+        for (let i = 0; i < baseRails.length; i++) {
+            const r1 = baseRails[i];
+
+            for (let j = i + 1; j < baseRails.length; j++) {
+                const r2 = baseRails[j];
+                if (Math.abs(r1.y - r2.y) > 30) continue;
+
+                const bridgeY = Math.round((r1.y + r2.y) / 2);
+                if (Math.abs(py - bridgeY) > 80) continue;
+
+                let gapLeft = 0;
+                let gapRight = 0;
+                if (r2.xLeft > r1.xRight) {
+                    gapLeft = r1.xRight;
+                    gapRight = r2.xLeft;
+                } else if (r1.xLeft > r2.xRight) {
+                    gapLeft = r2.xRight;
+                    gapRight = r1.xLeft;
+                } else {
+                    continue;
+                }
+
+                const gapWidth = gapRight - gapLeft;
+                if (gapWidth >= 15 && gapWidth <= 220) {
+                    const isNearLeft = (px >= gapLeft - 75 && px <= gapLeft + 25);
+                    const isNearRight = (px <= gapRight + 75 && px >= gapRight - 25);
+                    const isOverGap = (px >= gapLeft - 10 && px <= gapRight + 10);
+
+                    if (isNearLeft || isNearRight || isOverGap) {
+                        arch.deployLaserBridge(gapLeft, gapRight, bridgeY, rails, p);
+                    }
+                }
+            }
+        }
+    }
+
     function handleLanding(p, rail) {
         if (typeof p.triggerGround === "function") {
             p.triggerGround(rail);
         }
 
         if (!rail) return;
+
+        // Autonomous LiDaR Surface Welding: brief neon welding spark effect and laser line flash
+        const arch = window.AstromechArchitect || (window.Player3D && window.Player3D.architect);
+        if (arch && typeof arch.weldSurface === "function") {
+            rail._lidarDiscovered = true;
+            arch.weldSurface(rail, p.pos.x);
+        }
 
         if (rail.trap === "bounce") {
             p.jump(JUMP_FORCE * 1.35);
@@ -924,6 +1011,31 @@ onLoad(() => {
             window.Player3D.syncWith2D(player);
         }
 
+        // Update Astromech Architect Engine & Autonomous Chasm Bridging
+        const arch = window.AstromechArchitect || (window.Player3D && window.Player3D.architect);
+        if (arch && typeof arch.update === "function") {
+            arch.update(dtTotal, player, landingRails);
+        }
+        if (isPhysicsActive && !isRespawning && player) {
+            checkChasmBridging(player, landingRails);
+
+            // Autonomous LiDaR Surface Welding: discover and lock unvisited DOM rails within sensor range
+            if (arch && typeof arch.weldSurface === "function" && landingRails) {
+                for (let i = 0; i < landingRails.length; i++) {
+                    const r = landingRails[i];
+                    if (r && !r.isHardLight && !r._lidarDiscovered) {
+                        const distY = Math.abs(player.pos.y - r.y);
+                        const distX = (player.pos.x < r.xLeft) ? (r.xLeft - player.pos.x) :
+                                      (player.pos.x > r.xRight) ? (player.pos.x - r.xRight) : 0;
+                        if (distX <= 75 && distY <= 55) {
+                            r._lidarDiscovered = true;
+                            arch.weldSurface(r, Math.max(r.xLeft, Math.min(r.xRight, player.pos.x)));
+                        }
+                    }
+                }
+            }
+        }
+
         // Continually detect if manual movement keys are actively held
         const isMovementActive = !isTypingInForm() && (
             (typeof isKeyDown === "function" && (
@@ -952,4 +1064,12 @@ onLoad(() => {
             resetToAutonomous();
         }
     });
+
+    if (typeof onKeyPress === "function") {
+        onKeyPress("f", () => {
+            if (!isTypingInForm()) {
+                triggerConstructPlatform();
+            }
+        });
+    }
 });

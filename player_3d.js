@@ -474,12 +474,20 @@
                 window.Engine3D.addShadowCaster(this.root);
             }
 
+            if (AstromechArchitect) {
+                AstromechArchitect.init(scene);
+            }
+
             this.isCreated = true;
             console.log("Cel-Shaded 3D BB-8 Astromech Droid with Flush Panels & Ink Outlines Created in Three.js.");
         },
 
         // --- REAL-TIME FRAME SYNCHRONIZATION WITH 2D KABOOM PLAYER ---
         syncWith2D(guy) {
+            if (AstromechArchitect) {
+                AstromechArchitect.update(0.016, guy, (typeof window !== "undefined" ? window.landingRails : null));
+            }
+
             if (!this.isCreated || !guy || !guy.exists || !guy.exists()) {
                 if (this.root) this.root.visible = false;
                 return;
@@ -626,7 +634,22 @@
             }
         },
 
+        constructPlatform(guy, rails) {
+            return AstromechArchitect.constructPlatform(guy, rails || (typeof window !== "undefined" ? window.landingRails : null));
+        },
+
+        deployLaserBridge(gapLeft, gapRight, y, rails, guy) {
+            return AstromechArchitect.deployLaserBridge(gapLeft, gapRight, y, rails || (typeof window !== "undefined" ? window.landingRails : null), guy);
+        },
+
+        weldSurface(rail, contactX) {
+            return AstromechArchitect.weldSurface(rail, contactX);
+        },
+
         dispose() {
+            if (AstromechArchitect) {
+                AstromechArchitect.dispose(typeof window !== "undefined" ? window.player : null, typeof window !== "undefined" ? window.landingRails : null);
+            }
             if (this.root && this.root.parent) {
                 this.root.parent.remove(this.root);
             }
@@ -658,5 +681,663 @@
         }
     };
 
-    window.Player3D = Player3D;
+    // --- ASTROMECH ARCHITECT ENGINE (Level Devil 2.5D Hard-Light Laser Engine) ---
+    const AstromechArchitect = {
+        scene: null,
+        activeRails: [],
+        activeSparks: [],
+        activeBeams: [],
+        lastConstructTime: 0,
+        lastWeldTime: 0,
+
+        init(scene) {
+            this.scene = scene || (typeof window !== "undefined" && window.Engine3D && window.Engine3D.scene) || null;
+        },
+
+        getScene() {
+            if (typeof window !== "undefined" && window.Engine3D && window.Engine3D.scene) {
+                return window.Engine3D.scene;
+            }
+            if (this.scene) return this.scene;
+            if (typeof window !== "undefined" && Player3D.root && Player3D.root.parent) {
+                return Player3D.root.parent;
+            }
+            return null;
+        },
+
+        getScale() {
+            if (typeof window !== "undefined" && window.Engine3D && typeof window.Engine3D.getScale === "function") {
+                return window.Engine3D.getScale();
+            }
+            return 0.05;
+        },
+
+        to3DVec(x2d, y2d, z = 0) {
+            if (typeof window !== "undefined" && window.Engine3D && typeof window.Engine3D.to3DVec === "function") {
+                const target = (typeof THREE !== "undefined") ? new THREE.Vector3() : null;
+                const v = window.Engine3D.to3DVec(x2d, y2d, z, target);
+                return (v && typeof v.clone === "function") ? v.clone() : v;
+            }
+            if (typeof THREE !== "undefined") {
+                return new THREE.Vector3(x2d * 0.05, -y2d * 0.05, z);
+            }
+            return { x: x2d * 0.05, y: -y2d * 0.05, z };
+        },
+
+        // Spawn neon welding spark particles in Three.js
+        spawnSparkBurst(x2d, y2d, count = 16, colorHex = 0x4deeea) {
+            const scene = this.getScene();
+            if (!scene || typeof THREE === "undefined") return;
+
+            const origin3d = this.to3DVec(x2d, y2d, 0.2);
+            const positions = new Float32Array(count * 3);
+            const velocities = [];
+
+            for (let i = 0; i < count; i++) {
+                positions[i * 3] = origin3d.x;
+                positions[i * 3 + 1] = origin3d.y;
+                positions[i * 3 + 2] = origin3d.z + (Math.random() - 0.5) * 0.3;
+                velocities.push({
+                    vx: (Math.random() - 0.5) * 5.5,
+                    vy: Math.random() * 6.5 + 2.5,
+                    vz: (Math.random() - 0.5) * 3.5
+                });
+            }
+
+            const geo = new THREE.BufferGeometry();
+            geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const mat = new THREE.PointsMaterial({
+                color: colorHex,
+                size: 0.16,
+                transparent: true,
+                opacity: 1.0,
+                blending: THREE.AdditiveBlending
+            });
+            const points = new THREE.Points(geo, mat);
+            scene.add(points);
+
+            this.activeSparks.push({
+                points,
+                geo,
+                mat,
+                velocities,
+                count,
+                lastScrollY: (typeof window !== "undefined") ? (window.scrollY || window.pageYOffset || 0) : 0,
+                createdAt: performance.now(),
+                duration: 420
+            });
+        },
+
+        // Downward laser beam from BB-8 chassis to construct platform
+        fireDownwardBeam(x2d, fromY2d, toY2d) {
+            const scene = this.getScene();
+            if (!scene || typeof THREE === "undefined") return;
+
+            const scale = this.getScale();
+            const height2d = Math.max(8, toY2d - fromY2d);
+            const height3d = height2d * scale;
+            const midY2d = (fromY2d + toY2d) / 2;
+            const pos3d = this.to3DVec(x2d, midY2d, 0.1);
+
+            const geo = new THREE.CylinderGeometry(0.045, 0.045, height3d, 12);
+            const mat = new THREE.MeshBasicMaterial({ color: 0x4deeea, transparent: true, opacity: 0.95 });
+            const coreGeo = new THREE.CylinderGeometry(0.02, 0.02, height3d, 8);
+            const coreMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1.0 });
+
+            const group = new THREE.Group();
+            group.add(new THREE.Mesh(geo, mat));
+            group.add(new THREE.Mesh(coreGeo, coreMat));
+            group.position.copy(pos3d);
+            scene.add(group);
+
+            this.activeBeams.push({
+                group,
+                geometries: [geo, coreGeo],
+                materials: [mat, coreMat],
+                x2d,
+                y2d: midY2d,
+                createdAt: performance.now(),
+                duration: 220
+            });
+        },
+
+        // Targeting pulse beam from BB-8 to chasm gap
+        fireTargetingBeam(fromX, fromY, toX, toY) {
+            const scene = this.getScene();
+            if (!scene || typeof THREE === "undefined") return;
+
+            const from3d = this.to3DVec(fromX, fromY, 0.3);
+            const to3d = this.to3DVec(toX, toY, 0.1);
+            const dir = new THREE.Vector3().subVectors(to3d, from3d);
+            const length = dir.length();
+            if (length < 0.01) return;
+
+            const geo = new THREE.CylinderGeometry(0.035, 0.035, length, 8);
+            geo.translate(0, length / 2, 0);
+            geo.rotateX(Math.PI / 2);
+            const mat = new THREE.MeshBasicMaterial({ color: 0x4deeea, transparent: true, opacity: 0.9 });
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.position.copy(from3d);
+            mesh.lookAt(to3d);
+            scene.add(mesh);
+
+            this.activeBeams.push({
+                group: mesh,
+                geometries: [geo],
+                materials: [mat],
+                isTargeting: true,
+                fromX,
+                fromY,
+                toX,
+                toY,
+                createdAt: performance.now(),
+                duration: 200
+            });
+        },
+
+        // Autonomous LiDaR Surface Welding: Brief neon welding spark effect and laser line flash
+        weldSurface(rail, contactX) {
+            if (!rail) return;
+            const now = performance.now();
+            if (rail._lastWeldTime && now - rail._lastWeldTime < 280) return;
+            rail._lastWeldTime = now;
+
+            const cx = (typeof contactX === "number") ? contactX : (rail.xLeft + rail.xRight) / 2;
+            this.spawnSparkBurst(cx, rail.y, 14, 0x4deeea);
+
+            const scene = this.getScene();
+            if (!scene || typeof THREE === "undefined") return;
+
+            const scale = this.getScale();
+            const width2d = rail.width || (rail.xRight - rail.xLeft) || 120;
+            const width3d = width2d * scale;
+            const midX = (rail.xLeft + rail.xRight) / 2;
+            const p3d = this.to3DVec(midX, rail.y, 0.06);
+
+            const geo = new THREE.PlaneGeometry(width3d, 0.12);
+            const mat = new THREE.MeshBasicMaterial({
+                color: 0x4deeea,
+                transparent: true,
+                opacity: 1.0,
+                side: THREE.DoubleSide
+            });
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.position.copy(p3d);
+            mesh.scale.x = 0.2;
+            scene.add(mesh);
+
+            this.activeBeams.push({
+                group: mesh,
+                geometries: [geo],
+                materials: [mat],
+                cx: midX,
+                y2d: rail.y,
+                width3d,
+                isFlash: true,
+                createdAt: now,
+                duration: 320
+            });
+        },
+
+        // Player Construct Tool ('F' Hotkey / Laser Springboard)
+        constructPlatform(player, landingRails) {
+            const now = performance.now();
+            if (now - this.lastConstructTime < 350) return null;
+            this.lastConstructTime = now;
+
+            const px = player ? player.pos.x : 0;
+            const py = player ? player.pos.y : 0;
+            const width = 160;
+            const xLeft = Math.round(px - width / 2);
+            const xRight = Math.round(px + width / 2);
+            const platformY = Math.round(py);
+
+            // 1. Downward laser beam & spark particles
+            this.fireDownwardBeam(px, py - 35, platformY);
+            this.spawnSparkBurst(px, platformY, 18, 0x4deeea);
+
+            // 2. 3D holographic platform
+            let group = null;
+            let geometries = [];
+            let materials = [];
+            const scene = this.getScene();
+            const scale = this.getScale();
+            const len3d = width * scale;
+
+            if (scene && typeof THREE !== "undefined") {
+                group = new THREE.Group();
+                group.name = "hardLightPlatform";
+
+                // Main vibrant cyan beam (#4deeea)
+                const beamGeo = new THREE.CylinderGeometry(0.08, 0.08, len3d, 16);
+                beamGeo.rotateZ(Math.PI / 2);
+                const beamMat = new THREE.MeshBasicMaterial({ color: 0x4deeea, transparent: true, opacity: 0.9 });
+                const beamMesh = new THREE.Mesh(beamGeo, beamMat);
+                group.add(beamMesh);
+
+                // Laser core (white high-intensity)
+                const coreGeo = new THREE.CylinderGeometry(0.038, 0.038, len3d, 12);
+                coreGeo.rotateZ(Math.PI / 2);
+                const coreMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95 });
+                const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+                group.add(coreMesh);
+
+                // Laser endcaps (#00ffff)
+                const endcapGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.06, 16);
+                endcapGeo.rotateZ(Math.PI / 2);
+                const endcapMat = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 1.0 });
+                const leftCap = new THREE.Mesh(endcapGeo, endcapMat);
+                leftCap.position.x = -len3d / 2;
+                const rightCap = new THREE.Mesh(endcapGeo, endcapMat);
+                rightCap.position.x = len3d / 2;
+                group.add(leftCap);
+                group.add(rightCap);
+
+                // Holographic lattice shelf
+                const shelfGeo = new THREE.PlaneGeometry(len3d, 0.28);
+                shelfGeo.rotateX(-Math.PI / 2);
+                const shelfMat = new THREE.MeshBasicMaterial({ color: 0x4deeea, transparent: true, opacity: 0.45, side: THREE.DoubleSide });
+                const shelfMesh = new THREE.Mesh(shelfGeo, shelfMat);
+                group.add(shelfMesh);
+
+                const p3d = this.to3DVec(px, platformY, 0);
+                group.position.copy(p3d);
+                scene.add(group);
+
+                geometries = [beamGeo, coreGeo, endcapGeo, shelfGeo];
+                materials = [beamMat, coreMat, endcapMat, shelfMat];
+            }
+
+            // 3. Physical landing rail registered in Kaboom
+            const rail = {
+                xLeft,
+                xRight,
+                width,
+                y: platformY,
+                trap: "normal",
+                name: "HARD_LIGHT_PLATFORM",
+                isHardLight: true,
+                isBridge: false,
+                createdAt: now,
+                duration: 6000, // 6-second decay lifetime
+                group,
+                geometries,
+                materials,
+                cx: px,
+                y2d: platformY,
+                w2d: width,
+                len3d
+            };
+
+            this.activeRails.push(rail);
+            if (landingRails && !landingRails.includes(rail)) landingRails.push(rail);
+            if (typeof window !== "undefined" && window.landingRails && !window.landingRails.includes(rail)) {
+                window.landingRails.push(rail);
+            }
+
+            // 4. Pin player to platform & trigger landing
+            if (player) {
+                player.pos.y = platformY;
+                player.vy = 0;
+                player.grounded = true;
+                player.currentRail = rail;
+                if (typeof player.triggerGround === "function") {
+                    player.triggerGround(rail);
+                }
+            }
+
+            // 5. Emotive response & retro thought bubble
+            if (typeof Player3D !== "undefined" && typeof Player3D.nod === "function") {
+                Player3D.nod();
+            }
+            if (typeof window !== "undefined" && window.System1Brain && typeof window.System1Brain.emitThought === "function") {
+                window.System1Brain.emitThought("⚡ HARD-LIGHT RAIL DEPLOYED", 3000);
+            }
+
+            return rail;
+        },
+
+        // Dynamic Hard-Light Laser Bridging (Autonomous Chasm Bridging)
+        deployLaserBridge(gapLeft, gapRight, bridgeY, landingRails, player) {
+            const now = performance.now();
+            const cx = (gapLeft + gapRight) / 2;
+
+            // Check if active bridge already covers this gap
+            const existing = this.activeRails.find(r => r.isBridge && Math.abs(r.y2d - bridgeY) <= 8 && Math.abs(r.cx - cx) <= 25);
+            if (existing) {
+                existing.createdAt = now; // Refresh decay while near/crossing
+                return existing;
+            }
+
+            const xLeft = gapLeft - 6;
+            const xRight = gapRight + 6;
+            const width = xRight - xLeft;
+
+            // BB-8 fires targeting pulse beam towards the gap
+            if (player) {
+                this.fireTargetingBeam(player.pos.x, player.pos.y - 25, cx, bridgeY);
+            }
+
+            // Laser sparks at both bridge endcaps
+            this.spawnSparkBurst(gapLeft, bridgeY, 12, 0x4deeea);
+            this.spawnSparkBurst(gapRight, bridgeY, 12, 0x4deeea);
+
+            // Three.js holographic laser bridge
+            let group = null;
+            let geometries = [];
+            let materials = [];
+            const scene = this.getScene();
+            const scale = this.getScale();
+            const len3d = width * scale;
+
+            if (scene && typeof THREE !== "undefined") {
+                group = new THREE.Group();
+                group.name = "hardLightBridge";
+
+                // Vibrant glowing cyan beam (#4deeea)
+                const beamGeo = new THREE.CylinderGeometry(0.075, 0.075, len3d, 16);
+                beamGeo.rotateZ(Math.PI / 2);
+                const beamMat = new THREE.MeshBasicMaterial({ color: 0x4deeea, transparent: true, opacity: 0.92 });
+                const beamMesh = new THREE.Mesh(beamGeo, beamMat);
+                group.add(beamMesh);
+
+                // Laser core (white)
+                const coreGeo = new THREE.CylinderGeometry(0.035, 0.035, len3d, 12);
+                coreGeo.rotateZ(Math.PI / 2);
+                const coreMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.98 });
+                const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+                group.add(coreMesh);
+
+                // Laser endcaps at both anchors
+                const endcapGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.08, 16);
+                endcapGeo.rotateZ(Math.PI / 2);
+                const endcapMat = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 1.0 });
+                const leftCap = new THREE.Mesh(endcapGeo, endcapMat);
+                leftCap.position.x = -len3d / 2;
+                const rightCap = new THREE.Mesh(endcapGeo, endcapMat);
+                rightCap.position.x = len3d / 2;
+                group.add(leftCap);
+                group.add(rightCap);
+
+                // Holographic lattice plane
+                const shelfGeo = new THREE.PlaneGeometry(len3d, 0.25);
+                shelfGeo.rotateX(-Math.PI / 2);
+                const shelfMat = new THREE.MeshBasicMaterial({ color: 0x4deeea, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
+                const shelfMesh = new THREE.Mesh(shelfGeo, shelfMat);
+                group.add(shelfMesh);
+
+                const p3d = this.to3DVec(cx, bridgeY, 0);
+                group.position.copy(p3d);
+                scene.add(group);
+
+                geometries = [beamGeo, coreGeo, endcapGeo, shelfGeo];
+                materials = [beamMat, coreMat, endcapMat, shelfMat];
+            }
+
+            // Physical landing rail registered in Kaboom
+            const rail = {
+                xLeft,
+                xRight,
+                width,
+                y: bridgeY,
+                trap: "normal",
+                name: "HARD_LIGHT_BRIDGE",
+                isHardLight: true,
+                isBridge: true,
+                createdAt: now,
+                duration: 8000, // 8-second lifetime (auto-refreshed while player remains near)
+                group,
+                geometries,
+                materials,
+                cx,
+                y2d: bridgeY,
+                w2d: width,
+                len3d
+            };
+
+            this.activeRails.push(rail);
+            if (landingRails && !landingRails.includes(rail)) landingRails.push(rail);
+            if (typeof window !== "undefined" && window.landingRails && !window.landingRails.includes(rail)) {
+                window.landingRails.push(rail);
+            }
+
+            return rail;
+        },
+
+        // Clean disposal of a specific rail
+        disposeRail(rail, player, landingRails) {
+            if (!rail) return;
+            const scene = this.getScene();
+
+            if (rail.group && scene) {
+                scene.remove(rail.group);
+                if (typeof rail.group.clear === "function") {
+                    rail.group.clear();
+                }
+            }
+            if (rail.geometries) {
+                rail.geometries.forEach(g => { if (g && typeof g.dispose === "function") g.dispose(); });
+            }
+            if (rail.materials) {
+                rail.materials.forEach(m => { if (m && typeof m.dispose === "function") m.dispose(); });
+            }
+            rail.group = null;
+            rail.geometries = [];
+            rail.materials = [];
+
+            const p = player || (typeof window !== "undefined" ? window.player : null);
+            const rails = landingRails || (typeof window !== "undefined" ? window.landingRails : null);
+
+            // Remove from landingRails arrays
+            if (rails) {
+                const idx = rails.indexOf(rail);
+                if (idx !== -1) rails.splice(idx, 1);
+            }
+            if (typeof window !== "undefined" && window.landingRails && window.landingRails !== rails) {
+                const idx = window.landingRails.indexOf(rail);
+                if (idx !== -1) window.landingRails.splice(idx, 1);
+            }
+
+            // If player was standing on this rail when it despawned, un-ground
+            if (p && p.currentRail === rail) {
+                p.grounded = false;
+                p.currentRail = null;
+            }
+        },
+
+        // Per-frame animation, scroll-pinning, and decay update
+        update(dt, player, landingRails) {
+            const now = performance.now();
+            if (this._lastUpdateTime && (now - this._lastUpdateTime < 3)) {
+                return; // Frame guard against double execution
+            }
+            this._lastUpdateTime = now;
+
+            const scene = this.getScene();
+            const scale = this.getScale();
+            const p = player || (typeof window !== "undefined" ? window.player : null);
+            const rails = landingRails || (typeof window !== "undefined" ? window.landingRails : null);
+
+            // 1. Update Active Hard-Light Rails
+            for (let i = this.activeRails.length - 1; i >= 0; i--) {
+                const rail = this.activeRails[i];
+
+                // Refresh bridge lifetime while player is traversing or near it
+                if (rail.isBridge && p) {
+                    const distCenter = Math.abs(p.pos.x - rail.cx);
+                    const distY = Math.abs(p.pos.y - rail.y2d);
+                    if (distCenter <= rail.w2d / 2 + 60 && distY <= 60) {
+                        rail.createdAt = now;
+                    }
+                }
+
+                // Update 3D position anchored to 2D coordinates across scroll
+                if (rail.group) {
+                    const p3d = this.to3DVec(rail.cx, rail.y2d, 0);
+                    rail.group.position.x = p3d.x;
+                    rail.group.position.y = p3d.y;
+
+                    // Re-scale if DPR / viewport changed
+                    if (rail.len3d && rail.len3d > 0) {
+                        const currentLen3d = rail.w2d * scale;
+                        rail.group.scale.x = currentLen3d / rail.len3d;
+                    }
+                }
+
+                const elapsed = now - rail.createdAt;
+                const remaining = rail.duration - elapsed;
+
+                // Electric pulse & smooth decay pulse-out
+                if (rail.materials && rail.materials.length >= 4) {
+                    const pulse = 0.82 + 0.18 * Math.sin(now * 0.012 + rail.cx * 0.02);
+
+                    if (remaining <= 1500) {
+                        // Smooth pulse-out during final 1.5s
+                        const flashSpeed = 0.025 + (1 - remaining / 1500) * 0.045;
+                        const flash = 0.5 + 0.5 * Math.sin(now * flashSpeed);
+                        const alpha = Math.max(0, remaining / 1500) * flash;
+
+                        rail.materials[0].opacity = 0.90 * alpha; // beam
+                        rail.materials[1].opacity = 0.95 * alpha; // core
+                        rail.materials[2].opacity = 0.95 * alpha; // endcaps
+                        rail.materials[3].opacity = 0.45 * alpha; // shelf
+                    } else {
+                        rail.materials[0].opacity = 0.88 * pulse;
+                        rail.materials[1].opacity = 0.95 * pulse;
+                        rail.materials[2].opacity = 1.0;
+                        rail.materials[3].opacity = 0.45 * pulse;
+                    }
+                }
+
+                // Lifetime expired
+                if (remaining <= 0) {
+                    this.disposeRail(rail, p, rails);
+                    this.activeRails.splice(i, 1);
+                }
+            }
+
+            // 2. Update Active Spark Particles
+            for (let i = this.activeSparks.length - 1; i >= 0; i--) {
+                const spark = this.activeSparks[i];
+                const elapsed = now - spark.createdAt;
+
+                if (elapsed >= spark.duration) {
+                    if (spark.points && scene) scene.remove(spark.points);
+                    if (spark.geo) spark.geo.dispose();
+                    if (spark.mat) spark.mat.dispose();
+                    this.activeSparks.splice(i, 1);
+                    continue;
+                }
+
+                const progress = elapsed / spark.duration;
+                if (spark.mat) spark.mat.opacity = 1.0 - progress;
+
+                const posAttr = spark.geo ? spark.geo.attributes.position : null;
+                if (posAttr && spark.velocities) {
+                    const clampedDt = Math.min(dt || 0.016, 0.05);
+                    const currentScroll = (typeof window !== "undefined") ? (window.scrollY || window.pageYOffset || 0) : 0;
+                    const scrollDelta = (currentScroll - (spark.lastScrollY || currentScroll)) * scale;
+                    spark.lastScrollY = currentScroll;
+
+                    for (let j = 0; j < spark.count; j++) {
+                        const vel = spark.velocities[j];
+                        posAttr.array[j * 3] += vel.vx * clampedDt;
+                        posAttr.array[j * 3 + 1] += (vel.vy * clampedDt) + scrollDelta;
+                        posAttr.array[j * 3 + 2] += vel.vz * clampedDt;
+                        vel.vy -= 14.0 * clampedDt; // Gravity on sparks
+                    }
+                    posAttr.needsUpdate = true;
+                }
+            }
+
+            // 3. Update Active Beams & Laser Line Flashes
+            for (let i = this.activeBeams.length - 1; i >= 0; i--) {
+                const beam = this.activeBeams[i];
+                const elapsed = now - beam.createdAt;
+
+                if (elapsed >= beam.duration) {
+                    if (beam.group && scene) scene.remove(beam.group);
+                    if (beam.geometries) beam.geometries.forEach(g => g && g.dispose());
+                    if (beam.materials) beam.materials.forEach(m => m && m.dispose());
+                    beam.group = null;
+                    beam.geometries = [];
+                    beam.materials = [];
+                    this.activeBeams.splice(i, 1);
+                    continue;
+                }
+
+                const progress = elapsed / beam.duration;
+
+                if (beam.isFlash) {
+                    // Update flash position with scroll
+                    const p3d = this.to3DVec(beam.cx, beam.y2d, 0.06);
+                    beam.group.position.x = p3d.x;
+                    beam.group.position.y = p3d.y;
+
+                    // Expand scale X outward, fade opacity
+                    const expand = Math.min(1.0, 0.2 + progress * 1.6);
+                    beam.group.scale.x = expand;
+                    if (beam.materials[0]) beam.materials[0].opacity = (1.0 - progress);
+                } else if (beam.isTargeting) {
+                    // Targeting pulse beam scroll sync & lookAt
+                    if (typeof beam.fromX === "number") {
+                        const from3d = this.to3DVec(beam.fromX, beam.fromY, 0.3);
+                        const to3d = this.to3DVec(beam.toX, beam.toY, 0.1);
+                        beam.group.position.copy(from3d);
+                        beam.group.lookAt(to3d);
+                    }
+                    if (beam.materials[0]) beam.materials[0].opacity = (1.0 - progress);
+                } else {
+                    // Downward beam scroll sync
+                    const p3d = this.to3DVec(beam.x2d, beam.y2d, 0.1);
+                    beam.group.position.x = p3d.x;
+                    beam.group.position.y = p3d.y;
+                    if (beam.materials) {
+                        beam.materials.forEach(m => {
+                            if (m) m.opacity = (1.0 - progress);
+                        });
+                    }
+                }
+            }
+        },
+
+        // Zero-leak full teardown
+        dispose(player, landingRails) {
+            const p = player || (typeof window !== "undefined" ? window.player : null);
+            const rails = landingRails || (typeof window !== "undefined" ? window.landingRails : null);
+
+            for (let i = this.activeRails.length - 1; i >= 0; i--) {
+                this.disposeRail(this.activeRails[i], p, rails);
+            }
+            this.activeRails = [];
+
+            const scene = this.getScene();
+            for (const spark of this.activeSparks) {
+                if (spark.points && scene) scene.remove(spark.points);
+                if (spark.geo) spark.geo.dispose();
+                if (spark.mat) spark.mat.dispose();
+            }
+            this.activeSparks = [];
+
+            for (const beam of this.activeBeams) {
+                if (beam.group && scene) scene.remove(beam.group);
+                if (beam.geometries) beam.geometries.forEach(g => g && g.dispose());
+                if (beam.materials) beam.materials.forEach(m => m && m.dispose());
+            }
+            this.activeBeams = [];
+            this.scene = null;
+            this._lastUpdateTime = 0;
+        }
+    };
+
+    Player3D.architect = AstromechArchitect;
+
+    if (typeof window !== "undefined") {
+        window.Player3D = Player3D;
+        window.AstromechArchitect = AstromechArchitect;
+    }
+
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = { Player3D, AstromechArchitect };
+    }
 })();

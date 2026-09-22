@@ -92,8 +92,8 @@
             if (!this.bubbleElement) return;
 
             const now = (typeof performance !== "undefined") ? performance.now() : Date.now();
-            // Minimum cooldown between spontaneous thoughts (unless celebrate / submit / touchdown)
-            const isPriority = text.includes("dispatched") || text.includes("TOUCHDOWN") || text.includes("Terra Firma");
+            // Minimum cooldown between spontaneous thoughts (unless celebrate / submit / touchdown / hard-light)
+            const isPriority = text.includes("dispatched") || text.includes("TOUCHDOWN") || text.includes("Terra Firma") || text.includes("HARD-LIGHT") || text.includes("⚡");
             if (!isPriority && (now - this.lastThoughtTime < 5000)) {
                 return;
             }

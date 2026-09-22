@@ -345,3 +345,58 @@
   transform: rotate(45deg);
 }
 
+/* --- MOBILE CONTROLS & CONSTRUCT BUTTON --- */
+#mobile-controls {
+  position: fixed;
+  bottom: 24px;
+  left: 20px;
+  right: 20px;
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 180;
+  pointer-events: none;
+}
+
+@media (max-width: 960px) {
+  #mobile-controls {
+    display: flex;
+  }
+}
+
+#mobile-controls button {
+  pointer-events: auto;
+}
+
+.btn-dir {
+  width: 48px;
+  height: 48px;
+  background: var(--shell-paper, #fff4c9);
+  border: 3px solid var(--shell-ink, #17120f);
+  box-shadow: 4px 4px 0 var(--shell-ink, #17120f);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: var(--shell-ink, #17120f);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
+  border-radius: 0;
+}
+
+.btn-dir:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--shell-ink, #17120f);
+}
+
+.btn-construct {
+  background: #4deeea !important;
+  color: #17120f !important;
+  border: 3px solid var(--shell-ink, #17120f) !important;
+  box-shadow: 4px 4px 0 var(--shell-purple, #6d3bb8) !important;
+  font-size: 13px !important;
+  font-weight: bold;
+}
+
