@@ -57,10 +57,8 @@ describe("Unified application shell", () => {
     expect(shell).toContain("getIdTokenResult");
     expect(shell).toContain('loadScript("/sales-config.js")');
     expect(shell).toContain('loadScript("/sales-auth.js")');
-    expect(auth).toContain("signInWithPopup");
     expect(auth).toContain("signInWithRedirect");
     expect(auth).toContain("getRedirectResult");
-    expect(auth).toContain("auth/popup-closed-by-user");
     expect(config).toContain('projectId: "apoorv-sales"');
     expect(config).toContain('authDomain: "apoorv-sales.firebaseapp.com"');
     expect(config).not.toContain("speeddial-9b999");

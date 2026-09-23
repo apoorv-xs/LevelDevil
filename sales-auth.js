@@ -59,26 +59,7 @@
     async signIn() {
       const auth = await getAuth();
       const provider = new window.firebase.auth.GoogleAuthProvider();
-      try {
-        return await auth.signInWithPopup(provider);
-      } catch (error) {
-        if (["auth/popup-blocked", "auth/operation-not-supported", "auth/web-storage-unsupported"].includes(error.code)) {
-          try {
-            await auth.signInWithRedirect(provider);
-            throw new Error("Redirecting to secure sign-in...");
-          } catch (redirectError) {
-            if (redirectError.message === "Redirecting to secure sign-in...") throw redirectError;
-            throw new Error("Popup sign-in was blocked and redirect sign-in could not start. Check browser permissions and try again.");
-          }
-        }
-        if (["auth/popup-closed-by-user", "auth/cancelled-popup-request"].includes(error.code)) {
-          throw new Error("Sign-in was cancelled. Select the button to try again.");
-        }
-        if (error.code === "auth/unauthorized-domain") {
-          throw new Error("This site is not enabled for Google sign-in. Contact the owner.");
-        }
-        throw new Error("Secure sign-in failed. Check your Google account and try again.");
-      }
+      await auth.signInWithRedirect(provider);
     },
   };
 })();
