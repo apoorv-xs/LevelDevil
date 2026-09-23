@@ -18,11 +18,19 @@
     },
     {
       "route": "/workspace",
-      "rewrite": "/workspace/index.html"
+      "rewrite": "/workspace/index.html",
+      "headers": {
+        "X-Robots-Tag": "noindex, nofollow, noarchive",
+        "Cache-Control": "no-store, no-cache, must-revalidate"
+      }
     },
     {
       "route": "/workspace/*",
-      "rewrite": "/workspace/index.html"
+      "rewrite": "/workspace/index.html",
+      "headers": {
+        "X-Robots-Tag": "noindex, nofollow, noarchive",
+        "Cache-Control": "no-store, no-cache, must-revalidate"
+      }
     },
     {
       "route": "/api/*",

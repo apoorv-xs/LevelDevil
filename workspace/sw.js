@@ -1,10 +1,8 @@
 // SprintDial Service Worker for Web App (PWA) Offline & Fast-Launch
-const CACHE_NAME = "sprintdial-cache-v2";
+const CACHE_NAME = "sprintdial-cache-v3";
 const ASSETS_TO_CACHE = [
   "/",
   "/index.html",
-  "/prospects_data.js",
-  "/custom_prospects.js",
   "/app.js",
   "/manifest.json"
 ];

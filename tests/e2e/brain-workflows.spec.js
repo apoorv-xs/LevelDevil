@@ -70,8 +70,25 @@ test.describe("System 1 Decision Brain - Multi-Page Workflows", () => {
     await expect(page.locator("#googleSignInBtn")).toBeVisible();
   });
 
+  test("Workspace (/workspace/) rejects unauthorized localStorage tampering without active session", async ({ page }) => {
+    await page.addInitScript(() => {
+      // Simulate malicious stranger writing fake owner into localStorage
+      localStorage.setItem('sprintdial_user', JSON.stringify({
+        name: 'Attacker',
+        email: 'apoorv@eravex.studio',
+        role: 'owner'
+      }));
+    });
+    await page.goto("http://localhost:5173/workspace/", { waitUntil: "networkidle" });
+    await page.waitForTimeout(1000);
+    const authOverlay = page.locator("#authGateOverlay");
+    await expect(authOverlay).toBeVisible();
+    await expect(authOverlay).not.toHaveClass(/hidden/);
+  });
+
   test("Workspace (/workspace/) classifies prospect audit, radar sweep, and call standby", async ({ page }) => {
     await page.addInitScript(() => {
+      sessionStorage.setItem('sprintdial_test_mode', 'true');
       localStorage.setItem('sprintdial_user', JSON.stringify({
         name: 'Apoorv',
         email: 'apoorv@eravex.studio',

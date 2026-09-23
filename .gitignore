@@ -10,3 +10,7 @@ test-results/
 tests/results/
 v2/
 .agents/
+.env
+.env.*
+*.env
+.env.local

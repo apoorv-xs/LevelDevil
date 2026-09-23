@@ -1,4 +1,8 @@
 User-agent: *
+Disallow: /workspace/
+Disallow: /workspace/*
+Disallow: /api/
+Disallow: /api/*
 Allow: /
 
 Sitemap: https://apoorv.qzz.io/sitemap.xml
