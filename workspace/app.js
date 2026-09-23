@@ -2049,6 +2049,7 @@ function saveLeadOverride(id, updates) {
     });
     localStorage.setItem('sprintdial_lead_overrides', JSON.stringify(overrides));
     syncProspectUpdateToFirestore(id, overrides[id]);
+    syncCallOutcomeToGoogleSheet(id, overrides[id]);
   } catch (e) {
     console.warn('Failed to save lead override:', e);
   }
@@ -2123,6 +2124,270 @@ function exportProspectsJSON() {
   showNotification('📥 Prospects JSON backup downloaded.');
 }
 
+// ==========================================
+// GOOGLE SHEETS TWO-WAY BRIDGE & CSV ENGINE
+// ==========================================
+function getGoogleSheetsWebhookUrl() {
+  try {
+    return localStorage.getItem('sprintdial_gsheet_webhook_url') || '';
+  } catch(e) {
+    return '';
+  }
+}
+
+function initGoogleSheetsUI() {
+  const url = getGoogleSheetsWebhookUrl();
+  const input = document.getElementById('gsheetWebhookUrlInput');
+  const badge = document.getElementById('gsheetSyncStatusBadge');
+  if (input && url) input.value = url;
+  if (badge) {
+    if (url) {
+      badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold";
+      badge.innerText = "🟢 Webhook Connected";
+    } else {
+      badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-neutral-400 border border-white/5";
+      badge.innerText = "Webhook Standby";
+    }
+  }
+}
+
+function saveGoogleSheetsWebhookUI() {
+  const input = document.getElementById('gsheetWebhookUrlInput');
+  const url = input ? input.value.trim() : '';
+  if (url) {
+    if (!url.startsWith('https://script.google.com/')) {
+      alert('Validation Error: Google Apps Script Webhook must start with https://script.google.com/');
+      return;
+    }
+    localStorage.setItem('sprintdial_gsheet_webhook_url', url);
+    showNotification('📊 Google Sheets Webhook URL saved & connected!');
+  } else {
+    localStorage.removeItem('sprintdial_gsheet_webhook_url');
+    showNotification('Google Sheets Webhook URL removed.');
+  }
+  initGoogleSheetsUI();
+}
+
+async function pullFromGoogleSheetUI() {
+  const url = getGoogleSheetsWebhookUrl() || (document.getElementById('gsheetWebhookUrlInput') ? document.getElementById('gsheetWebhookUrlInput').value.trim() : '');
+  if (!url) {
+    alert('Please enter and save your Google Apps Script Web App URL first.');
+    return;
+  }
+
+  showNotification('⏳ Pulling latest prospects from Google Sheet...');
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}: Failed to reach Google Sheet Webhook`);
+    const data = await res.json();
+    if (!data.success || !Array.isArray(data.prospects) || data.prospects.length === 0) {
+      throw new Error(data.error || 'No prospects returned from Google Sheet.');
+    }
+
+    let addedCount = 0;
+    let updatedCount = 0;
+    data.prospects.forEach(sheetP => {
+      const idx = PROSPECTS.findIndex(p => p.id === sheetP.id);
+      if (idx !== -1) {
+        Object.assign(PROSPECTS[idx], sheetP);
+        updatedCount++;
+      } else {
+        PROSPECTS.push(sheetP);
+        addedCount++;
+      }
+    });
+
+    renderQueue();
+    selectProspect(PROSPECTS[0]?.id || "p-1");
+
+    // Also sync to Cloud Firestore if active
+    if (window.SALES_PLATFORM_AUTH?.getFirestore && currentUser) {
+      try {
+        const db = await window.SALES_PLATFORM_AUTH.getFirestore();
+        const batch = db.batch();
+        data.prospects.forEach(p => {
+          const docRef = db.collection('prospects').doc(p.id);
+          batch.set(docRef, p, { merge: true });
+        });
+        await batch.commit();
+      } catch (fsErr) {
+        console.warn('Firestore sync during Sheet pull:', fsErr.message);
+      }
+    }
+
+    showNotification(`🎉 Synced with Google Sheet! (${addedCount} added, ${updatedCount} updated)`);
+  } catch (err) {
+    alert(`Google Sheets Sync Error: ${err.message}`);
+  }
+}
+
+async function syncCallOutcomeToGoogleSheet(prospectId, updateData) {
+  const url = getGoogleSheetsWebhookUrl();
+  if (!url) return;
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        id: prospectId,
+        status: updateData.status || '',
+        notes: updateData.notes || '',
+        lastCallTime: updateData.updatedAt || new Date().toISOString(),
+        caller: updateData.updatedBy || currentUser?.name || 'Caller'
+      })
+    });
+  } catch (e) {
+    console.warn('Google Sheet background outcome sync:', e);
+  }
+}
+
+function exportToGoogleSheetsCSV() {
+  function escapeCsv(val) {
+    if (val === null || val === undefined) return '';
+    const str = String(val).replace(/"/g, '""');
+    if (str.includes(',') || str.includes('"') || str.includes('\n')) return `"${str}"`;
+    return str;
+  }
+
+  const headers = ['ID', 'City', 'Company Name', 'Decision Maker', 'Phone', 'WhatsApp', 'Website', 'Category', 'Fee', 'Status', 'Speed Score', 'LCP Time', 'Tech Stack', 'Flaws', 'Notes', 'Last Call Time', 'Caller'];
+  const rows = [headers.join(',')];
+
+  PROSPECTS.forEach(p => {
+    rows.push([
+      escapeCsv(p.id),
+      escapeCsv(p.city),
+      escapeCsv(p.name),
+      escapeCsv(p.dm),
+      escapeCsv(p.phone),
+      escapeCsv(p.wa),
+      escapeCsv(p.site),
+      escapeCsv(p.cat),
+      escapeCsv(p.fee),
+      escapeCsv(p.status || 'available'),
+      escapeCsv(p.speedScore),
+      escapeCsv(p.lcpTime),
+      escapeCsv(p.techStack),
+      escapeCsv((p.flaws || []).join('; ')),
+      escapeCsv(p.notes || ''),
+      escapeCsv(p.lastCallTime || ''),
+      escapeCsv(p.lockedBy || '')
+    ].join(','));
+  });
+
+  const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `SprintDial_GoogleSheet_Export_${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showNotification('📊 Exported CSV for Google Sheets!');
+}
+
+function openCsvImportModal() {
+  const modal = document.getElementById('csvImportModal');
+  if (modal) modal.classList.remove('hidden');
+}
+
+function closeCsvImportModal() {
+  const modal = document.getElementById('csvImportModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function processCsvImportUI() {
+  const textarea = document.getElementById('csvImportTextarea');
+  const text = textarea ? textarea.value.trim() : '';
+  if (!text) {
+    alert('Please paste CSV text to import.');
+    return;
+  }
+
+  const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+  if (lines.length < 2) {
+    alert('Invalid CSV format: Requires at least a header row and one data row.');
+    return;
+  }
+
+  function parseCsvLine(line) {
+    const result = [];
+    let insideQuotes = false;
+    let field = '';
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') {
+        if (insideQuotes && line[i + 1] === '"') {
+          field += '"';
+          i++;
+        } else {
+          insideQuotes = !insideQuotes;
+        }
+      } else if (c === ',' && !insideQuotes) {
+        result.push(field.trim());
+        field = '';
+      } else {
+        field += c;
+      }
+    }
+    result.push(field.trim());
+    return result;
+  }
+
+  const headers = parseCsvLine(lines[0]).map(h => h.toLowerCase().replace(/[^a-z0-9]/g, ''));
+  const idIdx = headers.findIndex(h => h === 'id');
+  const cityIdx = headers.findIndex(h => h === 'city');
+  const nameIdx = headers.findIndex(h => h.includes('name') || h.includes('company'));
+  const dmIdx = headers.findIndex(h => h.includes('dm') || h.includes('decision'));
+  const phoneIdx = headers.findIndex(h => h.includes('phone') || h.includes('mobile'));
+  const siteIdx = headers.findIndex(h => h.includes('site') || h.includes('web'));
+  const catIdx = headers.findIndex(h => h.includes('cat'));
+  const feeIdx = headers.findIndex(h => h.includes('fee'));
+  const statusIdx = headers.findIndex(h => h.includes('status'));
+
+  let imported = 0;
+  for (let i = 1; i < lines.length; i++) {
+    const row = parseCsvLine(lines[i]);
+    const name = nameIdx !== -1 ? row[nameIdx] : row[1];
+    if (!name) continue;
+
+    const id = (idIdx !== -1 && row[idIdx]) ? row[idIdx] : ('p-imp-' + Date.now() + '-' + i);
+    const existingIdx = PROSPECTS.findIndex(p => p.id === id);
+
+    const prospectObj = {
+      id,
+      city: (cityIdx !== -1 && row[cityIdx]) ? row[cityIdx] : 'Bangalore',
+      name: name,
+      dm: (dmIdx !== -1 && row[dmIdx]) ? row[dmIdx] : 'Director',
+      phone: (phoneIdx !== -1 && row[phoneIdx]) ? row[phoneIdx] : '',
+      wa: (phoneIdx !== -1 && row[phoneIdx]) ? row[phoneIdx].replace(/[^0-9]/g, '') : '',
+      site: (siteIdx !== -1 && row[siteIdx]) ? row[siteIdx] : '',
+      cat: (catIdx !== -1 && row[catIdx]) ? row[catIdx] : 'general',
+      fee: (feeIdx !== -1 && row[feeIdx]) ? row[feeIdx] : '₹50,000',
+      status: (statusIdx !== -1 && row[statusIdx]) ? row[statusIdx] : 'available',
+      speedScore: '🔴 32/100 (Mobile)',
+      lcpTime: 'LCP: 4.4s',
+      techStack: 'WordPress',
+      flaws: [],
+      notes: ''
+    };
+
+    if (existingIdx !== -1) {
+      Object.assign(PROSPECTS[existingIdx], prospectObj);
+    } else {
+      PROSPECTS.unshift(prospectObj);
+    }
+    imported++;
+  }
+
+  saveCustomWorkers(getCustomWorkers());
+  renderQueue();
+  selectProspect(PROSPECTS[0]?.id || "p-1");
+  closeCsvImportModal();
+  if (textarea) textarea.value = '';
+  showNotification(`🎉 Ingested ${imported} accounts from CSV into workspace!`);
+}
+
 function saveDialsToday() {
   try {
     const todayKey = `sprintdial_dials_${new Date().toISOString().slice(0, 10)}`;
@@ -2135,6 +2400,7 @@ function openAdminModal() {
   playSound('click');
   const modal = document.getElementById('adminModal');
   if (!modal) return;
+  initGoogleSheetsUI();
 
   // Enforce executive access check
   if (!isOwnerUser(currentUser)) {
