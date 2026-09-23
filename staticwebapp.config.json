@@ -17,6 +17,14 @@
       "rewrite": "/sales.html"
     },
     {
+      "route": "/workspace/prospects_data.js",
+      "statusCode": 403
+    },
+    {
+      "route": "/workspace/custom_prospects.js",
+      "statusCode": 403
+    },
+    {
       "route": "/workspace",
       "rewrite": "/workspace/index.html",
       "headers": {

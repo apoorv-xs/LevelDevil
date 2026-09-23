@@ -805,6 +805,30 @@ async function ensureProspectsLoaded() {
       return;
     }
 
+    // 1. Try secure API fetch with authenticated bearer token / session
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      const token = currentUser?.callerToken || (currentUser?.role === 'owner' ? 'owner-session' : '');
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch('/api/workspace/prospects', { headers });
+      if (res.ok) {
+        const body = await res.json();
+        if (body?.data?.prospects && Array.isArray(body.data.prospects) && body.data.prospects.length > 0) {
+          PROSPECTS = body.data.prospects;
+          if (body?.data?.custom && Array.isArray(body.data.custom)) {
+            window.CUSTOM_PROSPECTS = body.data.custom;
+          }
+          initPersistence();
+          renderQueue();
+          selectProspect("p-1");
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn('API prospects fetch unavailable, trying local fallback:', e);
+    }
+
     const loadScript = (src) => new Promise((resolve, reject) => {
       const s = document.createElement('script');
       s.src = src;

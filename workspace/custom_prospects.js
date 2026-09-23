@@ -1,6 +1,7 @@
 // SprintDial — Ingested Prospects from Gemini Autonomous Scout
 // Updated at: 2026-09-14T01:45:03.472Z
-window.CUSTOM_PROSPECTS = [
+(function(root) {
+  const dataset = [
   {
     "id": "gemini-scout-1789254909472-2",
     "city": "Bangalore",
@@ -222,3 +223,13 @@ window.CUSTOM_PROSPECTS = [
     "waMessage": "നമസ്കാരം Dr. Abraham Koshy (Chief Implantologist), Lakeshore Smiles & Implantology, Panampilly Nagar-ന്റെ വെബ്സൈറ്റ് പെർഫോമൻസിനെ കുറിച്ച് അപൂർവിന് വേണ്ടി വിളിച്ചിരുന്നു. മൊബൈൽ സ്പീഡും ഡയറക്ട് ബുക്കിംഗും വർദ്ധിപ്പിക്കാൻ അപൂർവ് തയ്യാറാക്കിയ എക്സിക്യൂട്ടീവ് പെർഫോമൻസ് ഓഡിറ്റ് (സാധാരണ ₹4,999 ചാർജ് ചെയ്യുന്നത്, കോംപ്ലിമെന്ററിയായി) ഷെയർ ചെയ്യാനാണ്. ഈ വ്യാഴാഴ്ച 10 മിനിറ്റ് ഡിസ്കവറി കോളിനായി എപ്പോഴാണ് സമയം ലഭിക്കുക? - അപൂർവിന് വേണ്ടി."
   }
 ];
+  if (typeof window !== 'undefined') {
+    window.CUSTOM_PROSPECTS = dataset;
+  }
+  if (typeof global !== 'undefined') {
+    global.CUSTOM_PROSPECTS = dataset;
+  }
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = dataset;
+  }
+})(typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : this));

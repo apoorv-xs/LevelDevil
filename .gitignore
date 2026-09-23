@@ -14,3 +14,9 @@ v2/
 .env.*
 *.env
 .env.local
+*.pem
+*.key
+*.p12
+*service_account*.json
+*credentials*.json
+

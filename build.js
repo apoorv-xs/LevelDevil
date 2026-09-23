@@ -65,12 +65,24 @@ if (fs.existsSync(fontsSrcDir)) {
     console.log('Copied: fonts directory');
 }
 
-// 4. Copy workspace directory
+// 4. Copy workspace directory (Excluding confidential lead intelligence from public static distribution)
 const workspaceSrcDir = path.join(srcDir, 'workspace');
 const workspaceDistDir = path.join(distDir, 'workspace');
 if (fs.existsSync(workspaceSrcDir)) {
-    fs.cpSync(workspaceSrcDir, workspaceDistDir, { recursive: true });
-    console.log('Copied: workspace directory');
+    fs.mkdirSync(workspaceDistDir, { recursive: true });
+    const wsFiles = fs.readdirSync(workspaceSrcDir);
+    wsFiles.forEach(wsFile => {
+        if (wsFile === 'prospects_data.js' || wsFile === 'custom_prospects.js') {
+            console.log(`Secured (excluded from public static distribution): ${wsFile}`);
+            return;
+        }
+        const wsSrcPath = path.join(workspaceSrcDir, wsFile);
+        const wsDestPath = path.join(workspaceDistDir, wsFile);
+        if (fs.statSync(wsSrcPath).isFile()) {
+            fs.copyFileSync(wsSrcPath, wsDestPath);
+            console.log(`Copied: workspace/${wsFile}`);
+        }
+    });
 }
 
 // 5. Config files

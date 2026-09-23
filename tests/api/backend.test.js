@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { resetStore, repos } from "../../api/src/store.js";
-import { publicInquiry, ownerInvitation, redeem, aiQualification, workspace } from "../../api/src/handlers.js";
+import { publicInquiry, ownerInvitation, redeem, aiQualification, workspace, workspaceProspects } from "../../api/src/handlers.js";
 
 const req = (body, token) => ({ body, headers: token ? { authorization: `Bearer ${token}` } : {} });
 const context = { error() {} };
@@ -38,6 +38,18 @@ describe("managed API", () => {
       user: { uid: "owner", email: "owner@mock.local", displayName: "owner", role: "owner" },
       data: { applications: [] },
     });
+  });
+
+  it("guards workspace prospects endpoint against unauthenticated visitors", async () => {
+    await expect(workspaceProspects(req({}, null), context)).rejects.toMatchObject({ status: 401 });
+  });
+
+  it("serves protected client prospect dossiers strictly to authenticated sessions", async () => {
+    const result = await workspaceProspects(req({}, "mock:owner:owner"), context);
+    expect(result.status).toBe(200);
+    const body = JSON.parse(result.body);
+    expect(body.data.prospects).toHaveLength(60);
+    expect(body.data.custom).toHaveLength(5);
   });
 
   it("rejects mock bearer tokens when the test-only flag is disabled", async () => {
