@@ -142,13 +142,23 @@ async function submitPublicForm(event, path, successMessage) {
           fallbackBox.style.cssText = "margin-top:14px; padding:12px; background:var(--white); border:2px solid var(--ink); box-shadow:3px 3px 0 var(--ink); font-family:'Courier Prime',monospace; font-size:13px; text-align:left;";
           form.appendChild(fallbackBox);
         }
-        fallbackBox.innerHTML = `
-          <div style="font-weight:bold; color:var(--ink); margin-bottom:6px;">⚡ Direct Dispatch Fallback:</div>
-          <div style="margin-bottom:10px; color:var(--ink); font-size:12px;">Network endpoint was unreachable, but your details are safely stored. Tap below to dispatch directly:</div>
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <a href="${mailto}" style="padding:6px 14px; background:var(--accent-yellow); border:2px solid var(--ink); color:var(--ink); text-decoration:none; font-weight:bold; font-size:12px; display:inline-flex; align-items:center; gap:6px;">✉️ Dispatch via Email</a>
-          </div>
-        `;
+        fallbackBox.textContent = "";
+        const titleDiv = document.createElement("div");
+        titleDiv.style.cssText = "font-weight:bold; color:var(--ink); margin-bottom:6px;";
+        titleDiv.textContent = "⚡ Direct Dispatch Fallback:";
+        const descDiv = document.createElement("div");
+        descDiv.style.cssText = "margin-bottom:10px; color:var(--ink); font-size:12px;";
+        descDiv.textContent = "Network endpoint was unreachable, but your details are safely stored. Tap below to dispatch directly:";
+        const wrapDiv = document.createElement("div");
+        wrapDiv.style.cssText = "display:flex; gap:10px; flex-wrap:wrap;";
+        const emailLink = document.createElement("a");
+        emailLink.href = mailto;
+        emailLink.style.cssText = "padding:6px 14px; background:var(--accent-yellow); border:2px solid var(--ink); color:var(--ink); text-decoration:none; font-weight:bold; font-size:12px; display:inline-flex; align-items:center; gap:6px;";
+        emailLink.textContent = "✉️ Dispatch via Email";
+        wrapDiv.appendChild(emailLink);
+        fallbackBox.appendChild(titleDiv);
+        fallbackBox.appendChild(descDiv);
+        fallbackBox.appendChild(wrapDiv);
       }
     }
   } finally {
@@ -173,7 +183,14 @@ async function syncAuthState() {
     // Form UI update
     if (formSignIn) formSignIn.style.display = "none";
     if (formAuthStatus) {
-      formAuthStatus.innerHTML = `<span style="color: #10b981; font-weight: bold;">✓ Verified with Google:</span> <span>${email}</span>`;
+      formAuthStatus.textContent = "";
+      const verifiedSpan = document.createElement("span");
+      verifiedSpan.style.cssText = "color: #10b981; font-weight: bold;";
+      verifiedSpan.textContent = "✓ Verified with Google: ";
+      const emailSpan = document.createElement("span");
+      emailSpan.textContent = email;
+      formAuthStatus.appendChild(verifiedSpan);
+      formAuthStatus.appendChild(emailSpan);
     }
     // Auto-fill inquiry form inputs
     if (inquiryForm) {

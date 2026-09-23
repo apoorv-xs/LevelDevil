@@ -45,4 +45,16 @@ describe("managed API", () => {
     await expect(ownerInvitation(req({ email: "rep@example.com" }, "mock:owner:owner"), context))
       .rejects.toMatchObject({ status: 401 });
   });
+
+  it("rejects public inquiry with invalid email format", () => {
+    expect(() => publicInquiry(req({ name: "Malicious", email: "not-an-email", message: "Hello" }), context))
+      .toThrow(expect.objectContaining({ status: 400, code: "validation_error" }));
+  });
+
+  it("sanitizes prototype pollution payload in request body", async () => {
+    const maliciousPayload = JSON.parse('{"name":"Ada","email":"ada@example.com","message":"Hi","__proto__":{"polluted":"yes"}}');
+    const result = await publicInquiry(req(maliciousPayload), context);
+    expect(result.status).toBe(201);
+    expect(({})["polluted"]).toBeUndefined();
+  });
 });

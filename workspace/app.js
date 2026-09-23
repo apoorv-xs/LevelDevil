@@ -4,6 +4,17 @@ let PROSPECTS = (typeof window !== 'undefined' && window.DEFAULT_PROSPECTS)
   ? window.DEFAULT_PROSPECTS 
   : (typeof DEFAULT_PROSPECTS !== 'undefined' ? DEFAULT_PROSPECTS : (typeof global !== 'undefined' && global.DEFAULT_PROSPECTS ? global.DEFAULT_PROSPECTS : []));
 
+function escapeHTML(str) {
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, m => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[m]));
+}
+
 const OBJECTIONS = [
   {
     title: "Send an email / brochure",
@@ -723,28 +734,37 @@ function renderAdminUsersList() {
 
   // Render Registered Custom Worker Accounts
   Object.keys(customWorkers).forEach(userKey => {
-    const acc = customWorkers[userKey];
+    const acc = customWorkers[userKey] || {};
+    const safeUserKey = escapeHTML(userKey);
+    const safeName = escapeHTML(acc.name || userKey);
+    const safePicture = (typeof acc.picture === 'string' && (acc.picture.startsWith('https://') || acc.picture.startsWith('http://')))
+      ? escapeHTML(acc.picture)
+      : ('https://ui-avatars.com/api/?name=' + encodeURIComponent(userKey));
 
     const el = document.createElement('div');
     el.className = "flex items-center justify-between p-3 rounded-xl bg-black/40 border border-white/5 text-xs hover:border-white/10 transition";
     el.innerHTML = `
       <div class="flex items-center gap-3">
-        <img src="${acc.picture || 'https://ui-avatars.com/api/?name=' + userKey}" class="w-7 h-7 rounded-full border border-slate-700">
+        <img src="${safePicture}" class="w-7 h-7 rounded-full border border-slate-700">
         <div>
           <div class="font-bold text-white flex items-center gap-1.5 font-mono">
-            <span>${acc.name || userKey}</span>
+            <span>${safeName}</span>
             <span class="px-1.5 py-0.2 rounded bg-white/10 text-[10px] text-slate-300 font-mono">CALLER</span>
             <span class="text-[9px] text-blue-400 bg-blue-950/40 px-1.5 py-0.2 rounded border border-blue-800/40">Custom</span>
           </div>
-          <div class="text-[11px] text-slate-400 font-mono">Username: <span class="text-white">${userKey}</span></div>
+          <div class="text-[11px] text-slate-400 font-mono">Username: <span class="text-white">${safeUserKey}</span></div>
         </div>
       </div>
       <div>
-        <button onclick="deleteWorkerAccount('${userKey}')" class="px-2.5 py-1 rounded bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/40 text-[11px] font-mono transition cursor-pointer">
+        <button class="delete-worker-btn px-2.5 py-1 rounded bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/40 text-[11px] font-mono transition cursor-pointer">
           Delete
         </button>
       </div>
     `;
+    const deleteBtn = el.querySelector('.delete-worker-btn');
+    if (deleteBtn) {
+      deleteBtn.onclick = () => deleteWorkerAccount(userKey);
+    }
     container.appendChild(el);
   });
 }
@@ -956,14 +976,19 @@ function renderQueue() {
       badgeText = p.status.replace('_', ' ');
     }
 
+    const safeName = escapeHTML(p.name);
+    const safeBadgeText = escapeHTML(badgeText);
+    const safeDm = escapeHTML(p.dm);
+    const safePtype = escapeHTML(p.ptype);
+
     item.innerHTML = `
       <div class="flex justify-between items-center gap-1.5">
-        <span class="font-bold text-xs text-white truncate flex-1 min-w-0">${p.name}</span>
-        <span class="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded shrink-0 ${badgeClass}">${badgeText}</span>
+        <span class="font-bold text-xs text-white truncate flex-1 min-w-0">${safeName}</span>
+        <span class="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded shrink-0 ${badgeClass}">${safeBadgeText}</span>
       </div>
       <div class="flex justify-between items-center gap-1.5 text-[11px] text-gray-400">
-        <span class="truncate flex-1 min-w-0">${p.dm}</span>
-        <span class="font-mono text-neutral-400 font-medium text-[10px] shrink-0">${p.ptype}</span>
+        <span class="truncate flex-1 min-w-0">${safeDm}</span>
+        <span class="font-mono text-neutral-400 font-medium text-[10px] shrink-0">${safePtype}</span>
       </div>
     `;
 
@@ -1434,14 +1459,15 @@ function updateScriptUI(p) {
     box.innerHTML = `
       <div class="space-y-2">
         <span class="text-xs font-mono text-neutral-300 uppercase tracking-wider font-semibold block">Gatekeeper / Receptionist Hook:</span>
-        <p class="text-base text-gray-100 font-medium leading-relaxed">${p.scripts.gatekeeper}</p>
+        <p class="text-base text-gray-100 font-medium leading-relaxed">${escapeHTML(p.scripts?.gatekeeper)}</p>
       </div>
     `;
   } else if (activeScriptMode === 'challenge') {
     const isNoSite = !p.site || p.site === '#' || p.ptype === 'STARTER';
-    const cleanSite = isNoSite ? 'your business listing' : ((p.site || '').replace(/^https?:\/\//, '').replace(/\/$/, '') || 'your website');
-    const lcpSec = (p.lcpTime || '4.4s').replace(/[^0-9.]/g, '') || '4.4';
-    const dmName = p.dm || 'Doctor';
+    const cleanSite = escapeHTML(isNoSite ? 'your business listing' : ((p.site || '').replace(/^https?:\/\//, '').replace(/\/$/, '') || 'your website'));
+    const lcpSec = escapeHTML((p.lcpTime || '4.4s').replace(/[^0-9.]/g, '') || '4.4');
+    const dmName = escapeHTML(p.dm || 'Doctor');
+    const pNameShort = escapeHTML((p.name || '').split(',')[0]);
 
     let scriptHtml = '';
     if (activeLang === 'ml') {
@@ -1455,7 +1481,7 @@ function updateScriptUI(p) {
             <span class="text-[10px] font-mono text-slate-400">15-Sec Spoken Test</span>
           </div>
           <p class="text-base leading-relaxed text-gray-100 font-medium">
-            "${dmName}, നമ്മൾ സംസാരിക്കുന്നതിനിടയിൽ സ്വന്തം മൊബൈലിൽ ഗൂഗിളിൽ നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ പേര് (<span class="text-amber-300 underline">${p.name.split(',')[0]}</span>) ഒന്ന് സേർച്ച് ചെയ്തു നോക്കാമോ? സ്വന്തം വെബ്സൈറ്റില്ലാത്തതുകൊണ്ട് എന്താണ് സംഭവിക്കുന്നതെന്ന് ഒരുമിച്ച് കാണാം..."
+            "${dmName}, നമ്മൾ സംസാരിക്കുന്നതിനിടയിൽ സ്വന്തം മൊബൈലിൽ ഗൂഗിളിൽ നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ പേര് (<span class="text-amber-300 underline">${pNameShort}</span>) ഒന്ന് സേർച്ച് ചെയ്തു നോക്കാമോ? സ്വന്തം വെബ്സൈറ്റില്ലാത്തതുകൊണ്ട് എന്താണ് സംഭവിക്കുന്നതെന്ന് ഒരുമിച്ച് കാണാം..."
           </p>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-xs">
             <div class="bg-black/40 border border-white/10 rounded-lg p-2.5">
@@ -1593,13 +1619,13 @@ function updateScriptUI(p) {
     }
     box.innerHTML = scriptHtml;
   } else {
-    const angleScripts = p.scripts[activeAngle] || p.scripts.speed;
+    const angleScripts = p.scripts[activeAngle] || p.scripts.speed || {};
     if (activeLang === 'ml' && angleScripts.ml) {
-      box.innerHTML = `<p class="text-base leading-loose font-normal text-gray-100">${angleScripts.ml}</p>`;
+      box.innerHTML = `<p class="text-base leading-loose font-normal text-gray-100">${escapeHTML(angleScripts.ml)}</p>`;
     } else if (activeLang === 'manglish' && angleScripts.manglish) {
-      box.innerHTML = `<p class="text-sm italic font-mono text-blue-200 leading-relaxed">${angleScripts.manglish}</p>`;
+      box.innerHTML = `<p class="text-sm italic font-mono text-blue-200 leading-relaxed">${escapeHTML(angleScripts.manglish)}</p>`;
     } else {
-      box.innerHTML = `<p class="text-sm sm:text-base leading-relaxed text-gray-200">${angleScripts.en}</p>`;
+      box.innerHTML = `<p class="text-sm sm:text-base leading-relaxed text-gray-200">${escapeHTML(angleScripts.en)}</p>`;
     }
   }
 }
@@ -1992,30 +2018,43 @@ function openAdminModal() {
       else if (p.status === 'blacklisted') statusBadge = "bg-rose-950/60 text-rose-300 border border-rose-700";
       else if (p.status === 'gatekeeper_rejection') statusBadge = "bg-amber-950/60 text-amber-300 border border-amber-700";
 
+      const safeName = escapeHTML(p.name);
+      const safeCity = escapeHTML(p.city);
+      const safePtype = escapeHTML(p.ptype);
+      const safeDm = escapeHTML(p.dm);
+      const safePhone = escapeHTML(p.phone);
+      const safeStatus = escapeHTML((p.status || '').replace('_', ' '));
+      const safeNotes = p.notes ? `"${escapeHTML(p.notes)}"` : '<span class="italic text-gray-600">No notes</span>';
+      const safeDiscovery = p.discoveryTime ? `<div class="text-emerald-400 text-[10px]">📅 ${escapeHTML(p.discoveryTime)}</div>` : '';
+
       tr.innerHTML = `
         <td class="p-3">
-          <div class="font-bold text-white">${p.name}</div>
-          <div class="text-[10px] text-gray-500">${p.city} • ${p.ptype}</div>
+          <div class="font-bold text-white">${safeName}</div>
+          <div class="text-[10px] text-gray-500">${safeCity} • ${safePtype}</div>
         </td>
         <td class="p-3">
-          <div class="text-gray-300">${p.dm}</div>
-          <div class="text-[10px] text-gray-500">${p.phone}</div>
+          <div class="text-gray-300">${safeDm}</div>
+          <div class="text-[10px] text-gray-500">${safePhone}</div>
         </td>
         <td class="p-3">
           <span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold ${statusBadge}">
-            ${p.status.replace('_', ' ')}
+            ${safeStatus}
           </span>
         </td>
         <td class="p-3 max-w-[200px] truncate text-gray-400">
-          ${p.notes ? `"${p.notes}"` : '<span class="italic text-gray-600">No notes</span>'}
-          ${p.discoveryTime ? `<div class="text-emerald-400 text-[10px]">📅 ${p.discoveryTime}</div>` : ''}
+          ${safeNotes}
+          ${safeDiscovery}
         </td>
         <td class="p-3 text-right">
-          <button onclick="selectProspectFromAdmin('${p.id}')" class="px-2 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 text-[10px] transition">
+          <button class="open-lead-btn px-2 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 text-[10px] transition cursor-pointer">
             Open Lead →
           </button>
         </td>
       `;
+      const openBtn = tr.querySelector('.open-lead-btn');
+      if (openBtn) {
+        openBtn.onclick = () => selectProspectFromAdmin(p.id);
+      }
       tbody.appendChild(tr);
     });
   }
@@ -3314,7 +3353,8 @@ ${wastedItemsMarkdown}
 `;
 
   if (content) {
-    content.innerHTML = currentGeneratedProposal
+    const safeProposal = escapeHTML(currentGeneratedProposal);
+    content.innerHTML = safeProposal
       .replace(/^# (.*$)/gm, '<h1 class="text-lg font-black text-white">$1</h1>')
       .replace(/^## (.*$)/gm, '<h2 class="text-sm font-semibold text-white mt-3">$1</h2>')
       .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>')
