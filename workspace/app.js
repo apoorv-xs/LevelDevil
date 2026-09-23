@@ -429,32 +429,22 @@ window.addEventListener('DOMContentLoaded', () => {
   const savedUser = localStorage.getItem('sprintdial_user') || localStorage.getItem('sprintdial_google_user');
   if (savedUser) {
     try {
-      currentUser = JSON.parse(savedUser);
-      onAuthVerified();
+      const parsed = JSON.parse(savedUser);
+      if (parsed && parsed.name && parsed.role) {
+        currentUser = parsed;
+        onAuthVerified();
+      } else {
+        throw new Error('Invalid user payload');
+      }
     } catch(e) {
       localStorage.removeItem('sprintdial_user');
       localStorage.removeItem('sprintdial_google_user');
-      currentUser = {
-        name: 'Apoorv',
-        email: 'apoorv@eravex.studio',
-        picture: 'https://ui-avatars.com/api/?name=Apoorv&background=1E3A8A&color=60A5FA&bold=true',
-        role: 'owner',
-        sub: Date.now().toString()
-      };
-      localStorage.setItem('sprintdial_user', JSON.stringify(currentUser));
-      onAuthVerified();
+      currentUser = null;
+      showAuthGate();
     }
   } else {
-    // Default authorized workstation session for Apoorv
-    currentUser = {
-      name: 'Apoorv',
-      email: 'apoorv@eravex.studio',
-      picture: 'https://ui-avatars.com/api/?name=Apoorv&background=1E3A8A&color=60A5FA&bold=true',
-      role: 'owner',
-      sub: Date.now().toString()
-    };
-    localStorage.setItem('sprintdial_user', JSON.stringify(currentUser));
-    onAuthVerified();
+    currentUser = null;
+    showAuthGate();
   }
 
   // Setup Keyboard Shortcuts
@@ -462,29 +452,11 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function showAuthGate() {
-  document.getElementById('authGateOverlay').classList.remove('hidden');
+  const overlay = document.getElementById('authGateOverlay');
+  if (overlay) overlay.classList.remove('hidden');
 }
 
-// Hardcoded Default Authorized Users Database (Zero Third-Party GAuth Dependency)
-const DEFAULT_AUTHORIZED_ACCOUNTS = {
-  'apoorv': {
-    password: ['9482', 'apoorv123', 'admin'],
-    name: 'Apoorv',
-    email: 'apoorv@eravex.studio',
-    role: 'owner',
-    picture: 'https://ui-avatars.com/api/?name=Apoorv&background=1E3A8A&color=60A5FA&bold=true'
-  },
-  'apoorv@eravex.studio': {
-    password: ['9482', 'apoorv123', 'admin'],
-    name: 'Apoorv',
-    email: 'apoorv@eravex.studio',
-    role: 'owner',
-    picture: 'https://ui-avatars.com/api/?name=Apoorv&background=1E3A8A&color=60A5FA&bold=true'
-  }
-};
-
-const AUTHORIZED_ACCOUNTS = { ...DEFAULT_AUTHORIZED_ACCOUNTS };
-
+// Caller accounts registered dynamically by the Owner via Admin Console
 function getCustomWorkers() {
   try {
     const raw = localStorage.getItem('sprintdial_custom_workers');
@@ -501,8 +473,54 @@ function saveCustomWorkers(workers) {
 }
 
 function getAllAuthorizedAccounts() {
-  const custom = getCustomWorkers();
-  return { ...DEFAULT_AUTHORIZED_ACCOUNTS, ...custom };
+  return getCustomWorkers();
+}
+
+async function handleWorkspaceGoogleAuth() {
+  const errEl = document.getElementById('loginErrorMsg');
+  if (errEl) errEl.classList.add('hidden');
+
+  try {
+    const auth = window.SALES_PLATFORM_AUTH;
+    if (!auth?.signIn) {
+      throw new Error("Google authentication service is initializing. Please refresh and try again.");
+    }
+    const result = await auth.signIn();
+    const user = result?.user;
+    if (!user || !user.email) {
+      throw new Error("Unable to retrieve Google user credentials.");
+    }
+
+    const email = user.email.toLowerCase().trim();
+    // Verify authorized user: Apoorv (owner) or authorized caller
+    const isOwner = email.includes('apoorv') || email.endsWith('@eravex.studio') || email === 'apoorvworkid@gmail.com';
+    const customWorkers = getCustomWorkers();
+    const isAuthorizedCaller = Object.values(customWorkers).some(w => (w.email || '').toLowerCase() === email);
+
+    if (!isOwner && !isAuthorizedCaller) {
+      if (typeof window.firebase?.auth === 'function') {
+        try { await window.firebase.auth().signOut(); } catch(e) {}
+      }
+      throw new Error(`Access restricted. Account ${email} is not authorized on this private workstation. Contact Apoorv for invite access.`);
+    }
+
+    currentUser = {
+      name: user.displayName || (isOwner ? 'Apoorv' : user.email.split('@')[0]),
+      email: user.email,
+      picture: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'User')}&background=1E3A8A&color=60A5FA&bold=true`,
+      role: isOwner ? 'owner' : 'caller',
+      sub: user.uid || Date.now().toString()
+    };
+
+    localStorage.setItem('sprintdial_user', JSON.stringify(currentUser));
+    localStorage.setItem('sprintdial_google_user', JSON.stringify(currentUser));
+    onAuthVerified();
+  } catch (err) {
+    if (errEl) {
+      errEl.innerText = err.message || 'Authentication failed.';
+      errEl.classList.remove('hidden');
+    }
+  }
 }
 
 function handleCredentialsAuth(e) {
@@ -516,52 +534,24 @@ function handleCredentialsAuth(e) {
 
   if (errEl) errEl.classList.add('hidden');
 
-  const allAccounts = getAllAuthorizedAccounts();
+  const customWorkers = getCustomWorkers();
+  const matched = customWorkers[rawUser];
 
-  // 1. Direct Match in Accounts (Default or Custom Workers)
-  const matched = allAccounts[rawUser];
   if (matched) {
     const validPasswords = Array.isArray(matched.password) ? matched.password : [matched.password];
     if (validPasswords.includes(rawPass)) {
       currentUser = {
-        name: matched.name,
-        email: matched.email,
-        picture: matched.picture,
+        name: matched.name || rawUser,
+        email: matched.email || `${rawUser}@workspace.local`,
+        picture: matched.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(rawUser)}&background=1E3A8A&color=60A5FA&bold=true`,
         role: matched.role || 'caller',
         sub: Date.now().toString()
       };
-      if (matched.role === 'owner') {
-        try {
-          if (typeof sessionStorage !== 'undefined') {
-            sessionStorage.setItem('sprintdial_owner_unlocked', 'true');
-          }
-        } catch(e) {}
-      }
       localStorage.setItem('sprintdial_user', JSON.stringify(currentUser));
       localStorage.setItem('sprintdial_google_user', JSON.stringify(currentUser));
       onAuthVerified();
       return;
     }
-  }
-
-  // 2. Master Owner Bypass for Apoorv
-  if (rawUser.includes('apoorv') && (rawPass === '9482' || rawPass === 'admin')) {
-    currentUser = {
-      name: 'Apoorv',
-      email: rawUser.includes('@') ? rawUser : 'apoorv@eravex.studio',
-      picture: 'https://ui-avatars.com/api/?name=Apoorv&background=1E3A8A&color=60A5FA&bold=true',
-      role: 'owner',
-      sub: Date.now().toString()
-    };
-    try {
-      if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem('sprintdial_owner_unlocked', 'true');
-      }
-    } catch(e) {}
-    localStorage.setItem('sprintdial_user', JSON.stringify(currentUser));
-    localStorage.setItem('sprintdial_google_user', JSON.stringify(currentUser));
-    onAuthVerified();
-    return;
   }
 
   // Failed Auth
@@ -636,24 +626,22 @@ function renderAdminUsersList() {
   ownerEl.className = "flex items-center justify-between p-3 rounded-xl bg-blue-950/30 border border-blue-800/40 text-xs";
   ownerEl.innerHTML = `
     <div class="flex items-center gap-3">
-      <img src="${allAccounts['apoorv'].picture}" class="w-7 h-7 rounded-full border border-blue-500/50">
+      <img src="https://ui-avatars.com/api/?name=Apoorv&background=1E3A8A&color=60A5FA&bold=true" class="w-7 h-7 rounded-full border border-blue-500/50">
       <div>
         <div class="font-bold text-white flex items-center gap-1.5 font-mono">
-          <span>${allAccounts['apoorv'].name}</span>
+          <span>Apoorv</span>
           <span class="px-1.5 py-0.2 rounded bg-blue-600 text-[10px] text-white font-mono">OWNER / ADMIN</span>
         </div>
-        <div class="text-[11px] text-slate-400 font-mono">Username: <span class="text-blue-300">apoorv</span> • PIN: <span class="text-slate-500">9482</span></div>
+        <div class="text-[11px] text-slate-400 font-mono">Account: <span class="text-blue-300">apoorv</span> • Auth: <span class="text-emerald-400">Google SSO</span></div>
       </div>
     </div>
     <span class="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/40">Active System</span>
   `;
   container.appendChild(ownerEl);
 
-  // Render Other Accounts (Built-in + Custom)
-  Object.keys(allAccounts).forEach(userKey => {
-    if (userKey === 'apoorv' || userKey.includes('@eravex.studio')) return;
-    const acc = allAccounts[userKey];
-    const isCustom = !!customWorkers[userKey];
+  // Render Registered Custom Worker Accounts
+  Object.keys(customWorkers).forEach(userKey => {
+    const acc = customWorkers[userKey];
 
     const el = document.createElement('div');
     el.className = "flex items-center justify-between p-3 rounded-xl bg-black/40 border border-white/5 text-xs hover:border-white/10 transition";
@@ -664,51 +652,31 @@ function renderAdminUsersList() {
           <div class="font-bold text-white flex items-center gap-1.5 font-mono">
             <span>${acc.name || userKey}</span>
             <span class="px-1.5 py-0.2 rounded bg-white/10 text-[10px] text-slate-300 font-mono">CALLER</span>
-            ${isCustom ? '<span class="text-[9px] text-blue-400 bg-blue-950/40 px-1.5 py-0.2 rounded border border-blue-800/40">Custom</span>' : '<span class="text-[9px] text-slate-500 font-mono">Preset</span>'}
+            <span class="text-[9px] text-blue-400 bg-blue-950/40 px-1.5 py-0.2 rounded border border-blue-800/40">Custom</span>
           </div>
-          <div class="text-[11px] text-slate-400 font-mono">Username: <span class="text-white">${userKey}</span> • Password: <span class="text-slate-400">${Array.isArray(acc.password) ? acc.password[0] : acc.password}</span></div>
+          <div class="text-[11px] text-slate-400 font-mono">Username: <span class="text-white">${userKey}</span></div>
         </div>
       </div>
       <div>
-        ${isCustom ? `
-          <button onclick="deleteWorkerAccount('${userKey}')" class="px-2.5 py-1 rounded bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/40 text-[11px] font-mono transition">
-            Delete
-          </button>
-        ` : `
-          <span class="text-[10px] font-mono text-slate-500">Built-in</span>
-        `}
+        <button onclick="deleteWorkerAccount('${userKey}')" class="px-2.5 py-1 rounded bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/40 text-[11px] font-mono transition cursor-pointer">
+          Delete
+        </button>
       </div>
     `;
     container.appendChild(el);
   });
 }
 
-function fillLoginPreset(type) {
-  const userInput = document.getElementById('loginUsernameInput');
-  const passInput = document.getElementById('loginPasswordInput');
-  const errEl = document.getElementById('loginErrorMsg');
-  if (errEl) errEl.classList.add('hidden');
-
-  if (userInput) userInput.value = 'apoorv';
-  if (passInput) passInput.value = '9482';
-}
-
 function triggerDirectGoogleAuth() {
-  fillLoginPreset('apoorv');
-  handleCredentialsAuth();
+  handleWorkspaceGoogleAuth();
 }
 
 function isOwnerUser(user) {
   if (!user) return false;
   const email = (user.email || '').toLowerCase().trim();
   const name = (user.name || '').toLowerCase().trim();
-  let hasPinOverride = false;
-  try {
-    if (typeof sessionStorage !== 'undefined') {
-      hasPinOverride = sessionStorage.getItem('sprintdial_owner_unlocked') === 'true';
-    }
-  } catch(e) {}
-  return email.includes('apoorv') || name.includes('apoorv') || hasPinOverride;
+  const role = (user.role || '').toLowerCase().trim();
+  return role === 'owner' || email.includes('apoorv') || email.endsWith('@eravex.studio') || email === 'apoorvworkid@gmail.com';
 }
 
 function onAuthVerified() {
@@ -742,6 +710,9 @@ function signOut() {
       sessionStorage.removeItem('sprintdial_owner_unlocked');
     }
   } catch(e) {}
+  if (typeof window.firebase?.auth === 'function') {
+    try { window.firebase.auth().signOut(); } catch(e) {}
+  }
   currentUser = null;
   location.reload();
 }
@@ -1856,25 +1827,8 @@ function openAdminModal() {
 
   // Enforce executive access check
   if (!isOwnerUser(currentUser)) {
-    const pin = prompt('Executive Admin War Room is restricted to Apoorv.\nEnter Master Studio PIN to unlock:');
-    if (pin === '9482') {
-      try {
-        if (typeof sessionStorage !== 'undefined') {
-          sessionStorage.setItem('sprintdial_owner_unlocked', 'true');
-        }
-      } catch(e) {}
-      const adminBtn = document.getElementById('adminBtnHeader');
-      if (adminBtn) {
-        adminBtn.classList.remove('hidden');
-        adminBtn.classList.add('flex');
-      }
-      showNotification('🔓 Master PIN accepted. Executive Admin War Room unlocked.');
-    } else {
-      if (pin !== null) {
-        alert('Access denied. This console is restricted exclusively to Apoorv.');
-      }
-      return;
-    }
+    showNotification('Access denied. Executive Admin War Room is restricted exclusively to Apoorv (Owner).', 'error');
+    return;
   }
 
   // Compute live metrics

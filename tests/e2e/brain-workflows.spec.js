@@ -62,7 +62,24 @@ test.describe("System 1 Decision Brain - Multi-Page Workflows", () => {
     expect(validationIntent).toBe("ALERT_VALIDATION");
   });
 
+  test("Workspace (/workspace/) locks unauthenticated visitors behind auth gate overlay", async ({ page }) => {
+    await page.goto("http://localhost:5173/workspace/", { waitUntil: "networkidle" });
+    const authOverlay = page.locator("#authGateOverlay");
+    await expect(authOverlay).toBeVisible();
+    await expect(authOverlay).not.toHaveClass(/hidden/);
+    await expect(page.locator("#googleSignInBtn")).toBeVisible();
+  });
+
   test("Workspace (/workspace/) classifies prospect audit, radar sweep, and call standby", async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem('sprintdial_user', JSON.stringify({
+        name: 'Apoorv',
+        email: 'apoorv@eravex.studio',
+        picture: 'https://ui-avatars.com/api/?name=Apoorv&background=1E3A8A&color=60A5FA&bold=true',
+        role: 'owner',
+        sub: 'mock-owner'
+      }));
+    });
     await page.goto("http://localhost:5173/workspace/", { waitUntil: "networkidle" });
     await page.waitForTimeout(2000);
 

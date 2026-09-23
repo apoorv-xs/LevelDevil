@@ -27,7 +27,7 @@ test.describe("Sales & Inquiry Acquisition UX", () => {
     await expect(nav).toBeVisible();
     await expect(nav.getByRole("link", { name: "Home" })).toHaveAttribute("href", "/");
     await expect(nav.getByRole("link", { name: "Contact" })).toHaveAttribute("href", "/sales");
-    await expect(nav.getByRole("link", { name: "Workspace" })).toHaveAttribute("href", "/workspace/");
+    await expect(nav.getByRole("link", { name: "Workspace" })).toHaveCount(0);
   });
 
   test("keeps keyboard focus order on topbar and navigation", async ({ page }) => {
@@ -40,8 +40,6 @@ test.describe("Sales & Inquiry Acquisition UX", () => {
     await expect(page.locator(".site-nav a").first()).toBeFocused();
     await page.keyboard.press("Tab");
     await expect(page.locator(".site-nav a").nth(1)).toBeFocused();
-    await page.keyboard.press("Tab");
-    await expect(page.locator(".site-nav a").nth(2)).toBeFocused();
   });
 
   test("keeps the portfolio route on the 3D canvas experience without action rail", async ({ page }) => {
