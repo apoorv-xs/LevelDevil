@@ -490,74 +490,239 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 let firebaseObserverInitialized = false;
-function initFirebaseSessionObserver() {
+async function initFirebaseSessionObserver() {
   if (firebaseObserverInitialized) return;
   firebaseObserverInitialized = true;
 
-  let hasResolved = false;
-  const timeoutId = setTimeout(() => {
-    if (!hasResolved && !currentUser) {
-      localStorage.removeItem('sprintdial_user');
-      localStorage.removeItem('sprintdial_google_user');
-      currentUser = null;
-      showAuthGate();
-    }
-  }, 2000);
+  try {
+    const authHelper = window.SALES_PLATFORM_AUTH;
+    if (authHelper?.getAuth) {
+      const auth = await authHelper.getAuth();
 
-  const checkAuth = async () => {
-    try {
-      if (window.firebase && typeof window.firebase.auth === 'function') {
-        window.firebase.auth().onAuthStateChanged((user) => {
-          hasResolved = true;
-          clearTimeout(timeoutId);
-          if (user && user.email) {
-            const email = user.email.toLowerCase().trim();
-            const isOwner = isApoorvOwnerEmail(email);
-            const customWorkers = getCustomWorkers();
-            const isAuthorizedCaller = Object.values(customWorkers).some(w => (w.email || '').toLowerCase() === email);
-
-            if (isOwner || isAuthorizedCaller) {
-              currentUser = {
-                name: user.displayName || (isOwner ? 'Apoorv' : user.email.split('@')[0]),
-                email: user.email,
-                picture: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'User')}&background=1E3A8A&color=60A5FA&bold=true`,
-                role: isOwner ? 'owner' : 'caller',
-                sub: user.uid
-              };
-              localStorage.setItem('sprintdial_user', JSON.stringify(currentUser));
-              localStorage.setItem('sprintdial_google_user', JSON.stringify(currentUser));
-              onAuthVerified();
-              return;
-            }
+      // 1. Process Google Auth redirect result if returning from redirect sign-in
+      if (typeof authHelper.resume === 'function') {
+        try {
+          const redirectSession = await authHelper.resume();
+          if (redirectSession?.user) {
+            handleUserAuthResolved(redirectSession.user);
+            return;
           }
-          // Firebase reports no active user or unauthorized account
-          localStorage.removeItem('sprintdial_user');
-          localStorage.removeItem('sprintdial_google_user');
-          currentUser = null;
-          showAuthGate();
-        });
-        return;
+        } catch (redirectErr) {
+          console.warn("Auth redirect resume note:", redirectErr);
+        }
+      }
+
+      // 2. Attach real-time session observer
+      auth.onAuthStateChanged((user) => {
+        if (user && user.email) {
+          handleUserAuthResolved(user);
+        } else {
+          checkLocalCredentialsOrGate();
+        }
+      });
+      return;
+    }
+  } catch (err) {
+    console.warn("Firebase Auth init error:", err);
+  }
+
+  checkLocalCredentialsOrGate();
+}
+
+function checkLocalCredentialsOrGate() {
+  const savedUser = localStorage.getItem('sprintdial_user');
+  if (savedUser) {
+    try {
+      const parsed = JSON.parse(savedUser);
+      if (parsed.role === 'caller' && parsed.callerToken) {
+        const customWorkers = getCustomWorkers();
+        const username = (parsed.username || parsed.name || '').toLowerCase();
+        if (customWorkers[username] && parsed.tokenExp && parsed.tokenExp > Date.now()) {
+          currentUser = parsed;
+          onAuthVerified();
+          return;
+        }
       }
     } catch(e) {}
+  }
+  localStorage.removeItem('sprintdial_user');
+  localStorage.removeItem('sprintdial_google_user');
+  currentUser = null;
+  showAuthGate();
+}
 
-    setTimeout(() => {
-      if (window.firebase && typeof window.firebase.auth === 'function') {
-        checkAuth();
-      } else {
-        hasResolved = true;
-        clearTimeout(timeoutId);
-        currentUser = null;
-        showAuthGate();
-      }
-    }, 400);
-  };
+function handleUserAuthResolved(user) {
+  if (!user || !user.email) {
+    showAuthGate();
+    return;
+  }
+  const email = (user.email || '').toLowerCase().trim();
+  const isOwner = isApoorvOwnerEmail(email);
+  const customWorkers = getCustomWorkers();
+  const isAuthorizedCaller = Object.values(customWorkers).some(w => (w.email || '').toLowerCase() === email);
 
-  checkAuth();
+  if (isOwner) {
+    // Tier 1: Owner (Apoorv)
+    currentUser = {
+      name: user.displayName || 'Apoorv',
+      email: user.email,
+      picture: user.photoURL || 'https://ui-avatars.com/api/?name=Apoorv&background=fff1bd&color=17120f',
+      role: 'owner',
+      sub: user.uid || Date.now().toString()
+    };
+    localStorage.setItem('sprintdial_user', JSON.stringify(currentUser));
+    localStorage.setItem('sprintdial_google_user', JSON.stringify(currentUser));
+    onAuthVerified();
+  } else if (isAuthorizedCaller) {
+    // Tier 2: Sales Rep (Authorized Worker)
+    currentUser = {
+      name: user.displayName || user.email.split('@')[0],
+      email: user.email,
+      picture: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'Rep')}&background=1E3A8A&color=60A5FA&bold=true`,
+      role: 'caller',
+      sub: user.uid || Date.now().toString()
+    };
+    localStorage.setItem('sprintdial_user', JSON.stringify(currentUser));
+    localStorage.setItem('sprintdial_google_user', JSON.stringify(currentUser));
+    onAuthVerified();
+  } else {
+    // Tier 3: Normal Visitor / Applicant / Prospective Client
+    currentUser = {
+      name: user.displayName || user.email.split('@')[0],
+      email: user.email,
+      picture: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'Visitor')}&background=F59E0B&color=17120F&bold=true`,
+      role: 'applicant',
+      sub: user.uid || Date.now().toString()
+    };
+    showApplicantPortal(currentUser);
+  }
 }
 
 function showAuthGate() {
   const overlay = document.getElementById('authGateOverlay');
+  const signInBox = document.getElementById('authGateSignInBox');
+  const applicantBox = document.getElementById('authGateApplicantBox');
   if (overlay) overlay.classList.remove('hidden');
+  if (signInBox) signInBox.classList.remove('hidden');
+  if (applicantBox) applicantBox.classList.add('hidden');
+}
+
+function showApplicantPortal(user) {
+  const overlay = document.getElementById('authGateOverlay');
+  const signInBox = document.getElementById('authGateSignInBox');
+  const applicantBox = document.getElementById('authGateApplicantBox');
+  if (overlay) overlay.classList.remove('hidden');
+  if (signInBox) signInBox.classList.add('hidden');
+  if (applicantBox) {
+    applicantBox.classList.remove('hidden');
+    const img = document.getElementById('applicantImg');
+    const name = document.getElementById('applicantName');
+    const email = document.getElementById('applicantEmail');
+    if (img) img.src = user.picture;
+    if (name) name.innerText = user.name;
+    if (email) email.innerText = user.email;
+
+    const apps = getStoredApplications();
+    const existing = apps.find(a => (a.email || '').toLowerCase() === user.email.toLowerCase());
+    const form = document.getElementById('repApplicationForm');
+    const successMsg = document.getElementById('applicantSuccessMsg');
+    if (existing) {
+      if (form) form.classList.add('hidden');
+      if (successMsg) {
+        successMsg.classList.remove('hidden');
+        successMsg.innerHTML = `✅ Application on file (<strong>${escapeHTML(existing.territory || 'General')}</strong>)! Status: <strong class="text-white">PENDING OWNER REVIEW</strong>. Apoorv will review and grant your sales rep clearance.`;
+      }
+    } else {
+      if (form) form.classList.remove('hidden');
+      if (successMsg) successMsg.classList.add('hidden');
+    }
+  }
+}
+
+function handleRepApplicationSubmit(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  if (!currentUser || !currentUser.email) return;
+
+  const territory = document.getElementById('applicantTerritory')?.value || 'Remote / Global';
+  const pitch = document.getElementById('applicantPitch')?.value?.trim() || '';
+  const phone = document.getElementById('applicantPhone')?.value?.trim() || '';
+
+  const appRecord = {
+    id: `app_${Date.now()}`,
+    name: currentUser.name,
+    email: currentUser.email,
+    picture: currentUser.picture,
+    territory,
+    pitch,
+    phone,
+    timestamp: new Date().toISOString(),
+    status: 'pending'
+  };
+
+  const apps = getStoredApplications();
+  apps.unshift(appRecord);
+  saveStoredApplications(apps);
+
+  // Persist to Firestore if initialized
+  if (window.SALES_PLATFORM_AUTH?.getFirestore) {
+    window.SALES_PLATFORM_AUTH.getFirestore().then(db => {
+      db.collection('applications').doc(appRecord.id).set(appRecord).catch(() => {});
+    }).catch(() => {});
+  }
+
+  const form = document.getElementById('repApplicationForm');
+  const successMsg = document.getElementById('applicantSuccessMsg');
+  if (form) form.classList.add('hidden');
+  if (successMsg) {
+    successMsg.classList.remove('hidden');
+    successMsg.innerHTML = `✅ Application submitted! Status: <strong class="text-white">PENDING OWNER REVIEW</strong>. Apoorv will review your profile and unlock your workstation clearance.`;
+  }
+  showNotification('Application submitted to Apoorv for review.');
+}
+
+function getStoredApplications() {
+  try {
+    const raw = localStorage.getItem('sprintdial_applications');
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) {
+    return [];
+  }
+}
+
+function saveStoredApplications(apps) {
+  try {
+    localStorage.setItem('sprintdial_applications', JSON.stringify(apps));
+  } catch(e) {}
+}
+
+function approveApplicationAsWorker(appId) {
+  if (!isOwnerUser(currentUser)) return;
+  const apps = getStoredApplications();
+  const app = apps.find(a => a.id === appId);
+  if (!app) return;
+
+  const workers = getCustomWorkers();
+  const username = (app.email.split('@')[0] || `rep_${Date.now()}`).toLowerCase().replace(/[^a-z0-9_]/g, '');
+  workers[username] = {
+    name: app.name,
+    email: app.email,
+    picture: app.picture,
+    password: `rep_${Math.random().toString(36).slice(2, 8)}`,
+    approvedAt: new Date().toISOString()
+  };
+  saveCustomWorkers(workers);
+
+  app.status = 'approved';
+  saveStoredApplications(apps);
+
+  if (window.SALES_PLATFORM_AUTH?.getFirestore) {
+    window.SALES_PLATFORM_AUTH.getFirestore().then(db => {
+      db.collection('applications').doc(appId).update({ status: 'approved' }).catch(() => {});
+    }).catch(() => {});
+  }
+
+  renderAdminUsersList();
+  showNotification(`✅ Approved ${app.name} (${app.email}) as authorized sales rep!`);
 }
 
 // Caller accounts registered dynamically by the Owner via Admin Console
@@ -589,36 +754,8 @@ async function handleWorkspaceGoogleAuth() {
     if (!auth?.signIn) {
       throw new Error("Google authentication service is initializing. Please refresh and try again.");
     }
-    const result = await auth.signIn();
-    const user = result?.user;
-    if (!user || !user.email) {
-      throw new Error("Unable to retrieve Google user credentials.");
-    }
-
-    const email = user.email.toLowerCase().trim();
-    // Verify authorized user: Apoorv (owner) or authorized caller
-    const isOwner = isApoorvOwnerEmail(email);
-    const customWorkers = getCustomWorkers();
-    const isAuthorizedCaller = Object.values(customWorkers).some(w => (w.email || '').toLowerCase() === email);
-
-    if (!isOwner && !isAuthorizedCaller) {
-      if (typeof window.firebase?.auth === 'function') {
-        try { await window.firebase.auth().signOut(); } catch(e) {}
-      }
-      throw new Error(`Access restricted. Account ${email} is not authorized on this private workstation. Contact Apoorv for invite access.`);
-    }
-
-    currentUser = {
-      name: user.displayName || (isOwner ? 'Apoorv' : user.email.split('@')[0]),
-      email: user.email,
-      picture: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'User')}&background=1E3A8A&color=60A5FA&bold=true`,
-      role: isOwner ? 'owner' : 'caller',
-      sub: user.uid || Date.now().toString()
-    };
-
-    localStorage.setItem('sprintdial_user', JSON.stringify(currentUser));
-    localStorage.setItem('sprintdial_google_user', JSON.stringify(currentUser));
-    onAuthVerified();
+    // signInWithRedirect navigates away — session is picked up on return via onAuthStateChanged
+    await auth.signIn();
   } catch (err) {
     if (errEl) {
       errEl.innerText = err.message || 'Authentication failed.';
@@ -778,6 +915,50 @@ function renderAdminUsersList() {
     const deleteBtn = el.querySelector('.delete-worker-btn');
     if (deleteBtn) {
       deleteBtn.onclick = () => deleteWorkerAccount(userKey);
+    }
+    container.appendChild(el);
+  });
+
+  renderAdminApplicationsList();
+}
+
+function renderAdminApplicationsList() {
+  const container = document.getElementById('adminApplicationsList');
+  const badge = document.getElementById('adminPendingAppsBadge');
+  if (!container) return;
+
+  const apps = getStoredApplications().filter(a => a.status === 'pending');
+  if (badge) badge.innerText = `${apps.length} Pending`;
+
+  if (apps.length === 0) {
+    container.innerHTML = `<div class="text-xs text-neutral-500 font-mono italic">No pending sales applications.</div>`;
+    return;
+  }
+
+  container.innerHTML = '';
+  apps.forEach(app => {
+    const el = document.createElement('div');
+    el.className = "flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-black/40 border border-blue-900/30 text-xs gap-3";
+    el.innerHTML = `
+      <div class="space-y-1 flex-1">
+        <div class="flex items-center gap-2">
+          <img src="${escapeHTML(app.picture || '')}" class="w-6 h-6 rounded-full border border-blue-400">
+          <span class="font-bold text-white font-mono">${escapeHTML(app.name)}</span>
+          <span class="text-[10px] text-blue-300 font-mono">(${escapeHTML(app.email)})</span>
+          <span class="px-1.5 py-0.5 rounded bg-blue-950 text-[10px] text-blue-300 border border-blue-800 font-mono">${escapeHTML(app.territory)}</span>
+        </div>
+        <div class="text-[11px] text-slate-300 font-mono pl-8 italic">"${escapeHTML(app.pitch)}"</div>
+        ${app.phone ? `<div class="text-[10px] text-slate-400 font-mono pl-8">Phone: ${escapeHTML(app.phone)}</div>` : ''}
+      </div>
+      <div class="shrink-0 flex gap-2 sm:self-center pl-8 sm:pl-0">
+        <button class="approve-rep-btn px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition cursor-pointer">
+          ✓ Approve as Sales Rep
+        </button>
+      </div>
+    `;
+    const btn = el.querySelector('.approve-rep-btn');
+    if (btn) {
+      btn.onclick = () => approveApplicationAsWorker(app.id);
     }
     container.appendChild(el);
   });

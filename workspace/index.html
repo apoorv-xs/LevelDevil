@@ -1089,7 +1089,8 @@
 
   <!-- 1. AUTH GATE OVERLAY -->
   <div id="authGateOverlay" class="hidden fixed inset-0 bg-[#090A0E]/95 backdrop-blur-md flex items-center justify-center p-4 z-50">
-    <div class="studio-panel-elevated rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5 border border-white/10">
+    <!-- View 1: Sign-In Box (Unauthenticated) -->
+    <div id="authGateSignInBox" class="studio-panel-elevated rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5 border border-white/10">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-lg bg-white/10 border border-white/15 flex items-center justify-center text-white">
@@ -1105,9 +1106,9 @@
       </div>
 
       <div class="space-y-1">
-        <h2 class="text-base font-bold text-white tracking-tight">Private Workstation Authentication</h2>
+        <h2 class="text-base font-bold text-white tracking-tight">Workstation Access</h2>
         <p class="text-xs text-neutral-400 leading-relaxed">
-          Operating strictly on Apoorv's behalf. Sign in with your authorized Google account or caller credentials to unlock workspace queues.
+          Operating strictly on Apoorv's behalf. Sign in with Google or your caller credentials to unlock workspace queues.
         </p>
       </div>
 
@@ -1119,12 +1120,12 @@
           class="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-neutral-100 text-neutral-900 font-mono text-xs font-bold shadow flex items-center justify-center gap-2.5 transition border border-neutral-300 cursor-pointer"
         >
           <svg width="15" height="15" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-          <span>Sign In with Google (Owner / Team)</span>
+          <span>Sign In with Google (Owner / Team / Applicants)</span>
         </button>
 
         <div class="flex items-center gap-3">
           <div class="h-px bg-white/10 flex-1"></div>
-          <span class="text-[10px] font-mono text-neutral-500 uppercase">Or Caller Access</span>
+          <span class="text-[10px] font-mono text-neutral-500 uppercase">Or Caller ID</span>
           <div class="h-px bg-white/10 flex-1"></div>
         </div>
 
@@ -1157,6 +1158,75 @@
             Sign In with Caller ID →
           </button>
         </form>
+      </div>
+    </div>
+
+    <!-- View 2: Visitor / Applicant Box (Signed in with normal Google account) -->
+    <div id="authGateApplicantBox" class="hidden studio-panel-elevated rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 border border-white/10">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div class="flex items-center gap-3">
+          <img id="applicantImg" src="https://ui-avatars.com/api/?name=User&background=F59E0B&color=17120F" class="w-10 h-10 rounded-full border-2 border-amber-400 object-cover" alt="User">
+          <div>
+            <div id="applicantName" class="font-bold font-mono text-sm text-white">Welcome</div>
+            <div id="applicantEmail" class="text-xs font-mono text-neutral-400">user@gmail.com</div>
+          </div>
+        </div>
+        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">VISITOR ACCOUNT</span>
+      </div>
+
+      <div class="text-xs font-mono text-neutral-300 leading-relaxed bg-[#101114] p-3 rounded-xl border border-white/5">
+        🔒 <strong class="text-white">Notice:</strong> The live calling dialer and prospect dossiers are restricted to active sales representatives. Select your path below:
+      </div>
+
+      <!-- Path 1: Apply as Sales Rep -->
+      <div id="repApplicationSection" class="bg-[#101114] border border-blue-900/30 rounded-xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-mono text-white font-bold">⚡ Apply for Sales Rep Clearance</span>
+          <span class="text-[10px] font-mono text-blue-400 font-bold">Commission Role</span>
+        </div>
+        <form id="repApplicationForm" onsubmit="handleRepApplicationSubmit(event)" class="space-y-3">
+          <div>
+            <label class="block text-[10px] font-mono text-neutral-400 mb-1">Target Territory</label>
+            <select id="applicantTerritory" class="w-full bg-[#15161B] border border-white/10 rounded-lg px-2.5 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-white/30">
+              <option value="Kochi">Kochi (High-Value Architecture & Retail)</option>
+              <option value="Bangalore">Bangalore (Tech, D2C & High Growth)</option>
+              <option value="Hyderabad">Hyderabad (Commercial & Enterprise)</option>
+              <option value="Remote / Global">Remote / Global (US / EU / Middle East)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] font-mono text-neutral-400 mb-1">Why do you want to represent Apoorv? (Experience / Pitch)</label>
+            <textarea id="applicantPitch" rows="2" required placeholder="Brief note on your sales background or why you can close WebGL/3D deals..." class="w-full bg-[#15161B] border border-white/10 rounded-lg p-2 text-xs font-mono text-white focus:outline-none focus:border-white/30"></textarea>
+          </div>
+          <div>
+            <label class="block text-[10px] font-mono text-neutral-400 mb-1">WhatsApp / Contact Phone (Optional)</label>
+            <input type="text" id="applicantPhone" placeholder="+91 / +1 ..." class="w-full bg-[#15161B] border border-white/10 rounded-lg px-2.5 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-white/30" />
+          </div>
+          <button type="submit" id="submitAppBtn" class="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
+            <span>🚀 Submit Application to Apoorv</span>
+          </button>
+        </form>
+        <div id="applicantSuccessMsg" class="hidden text-xs font-mono text-emerald-400 bg-emerald-950/40 p-2.5 rounded-lg border border-emerald-800/40">
+          ✅ Application submitted! Status: <strong class="text-white">PENDING OWNER REVIEW</strong>. Apoorv will review and unlock your workspace clearance.
+        </div>
+      </div>
+
+      <!-- Path 2: Work with Apoorv as a Client -->
+      <div class="bg-[#101114] border border-emerald-900/30 rounded-xl p-3 flex items-center justify-between gap-3">
+        <div>
+          <div class="text-xs font-mono text-white font-bold">💼 Want to hire Apoorv for a Project?</div>
+          <div class="text-[10px] font-mono text-neutral-400">Submit a project brief or schedule a 1-on-1 strategy call</div>
+        </div>
+        <a href="/sales" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition cursor-pointer whitespace-nowrap shrink-0">
+          Open Inquiries →
+        </a>
+      </div>
+
+      <div class="pt-2 flex justify-between items-center text-xs font-mono border-t border-white/10">
+        <a href="/" class="text-neutral-400 hover:text-white transition">← Back to Portfolio</a>
+        <button onclick="signOut()" class="text-rose-400 hover:text-rose-300 transition cursor-pointer">
+          Sign Out / Switch Account
+        </button>
       </div>
     </div>
   </div>
@@ -1469,8 +1539,18 @@
               </button>
             </div>
           </form>
-        </div>
         <div id="adminUsersList" class="space-y-2"></div>
+
+        <!-- Rep Applications Queue (Owner Review) -->
+        <div class="bg-[#101114] border border-blue-900/30 rounded-xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono text-white font-bold">📋 Sales Rep Applications Pending Clearance:</span>
+            <span id="adminPendingAppsBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950/60 text-blue-300 border border-blue-800/40">0 Pending</span>
+          </div>
+          <div id="adminApplicationsList" class="space-y-2">
+            <div class="text-xs text-neutral-500 font-mono italic">No pending sales applications.</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
