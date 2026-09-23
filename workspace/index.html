@@ -1394,18 +1394,20 @@
         <div class="bg-[#101114] border border-blue-900/30 rounded-xl p-4 space-y-3">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="text-xs font-mono text-white font-bold">Cloud Firestore (Spark Plan):</span>
+              <span class="text-xs font-mono text-white font-bold">☁️ Cloud Firestore (Spark Plan):</span>
               <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950/60 text-blue-300 border border-blue-800/40">100% Free Tier</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/60">AUTO-SYNC</span>
             </div>
             <span id="firestoreSyncStatusBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold">🟢 Firestore Ready</span>
           </div>
           <div class="text-[11px] font-mono text-slate-400 space-y-1">
             <div>Project ID: <span class="text-white">apoorv-sales</span> • Collection: <span class="text-blue-300">prospects</span></div>
             <div>Security: <span class="text-emerald-400">Strict RBAC Gated to apoorvxs@gmail.com</span></div>
+            <div class="text-[10px] text-blue-300/70 pt-1">Prospects auto-sync to Cloud Firestore on login. Real-time live sync across all devices.</div>
           </div>
           <div class="pt-1 flex flex-wrap gap-2">
             <button id="seedFirestoreBtn" onclick="uploadProspectsToFirestore()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
-              <span>🚀 Push Prospects to Firestore</span>
+              <span>🚀 Force Re-Sync to Firestore</span>
             </button>
             <button onclick="exportProspectsJSON()" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 border border-white/10 font-mono text-xs transition cursor-pointer">
               <span>⬇️ Download JSON Backup</span>
@@ -1417,13 +1419,13 @@
         <div class="bg-[#101114] border border-emerald-800/40 rounded-xl p-4 space-y-3">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="text-xs font-mono text-white font-bold">Google Sheets Two-Way Bridge:</span>
-              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-800/40">100% Free</span>
+              <span class="text-xs font-mono text-white font-bold">📊 Google Sheets Export:</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-800/40">1-Click</span>
             </div>
             <span id="gsheetSyncStatusBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-neutral-400 border border-white/5">Webhook Standby</span>
           </div>
           <div class="text-[11px] font-mono text-slate-400">
-            Paste your Google Apps Script Web App URL below to sync your Google Sheet with the workspace:
+            Export your live prospect data to Google Sheets with zero setup. No Apps Script needed.
           </div>
           <div class="flex flex-col sm:flex-row gap-2">
             <input type="text" id="gsheetWebhookUrlInput" placeholder="https://script.google.com/macros/s/.../exec?key=..." class="flex-1 bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-white/30" />
@@ -1431,8 +1433,8 @@
             <button onclick="pullFromGoogleSheetUI()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition whitespace-nowrap cursor-pointer">🔄 Pull Sheet Rows</button>
           </div>
           <div class="pt-2 border-t border-white/5 flex flex-wrap gap-2">
-            <button onclick="exportToGoogleSheetsCSV()" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-emerald-300 border border-emerald-800/30 font-mono text-xs transition cursor-pointer">
-              <span>📊 Download Google Sheets CSV Template (65 Accounts)</span>
+            <button onclick="openGoogleSheet1Click()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition cursor-pointer">
+              <span>📊 Export CSV & Open Google Sheets</span>
             </button>
             <button onclick="openCsvImportModal()" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 border border-white/10 font-mono text-xs transition cursor-pointer">
               <span>📥 Paste / Import CSV</span>

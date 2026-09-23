@@ -819,6 +819,9 @@ function initFirestoreRealtimeListener(db) {
       });
       if (changed) {
         renderQueue();
+        if (selectedProspectId) {
+          renderActiveProspect();
+        }
       }
     }, (err) => {
       console.warn('Firestore realtime listener error:', err.message);
@@ -853,6 +856,7 @@ async function ensureProspectsLoaded() {
             initFirestoreRealtimeListener(db);
             const badge = document.getElementById('firestoreSyncStatusBadge');
             if (badge) {
+              badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold";
               badge.innerText = `🟢 Cloud Firestore Active (${PROSPECTS.length})`;
             }
             return;
@@ -880,6 +884,10 @@ async function ensureProspectsLoaded() {
           initPersistence();
           renderQueue();
           selectProspect("p-1");
+          // Autonomous Cloud Auto-Seed: If Firestore was empty and verified owner is logged in, seed silently!
+          if (!isTestMode && window.SALES_PLATFORM_AUTH?.getFirestore && currentUser && isOwnerUser(currentUser)) {
+            autoBootstrapFirestore(PROSPECTS);
+          }
           return;
         }
       }
@@ -911,6 +919,10 @@ async function ensureProspectsLoaded() {
     initPersistence();
     renderQueue();
     selectProspect("p-1");
+    // Autonomous Cloud Auto-Seed: If Firestore was empty and verified owner is logged in, seed silently!
+    if (!isTestMode && window.SALES_PLATFORM_AUTH?.getFirestore && currentUser && isOwnerUser(currentUser)) {
+      autoBootstrapFirestore(PROSPECTS);
+    }
   })();
   return prospectsLoadPromise;
 }
@@ -2065,6 +2077,51 @@ async function syncProspectUpdateToFirestore(prospectId, updateFields) {
   }
 }
 
+let isBootstrappingFirestore = false;
+async function autoBootstrapFirestore(prospectsList) {
+  if (isBootstrappingFirestore) return;
+  if (!window.SALES_PLATFORM_AUTH?.getFirestore || !currentUser || !isOwnerUser(currentUser)) return;
+  if (!prospectsList || !prospectsList.length) return;
+  isBootstrappingFirestore = true;
+  try {
+    const db = await window.SALES_PLATFORM_AUTH.getFirestore();
+    const existing = await db.collection('prospects').limit(1).get();
+    if (!existing.empty) {
+      initFirestoreRealtimeListener(db);
+      const badge = document.getElementById('firestoreSyncStatusBadge');
+      if (badge) {
+        badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold";
+        badge.innerText = `🟢 Cloud Firestore Active (${PROSPECTS.length})`;
+      }
+      return;
+    }
+
+    const batch = db.batch();
+    prospectsList.forEach(p => {
+      const ref = db.collection('prospects').doc(p.id);
+      batch.set(ref, p, { merge: true });
+    });
+    await batch.commit();
+    initFirestoreRealtimeListener(db);
+    const badge = document.getElementById('firestoreSyncStatusBadge');
+    if (badge) {
+      badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold";
+      badge.innerText = `🟢 Cloud Firestore Active (${prospectsList.length})`;
+    }
+    const seedBtn = document.getElementById('seedFirestoreBtn');
+    if (seedBtn) {
+      seedBtn.innerHTML = `<span>✅ 100% Synced to Cloud</span>`;
+      seedBtn.classList.remove('bg-blue-600', 'hover:bg-blue-500');
+      seedBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-500');
+    }
+    showNotification(`⚡ Cloud Firestore active: ${prospectsList.length} accounts synced to your private cloud.`);
+  } catch (err) {
+    console.warn('Auto Firestore bootstrap:', err.message);
+  } finally {
+    isBootstrappingFirestore = false;
+  }
+}
+
 async function uploadProspectsToFirestore() {
   const btn = document.getElementById('seedFirestoreBtn');
   if (!window.SALES_PLATFORM_AUTH?.getFirestore) {
@@ -2284,6 +2341,22 @@ function exportToGoogleSheetsCSV() {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
   showNotification('📊 Exported CSV for Google Sheets!');
+}
+
+function openGoogleSheet1Click() {
+  exportToGoogleSheetsCSV();
+  window.open('https://sheets.new', '_blank');
+  showNotification('📊 Opening Google Sheets! In your new sheet, click File -> Import -> Upload and select the downloaded CSV.');
+}
+
+function copyGoogleSheetsFormula() {
+  const formula = `=IMPORTDATA("${window.location.origin}/SprintDial_Prospects_GoogleSheet_Template.csv")`;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(formula);
+    showNotification('📋 Copied formula to clipboard! Paste in Cell A1 of your Google Sheet.');
+  } else {
+    prompt('Copy this formula into Cell A1 of Google Sheets:', formula);
+  }
 }
 
 function openCsvImportModal() {
