@@ -15,6 +15,12 @@ function escapeHTML(str) {
   }[m]));
 }
 
+function isApoorvOwnerEmail(email) {
+  if (!email || typeof email !== 'string') return false;
+  const clean = email.toLowerCase().trim();
+  return clean === 'apoorv@eravex.studio' || clean === 'apoorvworkid@gmail.com' || clean.endsWith('@eravex.studio');
+}
+
 const OBJECTIONS = [
   {
     title: "Send an email / brochure",
@@ -246,13 +252,22 @@ function handleIncomingRealtimeEvent(data) {
 }
 
 function getFirebaseDbUrl() {
-  return localStorage.getItem('sprintdial_firebase_db_url') || '';
+  const raw = localStorage.getItem('sprintdial_firebase_db_url') || '';
+  if (raw && !/^https:\/\/[a-zA-Z0-9-]+\.firebaseio\.com$/i.test(raw)) {
+    localStorage.removeItem('sprintdial_firebase_db_url');
+    return '';
+  }
+  return raw;
 }
 
 function saveFirebaseDbUrlUI() {
   const input = document.getElementById('firebaseDbUrlInput');
   const url = input ? input.value.trim().replace(/\/$/, '') : '';
   if (url) {
+    if (!/^https:\/\/[a-zA-Z0-9-]+\.firebaseio\.com$/i.test(url)) {
+      alert('Security Validation Error: Firebase URL must be a valid https://<project-id>.firebaseio.com endpoint.');
+      return;
+    }
     localStorage.setItem('sprintdial_firebase_db_url', url);
     showNotification('🌐 Firebase Database connected for multi-computer anti-clash sync!');
     initFirebaseSync();
@@ -498,7 +513,7 @@ function initFirebaseSessionObserver() {
           clearTimeout(timeoutId);
           if (user && user.email) {
             const email = user.email.toLowerCase().trim();
-            const isOwner = email.includes('apoorv') || email.endsWith('@eravex.studio') || email === 'apoorvworkid@gmail.com';
+            const isOwner = isApoorvOwnerEmail(email);
             const customWorkers = getCustomWorkers();
             const isAuthorizedCaller = Object.values(customWorkers).some(w => (w.email || '').toLowerCase() === email);
 
@@ -583,7 +598,7 @@ async function handleWorkspaceGoogleAuth() {
 
     const email = user.email.toLowerCase().trim();
     // Verify authorized user: Apoorv (owner) or authorized caller
-    const isOwner = email.includes('apoorv') || email.endsWith('@eravex.studio') || email === 'apoorvworkid@gmail.com';
+    const isOwner = isApoorvOwnerEmail(email);
     const customWorkers = getCustomWorkers();
     const isAuthorizedCaller = Object.values(customWorkers).some(w => (w.email || '').toLowerCase() === email);
 
@@ -776,9 +791,8 @@ function triggerDirectGoogleAuth() {
 function isOwnerUser(user) {
   if (!user) return false;
   const email = (user.email || '').toLowerCase().trim();
-  const name = (user.name || '').toLowerCase().trim();
   const role = (user.role || '').toLowerCase().trim();
-  return role === 'owner' || email.includes('apoorv') || email.endsWith('@eravex.studio') || email === 'apoorvworkid@gmail.com';
+  return isApoorvOwnerEmail(email) || (role === 'owner' && isApoorvOwnerEmail(email));
 }
 
 let prospectsLoadPromise = null;
@@ -2744,7 +2758,7 @@ async function testGeminiConnectionUI() {
   }
 
   try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(key)}`;
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -2791,7 +2805,7 @@ async function runAiScoutFromUI() {
       if (logText) logText.innerText += `[2/3] Calling Gemini 2.0 Flash to audit mobile performance & generate multi-lingual pitches...\n`;
       const prompt = `Audit the establishment '${business}' located in ${city}, India within vertical '${category}'. Generate a SprintDial prospect dossier JSON matching: { city, name, dm, phone, site, cat, ptype: 'UPGRADE', fee: '₹50,000', speedScore, lcpTime, techStack, flaws: [], scripts: { speed: { en, ml, manglish }, commission: { en, ml, manglish }, visual: { en, ml, manglish }, gatekeeper }, waMessage }`;
       
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(key)}`;
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

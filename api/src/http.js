@@ -1,9 +1,39 @@
 import { ApiError } from "./errors.js";
 
-export function response(status, body) {
-  return { status, headers: { "content-type": "application/json", "cache-control": "no-store" }, body: JSON.stringify(body) };
+const ALLOWED_ORIGIN_PATTERNS = [
+  /^https?:\/\/localhost(:\d+)?$/,
+  /^https?:\/\/127\.0\.0\.1(:\d+)?$/,
+  /^https:\/\/([a-zA-Z0-9-]+\.)?qzz\.io$/,
+  /^https:\/\/([a-zA-Z0-9-]+\.)?vercel\.app$/,
+  /^https:\/\/([a-zA-Z0-9-]+\.)?azurestaticapps\.net$/
+];
+
+export function resolveAllowedOrigin(req) {
+  const origin = req?.headers?.origin || req?.headers?.Origin;
+  if (!origin) return null;
+  const isAllowed = ALLOWED_ORIGIN_PATTERNS.some((pattern) => pattern.test(origin));
+  if (!isAllowed) {
+    throw new ApiError(403, "forbidden_origin", "Cross-origin requests from this origin are forbidden");
+  }
+  return origin;
 }
-export function ok(data, status = 200) { return response(status, { data }); }
+
+export function response(status, body, allowedOrigin = null) {
+  const headers = {
+    "content-type": "application/json",
+    "cache-control": "no-store",
+    "x-content-type-options": "nosniff"
+  };
+  if (allowedOrigin) {
+    headers["access-control-allow-origin"] = allowedOrigin;
+    headers["access-control-allow-methods"] = "GET, POST, OPTIONS";
+    headers["access-control-allow-headers"] = "Content-Type, Authorization";
+    headers["access-control-max-age"] = "86400";
+    headers["vary"] = "Origin";
+  }
+  return { status, headers, body: JSON.stringify(body) };
+}
+export function ok(data, status = 200, allowedOrigin = null) { return response(status, { data }, allowedOrigin); }
 export function parseBody(req) {
   if (!req?.body) return {};
   let parsed;
@@ -19,11 +49,17 @@ export function parseBody(req) {
   return parsed;
 }
 export async function run(handler, req, context) {
-  try { return await handler(req, context); }
-  catch (error) {
+  let allowedOrigin = null;
+  try {
+    allowedOrigin = resolveAllowedOrigin(req);
+    if (req?.method?.toUpperCase() === "OPTIONS") {
+      return response(204, {}, allowedOrigin);
+    }
+    return await handler(req, context);
+  } catch (error) {
     const e = error instanceof ApiError ? error : new ApiError(500, "internal_error", "An unexpected error occurred");
     context?.error?.(error);
-    return response(e.status, { error: { code: e.code, message: e.message, ...(e.details ? { details: e.details } : {}) } });
+    return response(e.status, { error: { code: e.code, message: e.message, ...(e.details ? { details: e.details } : {}) } }, allowedOrigin);
   }
 }
 

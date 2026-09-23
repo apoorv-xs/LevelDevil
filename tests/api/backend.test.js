@@ -57,4 +57,24 @@ describe("managed API", () => {
     expect(result.status).toBe(201);
     expect(({})["polluted"]).toBeUndefined();
   });
+
+  it("rejects unauthorized cross-origin requests with 403", () => {
+    const maliciousReq = {
+      body: { name: "Attacker", email: "attacker@evil.com", message: "Spam" },
+      headers: { origin: "https://evil-hacker-site.com" }
+    };
+    expect(() => publicInquiry(maliciousReq, context))
+      .toThrow(expect.objectContaining({ status: 403, code: "forbidden_origin" }));
+  });
+
+  it("permits allowed cross-origin requests and sets CORS headers", async () => {
+    const validReq = {
+      body: { name: "Client", email: "client@example.com", message: "Legit inquiry" },
+      headers: { origin: "https://apoorv.qzz.io" }
+    };
+    const result = await publicInquiry(validReq, context);
+    expect(result.status).toBe(201);
+    expect(result.headers["access-control-allow-origin"]).toBe("https://apoorv.qzz.io");
+    expect(result.headers["access-control-allow-methods"]).toContain("POST");
+  });
 });
