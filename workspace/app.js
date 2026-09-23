@@ -17,8 +17,7 @@ function escapeHTML(str) {
 
 function isApoorvOwnerEmail(email) {
   if (!email || typeof email !== 'string') return false;
-  const clean = email.toLowerCase().trim();
-  return clean === 'apoorv@eravex.studio' || clean === 'apoorvworkid@gmail.com' || clean.endsWith('@eravex.studio');
+  return email.toLowerCase().trim() === 'apoorvxs@gmail.com';
 }
 
 const OBJECTIONS = [

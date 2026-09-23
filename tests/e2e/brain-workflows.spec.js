@@ -75,7 +75,7 @@ test.describe("System 1 Decision Brain - Multi-Page Workflows", () => {
       // Simulate malicious stranger writing fake owner into localStorage
       localStorage.setItem('sprintdial_user', JSON.stringify({
         name: 'Attacker',
-        email: 'apoorv@eravex.studio',
+        email: 'apoorvxs@gmail.com',
         role: 'owner'
       }));
     });
@@ -91,7 +91,7 @@ test.describe("System 1 Decision Brain - Multi-Page Workflows", () => {
       sessionStorage.setItem('sprintdial_test_mode', 'true');
       localStorage.setItem('sprintdial_user', JSON.stringify({
         name: 'Apoorv',
-        email: 'apoorv@eravex.studio',
+        email: 'apoorvxs@gmail.com',
         picture: 'https://ui-avatars.com/api/?name=Apoorv&background=1E3A8A&color=60A5FA&bold=true',
         role: 'owner',
         sub: 'mock-owner'

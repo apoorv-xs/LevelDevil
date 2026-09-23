@@ -15,7 +15,7 @@ export async function authenticate(req) {
   }
   const user = await verifyFirebaseToken(token);
   const email = (user.email || "").toLowerCase().trim();
-  const isOwnerEmail = email === "apoorv@eravex.studio" || email === "apoorvworkid@gmail.com";
+  const isOwnerEmail = email === "apoorvxs@gmail.com";
   const role = user.role || user.claims?.role || user.customClaims?.role || (isOwnerEmail ? "owner" : "user");
   return {
     ...user,

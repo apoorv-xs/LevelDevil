@@ -133,7 +133,7 @@ async function submitPublicForm(event, path, successMessage) {
       if (path === "/inquiry") {
         const subject = encodeURIComponent(`Project Inquiry: ${values.scope || "Creative Engineering"} - ${values.name || "Client"}`);
         const body = encodeURIComponent(`Hi Apoorv,\n\nName: ${values.name || ""}\nEmail: ${values.email || ""}\nScope: ${values.scope || ""}\nBudget: ${values.budget || ""}\n\nMessage:\n${values.message || ""}\n`);
-        const mailto = `mailto:${window.SALES_PLATFORM_CONFIG?.directEmail || "apoorvworkid@gmail.com"}?subject=${subject}&body=${body}`;
+        const mailto = `mailto:${window.SALES_PLATFORM_CONFIG?.directEmail || "apoorvxs@gmail.com"}?subject=${subject}&body=${body}`;
 
         let fallbackBox = form.querySelector(".inquiry-fallback-box");
         if (!fallbackBox) {

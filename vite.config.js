@@ -65,7 +65,7 @@ function salesApiDevPlugin() {
           res.end(JSON.stringify({
             user: {
               uid: "owner_apoorv",
-              email: "apoorvworkid@gmail.com",
+              email: "apoorvxs@gmail.com",
               displayName: "Apoorv A S",
               role: "owner"
             },
