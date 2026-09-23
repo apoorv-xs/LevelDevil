@@ -227,12 +227,12 @@ onLoad(() => {
         {"xLeft":925,"xRight":1288,"width":363,"y":2095,"trap":"normal","name":"DIV.capability-card-3::roof"},
         {"xLeft":925,"xRight":1288,"width":363,"y":2334,"trap":"normal","name":"DIV.capability-card-3::base"},
         {"xLeft":152,"xRight":1288,"width":1136,"y":2480,"trap":"normal","name":"DIV.section-header.dispatches"},
-        {"xLeft":152,"xRight":708,"width":556,"y":2512,"trap":"bounce","name":"ARTICLE.note-card-1::roof"},
-        {"xLeft":152,"xRight":708,"width":556,"y":2692,"trap":"bounce","name":"ARTICLE.note-card-1::base"},
-        {"xLeft":732,"xRight":1288,"width":556,"y":2512,"trap":"bounce","name":"ARTICLE.note-card-2::roof"},
-        {"xLeft":732,"xRight":1288,"width":556,"y":2692,"trap":"bounce","name":"ARTICLE.note-card-2::base"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":2716,"trap":"bounce","name":"ARTICLE.note-card-3::roof"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":2828,"trap":"bounce","name":"ARTICLE.note-card-3::base"},
+        {"xLeft":152,"xRight":708,"width":556,"y":2512,"trap":"none","name":"ARTICLE.note-card-1::roof"},
+        {"xLeft":152,"xRight":708,"width":556,"y":2692,"trap":"none","name":"ARTICLE.note-card-1::base"},
+        {"xLeft":732,"xRight":1288,"width":556,"y":2512,"trap":"none","name":"ARTICLE.note-card-2::roof"},
+        {"xLeft":732,"xRight":1288,"width":556,"y":2692,"trap":"none","name":"ARTICLE.note-card-2::base"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":2716,"trap":"none","name":"ARTICLE.note-card-3::roof"},
+        {"xLeft":152,"xRight":1288,"width":1136,"y":2828,"trap":"none","name":"ARTICLE.note-card-3::base"},
         {"xLeft":152,"xRight":1288,"width":1136,"y":2974,"trap":"normal","name":"DIV.section-header.contact"},
         {"xLeft":152,"xRight":1288,"width":1136,"y":3006,"trap":"normal","name":"SECTION.contact-card::roof"},
         {"xLeft":197,"xRight":835,"width":638,"y":3131,"trap":"normal","name":"H2.contact-heading"},
@@ -340,8 +340,8 @@ onLoad(() => {
             const notesHeader = { el: sectionHeaders[2], mode: 'bottom', name: 'DIV.section-header.dispatches' };
             const noteCards = Array.from(document.querySelectorAll('.note-card'));
             const notesItems = noteCards.flatMap((card, i) => [
-                { el: card, mode: 'top', name: `ARTICLE.note-card-${i+1}::roof`, trap: 'bounce' },
-                { el: card, mode: 'bottom', name: `ARTICLE.note-card-${i+1}::base`, trap: 'bounce' }
+                { el: card, mode: 'top', name: `ARTICLE.note-card-${i+1}::roof`, trap: 'none' },
+                { el: card, mode: 'bottom', name: `ARTICLE.note-card-${i+1}::base`, trap: 'none' }
             ]);
 
             const contactHeader = { el: sectionHeaders[3] || sectionHeaders[sectionHeaders.length - 1], mode: 'bottom', name: 'DIV.section-header.contact' };
