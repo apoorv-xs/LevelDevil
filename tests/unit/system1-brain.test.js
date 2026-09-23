@@ -384,5 +384,101 @@ describe("System 1 Decision Brain", () => {
       };
       expect(System1Brain.classifyIntent(telemetry)).toBe(INTENTS.RADAR_SWEEP);
     });
+
+    it("classifies SHOWCASE_PROJECT on Jarvis card and emits zero-cost bridge thought", () => {
+      const jarvisRail = { name: "ARTICLE.standard-project-card.jarvis::roof", y: 1800, xLeft: 200, xRight: 900, width: 700 };
+      const telemetry = {
+        scrollY: 1400,
+        viewportFocusY: 1800,
+        viewportHeight: 800,
+        userScrollSpeed: 0,
+        dwellTime: 2.0,
+        currentRail: jarvisRail,
+        playerPos: { x: 450, y: 1800 },
+        page: "home",
+        isGrounded: true
+      };
+      expect(System1Brain.classifyIntent(telemetry)).toBe(INTENTS.SHOWCASE_PROJECT);
+      System1Brain.evaluate(0.016, telemetry);
+      expect(System1Brain.currentThought).toContain("Jarvis: Zero-cost LLM gateway proxy");
+    });
+
+    it("correctly resolves Maison Anima (left) vs Level Devil (right) in side-by-side columns", () => {
+      // Both at Y = 1400 (within [1210, 1620]), but Maison is on left (x=400) and Level Devil is on right (x=850)
+      const telemetryMaison = {
+        scrollY: 1000,
+        viewportFocusY: 1400,
+        viewportHeight: 800,
+        userScrollSpeed: 0,
+        dwellTime: 2.0,
+        currentRail: { xLeft: 100, xRight: 600, y: 1400, width: 500 },
+        playerPos: { x: 400, y: 1400 },
+        page: "home",
+        isGrounded: true
+      };
+      expect(System1Brain.classifyIntent(telemetryMaison)).toBe(INTENTS.SHOWCASE_PROJECT);
+      System1Brain.evaluate(0.016, telemetryMaison);
+      expect(System1Brain.currentThought).toContain("Maison Anima");
+
+      // Reset thought throttle
+      System1Brain.lastThoughtTime = 0;
+
+      const telemetryLevelDevil = {
+        scrollY: 1000,
+        viewportFocusY: 1400,
+        viewportHeight: 800,
+        userScrollSpeed: 0,
+        dwellTime: 2.0,
+        currentRail: { xLeft: 750, xRight: 1250, y: 1400, width: 500 },
+        playerPos: { x: 850, y: 1400 },
+        page: "home",
+        isGrounded: true
+      };
+      expect(System1Brain.classifyIntent(telemetryLevelDevil)).toBe(INTENTS.SHOWCASE_PROJECT);
+      System1Brain.evaluate(0.016, telemetryLevelDevil);
+      expect(System1Brain.currentThought).toContain("Level Devil Engine");
+    });
+
+    it("positions companion bubble above BB-8 with dynamic tail offset and flippable margin", () => {
+      const mockProps = {};
+      const mockClassList = new Set();
+      const mockBubble = {
+        offsetWidth: 280,
+        offsetHeight: 44,
+        style: {
+          display: "block",
+          left: "",
+          top: "",
+          setProperty: (k, v) => { mockProps[k] = v; },
+          getPropertyValue: (k) => mockProps[k]
+        },
+        classList: {
+          toggle: (cls, val) => {
+            if (val) mockClassList.add(cls);
+            else mockClassList.delete(cls);
+          },
+          contains: (cls) => mockClassList.has(cls)
+        }
+      };
+
+      System1Brain.bubbleElement = mockBubble;
+      globalThis.window = { innerWidth: 1200, innerHeight: 800, scrollY: 100 };
+
+      const mockPlayer = { pos: { x: 400, y: 500 } };
+      System1Brain.updateBubblePosition(mockPlayer);
+
+      expect(mockBubble.style.left).toBe("260px"); // 400 - 280/2 = 260px
+      expect(mockBubble.style.top).toBe("320px");  // (500 - 100) - 36 - 44 = 320px
+      expect(mockBubble.style.getPropertyValue("--tail-left")).toBe("140px"); // 400 - 260 = 140px (dead center)
+      expect(mockClassList.has("bubble-flipped")).toBe(false);
+
+      // Test top boundary flip when near top of viewport (e.g. screenY = 120 -> top = 120 - 80 = 40 < 68)
+      const mockPlayerNearTop = { pos: { x: 400, y: 220 } }; // screenY = 220 - 100 = 120
+      System1Brain.updateBubblePosition(mockPlayerNearTop);
+      expect(mockClassList.has("bubble-flipped")).toBe(true);
+      expect(mockBubble.style.top).toBe("156px"); // 120 + 36 = 156px
+
+      delete globalThis.window;
+    });
   });
 });

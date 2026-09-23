@@ -27,28 +27,44 @@
         {
             id: "eravex",
             match: ["eravex", "webgpu", "flagship", "project-card-1", "featured-project-card", "featured"],
-            yRange: [600, 1350],
+            yRange: [500, 1210],
             thought: "ERAVEX 3D Studio: WebGPU compute, procedural GLSL & raymarched SDFs.",
             action: "inspect"
         },
         {
             id: "maison",
             match: ["maison", "luxury", "project-card-2"],
-            yRange: [1350, 2050],
+            yRange: [1210, 1620],
+            xRange: [0, 720],
             thought: "Maison Anima: Luxury 3D digital showcase. Sub-5MB Draco delivery.",
             action: "inspect"
         },
         {
             id: "leveldevil",
-            match: ["level devil", "spatial", "portfolio", "project-card-3"],
-            yRange: [2050, 2700],
+            match: ["level devil", "level-devil", "spatial", "portfolio", "project-card-3", "active-canvas"],
+            yRange: [1210, 1620],
+            xRange: [720, 9999],
             thought: "Level Devil Engine: 2.5D spatial physics with 60 FPS platforming.",
+            action: "nod"
+        },
+        {
+            id: "jarvis",
+            match: ["jarvis", "bridge", "loopback", "zero-cost", "zero-api"],
+            yRange: [1620, 2050],
+            thought: "Jarvis: Zero-cost LLM gateway proxy & Chrome automation bridge.",
+            action: "inspect"
+        },
+        {
+            id: "capabilities",
+            match: ["capability", "capabilities", "standards", "performance"],
+            yRange: [2050, 2450],
+            thought: "Engineering Standards: 60 FPS floor, sub-5MB Draco payloads, zero memory leaks.",
             action: "nod"
         },
         {
             id: "dispatches",
             match: ["dispatches", "principles", "notes", "project-card-4"],
-            yRange: [2700, 3300],
+            yRange: [2450, 2950],
             thought: "Dispatches: Pure mathematical performance over agency bloat.",
             action: "nod"
         }
@@ -224,6 +240,7 @@
         },
 
         emitThought(text, duration = 3200) {
+            this.currentThought = text;
             if (typeof document === "undefined") return;
             if (!this.bubbleElement) this.setupBubble();
             if (!this.bubbleElement) return;
@@ -264,10 +281,27 @@
             const screenX = player.pos.x;
             const screenY = player.pos.y - scrollY;
 
-            // Clamp so bubble doesn't clip screen boundaries
-            const bubbleW = 220;
+            // Dynamically measure bubble bounds to guarantee collision-free clearance
+            const bubbleW = this.bubbleElement.offsetWidth || 280;
+            const bubbleH = this.bubbleElement.offsetHeight || 44;
+
+            // Clamp bubble horizontally so it never clips viewport bounds
             const left = Math.max(16, Math.min(window.innerWidth - bubbleW - 20, screenX - bubbleW / 2));
-            const top = Math.max(64, screenY - 115);
+
+            // Position bubble comfortably above BB-8 (radius ~22px + 14px buffer + bubbleH)
+            let top = screenY - 36 - bubbleH;
+            let isFlipped = false;
+
+            // If clipped by topbar header (54px + buffer), flip bubble cleanly below BB-8
+            if (top < 68) {
+                top = screenY + 36;
+                isFlipped = true;
+            }
+
+            // Dynamically calculate tail offset so the pointer tail directly aligns with BB-8
+            const tailOffset = Math.max(16, Math.min(bubbleW - 16, screenX - left));
+            this.bubbleElement.style.setProperty("--tail-left", `${Math.round(tailOffset)}px`);
+            this.bubbleElement.classList.toggle("bubble-flipped", isFlipped);
 
             this.bubbleElement.style.left = `${Math.round(left)}px`;
             this.bubbleElement.style.top = `${Math.round(top)}px`;
@@ -434,13 +468,18 @@
                 return INTENTS.LEAD_DESCENT;
             }
 
-            // Flagship Project Showcase proximity check
-            const matchingProject = PROJECT_KNOWLEDGE.find(p => playerPos.y >= p.yRange[0] && playerPos.y < p.yRange[1]);
-            const isGroundedOnProject = groundedRail && (
-                (groundedRail.name && matchingProject?.match.some(m => groundedRail.name.toLowerCase().includes(m))) ||
-                (groundedRail.y >= (matchingProject?.yRange[0] || 0) && groundedRail.y < (matchingProject?.yRange[1] || 0))
-            );
-            if (matchingProject && (dwellTime > 1.5 || isGroundedOnProject)) {
+            // Flagship Project Showcase proximity check (prioritize rail name matching, fallback to spatial coordinate bounds)
+            const projectByRail = groundedRail?.name ? PROJECT_KNOWLEDGE.find(p => p.match.some(m => groundedRail.name.toLowerCase().includes(m))) : null;
+            const matchingProject = projectByRail || PROJECT_KNOWLEDGE.find(p => {
+                const yMatch = playerPos.y >= p.yRange[0] && playerPos.y < p.yRange[1];
+                if (!yMatch) return false;
+                if (p.xRange) {
+                    return playerPos.x >= p.xRange[0] && playerPos.x < p.xRange[1];
+                }
+                return true;
+            });
+            const isGroundedOnProject = Boolean(projectByRail || (groundedRail && matchingProject));
+            if (matchingProject && (dwellTime > 1.2 || isGroundedOnProject)) {
                 return INTENTS.SHOWCASE_PROJECT;
             }
 
@@ -590,7 +629,15 @@
                 }
 
                 case INTENTS.SHOWCASE_PROJECT: {
-                    const matchingProject = PROJECT_KNOWLEDGE.find(p => playerPos.y >= p.yRange[0] && playerPos.y < p.yRange[1]);
+                    const projectByRail = currentRail?.name ? PROJECT_KNOWLEDGE.find(p => p.match.some(m => currentRail.name.toLowerCase().includes(m))) : null;
+                    const matchingProject = projectByRail || PROJECT_KNOWLEDGE.find(p => {
+                        const yMatch = playerPos.y >= p.yRange[0] && playerPos.y < p.yRange[1];
+                        if (!yMatch) return false;
+                        if (p.xRange) {
+                            return playerPos.x >= p.xRange[0] && playerPos.x < p.xRange[1];
+                        }
+                        return true;
+                    });
                     if (matchingProject) {
                         this.emitThought(matchingProject.thought, 3500);
                         if (currentRail) {
