@@ -27,7 +27,30 @@
     return authPromise;
   }
 
+  let firestorePromise;
+  async function getFirestore() {
+    if (!firestorePromise) {
+      firestorePromise = (async () => {
+        await getAuth();
+        if (!window.firebase?.firestore) {
+          await load("firebase-firestore-compat.js");
+        }
+        const app = window.firebase.app();
+        const db = window.firebase.firestore(app);
+        try {
+          await db.enablePersistence({ synchronizeTabs: true });
+        } catch (e) {
+          // Fallback gracefully if indexedDB persistence is active in another tab
+        }
+        return db;
+      })();
+    }
+    return firestorePromise;
+  }
+
   window.SALES_PLATFORM_AUTH = {
+    getAuth,
+    getFirestore,
     async resume() {
       const auth = await getAuth();
       const result = await auth.getRedirectResult();

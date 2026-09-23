@@ -49,7 +49,7 @@ files.forEach(file => {
 
         // Skip test scripts, verify scripts, and test screenshots
         if (file.startsWith('test_') || file.startsWith('verify_') || file.endsWith('.test.js') || file.endsWith('.spec.js')) return;
-        if (file.endsWith('_preview.png') || file.startsWith('stratum')) return;
+        if (file.endsWith('_preview.png') || file.startsWith('stratum') || file.includes('prospects_export')) return;
 
         const destPath = path.join(distDir, file);
         fs.copyFileSync(srcPath, destPath);

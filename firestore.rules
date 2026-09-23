@@ -1,0 +1,43 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Strict Owner Helper: strictly apoorvxs@gmail.com
+    function isOwner() {
+      return request.auth != null && request.auth.token.email == 'apoorvxs@gmail.com';
+    }
+    
+    // Authorized Caller Helper: owner, caller, or sales_rep
+    function isAuthorizedCaller() {
+      return request.auth != null && (
+        isOwner() ||
+        request.auth.token.role == 'caller' ||
+        request.auth.token.role == 'sales_rep'
+      );
+    }
+    
+    // Confidential Prospects Collection
+    match /prospects/{prospectId} {
+      // 1. Read: Strictly authenticated owner or authorized caller
+      allow read: if isAuthorizedCaller();
+      
+      // 2. Create & Delete: Owner only
+      allow create, delete: if isOwner();
+      
+      // 3. Update: Owner can update anything; Callers can only update status, notes, locks, and call logs
+      allow update: if isOwner() || (
+        isAuthorizedCaller() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'status', 'lockedBy', 'lockedEmail', 'notes', 'callLog', 'discoveryTime', 'updatedAt', 'updatedBy'
+        ])
+      );
+    }
+    
+    // Workstation Audit & Call Logs
+    match /call_logs/{logId} {
+      allow read: if isAuthorizedCaller();
+      allow create: if isAuthorizedCaller();
+      allow update, delete: if isOwner();
+    }
+  }
+}

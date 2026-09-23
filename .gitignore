@@ -19,4 +19,5 @@ v2/
 *.p12
 *service_account*.json
 *credentials*.json
+*prospects_export*.json
 

@@ -795,6 +795,37 @@ function isOwnerUser(user) {
 }
 
 let prospectsLoadPromise = null;
+let unsubscribeFirestore = null;
+
+function initFirestoreRealtimeListener(db) {
+  if (unsubscribeFirestore || !db) return;
+  try {
+    unsubscribeFirestore = db.collection('prospects').onSnapshot((snapshot) => {
+      let changed = false;
+      snapshot.docChanges().forEach((change) => {
+        const data = change.doc.data();
+        if (!data || !data.id) return;
+        const idx = PROSPECTS.findIndex(p => p.id === data.id);
+        if (change.type === 'added' && idx === -1) {
+          PROSPECTS.push(data);
+          changed = true;
+        } else if (change.type === 'modified' && idx !== -1) {
+          Object.assign(PROSPECTS[idx], data);
+          changed = true;
+        } else if (change.type === 'removed' && idx !== -1) {
+          PROSPECTS.splice(idx, 1);
+          changed = true;
+        }
+      });
+      if (changed) {
+        renderQueue();
+      }
+    }, (err) => {
+      console.warn('Firestore realtime listener error:', err.message);
+    });
+  } catch (e) {}
+}
+
 async function ensureProspectsLoaded() {
   if (prospectsLoadPromise) return prospectsLoadPromise;
   prospectsLoadPromise = (async () => {
@@ -805,7 +836,34 @@ async function ensureProspectsLoaded() {
       return;
     }
 
-    // 1. Try secure API fetch with authenticated bearer token / session
+    // 1. Try Cloud Firestore (Spark Plan Free Tier) with real-time sync (skipped in test/mock mode)
+    const isTestMode = (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('sprintdial_test_mode') === 'true') || currentUser?.sub?.startsWith('mock');
+    if (!isTestMode && window.SALES_PLATFORM_AUTH?.getFirestore && currentUser) {
+      try {
+        const db = await window.SALES_PLATFORM_AUTH.getFirestore();
+        const snapshot = await db.collection('prospects').get();
+        if (!snapshot.empty) {
+          const firestoreList = [];
+          snapshot.forEach(doc => firestoreList.push(doc.data()));
+          if (firestoreList.length > 0) {
+            PROSPECTS = firestoreList;
+            initPersistence();
+            renderQueue();
+            selectProspect("p-1");
+            initFirestoreRealtimeListener(db);
+            const badge = document.getElementById('firestoreSyncStatusBadge');
+            if (badge) {
+              badge.innerText = `🟢 Cloud Firestore Active (${PROSPECTS.length})`;
+            }
+            return;
+          }
+        }
+      } catch (fsErr) {
+        console.warn('Cloud Firestore lookup or permission check:', fsErr.message);
+      }
+    }
+
+    // 2. Try secure API fetch with authenticated bearer token / session
     try {
       const headers = { 'Content-Type': 'application/json' };
       const token = currentUser?.callerToken || (currentUser?.role === 'owner' ? 'owner-session' : '');
@@ -1990,9 +2048,79 @@ function saveLeadOverride(id, updates) {
       updatedAt: new Date().toISOString()
     });
     localStorage.setItem('sprintdial_lead_overrides', JSON.stringify(overrides));
+    syncProspectUpdateToFirestore(id, overrides[id]);
   } catch (e) {
     console.warn('Failed to save lead override:', e);
   }
+}
+
+async function syncProspectUpdateToFirestore(prospectId, updateFields) {
+  if (!window.SALES_PLATFORM_AUTH?.getFirestore || !currentUser) return;
+  try {
+    const db = await window.SALES_PLATFORM_AUTH.getFirestore();
+    await db.collection('prospects').doc(prospectId).set(updateFields, { merge: true });
+  } catch (err) {
+    console.warn('Firestore background update sync:', err.message);
+  }
+}
+
+async function uploadProspectsToFirestore() {
+  const btn = document.getElementById('seedFirestoreBtn');
+  if (!window.SALES_PLATFORM_AUTH?.getFirestore) {
+    alert('Firebase Auth/Firestore service is initializing. Please try again in a moment.');
+    return;
+  }
+  if (!currentUser || !isOwnerUser(currentUser)) {
+    alert('Permission Denied: Only the verified owner (apoorvxs@gmail.com) can push prospects to Firestore.');
+    return;
+  }
+  if (!confirm(`Upload all ${PROSPECTS.length} prospects to Cloud Firestore under project 'apoorv-sales'?`)) return;
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span>⏳ Uploading to Firestore...</span>`;
+  }
+
+  try {
+    const db = await window.SALES_PLATFORM_AUTH.getFirestore();
+    const batch = db.batch();
+    PROSPECTS.forEach(p => {
+      const ref = db.collection('prospects').doc(p.id);
+      batch.set(ref, p, { merge: true });
+    });
+    await batch.commit();
+    showNotification(`🎉 Successfully uploaded ${PROSPECTS.length} accounts to Cloud Firestore!`);
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<span>✅ 100% Synced to Firestore</span>`;
+      btn.classList.remove('bg-blue-600', 'hover:bg-blue-500');
+      btn.classList.add('bg-emerald-600', 'hover:bg-emerald-500');
+    }
+    const badge = document.getElementById('firestoreSyncStatusBadge');
+    if (badge) {
+      badge.innerText = `🟢 Cloud Firestore Active (${PROSPECTS.length})`;
+    }
+    initFirestoreRealtimeListener(db);
+  } catch (err) {
+    alert(`Firestore upload error: ${err.message}`);
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<span>🚀 Push Prospects to Firestore</span>`;
+    }
+  }
+}
+
+function exportProspectsJSON() {
+  const blob = new Blob([JSON.stringify(PROSPECTS, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `sprintdial_prospects_${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showNotification('📥 Prospects JSON backup downloaded.');
 }
 
 function saveDialsToday() {
