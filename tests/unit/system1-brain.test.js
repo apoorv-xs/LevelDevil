@@ -468,15 +468,15 @@ describe("System 1 Decision Brain", () => {
       System1Brain.updateBubblePosition(mockPlayer);
 
       expect(mockBubble.style.left).toBe("260px"); // 400 - 280/2 = 260px
-      expect(mockBubble.style.top).toBe("320px");  // (500 - 100) - 36 - 44 = 320px
+      expect(mockBubble.style.top).toBe("280px");  // (500 - 100) - 76 - 44 = 280px (full BB-8 height clearance)
       expect(mockBubble.style.getPropertyValue("--tail-left")).toBe("140px"); // 400 - 260 = 140px (dead center)
       expect(mockClassList.has("bubble-flipped")).toBe(false);
 
-      // Test top boundary flip when near top of viewport (e.g. screenY = 120 -> top = 120 - 80 = 40 < 68)
+      // Test top boundary flip when near top of viewport (e.g. screenY = 120 -> top = 120 - 120 = 0 < 68)
       const mockPlayerNearTop = { pos: { x: 400, y: 220 } }; // screenY = 220 - 100 = 120
       System1Brain.updateBubblePosition(mockPlayerNearTop);
       expect(mockClassList.has("bubble-flipped")).toBe(true);
-      expect(mockBubble.style.top).toBe("156px"); // 120 + 36 = 156px
+      expect(mockBubble.style.top).toBe("144px"); // 120 + 24 = 144px
 
       delete globalThis.window;
     });

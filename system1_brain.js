@@ -583,13 +583,13 @@
             // Clamp bubble horizontally so it never clips viewport bounds
             const left = Math.max(16, Math.min(window.innerWidth - bubbleW - 20, screenX - bubbleW / 2));
 
-            // Position bubble comfortably above BB-8 (radius ~22px + 14px buffer + bubbleH)
-            let top = screenY - 36 - bubbleH;
+            // Position bubble comfortably above BB-8 (BB-8 height ~60px + 16px clearance buffer + bubbleH)
+            let top = screenY - 76 - bubbleH;
             let isFlipped = false;
 
             // If clipped by topbar header (54px + buffer), flip bubble cleanly below BB-8
             if (top < 68) {
-                top = screenY + 36;
+                top = screenY + 24;
                 isFlipped = true;
             }
 

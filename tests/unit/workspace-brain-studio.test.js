@@ -61,8 +61,8 @@ describe("System 1 Brain Studio Admin Console Interface Contracts", () => {
     });
 
     it("loads system1_brain.js directly in workspace/index.html before app.js", () => {
-      expect(htmlContent).toContain('<script src="/system1_brain.js?v=1014"></script>');
-      const brainIndex = htmlContent.indexOf('src="/system1_brain.js?v=1014"');
+      expect(htmlContent).toContain('<script src="/system1_brain.js?v=1015"></script>');
+      const brainIndex = htmlContent.indexOf('src="/system1_brain.js?v=1015"');
       const appIndex = htmlContent.indexOf('src="app.js"');
       expect(brainIndex).toBeGreaterThan(-1);
       expect(appIndex).toBeGreaterThan(-1);
