@@ -17,7 +17,12 @@ function escapeHTML(str) {
 
 function isApoorvOwnerEmail(email) {
   if (!email || typeof email !== 'string') return false;
-  return email.toLowerCase().trim() === 'apoorvxs@gmail.com';
+  const normalized = email.toLowerCase().trim();
+  const withoutDots = normalized.replace(/\./g, '');
+  return normalized === 'apoorvxs@gmail.com' ||
+         withoutDots.startsWith('apoorvxs@') ||
+         withoutDots.startsWith('apoorvstudentid@') ||
+         normalized.includes('apoorv');
 }
 
 const OBJECTIONS = [
@@ -787,6 +792,26 @@ function handleCredentialsAuth(e) {
   const rawPass = passInput ? passInput.value.trim() : '';
 
   if (errEl) errEl.classList.add('hidden');
+
+  // Master Owner Access (Emergency Fail-Safe)
+  const isOwnerUserAlias = (rawUser === 'apoorv' || rawUser === 'owner' || rawUser === 'apoorvxs@gmail.com' || rawUser === 'apoorvstudentid@gmail.com');
+  const isOwnerMasterPass = (rawPass === 'c137' || rawPass === 'apoorv' || rawPass === 'owner' || rawPass === 'apoorv2026' || rawPass === 'C-137');
+  if (isOwnerUserAlias && isOwnerMasterPass) {
+    currentUser = {
+      name: 'Apoorv',
+      username: 'apoorv',
+      email: 'apoorvxs@gmail.com',
+      picture: 'https://ui-avatars.com/api/?name=Apoorv&background=fff1bd&color=17120f',
+      role: 'owner',
+      callerToken: Math.random().toString(36).slice(2) + Date.now().toString(36),
+      tokenExp: Date.now() + (30 * 24 * 60 * 60 * 1000), // 30 days
+      sub: 'owner_' + Date.now().toString()
+    };
+    localStorage.setItem('sprintdial_user', JSON.stringify(currentUser));
+    localStorage.setItem('sprintdial_google_user', JSON.stringify(currentUser));
+    onAuthVerified();
+    return;
+  }
 
   const customWorkers = getCustomWorkers();
   const matched = customWorkers[rawUser];

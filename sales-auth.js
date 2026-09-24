@@ -63,14 +63,16 @@
         const result = await auth.signInWithPopup(provider);
         return result?.user ? result : null;
       } catch (popupErr) {
-        if (["auth/popup-blocked", "auth/operation-not-supported", "auth/web-storage-unsupported"].includes(popupErr.code)) {
-          await auth.signInWithRedirect(provider);
-          return null;
-        }
         if (["auth/popup-closed-by-user", "auth/cancelled-popup-request"].includes(popupErr.code)) {
           throw new Error("Sign-in was cancelled. Please try again.");
         }
-        throw popupErr;
+        console.warn("Popup sign-in encountered an issue, transitioning to redirect auth:", popupErr.code || popupErr.message);
+        try {
+          await auth.signInWithRedirect(provider);
+          return null;
+        } catch (redirectErr) {
+          throw new Error(redirectErr.message || "Unable to initiate Google sign-in.");
+        }
       }
     },
   };
