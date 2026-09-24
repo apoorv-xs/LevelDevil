@@ -579,6 +579,12 @@
       .admin-label-full { display: none !important; }
       .admin-label-short { display: inline !important; }
     }
+
+    /* Mobile Responsive Panes (< 768px) */
+    @media (max-width: 767px) {
+      #cockpitPane.mobile-pane-hidden { display: none !important; }
+      #queuePane.mobile-pane-hidden { display: none !important; }
+    }
       #userImg {
       width: 24px !important;
       height: 24px !important;
@@ -775,7 +781,7 @@
     <!-- ================================================================= -->
     <!-- COLUMN 2 & 3: COCKPIT CONTAINER (Audit + Dossier)                  -->
     <!-- ================================================================= -->
-    <div id="cockpitPane" class="flex-1 hidden md:flex flex-col xl:flex-row overflow-hidden bg-transparent">
+    <div id="cockpitPane" class="flex-1 flex flex-col xl:flex-row overflow-hidden bg-transparent mobile-pane-hidden">
 
       <!-- =============================================================== -->
       <!-- COLUMN 2 (CENTER): EXECUTIVE CLIENT AUDIT & TEARDOWN HUB        -->
@@ -1887,6 +1893,8 @@
 
   <script src="/sales-config.js"></script>
   <script src="/sales-auth.js"></script>
+  <script src="prospects_data.js"></script>
+  <script src="custom_prospects.js"></script>
   <script src="/system1_brain.js?v=1015"></script>
   <script src="app.js"></script>
   <script src="/three.min.js"></script>

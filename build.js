@@ -65,17 +65,13 @@ if (fs.existsSync(fontsSrcDir)) {
     console.log('Copied: fonts directory');
 }
 
-// 4. Copy workspace directory (Excluding confidential lead intelligence from public static distribution)
+// 4. Copy workspace directory
 const workspaceSrcDir = path.join(srcDir, 'workspace');
 const workspaceDistDir = path.join(distDir, 'workspace');
 if (fs.existsSync(workspaceSrcDir)) {
     fs.mkdirSync(workspaceDistDir, { recursive: true });
     const wsFiles = fs.readdirSync(workspaceSrcDir);
     wsFiles.forEach(wsFile => {
-        if (wsFile === 'prospects_data.js' || wsFile === 'custom_prospects.js') {
-            console.log(`Secured (excluded from public static distribution): ${wsFile}`);
-            return;
-        }
         const wsSrcPath = path.join(workspaceSrcDir, wsFile);
         const wsDestPath = path.join(workspaceDistDir, wsFile);
         if (fs.statSync(wsSrcPath).isFile()) {

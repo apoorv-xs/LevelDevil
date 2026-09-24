@@ -17,23 +17,7 @@
       "rewrite": "/sales.html"
     },
     {
-      "route": "/workspace/prospects_data.js",
-      "statusCode": 403
-    },
-    {
-      "route": "/workspace/custom_prospects.js",
-      "statusCode": 403
-    },
-    {
       "route": "/workspace",
-      "rewrite": "/workspace/index.html",
-      "headers": {
-        "X-Robots-Tag": "noindex, nofollow, noarchive",
-        "Cache-Control": "no-store, no-cache, must-revalidate"
-      }
-    },
-    {
-      "route": "/workspace/*",
       "rewrite": "/workspace/index.html",
       "headers": {
         "X-Robots-Tag": "noindex, nofollow, noarchive",

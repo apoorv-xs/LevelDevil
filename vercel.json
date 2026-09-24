@@ -2,18 +2,6 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "cleanUrls": true,
-  "redirects": [
-    {
-      "source": "/workspace/prospects_data.js",
-      "destination": "/404",
-      "permanent": false
-    },
-    {
-      "source": "/workspace/custom_prospects.js",
-      "destination": "/404",
-      "permanent": false
-    }
-  ],
   "rewrites": [
     {
       "source": "/sales",
@@ -36,7 +24,7 @@
       "destination": "/workspace/index.html"
     },
     {
-      "source": "/workspace/:match*",
+      "source": "/workspace/",
       "destination": "/workspace/index.html"
     }
   ],

@@ -1097,10 +1097,18 @@ function initFirestoreRealtimeListener(db) {
 async function ensureProspectsLoaded() {
   if (prospectsLoadPromise) return prospectsLoadPromise;
   prospectsLoadPromise = (async () => {
+    // 0. Synchronous dataset check (if loaded via static script tag)
+    if (typeof window !== 'undefined' && window.DEFAULT_PROSPECTS && window.DEFAULT_PROSPECTS.length) {
+      if (!PROSPECTS || !PROSPECTS.length) {
+        PROSPECTS = [...window.DEFAULT_PROSPECTS];
+      }
+    }
+
     if (PROSPECTS && PROSPECTS.length) {
       initPersistence();
       renderQueue();
-      selectProspect("p-1");
+      const initialId = PROSPECTS.find(p => p.id === "p-1")?.id || PROSPECTS[0]?.id;
+      if (initialId) selectProspect(initialId);
       return;
     }
 
@@ -1117,7 +1125,8 @@ async function ensureProspectsLoaded() {
             PROSPECTS = firestoreList;
             initPersistence();
             renderQueue();
-            selectProspect("p-1");
+            const initialId = PROSPECTS.find(p => p.id === "p-1")?.id || PROSPECTS[0]?.id;
+            if (initialId) selectProspect(initialId);
             initFirestoreRealtimeListener(db);
             const badge = document.getElementById('firestoreSyncStatusBadge');
             if (badge) {
@@ -1148,7 +1157,8 @@ async function ensureProspectsLoaded() {
           }
           initPersistence();
           renderQueue();
-          selectProspect("p-1");
+          const initialId = PROSPECTS.find(p => p.id === "p-1")?.id || PROSPECTS[0]?.id;
+          if (initialId) selectProspect(initialId);
           // Autonomous Cloud Auto-Seed: If Firestore was empty and verified owner is logged in, seed silently!
           if (!isTestMode && window.SALES_PLATFORM_AUTH?.getFirestore && currentUser && isOwnerUser(currentUser)) {
             autoBootstrapFirestore(PROSPECTS);
@@ -1168,22 +1178,29 @@ async function ensureProspectsLoaded() {
       document.body.appendChild(s);
     });
 
-    try {
-      await loadScript('prospects_data.js');
-      if (typeof window !== 'undefined' && window.DEFAULT_PROSPECTS) {
-        PROSPECTS = window.DEFAULT_PROSPECTS;
+    if (typeof window !== 'undefined' && window.DEFAULT_PROSPECTS && window.DEFAULT_PROSPECTS.length) {
+      PROSPECTS = [...window.DEFAULT_PROSPECTS];
+    } else {
+      try {
+        await loadScript('prospects_data.js').catch(() => loadScript('/workspace/prospects_data.js'));
+        if (typeof window !== 'undefined' && window.DEFAULT_PROSPECTS) {
+          PROSPECTS = [...window.DEFAULT_PROSPECTS];
+        }
+      } catch(err) {
+        console.warn('Unable to load prospects dataset', err);
       }
-    } catch(err) {
-      console.warn('Unable to load prospects dataset', err);
     }
 
-    try {
-      await loadScript('custom_prospects.js');
-    } catch(e) {}
+    if (!window.CUSTOM_PROSPECTS) {
+      try {
+        await loadScript('custom_prospects.js').catch(() => loadScript('/workspace/custom_prospects.js'));
+      } catch(e) {}
+    }
 
     initPersistence();
     renderQueue();
-    selectProspect("p-1");
+    const initialId = PROSPECTS.find(p => p.id === "p-1")?.id || PROSPECTS[0]?.id;
+    if (initialId) selectProspect(initialId);
     // Autonomous Cloud Auto-Seed: If Firestore was empty and verified owner is logged in, seed silently!
     if (!isTestMode && window.SALES_PLATFORM_AUTH?.getFirestore && currentUser && isOwnerUser(currentUser)) {
       autoBootstrapFirestore(PROSPECTS);
@@ -4204,46 +4221,46 @@ function showMobilePane(pane) {
 
   if (pane === 'queue') {
     if (queuePane) {
-      queuePane.classList.remove('hidden');
-      queuePane.classList.add('flex');
+      queuePane.classList.remove('mobile-pane-hidden', 'hidden');
     }
     if (cockpitPane) {
-      cockpitPane.classList.add('hidden');
-      cockpitPane.classList.add('md:flex');
+      cockpitPane.classList.add('mobile-pane-hidden');
     }
     if (tabQueue) {
-      tabQueue.className = "flex-1 py-1.5 rounded-md font-semibold text-neutral-950 bg-white shadow-sm transition text-center";
+      tabQueue.className = "flex-1 py-1.5 font-bold text-[#17120f] bg-[#fce566] border border-[#17120f] transition text-center";
     }
     if (tabCockpit) {
-      tabCockpit.className = "flex-1 py-1.5 rounded-md font-medium text-neutral-400 hover:text-white transition text-center";
+      tabCockpit.className = "flex-1 py-1.5 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center";
     }
   } else if (pane === 'cockpit') {
     if (queuePane) {
-      queuePane.classList.add('hidden');
-      queuePane.classList.add('md:flex');
+      queuePane.classList.add('mobile-pane-hidden');
     }
     if (cockpitPane) {
-      cockpitPane.classList.remove('hidden');
-      cockpitPane.classList.add('flex');
+      cockpitPane.classList.remove('mobile-pane-hidden', 'hidden');
     }
     if (tabCockpit) {
-      tabCockpit.className = "flex-1 py-1.5 rounded-md font-semibold text-neutral-950 bg-white shadow-sm transition text-center";
+      tabCockpit.className = "flex-1 py-1.5 font-bold text-[#17120f] bg-[#fce566] border border-[#17120f] transition text-center";
     }
     if (tabQueue) {
-      tabQueue.className = "flex-1 py-1.5 rounded-md font-medium text-neutral-400 hover:text-white transition text-center";
+      tabQueue.className = "flex-1 py-1.5 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center";
     }
   }
 }
 
+function ensureDesktopPanesVisible() {
+  if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+    const q = document.getElementById('queuePane');
+    const c = document.getElementById('cockpitPane');
+    if (q) q.classList.remove('hidden', 'mobile-pane-hidden');
+    if (c) c.classList.remove('hidden', 'mobile-pane-hidden');
+  }
+}
+
 if (typeof window !== 'undefined') {
-  window.addEventListener('resize', () => {
-    if (window.innerWidth >= 768) {
-      const q = document.getElementById('queuePane');
-      const c = document.getElementById('cockpitPane');
-      if (q) q.classList.remove('hidden');
-      if (c) c.classList.remove('hidden');
-    }
-  });
+  window.addEventListener('resize', ensureDesktopPanesVisible);
+  window.addEventListener('DOMContentLoaded', ensureDesktopPanesVisible);
+  ensureDesktopPanesVisible();
 }
 
 

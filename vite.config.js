@@ -7,30 +7,6 @@ function salesApiDevPlugin() {
   return {
     name: "sales-api-dev-plugin",
     configureServer(server) {
-      // 0. Confidential Lead Dataset Protection: Block unauthenticated scrapers & direct browser downloads
-      server.middlewares.use((req, res, next) => {
-        const url = req.url?.split("?")[0] || "";
-        if (url === "/workspace/prospects_data.js" || url === "/workspace/custom_prospects.js") {
-          const authHeader = req.headers["authorization"] || "";
-          const referer = req.headers["referer"] || "";
-          const secFetchDest = req.headers["sec-fetch-dest"] || "";
-          const isDirectAccess = secFetchDest === "document" || !referer || !referer.includes("/workspace");
-
-          if (isDirectAccess && !authHeader) {
-            res.statusCode = 403;
-            res.setHeader("Content-Type", "application/json");
-            res.end(JSON.stringify({
-              error: {
-                code: "FORBIDDEN",
-                message: "Access Denied: Confidential lead intelligence dataset is strictly protected. Authentication required."
-              }
-            }));
-            return;
-          }
-        }
-        next();
-      });
-
       // 1. SPA & Route Rewrites for /sales, /contact, /workspace
       server.middlewares.use((req, res, next) => {
         const url = req.url?.split("?")[0] || "";
