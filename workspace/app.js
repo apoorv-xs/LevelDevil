@@ -564,12 +564,38 @@ function checkLocalCredentialsOrGate() {
   localStorage.removeItem('sprintdial_user');
   localStorage.removeItem('sprintdial_google_user');
   currentUser = null;
-  showAuthGate();
+  initGuestMode();
+}
+
+function initGuestMode() {
+  currentUser = null;
+  const overlay = document.getElementById('authGateOverlay');
+  if (overlay) overlay.classList.add('hidden');
+
+  const signInBtn = document.getElementById('workspaceSignInBtnHeader');
+  if (signInBtn) {
+    signInBtn.classList.remove('hidden');
+    signInBtn.classList.add('flex');
+  }
+
+  const userChip = document.getElementById('userChipHeader');
+  if (userChip) {
+    userChip.classList.add('hidden');
+    userChip.classList.remove('flex');
+  }
+
+  const adminBtn = document.getElementById('adminBtnHeader');
+  if (adminBtn) {
+    adminBtn.classList.add('hidden');
+    adminBtn.classList.remove('flex');
+  }
+
+  ensureProspectsLoaded();
 }
 
 function handleUserAuthResolved(user) {
   if (!user || !user.email) {
-    showAuthGate();
+    initGuestMode();
     return;
   }
   const email = (user.email || '').toLowerCase().trim();
@@ -614,13 +640,33 @@ function handleUserAuthResolved(user) {
   }
 }
 
-function showAuthGate() {
+function openAuthGate() {
   const overlay = document.getElementById('authGateOverlay');
   const signInBox = document.getElementById('authGateSignInBox');
   const applicantBox = document.getElementById('authGateApplicantBox');
   if (overlay) overlay.classList.remove('hidden');
-  if (signInBox) signInBox.classList.remove('hidden');
-  if (applicantBox) applicantBox.classList.add('hidden');
+  if (currentUser && currentUser.role === 'applicant') {
+    if (signInBox) signInBox.classList.add('hidden');
+    if (applicantBox) applicantBox.classList.remove('hidden');
+  } else {
+    if (signInBox) signInBox.classList.remove('hidden');
+    if (applicantBox) applicantBox.classList.add('hidden');
+  }
+}
+
+function showAuthGate() {
+  openAuthGate();
+}
+
+function closeAuthGate() {
+  const overlay = document.getElementById('authGateOverlay');
+  if (overlay) overlay.classList.add('hidden');
+}
+
+function handleAuthBackdropClick(e) {
+  if (e && e.target && e.target.id === 'authGateOverlay') {
+    closeAuthGate();
+  }
 }
 
 function showApplicantPortal(user) {
@@ -1147,7 +1193,15 @@ async function ensureProspectsLoaded() {
 }
 
 function onAuthVerified() {
-  document.getElementById('authGateOverlay').classList.add('hidden');
+  const overlay = document.getElementById('authGateOverlay');
+  if (overlay) overlay.classList.add('hidden');
+
+  const signInBtn = document.getElementById('workspaceSignInBtnHeader');
+  if (signInBtn) {
+    signInBtn.classList.add('hidden');
+    signInBtn.classList.remove('flex');
+  }
+
   document.getElementById('userName').innerText = currentUser.name;
   document.getElementById('userEmail').innerText = currentUser.email;
   document.getElementById('userImg').src = currentUser.picture;
@@ -1206,6 +1260,7 @@ function setupKeyboardShortcuts() {
         searchInp.select();
       }
     } else if (e.key === 'Escape') {
+      closeAuthGate();
       closeAdminModal();
       closeProposalModal();
       closeClientTeardownModal();
@@ -1640,7 +1695,11 @@ function renderActiveProspect() {
 
 // Active Call Stopwatch
 function handleCallInitiated() {
-  if (!currentUser) return;
+  if (!currentUser) {
+    showNotification('🔑 Sign in with your Sales Rep or Owner credentials to initiate active calls.');
+    openAuthGate();
+    return;
+  }
   const p = PROSPECTS.find(item => item.id === selectedProspectId);
   if (!p) return;
   p.status = 'locked';
@@ -4592,6 +4651,9 @@ if (typeof window !== 'undefined') {
   window.syncBrainFromFirestoreUI = syncBrainFromFirestoreUI;
   window.startBrainTelemetryPolling = startBrainTelemetryPolling;
   window.stopBrainTelemetryPolling = stopBrainTelemetryPolling;
+  window.openAuthGate = openAuthGate;
+  window.closeAuthGate = closeAuthGate;
+  window.handleAuthBackdropClick = handleAuthBackdropClick;
 }
 if (typeof global !== 'undefined') {
   global.handleBrainCategoryChange = handleBrainCategoryChange;
@@ -4606,5 +4668,8 @@ if (typeof global !== 'undefined') {
   global.syncBrainFromFirestoreUI = syncBrainFromFirestoreUI;
   global.startBrainTelemetryPolling = startBrainTelemetryPolling;
   global.stopBrainTelemetryPolling = stopBrainTelemetryPolling;
+  global.openAuthGate = openAuthGate;
+  global.closeAuthGate = closeAuthGate;
+  global.handleAuthBackdropClick = handleAuthBackdropClick;
 }
 

@@ -599,14 +599,14 @@
       bottom: 0 !important;
       width: 100vw !important;
       height: 100vh !important;
-      background: rgba(23, 18, 15, 0.88) !important;
-      backdrop-filter: blur(8px) !important;
-      -webkit-backdrop-filter: blur(8px) !important;
+      background: rgba(23, 18, 15, 0.78) !important;
+      backdrop-filter: blur(6px) !important;
+      -webkit-backdrop-filter: blur(6px) !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
       padding: 16px !important;
-      z-index: 99999 !important;
+      z-index: 50 !important;
     }
     #authGateOverlay.hidden,
     #adminModal.hidden,
@@ -683,6 +683,11 @@
       <!-- Audio SFX Toggle -->
       <button id="sfx-toggle-btn" onclick="toggleAudioSFX()" title="Toggle Sound Effects" class="topbar-btn sfx-btn font-arcade text-[10px] px-2 py-1 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] transition cursor-pointer">
         [ 🔊 SFX ]
+      </button>
+
+      <!-- Sign In Trigger (Visible when unauthenticated / guest) -->
+      <button id="workspaceSignInBtnHeader" onclick="openAuthGate()" class="px-2.5 py-1 text-[10px] font-arcade bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] transition flex items-center gap-1.5 cursor-pointer">
+        <span>🔑</span> <span class="admin-label-full">Sign In / Sales Rep</span><span class="admin-label-short">Sign In</span>
       </button>
 
       <!-- Owner Admin Trigger (Gated strictly to Owner) -->
@@ -1197,7 +1202,7 @@
   <!-- MODALS & OVERLAYS -->
 
   <!-- 1. AUTH GATE OVERLAY -->
-  <div id="authGateOverlay" class="hidden fixed inset-0 bg-[#090A0E]/95 backdrop-blur-md flex items-center justify-center p-4 z-50">
+  <div id="authGateOverlay" onclick="handleAuthBackdropClick(event)" class="hidden fixed inset-0 bg-[#090A0E]/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
     <!-- View 1: Sign-In Box (Unauthenticated) -->
     <div id="authGateSignInBox" class="studio-panel-elevated rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5 border border-white/10">
       <div class="flex items-center justify-between">
@@ -1211,13 +1216,16 @@
           </div>
           <span class="font-bold font-mono text-sm tracking-tight text-white uppercase">APOORV // WORKBENCH</span>
         </div>
-        <span class="text-[10px] font-mono text-neutral-400 bg-white/5 px-2 py-0.5 rounded border border-white/5">Studio V3</span>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-mono text-neutral-400 bg-white/5 px-2 py-0.5 rounded border border-white/5">Studio V3</span>
+          <button id="closeAuthGateBtn" type="button" onclick="closeAuthGate()" class="text-neutral-500 hover:text-white font-mono text-base font-bold px-1.5 py-0.5 rounded hover:bg-white/10 transition cursor-pointer" title="Close">✕</button>
+        </div>
       </div>
 
       <div class="space-y-1">
         <h2 class="text-base font-bold text-white tracking-tight">Workstation Access</h2>
         <p class="text-xs text-neutral-400 leading-relaxed">
-          Operating strictly on Apoorv's behalf. Sign in with Google or your caller credentials to unlock workspace queues.
+          Sign in with Google or your caller credentials to unlock live dialer calling and lead reservations.
         </p>
       </div>
 
@@ -1267,6 +1275,11 @@
             Sign In with Caller ID →
           </button>
         </form>
+
+        <div class="pt-3 flex justify-between items-center text-xs font-mono border-t border-white/10">
+          <button type="button" onclick="closeAuthGate()" class="text-neutral-400 hover:text-white transition cursor-pointer">← Explore as Guest</button>
+          <a href="/" class="text-neutral-400 hover:text-white transition">Back to Home →</a>
+        </div>
       </div>
     </div>
 
@@ -1280,7 +1293,10 @@
             <div id="applicantEmail" class="text-xs font-mono text-neutral-400">user@gmail.com</div>
           </div>
         </div>
-        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">VISITOR ACCOUNT</span>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">VISITOR ACCOUNT</span>
+          <button type="button" onclick="closeAuthGate()" class="text-neutral-500 hover:text-white font-mono text-base font-bold px-1.5 py-0.5 rounded hover:bg-white/10 transition cursor-pointer" title="Close">✕</button>
+        </div>
       </div>
 
       <div class="text-xs font-mono text-neutral-300 leading-relaxed bg-[#101114] p-3 rounded-xl border border-white/5">
@@ -1332,7 +1348,7 @@
       </div>
 
       <div class="pt-2 flex justify-between items-center text-xs font-mono border-t border-white/10">
-        <a href="/" class="text-neutral-400 hover:text-white transition">← Back to Portfolio</a>
+        <button type="button" onclick="closeAuthGate()" class="text-neutral-400 hover:text-white transition cursor-pointer">← Back to Workspace</button>
         <button onclick="signOut()" class="text-rose-400 hover:text-rose-300 transition cursor-pointer">
           Sign Out / Switch Account
         </button>

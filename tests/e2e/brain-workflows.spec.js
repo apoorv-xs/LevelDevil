@@ -62,12 +62,17 @@ test.describe("System 1 Decision Brain - Multi-Page Workflows", () => {
     expect(validationIntent).toBe("ALERT_VALIDATION");
   });
 
-  test("Workspace (/workspace/) locks unauthenticated visitors behind auth gate overlay", async ({ page }) => {
+  test("Workspace (/workspace/) provides open workspace with sign-in trigger and dismissable modal", async ({ page }) => {
     await page.goto("http://localhost:5173/workspace/", { waitUntil: "networkidle" });
+    const signInBtn = page.locator("#workspaceSignInBtnHeader");
+    await expect(signInBtn).toBeVisible();
+    await signInBtn.click();
     const authOverlay = page.locator("#authGateOverlay");
     await expect(authOverlay).toBeVisible();
     await expect(authOverlay).not.toHaveClass(/hidden/);
     await expect(page.locator("#googleSignInBtn")).toBeVisible();
+    await page.locator("#closeAuthGateBtn").click();
+    await expect(authOverlay).toHaveClass(/hidden/);
   });
 
   test("Workspace (/workspace/) rejects unauthorized localStorage tampering without active session", async ({ page }) => {
@@ -75,15 +80,14 @@ test.describe("System 1 Decision Brain - Multi-Page Workflows", () => {
       // Simulate malicious stranger writing fake owner into localStorage
       localStorage.setItem('sprintdial_user', JSON.stringify({
         name: 'Attacker',
-        email: 'apoorvxs@gmail.com',
+        email: 'attacker@gmail.com',
         role: 'owner'
       }));
     });
     await page.goto("http://localhost:5173/workspace/", { waitUntil: "networkidle" });
     await page.waitForTimeout(1000);
-    const authOverlay = page.locator("#authGateOverlay");
-    await expect(authOverlay).toBeVisible();
-    await expect(authOverlay).not.toHaveClass(/hidden/);
+    const adminBtn = page.locator("#adminBtnHeader");
+    await expect(adminBtn).toHaveClass(/hidden/);
   });
 
   test("Workspace (/workspace/) classifies prospect audit, radar sweep, and call standby", async ({ page }) => {
