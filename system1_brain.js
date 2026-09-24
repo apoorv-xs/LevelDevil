@@ -151,13 +151,308 @@
         lastRadarTime: 0,
         isCallActive: false,
         callDuration: 0,
+        activeCustomRule: null,
+
+        // --- DYNAMIC NEURAL KNOWLEDGE LAYER (< 1ms IN-MEMORY ACCESS) ---
+        trainedKnowledge: {
+            projects: [],
+            scopes: {},
+            tiers: {},
+            defects: {},
+            customRules: []
+        },
+
+        loadTrainedKnowledge() {
+            try {
+                if (typeof localStorage !== "undefined") {
+                    const raw = localStorage.getItem("system1_brain_knowledge");
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (parsed && typeof parsed === "object") {
+                            this.trainedKnowledge.projects = Array.isArray(parsed.projects) ? parsed.projects : [];
+                            this.trainedKnowledge.scopes = (parsed.scopes && typeof parsed.scopes === "object") ? parsed.scopes : {};
+                            this.trainedKnowledge.tiers = (parsed.tiers && typeof parsed.tiers === "object") ? parsed.tiers : {};
+                            this.trainedKnowledge.defects = (parsed.defects && typeof parsed.defects === "object") ? parsed.defects : {};
+                            this.trainedKnowledge.customRules = Array.isArray(parsed.customRules) ? parsed.customRules : [];
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn("[System 1 Brain] Failed to load trained knowledge from localStorage:", err);
+            }
+        },
+
+        saveTrainedKnowledge(syncCloud = true) {
+            try {
+                if (typeof localStorage !== "undefined") {
+                    localStorage.setItem("system1_brain_knowledge", JSON.stringify(this.trainedKnowledge));
+                }
+            } catch (err) {
+                console.warn("[System 1 Brain] Failed to persist trained knowledge to localStorage:", err);
+            }
+            if (syncCloud && typeof window !== "undefined" && window.SALES_PLATFORM_AUTH?.getFirestore) {
+                window.SALES_PLATFORM_AUTH.getFirestore().then(db => {
+                    this.pushToFirestore(db).catch(() => {});
+                }).catch(() => {});
+            }
+        },
+
+        getProjectKnowledge() {
+            return [...(this.trainedKnowledge.projects || []), ...PROJECT_KNOWLEDGE];
+        },
+
+        getScopeKnowledge(scope) {
+            return (this.trainedKnowledge.scopes && this.trainedKnowledge.scopes[scope]) || SCOPE_KNOWLEDGE[scope];
+        },
+
+        getTierKnowledge(tier) {
+            return (this.trainedKnowledge.tiers && this.trainedKnowledge.tiers[tier]) || TIER_KNOWLEDGE[tier];
+        },
+
+        getDefectKnowledge(defectKey) {
+            return (this.trainedKnowledge.defects && this.trainedKnowledge.defects[defectKey]) || DEFECT_KNOWLEDGE[defectKey];
+        },
+
+        getCustomRules() {
+            return this.trainedKnowledge.customRules || [];
+        },
+
+        trainNode(node, syncCloud = true) {
+            if (!node || typeof node !== "object") throw new Error("Invalid knowledge node payload.");
+            const id = String(node.id || node.name || `node_${Date.now()}`).trim();
+            const category = node.category || "custom_trigger";
+
+            const record = {
+                id,
+                category,
+                name: node.name || id,
+                thought: String(node.thought || "").trim(),
+                page: node.page || "all",
+                action: node.action || "nod",
+                jumpForce: Number(node.jumpForce) || 400,
+                audioCue: node.audioCue || "playThought",
+                updatedAt: new Date().toISOString(),
+                source: "trained"
+            };
+
+            if (category === "project") {
+                record.match = Array.isArray(node.match) ? node.match : (node.match ? String(node.match).split(',').map(s=>s.trim()).filter(Boolean) : [id]);
+                record.yRange = Array.isArray(node.yRange) ? node.yRange : [Number(node.yMin) || 0, Number(node.yMax) || 4000];
+                if (node.xRange || (node.xMin !== undefined && node.xMax !== undefined)) {
+                    record.xRange = Array.isArray(node.xRange) ? node.xRange : [Number(node.xMin) || 0, Number(node.xMax) || 9999];
+                }
+                const idx = this.trainedKnowledge.projects.findIndex(p => p.id === id);
+                if (idx >= 0) this.trainedKnowledge.projects[idx] = record;
+                else this.trainedKnowledge.projects.unshift(record);
+            } else if (category === "scope") {
+                record.title = node.title || id;
+                this.trainedKnowledge.scopes[id] = record;
+            } else if (category === "tier") {
+                this.trainedKnowledge.tiers[id] = record;
+            } else if (category === "defect") {
+                this.trainedKnowledge.defects[id] = record.thought;
+            } else {
+                // category === "custom_trigger"
+                record.match = Array.isArray(node.match) ? node.match : (node.match ? String(node.match).split(',').map(s=>s.trim()).filter(Boolean) : [id]);
+                if (node.yRange || (node.yMin !== undefined && node.yMax !== undefined)) {
+                    record.yRange = Array.isArray(node.yRange) ? node.yRange : [Number(node.yMin) || 0, Number(node.yMax) || 4000];
+                }
+                const idx = this.trainedKnowledge.customRules.findIndex(r => r.id === id);
+                if (idx >= 0) this.trainedKnowledge.customRules[idx] = record;
+                else this.trainedKnowledge.customRules.unshift(record);
+            }
+
+            this.saveTrainedKnowledge(syncCloud);
+            return record;
+        },
+
+        deleteTrainedNode(id) {
+            if (!id) return false;
+            let deleted = false;
+            const pIdx = this.trainedKnowledge.projects.findIndex(p => p.id === id);
+            if (pIdx >= 0) {
+                this.trainedKnowledge.projects.splice(pIdx, 1);
+                deleted = true;
+            }
+            if (this.trainedKnowledge.scopes[id]) {
+                delete this.trainedKnowledge.scopes[id];
+                deleted = true;
+            }
+            if (this.trainedKnowledge.tiers[id]) {
+                delete this.trainedKnowledge.tiers[id];
+                deleted = true;
+            }
+            if (this.trainedKnowledge.defects[id]) {
+                delete this.trainedKnowledge.defects[id];
+                deleted = true;
+            }
+            const rIdx = this.trainedKnowledge.customRules.findIndex(r => r.id === id);
+            if (rIdx >= 0) {
+                this.trainedKnowledge.customRules.splice(rIdx, 1);
+                deleted = true;
+            }
+
+            if (deleted) {
+                this.saveTrainedKnowledge(false);
+                if (typeof window !== "undefined" && window.SALES_PLATFORM_AUTH?.getFirestore) {
+                    window.SALES_PLATFORM_AUTH.getFirestore().then(db => {
+                        db.collection("brain_knowledge").doc(id).delete().catch(() => {});
+                    }).catch(() => {});
+                }
+            }
+            return deleted;
+        },
+
+        getAllKnowledge() {
+            const list = [];
+            // 1. Projects
+            PROJECT_KNOWLEDGE.forEach(p => {
+                const isOverridden = this.trainedKnowledge.projects.some(tp => tp.id === p.id);
+                if (!isOverridden) {
+                    list.push({ ...p, category: "project", source: "factory", name: p.id.toUpperCase() });
+                }
+            });
+            this.trainedKnowledge.projects.forEach(p => {
+                list.push({ ...p, category: "project", source: "trained" });
+            });
+
+            // 2. Scopes
+            Object.keys(SCOPE_KNOWLEDGE).forEach(k => {
+                const isOverridden = Boolean(this.trainedKnowledge.scopes[k]);
+                if (!isOverridden) {
+                    list.push({ id: k, name: k, category: "scope", thought: SCOPE_KNOWLEDGE[k].thought, jumpForce: SCOPE_KNOWLEDGE[k].jumpForce, source: "factory" });
+                }
+            });
+            Object.keys(this.trainedKnowledge.scopes).forEach(k => {
+                list.push({ ...this.trainedKnowledge.scopes[k], id: k, name: k, category: "scope", source: "trained" });
+            });
+
+            // 3. Tiers
+            Object.keys(TIER_KNOWLEDGE).forEach(k => {
+                const isOverridden = Boolean(this.trainedKnowledge.tiers[k]);
+                if (!isOverridden) {
+                    list.push({ id: k, name: k, category: "tier", thought: TIER_KNOWLEDGE[k].thought, source: "factory" });
+                }
+            });
+            Object.keys(this.trainedKnowledge.tiers).forEach(k => {
+                list.push({ ...this.trainedKnowledge.tiers[k], id: k, name: k, category: "tier", source: "trained" });
+            });
+
+            // 4. Defects
+            Object.keys(DEFECT_KNOWLEDGE).forEach(k => {
+                const isOverridden = Boolean(this.trainedKnowledge.defects[k]);
+                if (!isOverridden) {
+                    list.push({ id: k, name: k.toUpperCase(), category: "defect", thought: DEFECT_KNOWLEDGE[k], source: "factory" });
+                }
+            });
+            Object.keys(this.trainedKnowledge.defects).forEach(k => {
+                list.push({ id: k, name: k.toUpperCase(), category: "defect", thought: this.trainedKnowledge.defects[k], source: "trained" });
+            });
+
+            // 5. Custom Rules
+            this.trainedKnowledge.customRules.forEach(r => {
+                list.push({ ...r, category: "custom_trigger", source: "trained" });
+            });
+
+            return list;
+        },
+
+        exportJSON() {
+            return JSON.stringify(this.trainedKnowledge, null, 2);
+        },
+
+        importJSON(jsonString) {
+            try {
+                const parsed = typeof jsonString === "string" ? JSON.parse(jsonString) : jsonString;
+                if (!parsed || typeof parsed !== "object") throw new Error("Invalid JSON structure.");
+                this.trainedKnowledge.projects = Array.isArray(parsed.projects) ? parsed.projects : [];
+                this.trainedKnowledge.scopes = (parsed.scopes && typeof parsed.scopes === "object") ? parsed.scopes : {};
+                this.trainedKnowledge.tiers = (parsed.tiers && typeof parsed.tiers === "object") ? parsed.tiers : {};
+                this.trainedKnowledge.defects = (parsed.defects && typeof parsed.defects === "object") ? parsed.defects : {};
+                this.trainedKnowledge.customRules = Array.isArray(parsed.customRules) ? parsed.customRules : [];
+                this.saveTrainedKnowledge(true);
+                return true;
+            } catch (err) {
+                console.error("[System 1 Brain] Failed to import knowledge JSON:", err);
+                throw err;
+            }
+        },
+
+        resetToFactory() {
+            this.trainedKnowledge = {
+                projects: [],
+                scopes: {},
+                tiers: {},
+                defects: {},
+                customRules: []
+            };
+            if (typeof localStorage !== "undefined") {
+                localStorage.removeItem("system1_brain_knowledge");
+            }
+            return true;
+        },
+
+        async syncWithFirestore(db) {
+            if (!db) return;
+            try {
+                const snap = await db.collection("brain_knowledge").get();
+                if (!snap.empty) {
+                    let count = 0;
+                    snap.forEach(doc => {
+                        const data = doc.data();
+                        if (data && data.id && data.category) {
+                            this.trainNode(data, false);
+                            count++;
+                        }
+                    });
+                    if (count > 0) {
+                        this.saveTrainedKnowledge(false);
+                    }
+                }
+            } catch (e) {
+                console.warn("[System 1 Brain] Firestore sync note:", e);
+            }
+        },
+
+        async pushToFirestore(db) {
+            if (!db) return;
+            try {
+                const allTrained = [];
+                this.trainedKnowledge.projects.forEach(p => allTrained.push(p));
+                Object.keys(this.trainedKnowledge.scopes).forEach(k => allTrained.push({ id: k, ...this.trainedKnowledge.scopes[k], category: "scope" }));
+                Object.keys(this.trainedKnowledge.tiers).forEach(k => allTrained.push({ id: k, ...this.trainedKnowledge.tiers[k], category: "tier" }));
+                Object.keys(this.trainedKnowledge.defects).forEach(k => allTrained.push({ id: k, thought: this.trainedKnowledge.defects[k], category: "defect" }));
+                this.trainedKnowledge.customRules.forEach(r => allTrained.push(r));
+
+                if (typeof db.batch === "function") {
+                    const batch = db.batch();
+                    allTrained.forEach(item => {
+                        const docRef = db.collection("brain_knowledge").doc(item.id);
+                        batch.set(docRef, item, { merge: true });
+                    });
+                    await batch.commit();
+                } else {
+                    for (const item of allTrained) {
+                        await db.collection("brain_knowledge").doc(item.id).set(item, { merge: true });
+                    }
+                }
+            } catch (e) {
+                console.warn("[System 1 Brain] Firestore push note:", e);
+            }
+        },
 
         init() {
+            this.loadTrainedKnowledge();
             if (typeof document !== "undefined") {
                 this.setupBubble();
                 this.bindEvents();
             }
-            console.log("System 1 Decision Brain Initialized (Unified Multi-Page Architecture).");
+            if (typeof window !== "undefined" && window.SALES_PLATFORM_AUTH?.getFirestore) {
+                window.SALES_PLATFORM_AUTH.getFirestore().then(db => {
+                    this.syncWithFirestore(db).catch(() => {});
+                }).catch(() => {});
+            }
+            console.log("System 1 Decision Brain Initialized (Dynamic Neural Memory Enabled).");
         },
 
         setupBubble() {
@@ -327,7 +622,7 @@
             this.selectedScope = scope;
             this.lastScopeTime = (typeof performance !== "undefined") ? performance.now() : Date.now();
             this.currentIntent = INTENTS.CALIBRATE_SCOPE;
-            const intel = SCOPE_KNOWLEDGE[scope];
+            const intel = this.getScopeKnowledge(scope);
             if (intel) {
                 this.emitThought(intel.thought, 3200);
             } else {
@@ -342,7 +637,7 @@
             this.selectedTier = tier;
             this.lastTierTime = (typeof performance !== "undefined") ? performance.now() : Date.now();
             this.currentIntent = INTENTS.VALIDATE_TIER;
-            const intel = TIER_KNOWLEDGE[tier];
+            const intel = this.getTierKnowledge(tier);
             if (intel) {
                 this.emitThought(intel.thought, 3200);
             } else {
@@ -399,11 +694,11 @@
             const flaw = (prospect.flaws && prospect.flaws[0]) || "";
             let defectText = `Auditing ${prospect.name || "prospect"}: ${lcp} mobile latency.`;
             if (flaw.toLowerCase().includes("dom") || (prospect.techStack && prospect.techStack.includes("WordPress"))) {
-                defectText = DEFECT_KNOWLEDGE.dom;
+                defectText = this.getDefectKnowledge("dom");
             } else if (flaw.toLowerCase().includes("dpdp") || flaw.toLowerCase().includes("privacy")) {
-                defectText = DEFECT_KNOWLEDGE.dpdp;
+                defectText = this.getDefectKnowledge("dpdp");
             } else if (parseFloat(lcp) > 3.0) {
-                defectText = DEFECT_KNOWLEDGE.lcp;
+                defectText = this.getDefectKnowledge("lcp");
             }
             this.emitThought(defectText, 3200);
             if (typeof window !== "undefined" && window.Player3D && window.Player3D.curiousInspect) {
@@ -469,8 +764,9 @@
             }
 
             // Flagship Project Showcase proximity check (prioritize rail name matching, fallback to spatial coordinate bounds)
-            const projectByRail = groundedRail?.name ? PROJECT_KNOWLEDGE.find(p => p.match.some(m => groundedRail.name.toLowerCase().includes(m))) : null;
-            const matchingProject = projectByRail || PROJECT_KNOWLEDGE.find(p => {
+            const allProjects = this.getProjectKnowledge();
+            const projectByRail = groundedRail?.name ? allProjects.find(p => p.match.some(m => groundedRail.name.toLowerCase().includes(m))) : null;
+            const matchingProject = projectByRail || allProjects.find(p => {
                 const yMatch = playerPos.y >= p.yRange[0] && playerPos.y < p.yRange[1];
                 if (!yMatch) return false;
                 if (p.xRange) {
@@ -488,6 +784,33 @@
             }
 
             return INTENTS.IDLE_PERCH;
+        },
+
+        classifyCustomRule(telemetry) {
+            const rules = this.getCustomRules();
+            if (!rules || !rules.length) return null;
+            const { page = "home", playerPos = { x: 0, y: 0 }, groundedRail = null, activeElement = null } = telemetry;
+
+            for (const rule of rules) {
+                if (rule.page && rule.page !== "all" && rule.page !== page) continue;
+
+                if (rule.yRange && Array.isArray(rule.yRange) && rule.yRange.length === 2) {
+                    if (playerPos.y < rule.yRange[0] || playerPos.y >= rule.yRange[1]) continue;
+                }
+                if (rule.xRange && Array.isArray(rule.xRange) && rule.xRange.length === 2) {
+                    if (playerPos.x < rule.xRange[0] || playerPos.x >= rule.xRange[1]) continue;
+                }
+                if (rule.match && Array.isArray(rule.match) && rule.match.length > 0) {
+                    const railName = (groundedRail?.name || "").toLowerCase();
+                    const elId = (activeElement?.id || "").toLowerCase();
+                    const elName = (activeElement?.name || "").toLowerCase();
+                    const matchesRail = rule.match.some(m => railName.includes(m.toLowerCase()));
+                    const matchesEl = rule.match.some(m => elId.includes(m.toLowerCase()) || elName.includes(m.toLowerCase()));
+                    if (!matchesRail && !matchesEl && rule.match[0] !== "*") continue;
+                }
+                return rule;
+            }
+            return null;
         },
 
         classifySalesIntent(telemetry) {
@@ -548,6 +871,18 @@
             // Universal hazard evasion
             if (currentRail && currentRail.trap === "spikes") {
                 return INTENTS.EVADE_HAZARD;
+            }
+
+            // Check custom trained trigger rules
+            const customRule = this.classifyCustomRule(telemetry);
+            if (customRule) {
+                this.activeCustomRule = customRule;
+                if (customRule.intent && INTENTS[customRule.intent]) {
+                    return INTENTS[customRule.intent];
+                }
+                return INTENTS.SHOWCASE_PROJECT;
+            } else {
+                this.activeCustomRule = null;
             }
 
             // Priority: Active route-specific workflows take precedence over passive catch-up
@@ -629,8 +964,29 @@
                 }
 
                 case INTENTS.SHOWCASE_PROJECT: {
-                    const projectByRail = currentRail?.name ? PROJECT_KNOWLEDGE.find(p => p.match.some(m => currentRail.name.toLowerCase().includes(m))) : null;
-                    const matchingProject = projectByRail || PROJECT_KNOWLEDGE.find(p => {
+                    if (this.activeCustomRule) {
+                        this.emitThought(this.activeCustomRule.thought, 3500);
+                        if (this.activeCustomRule.action === "jump" && isGrounded) {
+                            result.wantsJump = true;
+                            result.jumpForce = this.activeCustomRule.jumpForce || 450;
+                        } else if (this.activeCustomRule.action === "celebrate") {
+                            if (typeof window !== "undefined" && window.Player3D?.celebrateVictory) {
+                                window.Player3D.celebrateVictory();
+                            }
+                        } else if (this.activeCustomRule.action === "nod") {
+                            if (typeof window !== "undefined" && window.Player3D?.nod) {
+                                window.Player3D.nod();
+                            }
+                        }
+                        if (this.activeCustomRule.audioCue && typeof window !== "undefined" && window.SFX?.[this.activeCustomRule.audioCue]) {
+                            const px = (window.player && window.player.pos) ? window.player.pos.x : null;
+                            window.SFX[this.activeCustomRule.audioCue](px);
+                        }
+                        break;
+                    }
+                    const allProjects = this.getProjectKnowledge();
+                    const projectByRail = currentRail?.name ? allProjects.find(p => p.match.some(m => currentRail.name.toLowerCase().includes(m))) : null;
+                    const matchingProject = projectByRail || allProjects.find(p => {
                         const yMatch = playerPos.y >= p.yRange[0] && playerPos.y < p.yRange[1];
                         if (!yMatch) return false;
                         if (p.xRange) {
@@ -651,7 +1007,7 @@
                 }
 
                 case INTENTS.CALIBRATE_SCOPE: {
-                    const intel = SCOPE_KNOWLEDGE[this.selectedScope];
+                    const intel = this.getScopeKnowledge(this.selectedScope);
                     const scopeEl = typeof document !== "undefined" ? document.querySelector('select[name="scope"], .scope-pill') : null;
                     if (scopeEl) {
                         const rect = scopeEl.getBoundingClientRect();

@@ -1362,6 +1362,7 @@
         <button id="btnAdminTabLogs" onclick="switchAdminTab('logs')" class="px-3 py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Call Logs</button>
         <button id="btnAdminTabSync" onclick="switchAdminTab('sync')" class="px-3 py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Cloud Sync</button>
         <button id="btnAdminTabUsers" onclick="switchAdminTab('users')" class="px-3 py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Worker Logins</button>
+        <button id="btnAdminTabBrain" onclick="switchAdminTab('brain')" class="px-3 py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1.5"><span>🧠</span><span>Brain Studio</span></button>
       </div>
 
       <!-- Tab 1: Gemini AI -->
@@ -1552,6 +1553,184 @@
           </div>
         </div>
       </div>
+
+      <!-- Tab 6: 🧠 System 1 Brain Studio (Owner Dynamic Neural Training & Knowledge Inspector) -->
+      <div id="adminTabBrain" class="hidden flex-1 overflow-y-auto space-y-4 custom-scrollbar">
+        <!-- 1. Cognitive Telemetry Monitor (Live Real-Time Sub-1ms Stats) -->
+        <div class="bg-[#101114] border border-purple-900/30 rounded-xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-sm">🧠</span>
+              <span class="text-xs font-mono text-white font-bold uppercase tracking-wider">Cognitive Telemetry & Frame Budget</span>
+            </div>
+            <span id="telemetryStatusPill" class="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-950/60 text-purple-300 border border-purple-800/40 font-bold">Latency: &lt; 0.2ms // 60 FPS</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
+            <div class="bg-[#15161B] border border-white/5 rounded-lg p-2.5">
+              <div class="text-[10px] text-neutral-400">ACTIVE INTENT</div>
+              <div id="telemetryIntentVal" class="text-xs font-bold text-cyan-400 truncate mt-1">IDLE_PERCH</div>
+            </div>
+            <div class="bg-[#15161B] border border-white/5 rounded-lg p-2.5">
+              <div class="text-[10px] text-neutral-400">CURRENT THOUGHT</div>
+              <div id="telemetryThoughtVal" class="text-xs font-bold text-amber-300 truncate mt-1" title="Monitoring page telemetry">Monitoring telemetry</div>
+            </div>
+            <div class="bg-[#15161B] border border-white/5 rounded-lg p-2.5">
+              <div class="text-[10px] text-neutral-400">KNOWLEDGE NODES</div>
+              <div id="telemetryTotalNodesVal" class="text-xs font-bold text-emerald-400 mt-1">24 Active</div>
+            </div>
+            <div class="bg-[#15161B] border border-white/5 rounded-lg p-2.5">
+              <div class="text-[10px] text-neutral-400">CLOUD SYNC (FIRESTORE)</div>
+              <div id="telemetryCloudStatusVal" class="text-xs font-bold text-blue-400 mt-1">Ready</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Interactive Neural Training Module -->
+        <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono text-white font-bold">⚡ Train New Cognitive Node / Trigger Rule:</span>
+            <span class="text-[10px] font-mono text-neutral-500">Non-Autoregressive • Zero Compute Cost</span>
+          </div>
+          <form id="trainBrainForm" onsubmit="handleTrainBrainSubmit(event)" class="space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div>
+                <label class="text-[10px] font-mono text-neutral-400 block mb-1">Node Identifier (Unique ID)</label>
+                <input type="text" id="trainNodeId" required placeholder="e.g. cyber_punk_showcase" class="w-full bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-purple-500/50" />
+              </div>
+              <div>
+                <label class="text-[10px] font-mono text-neutral-400 block mb-1">Knowledge Category</label>
+                <select id="trainCategory" class="w-full bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-purple-500/50" onchange="handleBrainCategoryChange()">
+                  <option value="project">Project Showcase</option>
+                  <option value="scope">Scope Calibration</option>
+                  <option value="tier">Budget Tier Guidance</option>
+                  <option value="defect">Client Defect Diagnosis</option>
+                  <option value="custom_trigger">Spatial Custom Rule Trigger</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-[10px] font-mono text-neutral-400 block mb-1">Target Page Context</label>
+                <select id="trainPage" class="w-full bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-purple-500/50">
+                  <option value="*">* Universal (All Pages)</option>
+                  <option value="home">Home (2.5D Descent)</option>
+                  <option value="sales">Sales (Intake Engine)</option>
+                  <option value="workspace">Workspace (Cockpit)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Context-specific Inputs -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div class="sm:col-span-2">
+                <label class="text-[10px] font-mono text-neutral-400 block mb-1">Match Keywords (comma separated)</label>
+                <input type="text" id="trainMatchKeywords" placeholder="e.g. webgl, 3d, cyberpunk, spatial, luxury" class="w-full bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-purple-500/50" />
+              </div>
+              <div id="trainAltitudeGroup" class="grid grid-cols-2 gap-1 hidden">
+                <div>
+                  <label class="text-[10px] font-mono text-neutral-400 block mb-1">Y Min (px)</label>
+                  <input type="number" id="trainYMin" placeholder="1000" class="w-full bg-[#15161B] border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-purple-500/50" />
+                </div>
+                <div>
+                  <label class="text-[10px] font-mono text-neutral-400 block mb-1">Y Max (px)</label>
+                  <input type="number" id="trainYMax" placeholder="2500" class="w-full bg-[#15161B] border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-purple-500/50" />
+                </div>
+              </div>
+              <div id="trainJumpForceGroup">
+                <label class="text-[10px] font-mono text-neutral-400 block mb-1">Kinematic Jump Force</label>
+                <input type="number" id="trainJumpForce" placeholder="e.g. 520 (default 480)" class="w-full bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-purple-500/50" />
+              </div>
+            </div>
+
+            <!-- Thought Speech Balloon & Physical Response -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div class="sm:col-span-2">
+                <label class="text-[10px] font-mono text-neutral-400 block mb-1">Thought Balloon Text (Speech Bubble)</label>
+                <input type="text" id="trainThoughtText" required placeholder="e.g. ⚡ ARCHITECTING PROCEDURAL COMPUTE PIPELINE..." class="w-full bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-purple-500/50" />
+              </div>
+              <div class="grid grid-cols-2 gap-1">
+                <div>
+                  <label class="text-[10px] font-mono text-neutral-400 block mb-1">Action</label>
+                  <select id="trainAction" class="w-full bg-[#15161B] border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-purple-500/50">
+                    <option value="none">Speech Only</option>
+                    <option value="jump">Kinematic Jump</option>
+                    <option value="spin">360° Spin</option>
+                    <option value="perch">Perch Rail</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-[10px] font-mono text-neutral-400 block mb-1">Audio Cue</label>
+                  <select id="trainAudioCue" class="w-full bg-[#15161B] border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-purple-500/50">
+                    <option value="none">Silent</option>
+                    <option value="celebrate">Celebrate Chime</option>
+                    <option value="whistle">Whistle</option>
+                    <option value="blip">Tactical Blip</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-1">
+              <span class="text-[10px] font-mono text-neutral-400">Node will be hot-reloaded into memory and persisted locally & to Cloud Firestore.</span>
+              <button type="submit" class="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-mono text-xs font-bold shadow-lg shadow-purple-900/30 transition flex items-center gap-1.5 cursor-pointer">
+                <span>⚡</span><span>Train Neural Node (Sub-1ms)</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 3. Neural Memory Explorer & Knowledge Inspector -->
+        <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-white font-bold">🔍 Active Knowledge Graph Explorer:</span>
+              <span id="brainExplorerCountBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-neutral-400 border border-white/10">0 Nodes</span>
+            </div>
+            <!-- Search & Filter Controls -->
+            <div class="flex items-center gap-2">
+              <input type="text" id="brainSearchInput" oninput="renderBrainKnowledgeExplorer()" placeholder="Filter nodes by keyword or id..." class="bg-[#15161B] border border-white/10 rounded-lg px-2.5 py-1 text-xs font-mono text-white focus:outline-none focus:border-purple-500/40 w-48 sm:w-60" />
+              <select id="brainCategoryFilter" onchange="renderBrainKnowledgeExplorer()" class="bg-[#15161B] border border-white/10 rounded-lg px-2 py-1 text-xs font-mono text-white focus:outline-none">
+                <option value="all">All Categories</option>
+                <option value="project">Projects</option>
+                <option value="scope">Scopes</option>
+                <option value="tier">Tiers</option>
+                <option value="defect">Defects</option>
+                <option value="custom_trigger">Custom Rules</option>
+                <option value="trained">Only Custom Trained</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Scrollable Knowledge Cards -->
+          <div id="brainKnowledgeList" class="space-y-2 max-h-72 overflow-y-auto custom-scrollbar pr-1">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- 4. Cloud Checkpoints & Dataset Operations -->
+        <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono text-neutral-300 font-bold">Dataset Checkpoints & Cloud Firestore:</span>
+            <span id="brainDatasetStatus" class="text-[10px] font-mono text-neutral-400">Status: In-Memory + Local Storage</span>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="pushBrainToFirestoreUI()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+              <span>☁️</span><span>Push to Cloud Firestore</span>
+            </button>
+            <button onclick="syncBrainFromFirestoreUI()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+              <span>🔄</span><span>Sync from Cloud</span>
+            </button>
+            <button onclick="exportBrainDatasetUI()" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-neutral-200 border border-white/10 font-mono text-xs transition flex items-center gap-1.5 cursor-pointer">
+              <span>💾</span><span>Export JSON Checkpoint</span>
+            </button>
+            <label class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-neutral-200 border border-white/10 font-mono text-xs transition flex items-center gap-1.5 cursor-pointer">
+              <span>📂</span><span>Import JSON</span>
+              <input type="file" id="brainJsonFileInput" accept=".json" onchange="importBrainDatasetUI(event)" class="hidden" />
+            </label>
+            <button onclick="resetBrainToFactoryUI()" class="px-3 py-1.5 rounded-lg bg-red-900/40 hover:bg-red-800/60 text-red-200 border border-red-800/40 font-mono text-xs transition flex items-center gap-1.5 ml-auto cursor-pointer">
+              <span>⚠️</span><span>Reset to Factory</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1583,6 +1762,7 @@
 
   <script src="/sales-config.js"></script>
   <script src="/sales-auth.js"></script>
+  <script src="/system1_brain.js?v=1014"></script>
   <script src="app.js"></script>
   <script src="/three.min.js"></script>
   <script src="/shell.js"></script>

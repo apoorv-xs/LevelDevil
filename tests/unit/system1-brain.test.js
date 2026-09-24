@@ -481,4 +481,197 @@ describe("System 1 Decision Brain", () => {
       delete globalThis.window;
     });
   });
+
+  describe("Dynamic Neural Knowledge Training & Inspection", () => {
+    it("trains, overrides, and introspects project knowledge nodes", () => {
+      System1Brain.resetToFactory();
+
+      const baseProjects = System1Brain.getProjectKnowledge();
+      expect(baseProjects.length).toBeGreaterThanOrEqual(6);
+
+      // Train a new custom project node
+      const trainedNode = System1Brain.trainNode({
+        id: "quantum_forge",
+        category: "project",
+        match: ["quantum", "forge", "quantum-card"],
+        yRange: [2950, 3400],
+        thought: "Quantum Forge: Sub-atomic compute matrix trained in real-time.",
+        action: "jump",
+        jumpForce: 490
+      }, false);
+
+      expect(trainedNode.id).toBe("quantum_forge");
+      expect(trainedNode.source).toBe("trained");
+
+      // Verify custom trained node is at the front of project knowledge
+      const updatedProjects = System1Brain.getProjectKnowledge();
+      expect(updatedProjects[0].id).toBe("quantum_forge");
+      expect(updatedProjects[0].thought).toContain("Quantum Forge");
+
+      // Test classification on the custom trained project
+      const telemetry = {
+        scrollY: 2800,
+        viewportFocusY: 3100,
+        viewportHeight: 800,
+        userScrollSpeed: 0,
+        dwellTime: 2.0,
+        currentRail: { name: "quantum-forge-rail", xLeft: 100, width: 200 },
+        groundedRail: { name: "quantum-forge-rail", xLeft: 100, width: 200 },
+        playerPos: { x: 200, y: 3100 },
+        page: "home"
+      };
+      expect(System1Brain.classifyIntent(telemetry)).toBe(INTENTS.SHOWCASE_PROJECT);
+
+      // Verify introspection catalog contains both factory and trained nodes
+      const allKnowledge = System1Brain.getAllKnowledge();
+      const customEntry = allKnowledge.find(k => k.id === "quantum_forge");
+      expect(customEntry).toBeDefined();
+      expect(customEntry.source).toBe("trained");
+
+      // Clean up
+      System1Brain.deleteTrainedNode("quantum_forge");
+      expect(System1Brain.getProjectKnowledge().some(p => p.id === "quantum_forge")).toBe(false);
+    });
+
+    it("trains and resolves custom scope and budget tier parameters", () => {
+      System1Brain.resetToFactory();
+
+      System1Brain.trainNode({
+        id: "Holographic Neural Rig",
+        category: "scope",
+        thought: "Scope: Volumetric gaussian radiance fields at locked 60 FPS.",
+        jumpForce: 520
+      }, false);
+
+      const scopeIntel = System1Brain.getScopeKnowledge("Holographic Neural Rig");
+      expect(scopeIntel).toBeDefined();
+      expect(scopeIntel.thought).toContain("Volumetric gaussian radiance fields");
+      expect(scopeIntel.jumpForce).toBe(520);
+
+      // Train custom budget tier
+      System1Brain.trainNode({
+        id: "$50k+ Syndicate",
+        category: "tier",
+        thought: "Syndicate Tier ($50k+): Sovereign WebGPU engine infrastructure deployed."
+      }, false);
+
+      const tierIntel = System1Brain.getTierKnowledge("$50k+ Syndicate");
+      expect(tierIntel).toBeDefined();
+      expect(tierIntel.thought).toContain("Sovereign WebGPU engine");
+
+      System1Brain.resetToFactory();
+    });
+
+    it("trains custom behavioral trigger rules", () => {
+      System1Brain.resetToFactory();
+
+      System1Brain.trainNode({
+        id: "vip_terminal_focus",
+        category: "custom_trigger",
+        match: ["vip-secret-input"],
+        page: "sales",
+        thought: "⚡ VIP clearance sequence detected. Unlocking fast-track rail.",
+        action: "celebrate"
+      }, false);
+
+      const mockInput = { id: "vip-secret-input", tagName: "INPUT" };
+      const telemetry = {
+        scrollY: 0,
+        viewportFocusY: 200,
+        viewportHeight: 800,
+        userScrollSpeed: 0,
+        dwellTime: 1.0,
+        currentRail: null,
+        playerPos: { x: 300, y: 300 },
+        activeElement: mockInput,
+        page: "sales"
+      };
+
+      const matchedRule = System1Brain.classifyCustomRule(telemetry);
+      expect(matchedRule).toBeDefined();
+      expect(matchedRule.id).toBe("vip_terminal_focus");
+      expect(matchedRule.thought).toContain("VIP clearance sequence");
+
+      System1Brain.resetToFactory();
+    });
+
+    it("exports and imports neural knowledge JSON checkpoints", () => {
+      System1Brain.resetToFactory();
+
+      System1Brain.trainNode({
+        id: "checkpoint_test",
+        category: "project",
+        match: ["checkpoint"],
+        yRange: [1000, 1500],
+        thought: "Test Checkpoint Thought"
+      }, false);
+
+      const exportedJson = System1Brain.exportJSON();
+      expect(exportedJson).toContain("checkpoint_test");
+
+      System1Brain.resetToFactory();
+      expect(System1Brain.getProjectKnowledge().some(p => p.id === "checkpoint_test")).toBe(false);
+
+      // Re-import
+      System1Brain.importJSON(exportedJson);
+      expect(System1Brain.getProjectKnowledge().some(p => p.id === "checkpoint_test")).toBe(true);
+
+      System1Brain.resetToFactory();
+    });
+
+    it("synchronizes knowledge bidirectionally with Cloud Firestore", async () => {
+      System1Brain.resetToFactory();
+
+      const mockDocs = [
+        {
+          data: () => ({
+            id: "cloud_trained_project",
+            name: "CLOUD PROJECT",
+            category: "project",
+            thought: "⚡ Synchronized from Cloud Firestore node.",
+            keywords: ["cloud", "webrtc"]
+          })
+        }
+      ];
+
+      const mockDb = {
+        collection: (colName) => ({
+          get: async () => ({
+            empty: false,
+            forEach: (cb) => mockDocs.forEach(cb)
+          }),
+          doc: (docId) => ({
+            set: async (payload, opts) => {
+              return true;
+            }
+          })
+        })
+      };
+
+      // 1. Sync from Firestore
+      await System1Brain.syncWithFirestore(mockDb);
+      const all = System1Brain.getAllKnowledge();
+      const synced = all.find(n => n.id === "cloud_trained_project");
+      expect(synced).toBeDefined();
+      expect(synced.thought).toContain("Synchronized from Cloud Firestore");
+
+      // 2. Push to Firestore
+      let pushedDocs = [];
+      const mockPushDb = {
+        collection: (colName) => ({
+          doc: (docId) => ({
+            set: async (payload, opts) => {
+              pushedDocs.push({ id: docId, payload });
+              return true;
+            }
+          })
+        })
+      };
+
+      await System1Brain.pushToFirestore(mockPushDb);
+      expect(pushedDocs.some(d => d.id === "cloud_trained_project")).toBe(true);
+
+      System1Brain.resetToFactory();
+    });
+  });
 });
