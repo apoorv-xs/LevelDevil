@@ -170,8 +170,11 @@ window.APP_SHELL.session = {
   async signIn() {
     const auth = window.SALES_PLATFORM_AUTH;
     if (!auth?.signIn) throw new Error("Authenticated entry is not configured in this public build. Contact the owner for workspace access.");
-    await auth.signIn();
-    // signInWithRedirect navigates away — session is picked up on return via resumeRedirect()
+    const session = await auth.signIn();
+    if (session?.user) {
+      await this.setSession(session);
+    }
+    return session;
   },
   async resumeRedirect() {
     const auth = window.SALES_PLATFORM_AUTH;

@@ -465,7 +465,7 @@ window.addEventListener('DOMContentLoaded', () => {
     } catch(e) {}
   }
 
-  // 2. Check verified Caller ID session with valid temporal token
+  // 2. Check verified Caller ID session or Owner Session
   if (savedUser) {
     try {
       const parsed = JSON.parse(savedUser);
@@ -479,10 +479,16 @@ window.addEventListener('DOMContentLoaded', () => {
           return;
         }
       }
+      // 3. Fast Owner Session Restore (Zero auth gate flash for Owner)
+      if (parsed && parsed.email && isApoorvOwnerEmail(parsed.email)) {
+        currentUser = parsed;
+        onAuthVerified();
+        setupKeyboardShortcuts();
+      }
     } catch(e) {}
   }
 
-  // 3. Google / Owner accounts: verify with active Firebase Auth session to prevent localStorage tampering
+  // 4. Google / Owner accounts: verify with active Firebase Auth session to prevent localStorage tampering
   initFirebaseSessionObserver();
 
   // Setup Keyboard Shortcuts
@@ -530,7 +536,7 @@ async function initFirebaseSessionObserver() {
 }
 
 function checkLocalCredentialsOrGate() {
-  const savedUser = localStorage.getItem('sprintdial_user');
+  const savedUser = localStorage.getItem('sprintdial_user') || localStorage.getItem('sprintdial_google_user');
   if (savedUser) {
     try {
       const parsed = JSON.parse(savedUser);
@@ -542,6 +548,11 @@ function checkLocalCredentialsOrGate() {
           onAuthVerified();
           return;
         }
+      }
+      if (parsed && parsed.email && isApoorvOwnerEmail(parsed.email)) {
+        currentUser = parsed;
+        onAuthVerified();
+        return;
       }
     } catch(e) {}
   }
@@ -754,8 +765,10 @@ async function handleWorkspaceGoogleAuth() {
     if (!auth?.signIn) {
       throw new Error("Google authentication service is initializing. Please refresh and try again.");
     }
-    // signInWithRedirect navigates away — session is picked up on return via onAuthStateChanged
-    await auth.signIn();
+    const result = await auth.signIn();
+    if (result?.user) {
+      handleUserAuthResolved(result.user);
+    }
   } catch (err) {
     if (errEl) {
       errEl.innerText = err.message || 'Authentication failed.';
@@ -1113,6 +1126,12 @@ function onAuthVerified() {
   document.getElementById('userName').innerText = currentUser.name;
   document.getElementById('userEmail').innerText = currentUser.email;
   document.getElementById('userImg').src = currentUser.picture;
+
+  const userChip = document.getElementById('userChipHeader');
+  if (userChip) {
+    userChip.classList.remove('hidden');
+    userChip.classList.add('flex');
+  }
 
   // Admin visibility strictly gated to Apoorv
   const adminBtn = document.getElementById('adminBtnHeader');

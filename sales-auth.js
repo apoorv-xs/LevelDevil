@@ -59,7 +59,19 @@
     async signIn() {
       const auth = await getAuth();
       const provider = new window.firebase.auth.GoogleAuthProvider();
-      await auth.signInWithRedirect(provider);
+      try {
+        const result = await auth.signInWithPopup(provider);
+        return result?.user ? result : null;
+      } catch (popupErr) {
+        if (["auth/popup-blocked", "auth/operation-not-supported", "auth/web-storage-unsupported"].includes(popupErr.code)) {
+          await auth.signInWithRedirect(provider);
+          return null;
+        }
+        if (["auth/popup-closed-by-user", "auth/cancelled-popup-request"].includes(popupErr.code)) {
+          throw new Error("Sign-in was cancelled. Please try again.");
+        }
+        throw popupErr;
+      }
     },
   };
 })();

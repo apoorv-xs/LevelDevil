@@ -579,7 +579,7 @@
       .admin-label-full { display: none !important; }
       .admin-label-short { display: inline !important; }
     }
-    #userImg {
+      #userImg {
       width: 24px !important;
       height: 24px !important;
       min-width: 24px !important;
@@ -587,6 +587,70 @@
       border-radius: 9999px !important;
       object-fit: cover !important;
       display: inline-block !important;
+    }
+
+    /* Fail-Safe Modal & Auth Gate Overlay Styling */
+    #authGateOverlay {
+      position: fixed !important;
+      inset: 0 !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      background: rgba(23, 18, 15, 0.88) !important;
+      backdrop-filter: blur(8px) !important;
+      -webkit-backdrop-filter: blur(8px) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 16px !important;
+      z-index: 99999 !important;
+    }
+    #authGateOverlay.hidden,
+    #adminModal.hidden,
+    #shortcutsModal.hidden,
+    #proposalModal.hidden,
+    #clientTeardownModal.hidden,
+    #laymanAnalogyModal.hidden {
+      display: none !important;
+    }
+    #authGateSignInBox,
+    #authGateApplicantBox {
+      max-width: 440px !important;
+      width: 100% !important;
+      background: #fff4c9 !important;
+      border: 3px solid #17120f !important;
+      box-shadow: 6px 6px 0 #17120f !important;
+      padding: 24px !important;
+      color: #17120f !important;
+      font-family: "Courier Prime", "Courier New", monospace !important;
+      margin: auto !important;
+    }
+    #authGateSignInBox.hidden,
+    #authGateApplicantBox.hidden {
+      display: none !important;
+    }
+    #googleSignInBtn {
+      background: #fffdf1 !important;
+      color: #17120f !important;
+      border: 2px solid #17120f !important;
+      box-shadow: 3px 3px 0 #17120f !important;
+      font-family: "Courier Prime", monospace !important;
+      font-weight: bold !important;
+      cursor: pointer !important;
+    }
+    #googleSignInBtn:hover {
+      background: #fce566 !important;
+    }
+    #loginUsernameInput,
+    #loginPasswordInput {
+      background: #fffdf1 !important;
+      border: 2px solid #17120f !important;
+      color: #17120f !important;
+      padding: 8px 12px !important;
+      font-family: "Courier Prime", monospace !important;
     }
   </style>
 </head>
@@ -621,14 +685,14 @@
         [ 🔊 SFX ]
       </button>
 
-      <!-- Owner Admin Trigger -->
-      <button id="adminBtnHeader" onclick="openAdminModal()" class="px-2.5 py-1 text-[10px] font-arcade bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] transition flex items-center gap-1.5 cursor-pointer">
+      <!-- Owner Admin Trigger (Gated strictly to Owner) -->
+      <button id="adminBtnHeader" onclick="openAdminModal()" class="hidden px-2.5 py-1 text-[10px] font-arcade bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] transition items-center gap-1.5 cursor-pointer">
         <span class="w-2 h-2 rounded-full bg-emerald-500 border border-[#17120f]" style="width:8px;height:8px;border-radius:9999px;display:inline-block;"></span>
         <span class="admin-label-full">Admin Console</span><span class="admin-label-short">Admin</span>
       </button>
 
-      <!-- User Chip & Logout -->
-      <div class="flex items-center gap-2 pl-2 border-l-2 border-[#17120f]">
+      <!-- User Chip & Logout (Gated to Authenticated Session) -->
+      <div id="userChipHeader" class="hidden items-center gap-2 pl-2 border-l-2 border-[#17120f]">
         <img id="userImg" width="24" height="24" src="https://ui-avatars.com/api/?name=Apoorv&background=fff1bd&color=17120f" class="w-6 h-6 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] object-cover" alt="User" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'%2317120f\'%3E%3Cpath d=\'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\'/%3E%3C/svg%3E';">
         <span id="userEmail" class="text-[11px] font-mono text-[#17120f] hidden xl:inline">apoorvxs@gmail.com</span>
         <button onclick="signOutGoogle()" title="Sign Out" class="p-1 text-xs text-[#17120f] hover:text-[#8f1727] transition cursor-pointer">
