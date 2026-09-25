@@ -557,6 +557,50 @@
   border-top: 2px solid var(--ink, #17120f);
 }
 
+.companion-bubble.hud-active {
+  pointer-events: auto;
+  user-select: none;
+}
+
+.companion-bubble .bb8-hud-content {
+  text-align: left;
+}
+
+.companion-bubble .bb8-hud-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--purple, #6d3bb8);
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
+.companion-bubble .bb8-hud-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.companion-bubble .bb8-hud-btn {
+  background: var(--paper, #fff4c9);
+  color: var(--ink, #17120f);
+  border: 1.5px solid var(--ink, #17120f);
+  box-shadow: 2px 2px 0 var(--ink, #17120f);
+  font-family: 'Courier Prime', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.1s ease;
+  border-radius: 0;
+}
+
+.companion-bubble .bb8-hud-btn:hover {
+  background: var(--accent, #fce566);
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--ink, #17120f);
+}
+
 /* --- MOBILE CONTROLS & CONSTRUCT BUTTON --- */
 #mobile-controls {
   position: fixed;

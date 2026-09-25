@@ -548,6 +548,7 @@
 
             this.currentThought = text;
             this.lastThoughtTime = now;
+            this.bubbleElement.classList.remove("hud-active");
             this.bubbleElement.textContent = text;
             this.bubbleElement.style.display = "block";
             this.bubbleElement.style.opacity = "1";
@@ -568,6 +569,214 @@
                     }, 300);
                 }
             }, duration);
+        },
+
+        showGuidanceHUD() {
+            if (typeof document === "undefined") return;
+            if (!this.bubbleElement) this.setupBubble();
+            if (!this.bubbleElement) return;
+
+            const page = (typeof window !== "undefined" && typeof window.location !== "undefined")
+                ? ((window.location.pathname || "").includes("workspace") || document.body?.classList?.contains("retro-workspace") ? "workspace"
+                : (window.location.pathname || "").includes("sales") || document.body?.classList?.contains("sales-page") ? "sales" : "home")
+                : "home";
+
+            let title = "⚡ BB-8 CO-PILOT";
+            let buttonsHtml = "";
+
+            if (page === "workspace") {
+                title = "⚡ BB-8 TACTICAL CO-PILOT";
+                buttonsHtml = `
+                    <div class="bb8-hud-buttons">
+                        <button onclick="window.System1Brain.startMission('deals')" class="bb8-hud-btn">🎯 Hunt $15k+ Deals</button>
+                        <button onclick="window.System1Brain.startMission('flaws')" class="bb8-hud-btn">⚡ Inspect Latency Flaws</button>
+                        <button onclick="window.System1Brain.startMission('call')" class="bb8-hud-btn">📞 Test Call Battle</button>
+                        <button onclick="window.Player3D?.celebrateVictory?.(); window.System1Brain.closeHUD();" class="bb8-hud-btn">🤖 Droid 360° Spin</button>
+                    </div>
+                `;
+            } else if (page === "sales") {
+                title = "⚡ BB-8 BRIEF CO-PILOT";
+                buttonsHtml = `
+                    <div class="bb8-hud-buttons">
+                        <button onclick="window.System1Brain.startMission('fill')" class="bb8-hud-btn">📝 Focus Brief</button>
+                        <button onclick="window.System1Brain.startMission('scope')" class="bb8-hud-btn">💰 View Retainers</button>
+                        <button onclick="window.Player3D?.celebrateVictory?.(); window.System1Brain.closeHUD();" class="bb8-hud-btn">🤖 Droid 360° Spin</button>
+                    </div>
+                `;
+            } else {
+                title = "⚡ BB-8 NAVIGATOR";
+                buttonsHtml = `
+                    <div class="bb8-hud-buttons">
+                        <button onclick="window.System1Brain.startMission('work')" class="bb8-hud-btn">🚀 Selected Work</button>
+                        <button onclick="window.System1Brain.startMission('capabilities')" class="bb8-hud-btn">🛠 60 FPS Standards</button>
+                        <button onclick="window.System1Brain.startMission('contact')" class="bb8-hud-btn">↗ Initiate Contract</button>
+                        <button onclick="window.Player3D?.celebrateVictory?.(); window.System1Brain.closeHUD();" class="bb8-hud-btn">🤖 Droid 360° Spin</button>
+                    </div>
+                `;
+            }
+
+            this.bubbleElement.innerHTML = `
+                <div class="bb8-hud-content">
+                    <div class="bb8-hud-title">${title}</div>
+                    ${buttonsHtml}
+                </div>
+            `;
+            this.bubbleElement.classList.add("hud-active");
+            this.bubbleElement.style.display = "block";
+            this.bubbleElement.style.opacity = "1";
+
+            if (this.bubbleTimeout) clearTimeout(this.bubbleTimeout);
+            this.bubbleTimeout = setTimeout(() => {
+                this.closeHUD();
+            }, 10000);
+        },
+
+        closeHUD() {
+            if (!this.bubbleElement) return;
+            this.bubbleElement.classList.remove("hud-active");
+            this.bubbleElement.style.opacity = "0";
+            setTimeout(() => {
+                if (this.bubbleElement && this.bubbleElement.style.opacity === "0") {
+                    this.bubbleElement.style.display = "none";
+                }
+            }, 300);
+        },
+
+        startMission(missionId) {
+            this.closeHUD();
+            if (typeof window === "undefined" || typeof document === "undefined") return;
+            const scrollY = window.scrollY || window.pageYOffset || 0;
+
+            if (missionId === "deals") {
+                const topProspect = (typeof window.PROSPECTS !== "undefined" && Array.isArray(window.PROSPECTS))
+                    ? (window.PROSPECTS.find(p => String(p.fee || "").includes("15k") || String(p.fee || "").includes("18k") || String(p.fee || "").includes("20k") || String(p.fee || "").includes("25k")) || window.PROSPECTS[0])
+                    : null;
+
+                if (topProspect && typeof window.selectProspectById === "function") {
+                    window.selectProspectById(topProspect.id);
+                }
+
+                const targetEl = document.querySelector("#activeName") || document.querySelector(".studio-panel");
+                if (targetEl && window.smoothGlideTo) {
+                    const r = targetEl.getBoundingClientRect();
+                    window.smoothGlideTo(Math.round(r.left + 80), Math.round(r.top + scrollY), 700, () => {
+                        const feeEl = document.querySelector("#activeFee");
+                        if (feeEl && window.Player3D?.holographicSpotlight) {
+                            const fr = feeEl.getBoundingClientRect();
+                            window.Player3D.holographicSpotlight(Math.round(fr.left + fr.width/2), Math.round(fr.top + scrollY), 3000);
+                        }
+                        this.emitThought(`Spotlighting ${topProspect?.name || "lead"}: High-ticket fee opportunity!`, 3500);
+                    });
+                }
+            } else if (missionId === "flaws") {
+                const flawsPanel = document.querySelector("#flawsPanel") || document.querySelector(".studio-panel-elevated") || document.querySelector(".studio-panel");
+                if (flawsPanel && window.smoothGlideTo) {
+                    const r = flawsPanel.getBoundingClientRect();
+                    window.smoothGlideTo(Math.round(r.left + 80), Math.round(r.top + scrollY), 700, () => {
+                        const lcpBox = document.querySelector("#metricLCP") || flawsPanel;
+                        if (lcpBox && window.Player3D?.holographicSpotlight) {
+                            const lr = lcpBox.getBoundingClientRect();
+                            window.Player3D.holographicSpotlight(Math.round(lr.left + lr.width/2), Math.round(lr.top + scrollY), 3000);
+                        }
+                        this.emitThought("LCP Latency Bottleneck: Front door jammed shut (>4s). Patients walk next door!", 3800);
+                    });
+                }
+            } else if (missionId === "call") {
+                const callBtn = document.querySelector("#callActionBtn") || document.querySelector("#btnStartCall");
+                const objRack = document.querySelector(".obj-btn");
+                if (callBtn && window.smoothGlideTo) {
+                    const r = callBtn.getBoundingClientRect();
+                    window.smoothGlideTo(Math.round(r.left + 60), Math.round(r.top + scrollY - 20), 700, () => {
+                        if (window.Player3D?.holographicSpotlight) {
+                            window.Player3D.holographicSpotlight(Math.round(r.left + r.width/2), Math.round(r.top + scrollY), 3000);
+                        }
+                        this.emitThought("Tactical Co-Pilot Standby: Rebuttal weapons armed and ready!", 3500);
+                        if (objRack && window.Player3D?.holographicSpotlight) {
+                            setTimeout(() => {
+                                const or = objRack.getBoundingClientRect();
+                                window.Player3D.holographicSpotlight(Math.round(or.left + or.width/2), Math.round(or.top + scrollY), 3000);
+                            }, 1200);
+                        }
+                    });
+                }
+            } else if (missionId === "work") {
+                const workHeader = document.querySelector("#selected-work") || document.querySelector(".featured-project-card");
+                if (workHeader) {
+                    workHeader.scrollIntoView({ behavior: "smooth", block: "center" });
+                    setTimeout(() => {
+                        const r = workHeader.getBoundingClientRect();
+                        const sY = window.scrollY || window.pageYOffset || 0;
+                        if (window.smoothGlideTo) {
+                            window.smoothGlideTo(Math.round(r.left + 120), Math.round(r.top + sY), 700, () => {
+                                const cta = workHeader.querySelector("a.tech-pill, .launch-eravex");
+                                if (cta && window.Player3D?.holographicSpotlight) {
+                                    const cr = cta.getBoundingClientRect();
+                                    window.Player3D.holographicSpotlight(Math.round(cr.left + cr.width/2), Math.round(cr.top + sY), 3000);
+                                }
+                                this.emitThought("ERAVEX 3D Studio: Pure WebGPU compute & procedural GLSL shaders.", 3500);
+                            });
+                        }
+                    }, 400);
+                }
+            } else if (missionId === "capabilities") {
+                const capHeader = document.querySelector(".capabilities-grid") || document.querySelector(".section-header.capabilities");
+                if (capHeader) {
+                    capHeader.scrollIntoView({ behavior: "smooth", block: "center" });
+                    setTimeout(() => {
+                        const r = capHeader.getBoundingClientRect();
+                        const sY = window.scrollY || window.pageYOffset || 0;
+                        if (window.smoothGlideTo) {
+                            window.smoothGlideTo(Math.round(r.left + 120), Math.round(r.top + sY), 700, () => {
+                                this.emitThought("Production Engineering Standards: 60 FPS floor, sub-5MB Draco payloads.", 3500);
+                            });
+                        }
+                    }, 400);
+                }
+            } else if (missionId === "contact") {
+                const contactCard = document.querySelector(".contact-card");
+                if (contactCard) {
+                    contactCard.scrollIntoView({ behavior: "smooth", block: "center" });
+                    setTimeout(() => {
+                        const r = contactCard.getBoundingClientRect();
+                        const sY = window.scrollY || window.pageYOffset || 0;
+                        if (window.smoothGlideTo) {
+                            window.smoothGlideTo(Math.round(r.left + 120), Math.round(r.top + sY), 700, () => {
+                                const cta = contactCard.querySelector(".cta-btn-primary");
+                                if (cta && window.Player3D?.holographicSpotlight) {
+                                    const cr = cta.getBoundingClientRect();
+                                    window.Player3D.holographicSpotlight(Math.round(cr.left + cr.width/2), Math.round(cr.top + sY), 3000);
+                                }
+                                this.emitThought("Initiate Contract: Fixed milestone SOW with 50/25/25 armor.", 3500);
+                            });
+                        }
+                    }, 400);
+                }
+            } else if (missionId === "fill") {
+                const nameInput = document.querySelector('#inquiry-form input[name="name"]');
+                if (nameInput) {
+                    nameInput.scrollIntoView({ behavior: "smooth", block: "center" });
+                    nameInput.focus();
+                    const r = nameInput.getBoundingClientRect();
+                    const sY = window.scrollY || window.pageYOffset || 0;
+                    if (window.smoothGlideTo) {
+                        window.smoothGlideTo(Math.round(r.left + 60), Math.round(r.top + sY), 700, () => {
+                            this.emitThought("Tell us about your project parameters!", 3000);
+                        });
+                    }
+                }
+            } else if (missionId === "scope") {
+                const scopeSelect = document.querySelector('#inquiry-form select[name="scope"]') || document.querySelector("#engagement-card");
+                if (scopeSelect) {
+                    scopeSelect.scrollIntoView({ behavior: "smooth", block: "center" });
+                    const r = scopeSelect.getBoundingClientRect();
+                    const sY = window.scrollY || window.pageYOffset || 0;
+                    if (window.smoothGlideTo) {
+                        window.smoothGlideTo(Math.round(r.left + 60), Math.round(r.top + sY), 700, () => {
+                            this.emitThought("Select scope parameters: Micro-Sprint to Flagship 3D Engine.", 3000);
+                        });
+                    }
+                }
+            }
         },
 
         updateBubblePosition(player) {
@@ -701,8 +910,17 @@
                 defectText = this.getDefectKnowledge("lcp");
             }
             this.emitThought(defectText, 3200);
-            if (typeof window !== "undefined" && window.Player3D && window.Player3D.curiousInspect) {
-                window.Player3D.curiousInspect();
+
+            if (typeof window !== "undefined") {
+                const targetEl = document.querySelector("#activeName") || document.querySelector(".studio-panel");
+                if (targetEl && window.smoothGlideTo) {
+                    const scrollY = window.scrollY || window.pageYOffset || 0;
+                    const r = targetEl.getBoundingClientRect();
+                    window.smoothGlideTo(Math.round(r.left + 80), Math.round(r.top + scrollY), 650);
+                }
+                if (window.Player3D && window.Player3D.curiousInspect) {
+                    window.Player3D.curiousInspect();
+                }
             }
         },
 
@@ -712,8 +930,17 @@
             this.currentIntent = INTENTS.RADAR_SWEEP;
             const countText = count !== undefined ? `${count} targets` : "Radar active";
             this.emitThought(`Radar: [${city || "All"}] ${countText}.`, 2500);
-            if (typeof window !== "undefined" && window.Player3D && window.Player3D.nod) {
-                window.Player3D.nod();
+
+            if (typeof window !== "undefined") {
+                const activeTab = document.querySelector(".city-tab.active") || document.querySelector(".city-tab");
+                if (activeTab && window.smoothGlideTo) {
+                    const scrollY = window.scrollY || window.pageYOffset || 0;
+                    const r = activeTab.getBoundingClientRect();
+                    window.smoothGlideTo(Math.round(r.left + r.width / 2), Math.round(r.top + scrollY), 550);
+                }
+                if (window.Player3D && window.Player3D.nod) {
+                    window.Player3D.nod();
+                }
             }
         },
 
@@ -734,7 +961,12 @@
             }
             if (el.classList?.contains("obj-btn") || el.classList?.contains("objection-btn")) {
                 const title = el.textContent?.trim() || "Rebuttal";
-                this.emitThought(`Deploying tactical rebuttal: "${title.slice(0, 30)}..."`, 2400);
+                this.emitThought(`Deploying tactical rebuttal: "${title.slice(0, 30)}..."`, 2600);
+                if (typeof window !== "undefined" && window.Player3D?.holographicSpotlight) {
+                    const scrollY = window.scrollY || window.pageYOffset || 0;
+                    const r = el.getBoundingClientRect();
+                    window.Player3D.holographicSpotlight(Math.round(r.left + r.width/2), Math.round(r.top + scrollY), 2400);
+                }
             }
         },
 

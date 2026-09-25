@@ -261,12 +261,51 @@
                 window.mousePos2D.lastMoveTime = performance.now();
             }, { passive: true });
 
-            window.addEventListener("pointerdown", () => {
+            const raycaster = (typeof THREE !== "undefined") ? new THREE.Raycaster() : null;
+            const pointerVec = (typeof THREE !== "undefined") ? new THREE.Vector2() : null;
+
+            window.addEventListener("pointerdown", (e) => {
+                // If clicking an interactive form element or HUD button, let it handle
+                if (e.target && e.target.closest && e.target.closest("input, textarea, select, button, a, .bb8-hud-btn")) return;
+
+                if (this.root && raycaster && pointerVec && window.Engine3D && window.Engine3D.camera) {
+                    pointerVec.x = (e.clientX / window.innerWidth) * 2 - 1;
+                    pointerVec.y = -(e.clientY / window.innerHeight) * 2 + 1;
+                    raycaster.setFromCamera(pointerVec, window.Engine3D.camera);
+                    const hits = raycaster.intersectObject(this.root, true);
+                    if (hits && hits.length > 0) {
+                        e.stopPropagation();
+                        this.celebrateVictory();
+                        if (typeof window.SFX?.playThought === "function") {
+                            window.SFX.playThought(window.player?.pos?.x);
+                        }
+                        if (window.System1Brain && typeof window.System1Brain.showGuidanceHUD === "function") {
+                            window.System1Brain.showGuidanceHUD();
+                        }
+                        return;
+                    }
+                }
+
                 this.pulseAntenna(0xffd700, 220);
                 if (!this.isCelebrating && Math.random() > 0.6) {
                     this.nod();
                 }
-            }, { passive: true });
+            }, { passive: false });
+        },
+
+        setThrusterActive(active) {
+            this.isThrusterActive = Boolean(active);
+            if (active) {
+                this.pulseAntenna(0x4deeea, 800);
+            }
+        },
+
+        holographicSpotlight(targetX, targetY, duration = 2500) {
+            if (!this.root || !window.player) return;
+            const fromX = window.player.pos.x;
+            const fromY = window.player.pos.y - 20; // from antenna beacon
+            AstromechArchitect.fireTargetingBeam(fromX, fromY, targetX, targetY);
+            this.pulseAntenna(0x4deeea, duration);
         },
 
         smashIntoCamera() {
@@ -648,7 +687,10 @@
             this.headGroup.rotation.y += (targetYaw - this.headGroup.rotation.y) * 0.12;
 
             // 6. Jump & Airborne Dynamics + Contact Shadow
-            if (!isGrounded) {
+            if (!isGrounded || this.isThrusterActive) {
+                if (this.isThrusterActive && Math.random() > 0.4) {
+                    AstromechArchitect.spawnSparkBurst(guy.pos.x, guy.pos.y + 10, 3, 0x4deeea);
+                }
                 // Airborne: Dome lifts slightly on magnetic cushion, slight wobble
                 this.headGroup.position.y = 1.34 + Math.sin(t * 12) * 0.02;
                 this.bodyContainer.scale.set(0.92, 1.10, 0.92); // Stretch in air

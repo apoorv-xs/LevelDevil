@@ -162,7 +162,7 @@ describe("System 1 Decision Brain", () => {
     expect(cmd.jumpForce).toBeGreaterThan(600);
   });
 
-  it("verifies exactly 51 calibrated rails taking BB-8 down to Terra Firma", () => {
+  it("verifies living dynamic DOM landing rails and smooth thruster hover-glide in portfolio_engine.js", () => {
     const fs = require("fs");
     const railsData = JSON.parse(fs.readFileSync("ground_rails.json", "utf8"));
     expect(railsData.length).toBe(51);
@@ -174,11 +174,22 @@ describe("System 1 Decision Brain", () => {
     expect(lastRail.y).toBeGreaterThanOrEqual(3400);
 
     const engineSrc = fs.readFileSync("portfolio_engine.js", "utf8");
-    const match = engineSrc.match(/const CALIBRATED_RAILS = (\[[\s\S]*?\]);/);
-    expect(match).not.toBeNull();
-    const engineRails = JSON.parse(match[1]);
-    expect(engineRails.length).toBe(51);
-    expect(engineRails[engineRails.length - 1].name).toBe("DIV.touchdown-zone");
+    expect(engineSrc).toContain("generatePageRails()");
+    expect(engineSrc).toContain("window.smoothGlideTo =");
+    expect(engineSrc).toContain("initClickToSummon()");
+    expect(engineSrc).toContain("!window.isAirborneGlide");
+  });
+
+  it("verifies System 1 Brain Guidance HUD and mission dispatchers", () => {
+    expect(typeof System1Brain.showGuidanceHUD).toBe("function");
+    expect(typeof System1Brain.closeHUD).toBe("function");
+    expect(typeof System1Brain.startMission).toBe("function");
+
+    // Test startMission runs cleanly without error across missions
+    expect(() => System1Brain.startMission("deals")).not.toThrow();
+    expect(() => System1Brain.startMission("flaws")).not.toThrow();
+    expect(() => System1Brain.startMission("call")).not.toThrow();
+    expect(() => System1Brain.startMission("work")).not.toThrow();
   });
 
   it("evaluates INSPECT_FORM_INPUT actuator to hop up to higher inputs", () => {

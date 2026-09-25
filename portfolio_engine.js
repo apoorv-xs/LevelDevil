@@ -187,61 +187,7 @@ onLoad(() => {
     const player = window.createPlayer ? window.createPlayer(window.innerWidth / 2, 0) : createPlayer(window.innerWidth / 2, 0);
     window.player = player;
 
-    // Pillar 1 & 2 & 3: Master Calibrated 1D Continuous Swept Ground Rails Map
-    const CALIBRATED_RAILS = [
-        {"xLeft":0,"xRight":1440,"width":1440,"y":54,"trap":"normal","name":"HEADER.topbar"},
-        {"xLeft":152,"xRight":762,"width":610,"y":222,"trap":"normal","name":"DIV.role-badge"},
-        {"xLeft":152,"xRight":936,"width":784,"y":312,"trap":"normal","name":"H1"},
-        {"xLeft":152,"xRight":936,"width":784,"y":428,"trap":"normal","name":"P.hero-hook"},
-        {"xLeft":152,"xRight":628,"width":476,"y":492,"trap":"normal","name":"DIV.controls-pill"},
-        {"xLeft":152,"xRight":326,"width":174,"y":532,"trap":"normal","name":"A.topbar-btn#selected-work"},
-        {"xLeft":336,"xRight":547,"width":211,"y":532,"trap":"cta","name":"A.topbar-btn#contract"},
-        {"xLeft":968,"xRight":1288,"width":320,"y":176,"trap":"normal","name":"ASIDE.hero-aside-status::roof"},
-        {"xLeft":991,"xRight":1265,"width":274,"y":280,"trap":"normal","name":"P.hero-aside-p"},
-        {"xLeft":991,"xRight":1265,"width":274,"y":354,"trap":"normal","name":"LI.hero-aside-item-1"},
-        {"xLeft":991,"xRight":1265,"width":274,"y":376,"trap":"normal","name":"LI.hero-aside-item-2"},
-        {"xLeft":991,"xRight":1265,"width":274,"y":398,"trap":"normal","name":"LI.hero-aside-item-3"},
-        {"xLeft":991,"xRight":1265,"width":274,"y":421,"trap":"normal","name":"LI.hero-aside-item-4"},
-        {"xLeft":991,"xRight":1265,"width":274,"y":443,"trap":"normal","name":"LI.hero-aside-item-5"},
-        {"xLeft":968,"xRight":1288,"width":320,"y":492,"trap":"normal","name":"ASIDE.hero-aside-status::base"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":711,"trap":"normal","name":"DIV#selected-work"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":743,"trap":"normal","name":"ARTICLE.featured-project-card::roof"},
-        {"xLeft":191,"xRight":257,"width":66,"y":935,"trap":"normal","name":"SPAN.tech-pill.webgpu"},
-        {"xLeft":191,"xRight":551,"width":360,"y":1089,"trap":"normal","name":"DIV.featured-validation"},
-        {"xLeft":191,"xRight":336,"width":145,"y":1138,"trap":"cta","name":"A.tech-pill.launch-eravex"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":1192,"trap":"normal","name":"ARTICLE.featured-project-card::base"},
-        {"xLeft":152,"xRight":704,"width":552,"y":1224,"trap":"normal","name":"ARTICLE.standard-project-card.maison::roof"},
-        {"xLeft":188,"xRight":302,"width":114,"y":1514,"trap":"cta","name":"A.tech-pill.case-study"},
-        {"xLeft":152,"xRight":704,"width":552,"y":1598,"trap":"normal","name":"ARTICLE.standard-project-card.maison::base"},
-        {"xLeft":736,"xRight":1288,"width":552,"y":1224,"trap":"normal","name":"ARTICLE.standard-project-card.level-devil::roof"},
-        {"xLeft":772,"xRight":992,"width":220,"y":1562,"trap":"normal","name":"SPAN.tech-pill.active-canvas"},
-        {"xLeft":736,"xRight":1288,"width":552,"y":1598,"trap":"normal","name":"ARTICLE.standard-project-card.level-devil::base"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":1630,"trap":"normal","name":"ARTICLE.standard-project-card.jarvis::roof"},
-        {"xLeft":188,"xRight":308,"width":120,"y":1790,"trap":"normal","name":"SPAN.tech-pill.loopback"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":1917,"trap":"normal","name":"ARTICLE.standard-project-card.jarvis::base"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":2063,"trap":"normal","name":"DIV.section-header.capabilities"},
-        {"xLeft":152,"xRight":515,"width":363,"y":2095,"trap":"normal","name":"DIV.capability-card-1::roof"},
-        {"xLeft":152,"xRight":515,"width":363,"y":2334,"trap":"normal","name":"DIV.capability-card-1::base"},
-        {"xLeft":539,"xRight":901,"width":363,"y":2095,"trap":"normal","name":"DIV.capability-card-2::roof"},
-        {"xLeft":539,"xRight":901,"width":363,"y":2334,"trap":"normal","name":"DIV.capability-card-2::base"},
-        {"xLeft":925,"xRight":1288,"width":363,"y":2095,"trap":"normal","name":"DIV.capability-card-3::roof"},
-        {"xLeft":925,"xRight":1288,"width":363,"y":2334,"trap":"normal","name":"DIV.capability-card-3::base"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":2480,"trap":"normal","name":"DIV.section-header.dispatches"},
-        {"xLeft":152,"xRight":708,"width":556,"y":2512,"trap":"none","name":"ARTICLE.note-card-1::roof"},
-        {"xLeft":152,"xRight":708,"width":556,"y":2692,"trap":"none","name":"ARTICLE.note-card-1::base"},
-        {"xLeft":732,"xRight":1288,"width":556,"y":2512,"trap":"none","name":"ARTICLE.note-card-2::roof"},
-        {"xLeft":732,"xRight":1288,"width":556,"y":2692,"trap":"none","name":"ARTICLE.note-card-2::base"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":2716,"trap":"none","name":"ARTICLE.note-card-3::roof"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":2828,"trap":"none","name":"ARTICLE.note-card-3::base"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":2974,"trap":"normal","name":"DIV.section-header.contact"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":3006,"trap":"normal","name":"SECTION.contact-card::roof"},
-        {"xLeft":197,"xRight":835,"width":638,"y":3131,"trap":"normal","name":"H2.contact-heading"},
-        {"xLeft":867,"xRight":1243,"width":376,"y":3135,"trap":"cta","name":"A.cta-btn-primary"},
-        {"xLeft":867,"xRight":1243,"width":376,"y":3236,"trap":"normal","name":"DIV.secondary-cta-rack"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":3297,"trap":"normal","name":"SECTION.contact-card::base"},
-        {"xLeft":152,"xRight":1288,"width":1136,"y":3488,"trap":"normal","name":"DIV.touchdown-zone"}
-    ];
-
+    // --- LIVING DYNAMIC DOM SURFACE GRAPH & THRUSTER HOVER-GLIDE ENGINE ---
     let landingRails = [];
     let isPhysicsActive = false;
 
@@ -252,39 +198,7 @@ onLoad(() => {
         return "home";
     }
 
-    function getCalibratedRails() {
-        const BASE_SHELL_LEFT = 152;
-        const shell = document.querySelector('main.portfolio-shell');
-        const currentShellLeft = shell ? (shell.getBoundingClientRect().left + 32) : BASE_SHELL_LEFT;
-        const deltaX = Math.round(currentShellLeft - BASE_SHELL_LEFT);
-
-        return CALIBRATED_RAILS.map(r => ({
-            ...r,
-            xLeft: r.xLeft + deltaX,
-            xRight: r.xRight + deltaX,
-            width: r.xRight - r.xLeft
-        }));
-    }
-
-    function loadSavedRails() {
-        try {
-            const saved = localStorage.getItem("apoorv_custom_rails_v4");
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                    landingRails = parsed;
-                    window.landingRails = landingRails;
-                    console.log("Loaded custom ground rails v4 from localStorage:", landingRails.length);
-                    return true;
-                }
-            }
-        } catch(e) {
-            console.warn("Failed to load custom rails", e);
-        }
-        return false;
-    }
-
-    // Dynamic Multi-Page DOM Landing Rail Scanner (Refined Dual-Surface Roof & Shelf Engine)
+    // Dynamic Multi-Page Living DOM Surface Scanner (Zero Hardcoded Pixel Rails)
     function generatePageRails() {
         const page = getCurrentPage();
         const scrollY = window.scrollY || window.pageYOffset || 0;
@@ -368,23 +282,20 @@ onLoad(() => {
                 touchdownZone
             ].filter(d => d.el);
 
-            if (homeDefinitions.length >= 45) {
-                return homeDefinitions.map(def => {
-                    const r = def.el.getBoundingClientRect();
-                    const y = def.mode === 'top' ? Math.round(r.top + scrollY) : Math.round(r.bottom + scrollY);
-                    return {
-                        xLeft: Math.round(r.left),
-                        xRight: Math.round(r.right),
-                        width: Math.round(r.width),
-                        y: y,
-                        domElement: def.el,
-                        trap: def.trap || 'normal',
-                        name: def.name,
-                        surface: def.mode
-                    };
-                });
-            }
-            return getCalibratedRails();
+            return homeDefinitions.map(def => {
+                const r = def.el.getBoundingClientRect();
+                const y = def.mode === 'top' ? Math.round(r.top + scrollY) : Math.round(r.bottom + scrollY);
+                return {
+                    xLeft: Math.round(r.left),
+                    xRight: Math.round(r.right),
+                    width: Math.round(r.width),
+                    y: y,
+                    domElement: def.el,
+                    trap: def.trap || 'normal',
+                    name: def.name,
+                    surface: def.mode
+                };
+            }).filter(r => r.width > 8);
         }
 
         const detected = [];
@@ -446,21 +357,30 @@ onLoad(() => {
             const btnPrev = { el: document.querySelector('#btnPrevLeadHero'), mode: 'bottom', name: 'BUTTON#btnPrevLeadHero', trap: 'cta' };
             const btnNext = { el: document.querySelector('#btnNextLeadHero'), mode: 'bottom', name: 'BUTTON#btnNextLeadHero', trap: 'cta' };
             const activeName = { el: document.querySelector('#activeName'), mode: 'bottom', name: 'H1#activeName' };
+            const timingBadge = { el: document.querySelector('#timingBadge'), mode: 'bottom', name: 'SPAN#timingBadge' };
+            const currentLock = { el: document.querySelector('#currentLockStatus'), mode: 'bottom', name: 'SPAN#currentLockStatus' };
+            const activeFee = { el: document.querySelector('#activeFee'), mode: 'bottom', name: 'SPAN#activeFee', trap: 'cta' };
+            const activeRating = { el: document.querySelector('#activeRating'), mode: 'bottom', name: 'SPAN#activeRating' };
+            const leadQueuePos = { el: document.querySelector('#leadQueuePosition'), mode: 'bottom', name: 'SPAN#leadQueuePosition' };
             const heroBase = { el: heroPanel, mode: 'bottom', name: 'DIV.hero-panel::base' };
 
             const flawsRoof = { el: flawsPanel, mode: 'top', name: 'DIV.flaws-panel::roof' };
+            const btnTeardown = { el: document.querySelector('#btnTeardownModal'), mode: 'bottom', name: 'BUTTON#btnTeardownModal', trap: 'cta' };
+            const btnAnalogy = { el: document.querySelector('#btnAnalogyModal'), mode: 'bottom', name: 'BUTTON#btnAnalogyModal', trap: 'cta' };
             const flawsBase = { el: flawsPanel, mode: 'bottom', name: 'DIV.flaws-panel::base' };
 
             const notesRoof = { el: notesPanel, mode: 'top', name: 'DIV.notes-panel::roof' };
+            const callActionBtn = { el: document.querySelector('#callActionBtn'), mode: 'bottom', name: 'BUTTON#callActionBtn', trap: 'cta' };
+            const objBtns = Array.from(document.querySelectorAll('.obj-btn, .objection-btn')).map((btn, i) => ({ el: btn, mode: 'bottom', name: `BUTTON.obj-btn-${i+1}`, trap: 'cta' }));
             const callNotes = { el: document.querySelector('#callNotesInput'), mode: 'bottom', name: 'TEXTAREA#callNotesInput' };
             const saveBtn = { el: document.querySelector('#btnNextLeadHandoff'), mode: 'bottom', name: 'BUTTON#save-next', trap: 'cta' };
             const notesBase = { el: notesPanel, mode: 'bottom', name: 'DIV.notes-panel::base' };
 
             const wsDefinitions = [
                 topbar, ...cityTabs, searchInput,
-                heroRoof, btnPrev, btnNext, activeName, heroBase,
-                flawsRoof, flawsBase,
-                notesRoof, callNotes, saveBtn, notesBase
+                heroRoof, btnPrev, btnNext, activeName, timingBadge, currentLock, activeFee, activeRating, leadQueuePos, heroBase,
+                flawsRoof, btnTeardown, btnAnalogy, flawsBase,
+                notesRoof, callActionBtn, ...objBtns, callNotes, saveBtn, notesBase
             ].filter(d => d.el);
 
             wsDefinitions.forEach(def => {
@@ -486,6 +406,76 @@ onLoad(() => {
         }
         return uniqueRails;
     }
+
+    // Smooth Airborne Thruster Hover-Glide Navigation Controller
+    window.smoothGlideTo = function (targetX, targetY, duration = 650, callback) {
+        if (!player) return;
+        window.isAirborneGlide = true;
+        if (window.Player3D && typeof window.Player3D.setThrusterActive === "function") {
+            window.Player3D.setThrusterActive(true);
+        }
+        const startX = player.pos.x;
+        const startY = player.pos.y;
+        const startTime = performance.now();
+
+        function stepGlide(now) {
+            const elapsed = now - startTime;
+            const progress = Math.min(1, elapsed / duration);
+            // Ease out cubic
+            const ease = 1 - Math.pow(1 - progress, 3);
+            player.pos.x = startX + (targetX - startX) * ease;
+            player.pos.y = startY + (targetY - startY) * ease;
+            player.vy = 0;
+            if (player.vel) {
+                player.vel.x = 0;
+                player.vel.y = 0;
+            }
+
+            if (progress < 1) {
+                requestAnimationFrame(stepGlide);
+            } else {
+                window.isAirborneGlide = false;
+                if (window.Player3D && typeof window.Player3D.setThrusterActive === "function") {
+                    window.Player3D.setThrusterActive(false);
+                }
+                player.grounded = true;
+                player.vy = 0;
+                if (window.SFX && typeof window.SFX.playLand === "function") {
+                    window.SFX.playLand(player.pos.x);
+                }
+                if (typeof callback === "function") callback();
+            }
+        }
+        requestAnimationFrame(stepGlide);
+    };
+
+    // Click-to-Summon on Card Elements & Panels across every page
+    function initClickToSummon() {
+        document.addEventListener("click", (e) => {
+            if (isTypingInForm()) return;
+            const target = e.target.closest(
+                ".featured-project-card, .standard-project-card, .capability-card, .note-card, .contact-card, .studio-panel, .prospect-row"
+            );
+            if (!target) return;
+            // If user clicked inside an interactive button/input inside the card, let the button execute
+            if (e.target.closest("button, a, input, textarea, select")) return;
+
+            const rect = target.getBoundingClientRect();
+            const scrollY = window.scrollY || window.pageYOffset || 0;
+            const targetX = Math.round(rect.left + Math.min(140, rect.width * 0.35));
+            const targetY = Math.round(rect.top + scrollY);
+
+            if (window.smoothGlideTo) {
+                window.smoothGlideTo(targetX, targetY, 650, () => {
+                    if (window.System1Brain && typeof window.System1Brain.emitThought === "function") {
+                        const title = target.querySelector("h1, h2, h3, .card-title, #activeName")?.textContent?.trim() || "Inspecting sector";
+                        window.System1Brain.emitThought(`Navigating to: ${title.slice(0, 32)}`, 2400);
+                    }
+                });
+            }
+        });
+    }
+    initClickToSummon();
 
     function syncDOM(force = false) {
         if (!force && getCurrentPage() === "home" && localStorage.getItem("apoorv_custom_rails_v4")) {
@@ -783,7 +773,7 @@ onLoad(() => {
         const currentScrollY = window.scrollY || window.pageYOffset || 0;
 
         // Pillar 1 & 2: 3-Sub-Step Vertical Integration with Swept Interval Collision
-        if (isPhysicsActive && !isRespawning && dtTotal > 0) {
+        if (isPhysicsActive && !isRespawning && !window.isAirborneGlide && dtTotal > 0) {
             const clampedDt = Math.min(dtTotal, 0.05);
             const SUB_STEPS = 3;
             const subDt = clampedDt / SUB_STEPS;

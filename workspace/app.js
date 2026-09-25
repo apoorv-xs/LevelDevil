@@ -1437,6 +1437,11 @@ function selectProspect(id, playSoundEffect = false) {
   }
 }
 
+if (typeof window !== 'undefined') {
+  window.selectProspectById = selectProspect;
+  window.PROSPECTS = PROSPECTS;
+}
+
 // 1-Click WhatsApp Brief Generator (Auto-injecting custom intelligence & language routing)
 function generateWhatsAppBrief(p) {
   if (!p) return '#';
