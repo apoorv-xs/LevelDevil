@@ -370,17 +370,7 @@
 
         /* --- RETRO BRUTALIST ALTIMETER HUD --- */
         .altimeter-pill {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 8.5px;
-            background: var(--shell-accent, #fce566);
-            color: var(--shell-ink, #17120f);
-            border: 2px solid var(--shell-line, #17120f);
-            box-shadow: 2px 2px 0 var(--shell-line, #17120f);
-            padding: 5px 8px;
-            display: inline-flex;
-            align-items: center;
-            line-height: 1;
-            white-space: nowrap;
+            display: none !important;
         }
 
         @media (max-width: 600px) {
@@ -528,8 +518,8 @@
                 <span class="topbar-dot"></span>
                 <span><span id="live-fps">60.0</span> FPS</span>
             </div>
-            <button id="bb8-guide-btn" class="topbar-btn guide-btn" onclick="window.System1Brain?.showGuidanceHUD?.()" aria-label="Summon BB-8 Guide" title="Summon BB-8 Guide">[ 🤖 GUIDE ]</button>
-            <button id="sfx-toggle-btn" class="topbar-btn sfx-btn" aria-label="Toggle Sound Effects" title="Toggle Sound Effects">[ 🔊 SFX ]</button>
+            <button id="bb8-guide-btn" class="topbar-btn guide-btn" onclick="window.System1Brain?.showGuidanceHUD?.()" aria-label="Summon BB-8 Guide" title="Summon BB-8 Guide">[ 🤖<span class="guide-label"> GUIDE</span> ]</button>
+            <button id="sfx-toggle-btn" class="topbar-btn sfx-btn" aria-label="Toggle Sound Effects" title="Toggle Sound Effects">[ 🔊<span class="sfx-label"> SFX</span> ]</button>
             <a href="/sales" class="topbar-btn topbar-btn-primary hide-mobile" title="Inquire for Contracts">
                 <span>INQUIRE</span>
                 <span>↗</span>

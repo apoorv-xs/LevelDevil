@@ -389,24 +389,38 @@
   }
 }
 
+.altimeter-pill {
+  display: none !important;
+}
+
 @media (max-width: 600px) {
-  .altimeter-pill {
-    display: none !important;
-  }
   .topbar {
-    padding: 0 6px !important;
+    padding: 0 4px !important;
   }
   .topbar-brand-name {
     font-size: 10px !important;
   }
   .site-nav a {
-    padding: 4px 6px !important;
+    padding: 4px 5px !important;
     font-size: 8px !important;
     letter-spacing: 0.02em;
   }
-  .sfx-btn {
-    padding: 4px 6px !important;
+  .topbar-actions {
+    gap: 4px !important;
+  }
+  .guide-btn {
+    padding: 4px 5px !important;
     font-size: 8px !important;
+  }
+  .guide-btn .guide-label {
+    display: none !important;
+  }
+  .sfx-btn {
+    padding: 4px 5px !important;
+    font-size: 8px !important;
+  }
+  .sfx-btn .sfx-label {
+    display: none !important;
   }
   #topbar-sign-in,
   #workspaceSignInBtnHeader {
@@ -624,11 +638,15 @@
   font-family: 'Courier Prime', monospace;
   font-size: 11px;
   font-weight: 700;
-  padding: 4px 8px;
+  padding: 6px 10px;
   cursor: pointer;
   text-align: left;
   transition: all 0.1s ease;
   border-radius: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.25;
 }
 
 .companion-bubble .bb8-hud-btn:hover {

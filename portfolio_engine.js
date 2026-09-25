@@ -172,14 +172,25 @@ if (btnConstruct) {
 
 const btnToggleCtrls = document.getElementById("btn-toggle-ctrls");
 if (btnToggleCtrls) {
+    const mobileCtrls = document.getElementById("mobile-controls");
+    try {
+        if (sessionStorage.getItem("apoorv_mobile_ctrls_minimized") === "true" && mobileCtrls) {
+            mobileCtrls.classList.add("controls-minimized");
+            btnToggleCtrls.textContent = "🎮";
+            btnToggleCtrls.setAttribute("aria-label", "Expand Mobile Controls");
+        }
+    } catch (e) {}
+
     const onToggleCtrls = (e) => {
         if (e.cancelable) e.preventDefault();
         e.stopPropagation();
-        const mobileCtrls = document.getElementById("mobile-controls");
         if (mobileCtrls) {
             const isMin = mobileCtrls.classList.toggle("controls-minimized");
             btnToggleCtrls.textContent = isMin ? "🎮" : "✕";
             btnToggleCtrls.setAttribute("aria-label", isMin ? "Expand Mobile Controls" : "Collapse Mobile Controls");
+            try {
+                sessionStorage.setItem("apoorv_mobile_ctrls_minimized", isMin ? "true" : "false");
+            } catch (err) {}
         }
     };
     btnToggleCtrls.addEventListener("click", onToggleCtrls);

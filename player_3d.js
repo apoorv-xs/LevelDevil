@@ -300,12 +300,19 @@
                     const hits = raycaster.intersectObject(this.root, true);
                     if (hits && hits.length > 0) {
                         e.stopPropagation();
-                        this.celebrateVictory();
                         if (typeof window.SFX?.playThought === "function") {
                             window.SFX.playThought(window.player?.pos?.x);
                         }
                         if (window.System1Brain && typeof window.System1Brain.showGuidanceHUD === "function") {
-                            window.System1Brain.showGuidanceHUD();
+                            if (window.System1Brain.bubbleElement?.classList?.contains("hud-active")) {
+                                window.System1Brain.closeHUD();
+                                this.nod();
+                            } else {
+                                this.celebrateVictory();
+                                window.System1Brain.showGuidanceHUD();
+                            }
+                        } else {
+                            this.celebrateVictory();
                         }
                         return;
                     }

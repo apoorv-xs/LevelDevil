@@ -759,7 +759,7 @@
                                     const cr = cta.getBoundingClientRect();
                                     window.Player3D.holographicSpotlight(Math.round(cr.left + cr.width/2), Math.round(cr.top + sY), 3000);
                                 }
-                                this.emitThought("ERAVEX 3D Studio: Pure WebGPU compute & procedural GLSL shaders.", 3500);
+                                this.emitThought("Have a look at ERAVEX: WebGPU compute & procedural shaders at 60 FPS!", 3500);
                             });
                         }
                     }, 400);
@@ -773,7 +773,7 @@
                         const sY = window.scrollY || window.pageYOffset || 0;
                         if (window.smoothGlideTo) {
                             window.smoothGlideTo(Math.round(r.left + 120), Math.round(r.top + sY), 700, () => {
-                                this.emitThought("Production Engineering Standards: 60 FPS floor, sub-5MB Draco payloads.", 3500);
+                                this.emitThought("Curious about our benchmarks? We lock 60 FPS with sub-5MB Draco payloads.", 3500);
                             });
                         }
                     }, 400);
@@ -792,7 +792,7 @@
                                     const cr = cta.getBoundingClientRect();
                                     window.Player3D.holographicSpotlight(Math.round(cr.left + cr.width/2), Math.round(cr.top + sY), 3000);
                                 }
-                                this.emitThought("Initiate Contract: Fixed milestone SOW with 50/25/25 armor.", 3500);
+                                this.emitThought("Ready to collaborate? Let's discuss your project parameters!", 3500);
                             });
                         }
                     }, 400);
