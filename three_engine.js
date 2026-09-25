@@ -255,8 +255,14 @@
             mesh.receiveShadow = true;
             mesh.traverse(child => {
                 if (child.isMesh) {
-                    child.castShadow = true;
-                    child.receiveShadow = true;
+                    // Do not cast shadows from outline meshes, faux shadows, or back-face meshes
+                    if (child.name?.includes("Outline") || child.material?.side === 1 || child.name?.includes("groundShadow")) {
+                        child.castShadow = false;
+                        child.receiveShadow = false;
+                    } else {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
                 }
             });
         }

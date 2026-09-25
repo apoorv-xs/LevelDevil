@@ -48,6 +48,8 @@ function resetToAutonomous() {
 
 function triggerManualControl() {
     if (isTypingInForm()) return;
+    window._currentGlideId = null;
+    window.isAirborneGlide = false;
     window.controlMode = "manual";
     if (manualTimeout) {
         clearTimeout(manualTimeout);
@@ -169,7 +171,8 @@ if (btnConstruct) {
 }
 
 // Window-level release listeners to prevent mobile sticky drag lockout outside button boundary
-const releaseMobileControls = () => {
+const releaseMobileControls = (e) => {
+    if (e && e.touches && e.touches.length > 0) return;
     if (window.mobileLeftDown || window.mobileRightDown) {
         window.mobileLeftDown = false;
         window.mobileRightDown = false;
@@ -445,7 +448,7 @@ onLoad(() => {
                 player.vy = 0;
                 // Bind to nearest matching rail
                 player.currentRail = (window.landingRails || landingRails || []).find(r => 
-                    Math.abs(r.y - targetY) <= 8 && r.xLeft <= targetX + 20 && r.xRight >= targetX - 20
+                    Math.abs(r.y - targetY) <= 35 && r.xLeft <= targetX + 40 && r.xRight >= targetX - 40
                 ) || null;
                 if (window.SFX && typeof window.SFX.playLand === "function") {
                     window.SFX.playLand(player.pos.x);
@@ -756,6 +759,8 @@ onLoad(() => {
     }
 
     function respawnPlayer() {
+        window._currentGlideId = null;
+        window.isAirborneGlide = false;
         isRespawning = true;
         player.vy = 0;
         if (player.vel) {
@@ -991,7 +996,7 @@ onLoad(() => {
         }
 
         // Autonomous System 1 Decision Brain Execution
-        if (window.controlMode === "autonomous" && isPhysicsActive && !isRespawning && player) {
+        if (!window.isAirborneGlide && window.controlMode === "autonomous" && isPhysicsActive && !isRespawning && player) {
             const telemetry = {
                 scrollY: currentScrollY,
                 viewportFocusY: currentScrollY + window.innerHeight * 0.45,

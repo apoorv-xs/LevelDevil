@@ -655,7 +655,7 @@
             if (this.isNodding) {
                 const elapsedNod = (performance.now() - this.nodStartTime) / 1000;
                 if (elapsedNod < 0.8) {
-                    targetPitch = Math.sin(elapsedNod * Math.PI * 4) * 0.35;
+                    targetPitch = Math.sin((elapsedNod / 0.8) * Math.PI * 4) * 0.35;
                 } else {
                     this.isNodding = false;
                 }
@@ -703,7 +703,7 @@
             // 6. Jump & Airborne Dynamics + Contact Shadow
             if (!isGrounded || this.isThrusterActive) {
                 if (this.isThrusterActive && Math.random() > 0.4) {
-                    AstromechArchitect.spawnSparkBurst(guy.pos.x, guy.pos.y + 10, 3, 0x4deeea);
+                    AstromechArchitect.spawnSparkBurst(guy.pos.x, guy.pos.y + 10, 3, 0x4deeea, true);
                 }
                 // Airborne: Dome lifts slightly on magnetic cushion, slight wobble
                 this.headGroup.position.y = 1.34 + Math.sin(t * 12) * 0.02;
@@ -789,6 +789,15 @@
             this.shortAntenna = null;
             this.isCreated = false;
             
+            this.lastX = null;
+            this.currentRollZ = 0;
+            this.headTiltZ = 0;
+            this.isCelebrating = false;
+            this.isNodding = false;
+            this.isCurious = false;
+            if (this._gazeTimeout) clearTimeout(this._gazeTimeout);
+            if (this._antennaPulseTimeout) clearTimeout(this._antennaPulseTimeout);
+
             if (this._onPointerMove) {
                 window.removeEventListener('pointermove', this._onPointerMove);
                 this._onPointerMove = null;
@@ -845,7 +854,7 @@
         },
 
         // Spawn neon welding spark particles in Three.js
-        spawnSparkBurst(x2d, y2d, count = 16, colorHex = 0x4deeea) {
+        spawnSparkBurst(x2d, y2d, count = 16, colorHex = 0x4deeea, isExhaust = false) {
             const scene = this.getScene();
             if (!scene || typeof THREE === "undefined") return;
 
@@ -859,7 +868,7 @@
                 positions[i * 3 + 2] = origin3d.z + (Math.random() - 0.5) * 0.3;
                 velocities.push({
                     vx: (Math.random() - 0.5) * 5.5,
-                    vy: -(Math.random() * 6.5 + 2.5),
+                    vy: isExhaust ? -(Math.random() * 6.5 + 2.5) : (Math.random() * 6.5 + 2.5),
                     vz: (Math.random() - 0.5) * 3.5
                 });
             }
@@ -1039,14 +1048,14 @@
                 // Main vibrant cyan beam (#4deeea)
                 const beamGeo = new THREE.CylinderGeometry(0.08, 0.08, len3d, 16);
                 beamGeo.rotateZ(Math.PI / 2);
-                const beamMat = new THREE.MeshBasicMaterial({ color: 0x4deeea, transparent: true, opacity: 0.9 });
+                const beamMat = new THREE.MeshBasicMaterial({ color: 0x4deeea, transparent: true, opacity: 0.9, depthWrite: false });
                 const beamMesh = new THREE.Mesh(beamGeo, beamMat);
                 group.add(beamMesh);
 
                 // Laser core (white high-intensity)
                 const coreGeo = new THREE.CylinderGeometry(0.038, 0.038, len3d, 12);
                 coreGeo.rotateZ(Math.PI / 2);
-                const coreMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95 });
+                const coreMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95, depthWrite: false });
                 const coreMesh = new THREE.Mesh(coreGeo, coreMat);
                 group.add(coreMesh);
 
@@ -1163,14 +1172,14 @@
                 // Vibrant glowing cyan beam (#4deeea)
                 const beamGeo = new THREE.CylinderGeometry(0.075, 0.075, len3d, 16);
                 beamGeo.rotateZ(Math.PI / 2);
-                const beamMat = new THREE.MeshBasicMaterial({ color: 0x4deeea, transparent: true, opacity: 0.92 });
+                const beamMat = new THREE.MeshBasicMaterial({ color: 0x4deeea, transparent: true, opacity: 0.92, depthWrite: false });
                 const beamMesh = new THREE.Mesh(beamGeo, beamMat);
                 group.add(beamMesh);
 
                 // Laser core (white)
                 const coreGeo = new THREE.CylinderGeometry(0.035, 0.035, len3d, 12);
                 coreGeo.rotateZ(Math.PI / 2);
-                const coreMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.98 });
+                const coreMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.98, depthWrite: false });
                 const coreMesh = new THREE.Mesh(coreGeo, coreMat);
                 group.add(coreMesh);
 
@@ -1188,7 +1197,7 @@
                 // Holographic lattice plane
                 const shelfGeo = new THREE.PlaneGeometry(len3d, 0.25);
                 shelfGeo.rotateX(-Math.PI / 2);
-                const shelfMat = new THREE.MeshBasicMaterial({ color: 0x4deeea, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
+                const shelfMat = new THREE.MeshBasicMaterial({ color: 0x4deeea, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false });
                 const shelfMesh = new THREE.Mesh(shelfGeo, shelfMat);
                 group.add(shelfMesh);
 

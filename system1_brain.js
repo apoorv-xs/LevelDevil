@@ -401,6 +401,7 @@
             if (typeof localStorage !== "undefined") {
                 localStorage.removeItem("system1_brain_knowledge");
             }
+            this.hasCelebratedTouchdown = false;
             return true;
         },
 
@@ -485,6 +486,8 @@
 
         bindEvents() {
             if (typeof document === "undefined") return;
+            if (this._eventsBound) return;
+            this._eventsBound = true;
 
             // Track form focus on /sales
             document.addEventListener("focusin", (e) => {
@@ -820,7 +823,8 @@
             let isFlipped = false;
 
             // If clipped by topbar header (54px + buffer), flip bubble cleanly below BB-8
-            if (top < 68) {
+            const minTopClearance = (typeof window !== "undefined" && window.innerWidth <= 768) ? 88 : 68;
+            if (top < minTopClearance) {
                 top = screenY + 24;
                 isFlipped = true;
             }
@@ -1032,12 +1036,16 @@
             } = telemetry;
 
             // Touchdown zone check on Home (ALT: 0 FT) - true bedrock landing
-            if ((playerPos.y >= 3470 && (groundedRail?.name?.includes("touchdown") || groundedRail?.y >= 3470)) ||
-                (playerPos.y >= 3350 && !groundedRail && !telemetry.allRails)) {
+            if (playerPos.y >= 3470 || (groundedRail && groundedRail.name && groundedRail.name.includes("touchdown")) || (playerPos.y >= 3350 && !groundedRail && !telemetry.allRails)) {
                 if (!this.hasCelebratedTouchdown) {
                     this.hasCelebratedTouchdown = true;
                     return INTENTS.CELEBRATE;
                 }
+                // If user is actively scrolling up, allow ascent; otherwise stay perched!
+                if (userScrollSpeed < -6) {
+                    return INTENTS.LEAD_ASCENT;
+                }
+                return INTENTS.IDLE_PERCH;
             } else if (playerPos.y < 3200) {
                 this.hasCelebratedTouchdown = false;
             }
@@ -1115,11 +1123,11 @@
             if (isTierActive) {
                 return INTENTS.VALIDATE_TIER;
             }
-            if (this.isFormReady) {
-                return INTENTS.PROMPT_SUBMIT;
-            }
             if (activeElement && (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA" || activeElement.tagName === "SELECT")) {
                 return INTENTS.INSPECT_FORM_INPUT;
+            }
+            if (this.isFormReady) {
+                return INTENTS.PROMPT_SUBMIT;
             }
             return INTENTS.IDLE_PERCH;
         },
@@ -1447,52 +1455,51 @@
                 }
 
                 case INTENTS.LEAD_DESCENT: {
-                    if (currentRail) {
-                        let target = null;
-                        let bestY = Infinity;
-                        let fallbackTarget = null;
-                        let fallbackY = Infinity;
-                        for (let i = 0; i < allRails.length; i++) {
-                            const r = allRails[i];
-                            if (r.y > currentRail.y + 15 && r.y < currentRail.y + 700) {
-                                if (r.y < fallbackY) {
-                                    fallbackY = r.y;
-                                    fallbackTarget = r;
-                                }
-                                if (r.xLeft <= currentRail.xRight + 150 && r.xRight >= currentRail.xLeft - 150) {
-                                    if (r.y < bestY) {
-                                        bestY = r.y;
-                                        target = r;
-                                    }
+                    const refY = currentRail ? currentRail.y : playerPos.y;
+                    let target = null;
+                    let bestY = Infinity;
+                    let fallbackTarget = null;
+                    let fallbackY = Infinity;
+                    for (let i = 0; i < allRails.length; i++) {
+                        const r = allRails[i];
+                        if (r.y > refY + 15 && r.y < refY + 700) {
+                            if (r.y < fallbackY) {
+                                fallbackY = r.y;
+                                fallbackTarget = r;
+                            }
+                            if (!currentRail || (r.xLeft <= currentRail.xRight + 150 && r.xRight >= currentRail.xLeft - 150)) {
+                                if (r.y < bestY) {
+                                    bestY = r.y;
+                                    target = r;
                                 }
                             }
                         }
-                        if (!target) target = fallbackTarget;
+                    }
+                    if (!target) target = fallbackTarget;
 
-                        if (target) {
-                            result.targetRail = target;
-                            const screenW = (typeof window !== "undefined") ? (window.innerWidth || 1200) : 1200;
-                            const minX = Math.max(35, Math.min(target.xLeft + 20, target.xRight - 20));
-                            const maxX = Math.min(screenW - 35, Math.max(target.xRight - 20, target.xLeft + 20));
-                            const chosenX = (maxX >= minX) ? Math.round((minX + maxX) / 2) : Math.max(35, Math.min(screenW - 35, target.xLeft + 20));
-                            result.targetX = chosenX;
+                    if (target) {
+                        result.targetRail = target;
+                        const screenW = (typeof window !== "undefined") ? (window.innerWidth || 1200) : 1200;
+                        const minX = Math.max(35, Math.min(target.xLeft + 20, target.xRight - 20));
+                        const maxX = Math.min(screenW - 35, Math.max(target.xRight - 20, target.xLeft + 20));
+                        const chosenX = (maxX >= minX) ? Math.round((minX + maxX) / 2) : Math.max(35, Math.min(screenW - 35, target.xLeft + 20));
+                        result.targetX = chosenX;
 
-                            const dx = chosenX - playerPos.x;
-                            const isHorizontallyAligned = Math.abs(dx) <= 30;
-                            const isDirectlyUnderneath = isHorizontallyAligned && (target.xLeft <= playerPos.x + 25 && target.xRight >= playerPos.x - 25);
+                        const dx = chosenX - playerPos.x;
+                        const isHorizontallyAligned = Math.abs(dx) <= 30;
+                        const isDirectlyUnderneath = isHorizontallyAligned && (target.xLeft <= playerPos.x + 25 && target.xRight >= playerPos.x - 25);
 
-                            if (!isHorizontallyAligned) {
-                                result.moveX = Math.sign(dx);
-                            } else if (isDirectlyUnderneath && isGrounded) {
-                                // Direct drop-through platform descent to prevent infinite jump loops (DEF-02)
-                                result.wantsDrop = true;
-                                this.wantsDrop = true;
-                            } else {
-                                const distY = target.y - currentRail.y;
-                                if (isGrounded) {
-                                    result.wantsJump = true;
-                                    result.jumpForce = distY > 180 ? 460 : 380;
-                                }
+                        if (!isHorizontallyAligned) {
+                            result.moveX = Math.sign(dx);
+                        } else if (isDirectlyUnderneath && isGrounded) {
+                            // Direct drop-through platform descent to prevent infinite jump loops (DEF-02)
+                            result.wantsDrop = true;
+                            this.wantsDrop = true;
+                        } else if (currentRail) {
+                            const distY = target.y - currentRail.y;
+                            if (isGrounded) {
+                                result.wantsJump = true;
+                                result.jumpForce = distY > 180 ? 460 : 380;
                             }
                         }
                     }
@@ -1500,29 +1507,28 @@
                 }
 
                 case INTENTS.LEAD_ASCENT: {
-                    if (currentRail) {
-                        let target = null;
-                        let bestY = -Infinity;
-                        for (let i = 0; i < allRails.length; i++) {
-                            const r = allRails[i];
-                            if (r.y < currentRail.y - 15 && r.y > currentRail.y - 600) {
-                                if (r.y > bestY) {
-                                    bestY = r.y;
-                                    target = r;
-                                }
+                    const refY = currentRail ? currentRail.y : playerPos.y;
+                    let target = null;
+                    let bestY = -Infinity;
+                    for (let i = 0; i < allRails.length; i++) {
+                        const r = allRails[i];
+                        if (r.y < refY - 15 && r.y > refY - 600) {
+                            if (r.y > bestY) {
+                                bestY = r.y;
+                                target = r;
                             }
                         }
-                        if (target) {
-                            result.targetRail = target;
-                            const screenW = (typeof window !== "undefined") ? (window.innerWidth || 1200) : 1200;
-                            result.targetX = Math.max(35, Math.min(screenW - 35, target.xLeft + target.width / 2));
-                            if (Math.abs(playerPos.x - result.targetX) > 25) {
-                                result.moveX = Math.sign(result.targetX - playerPos.x);
-                            }
-                            if (isGrounded) {
-                                result.wantsJump = true;
-                                result.jumpForce = 580;
-                            }
+                    }
+                    if (target) {
+                        result.targetRail = target;
+                        const screenW = (typeof window !== "undefined") ? (window.innerWidth || 1200) : 1200;
+                        result.targetX = Math.max(35, Math.min(screenW - 35, target.xLeft + target.width / 2));
+                        if (Math.abs(playerPos.x - result.targetX) > 25) {
+                            result.moveX = Math.sign(result.targetX - playerPos.x);
+                        }
+                        if (isGrounded) {
+                            result.wantsJump = true;
+                            result.jumpForce = 580;
                         }
                     }
                     break;

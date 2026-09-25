@@ -92,7 +92,6 @@ function createPlayer(x, y) {
                 (typeof window.isPhysicalKeyDown === "function" && (window.isPhysicalKeyDown("right") || window.isPhysicalKeyDown("d"))) ||
                 Boolean(window.mobileRightDown);
             const hasJump = (typeof isKeyPressed === "function" && (isKeyPressed("space") || isKeyPressed("w") || isKeyPressed("up"))) ||
-                (typeof window.isPhysicalKeyDown === "function" && (window.isPhysicalKeyDown("space") || window.isPhysicalKeyDown("w") || window.isPhysicalKeyDown("up"))) ||
                 Boolean(window.mobileJumpPressed);
 
             if (hasLeft) {

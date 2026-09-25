@@ -174,7 +174,9 @@
       const ctx = this.getAudioContext();
       if (!ctx) return;
       if (ctx.state !== "running") {
-        ctx.resume().catch(() => {});
+        ctx.resume().then(() => {
+          if (!this.muted && !this.ambientActive) this.startAmbient();
+        }).catch(() => {});
         return;
       }
       if (this.ambientActive) return;
@@ -544,7 +546,7 @@
         gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
         osc1.connect(gain1);
         gain1.connect(dest);
-        this._autoDisconnect(osc1, panner, gain1);
+        this._autoDisconnect(osc1, gain1);
         osc1.start(now);
         osc1.stop(now + 0.09);
 
@@ -595,7 +597,11 @@
           osc.connect(gain);
           gain.connect(dest);
 
-          this._autoDisconnect(osc, panner, gain);
+          if (i === notes.length - 1) {
+            this._autoDisconnect(osc, panner, gain);
+          } else {
+            this._autoDisconnect(osc, gain);
+          }
           osc.start(now);
           osc.stop(now + 0.30);
         });

@@ -1,7 +1,13 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, beforeEach } from "vitest";
 import { System1Brain, INTENTS } from "../../system1_brain.js";
 
 describe("System 1 Decision Brain", () => {
+  beforeEach(() => {
+    if (typeof System1Brain.resetToFactory === "function") {
+      System1Brain.resetToFactory();
+    }
+  });
+
   it("defines all required typed intent states", () => {
     expect(INTENTS.IDLE_PERCH).toBe("IDLE_PERCH");
     expect(INTENTS.LEAD_DESCENT).toBe("LEAD_DESCENT");

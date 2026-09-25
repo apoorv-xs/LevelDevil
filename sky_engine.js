@@ -589,6 +589,8 @@
             this.clouds = [];
             this.stars = [];
             this.mountainCanvas = null;
+            this.ctx = null;
+            this._scanPattern = null;
         }
     };
 
