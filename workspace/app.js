@@ -141,18 +141,35 @@ let recordedAudioBlob = null;
 
 // Audio Synthesizer (Web Audio API - 100% zero-dependency sound effects)
 let audioCtx = null;
+let userHasInteracted = false;
+
+if (typeof window !== 'undefined') {
+  const onUserGesture = () => {
+    userHasInteracted = true;
+    ['pointerdown', 'keydown', 'touchstart', 'click'].forEach(evt => {
+      window.removeEventListener(evt, onUserGesture);
+    });
+  };
+  ['pointerdown', 'keydown', 'touchstart', 'click'].forEach(evt => {
+    window.addEventListener(evt, onUserGesture, { passive: true, once: true });
+  });
+}
 
 function getAudioContext() {
+  if (!userHasInteracted) return null;
   if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtxClass) return null;
+    audioCtx = new AudioCtxClass();
   }
   if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
+    audioCtx.resume().catch(() => {});
   }
   return audioCtx;
 }
 
 function playSound(type) {
+  if (!userHasInteracted) return;
   if (window.SFX) {
     if (window.SFX.isMuted()) return;
     if (type === 'click') { window.SFX.playClick(); return; }
@@ -161,6 +178,7 @@ function playSound(type) {
   if (!soundEnabled) return;
   try {
     const ctx = getAudioContext();
+    if (!ctx || ctx.state !== 'running') return;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
@@ -1397,14 +1415,16 @@ function renderQueue() {
     `;
 
     item.setAttribute('data-kaboom-body', 'true');
-    item.onclick = () => selectProspect(p.id);
+    item.onclick = () => selectProspect(p.id, true);
     listEl.appendChild(item);
   });
   window.syncDOM?.();
 }
 
-function selectProspect(id) {
-  playSound('click');
+function selectProspect(id, playSoundEffect = false) {
+  if (playSoundEffect && userHasInteracted) {
+    playSound('click');
+  }
   selectedProspectId = id;
   renderQueue();
   renderActiveProspect();

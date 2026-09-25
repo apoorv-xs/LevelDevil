@@ -35,12 +35,25 @@
 
 /* Left Brand Anchor */
 .topbar-brand {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
   text-decoration: none;
   color: var(--shell-ink);
   flex-shrink: 0;
+}
+
+.topbar-brand::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 44px;
+  width: 100%;
+  min-height: 44px;
+  height: 100%;
 }
 
 .topbar-brand-name {
@@ -112,6 +125,7 @@
 }
 
 .site-nav a {
+  position: relative;
   color: var(--shell-ink);
   border: 2px solid transparent;
   border-radius: 0;
@@ -122,6 +136,18 @@
   white-space: nowrap !important;
   display: inline-block;
   transition: all 0.1s ease;
+}
+
+.site-nav a::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 44px;
+  width: 100%;
+  min-height: 44px;
+  height: 100%;
 }
 
 .site-nav a:hover,
@@ -157,6 +183,7 @@
 }
 
 .topbar-btn {
+  position: relative;
   font: 10px "Press Start 2P", monospace;
   background: var(--shell-white);
   color: var(--shell-ink);
@@ -170,6 +197,18 @@
   line-height: 1;
   cursor: pointer;
   transition: all 0.1s ease;
+}
+
+.topbar-btn::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 44px;
+  width: 100%;
+  min-height: 44px;
+  height: 100%;
 }
 
 .topbar-btn:hover {

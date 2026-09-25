@@ -19,6 +19,7 @@
       this.ambientGain = null;
       this.ambientActive = false;
       this.currentAltitude = 10000;
+      this._hasUserGesture = false;
 
       // Load initial mute state from localStorage
       if (typeof window !== "undefined" && window.localStorage) {
@@ -37,26 +38,35 @@
       this._firstGestureBound = true;
 
       const unlock = () => {
-        const ctx = this.getAudioContext();
+        this._hasUserGesture = true;
+        const ctx = this.getAudioContext(true);
         if (ctx && !this.muted && !this.ambientActive) {
           this.startAmbient();
         }
         window.removeEventListener("pointerdown", unlock);
         window.removeEventListener("keydown", unlock);
         window.removeEventListener("touchstart", unlock);
+        window.removeEventListener("click", unlock);
       };
 
       window.addEventListener("pointerdown", unlock, { passive: true, once: true });
       window.addEventListener("keydown", unlock, { passive: true, once: true });
       window.addEventListener("touchstart", unlock, { passive: true, once: true });
+      window.addEventListener("click", unlock, { passive: true, once: true });
     }
 
-    getAudioContext() {
+    getAudioContext(force = false) {
       if (this.ctx) {
-        if (this.ctx.state === "suspended") {
+        if (this.ctx.state === "suspended" && (this._hasUserGesture || force)) {
           this.ctx.resume().catch(() => {});
         }
         return this.ctx;
+      }
+
+      // Defer AudioContext instantiation until first user gesture in browser environments to avoid autoplay violations
+      const isTestEnv = typeof process !== "undefined" && process.env && (process.env.VITEST || process.env.NODE_ENV === "test");
+      if (!this._hasUserGesture && !force && !isTestEnv && typeof window !== "undefined") {
+        return null;
       }
 
       const AudioCtxClass = typeof window !== "undefined" ? (window.AudioContext || window.webkitAudioContext) : null;
@@ -69,7 +79,7 @@
         this.masterGain.connect(this.ctx.destination);
         this.initialized = true;
 
-        if (this.ctx.state === "suspended") {
+        if (this.ctx.state === "suspended" && (this._hasUserGesture || force || isTestEnv)) {
           this.ctx.resume().catch(() => {});
         }
       } catch (err) {
@@ -113,8 +123,10 @@
     }
 
     toggle() {
+      this._hasUserGesture = true;
       this.setMuted(!this.muted);
       if (!this.muted) {
+        this.getAudioContext(true);
         // Play gentle click confirmation when unmuting
         this.playClick();
       }
