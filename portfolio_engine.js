@@ -914,7 +914,7 @@ onLoad(() => {
             const mobileVsi = document.getElementById("flight-tape-vsi");
 
             if (isTouchdown) {
-                if (altimeterPill) altimeterPill.textContent = "ALT: 0 FT / TOUCHDOWN";
+                if (altimeterPill) altimeterPill.textContent = "ALT: 0 FT";
                 if (mobileAlt) mobileAlt.textContent = "0 FT";
                 if (mobileStratum) mobileStratum.textContent = "TOUCHDOWN";
                 if (mobileVsi) mobileVsi.textContent = "TERRA FIRMA";

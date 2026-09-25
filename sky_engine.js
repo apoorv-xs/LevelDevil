@@ -422,36 +422,7 @@
                 ctx.restore();
             }
 
-            // 7. BEDROCK TOUCHDOWN RUNWAY MARKINGS (Stratum 5 / Ground Approach)
-            if (scrollProgress > 0.88) {
-                const groundProgress = Math.min(1, (scrollProgress - 0.88) / 0.12);
-                const isMobile = w < 768;
-                const runwayH = isMobile ? 180 : 160;
-                const runwayY = h - groundProgress * runwayH;
-                ctx.save();
-                ctx.fillStyle = "#17120f";
-                ctx.fillRect(0, runwayY, w, runwayH + 60);
-
-                // Zebra threshold approach bars
-                ctx.fillStyle = "#fce566";
-                const barW = isMobile ? 14 : Math.max(16, Math.min(24, Math.floor(w / 18)));
-                const barGap = isMobile ? 10 : Math.max(12, Math.floor(barW * 0.8));
-                const totalBars = Math.floor(w / (barW + barGap));
-                for (let i = 0; i < totalBars; i++) {
-                    ctx.fillRect(i * (barW + barGap) + 8, runwayY + (isMobile ? 12 : 16), barW, isMobile ? 32 : 40);
-                }
-
-                // Runway centerline dashes
-                ctx.fillStyle = "#fffdf1";
-                const dashStep = isMobile ? 55 : 80;
-                const dashW = isMobile ? 30 : 40;
-                for (let x = 12; x < w; x += dashStep) {
-                    ctx.fillRect(x, runwayY + (isMobile ? 56 : 75), dashW, 4);
-                }
-                ctx.restore();
-            }
-
-            // 8. TACTICAL AVIATION MARGIN RULERS (DESKTOP HUD & MOBILE ALTITUDE GUTTER)
+            // 7. TACTICAL AVIATION MARGIN RULERS (DESKTOP HUD & MOBILE ALTITUDE GUTTER)
             if (w >= 960) {
                 this.renderAviationTelemetryRulers(ctx, w, h, scrollY, maxScroll, scrollProgress);
             } else {
