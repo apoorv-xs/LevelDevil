@@ -41,7 +41,7 @@
                 antialias: true,
                 powerPreference: "high-performance"
             });
-            this.renderer.setSize(window.innerWidth, window.innerHeight);
+            this.renderer.setSize(window.innerWidth, window.innerHeight, false);
             this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
             this.renderer.shadowMap.enabled = true;
             this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -87,7 +87,7 @@
                     const height = window.innerHeight;
                     this.camera.aspect = width / height;
                     this.camera.updateProjectionMatrix();
-                    this.renderer.setSize(width, height);
+                    this.renderer.setSize(width, height, false);
                     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
                 }
             };
@@ -139,6 +139,9 @@
                         });
                     }
                 });
+                if (this.sunLight && this.sunLight.shadow && this.sunLight.shadow.map) {
+                    this.sunLight.shadow.map.dispose();
+                }
                 this.scene = null;
             }
             if (this.renderer) {

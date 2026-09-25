@@ -126,6 +126,8 @@
         currentThought: null,
         bubbleElement: null,
         bubbleTimeout: null,
+        _cachedBubbleW: 280,
+        _cachedBubbleH: 44,
         lastThoughtTime: 0,
         dwellStartTime: 0,
         lastDwellY: 0,
@@ -134,6 +136,7 @@
         targetX: null,
         activeFocusedElement: null,
         isCelebrating: false,
+        hasCelebratedTouchdown: false,
         lastIntentChange: 0,
         stepDownTimer: 0,
 
@@ -253,8 +256,17 @@
                 this.trainedKnowledge.defects[id] = record.thought;
             } else {
                 // category === "custom_trigger"
-                record.match = Array.isArray(node.match) ? node.match : (node.match ? String(node.match).split(',').map(s=>s.trim()).filter(Boolean) : [id]);
-                if (node.yRange || (node.yMin !== undefined && node.yMax !== undefined)) {
+                if (node.match && typeof node.match === "object" && !Array.isArray(node.match)) {
+                    // Object form from workspace UI: { keywords: [...], yMin, yMax }
+                    record.match = Array.isArray(node.match.keywords) ? node.match.keywords : 
+                        (typeof node.match.keywords === 'string' ? node.match.keywords.split(',').map(s => s.trim()).filter(Boolean) : [id]);
+                    if (node.match.yMin !== undefined && node.match.yMax !== undefined) {
+                        record.yRange = [Number(node.match.yMin) || 0, Number(node.match.yMax) || 4000];
+                    }
+                } else {
+                    record.match = Array.isArray(node.match) ? node.match : (node.match ? String(node.match).split(',').map(s => s.trim()).filter(Boolean) : [id]);
+                }
+                if (!record.yRange && (node.yRange || (node.yMin !== undefined && node.yMax !== undefined))) {
                     record.yRange = Array.isArray(node.yRange) ? node.yRange : [Number(node.yMin) || 0, Number(node.yMax) || 4000];
                 }
                 const idx = this.trainedKnowledge.customRules.findIndex(r => r.id === id);
@@ -462,6 +474,9 @@
                 el = document.createElement("div");
                 el.id = "companion-bubble";
                 el.className = "companion-bubble";
+                el.setAttribute('role', 'status');
+                el.setAttribute('aria-live', 'polite');
+                el.setAttribute('aria-atomic', 'true');
                 el.style.display = "none";
                 document.body.appendChild(el);
             }
@@ -502,6 +517,7 @@
             document.addEventListener("input", (e) => {
                 const target = e.target;
                 if (target && target.form && target.form.id === "inquiry-form") {
+                    this.isFormReady = false;
                     const form = target.form;
                     const name = form.querySelector('input[name="name"]')?.value?.trim();
                     const email = form.querySelector('input[name="email"]')?.value?.trim();
@@ -539,6 +555,7 @@
             if (typeof document === "undefined") return;
             if (!this.bubbleElement) this.setupBubble();
             if (!this.bubbleElement) return;
+            if (this.bubbleElement && this.bubbleElement.classList.contains("hud-active")) return;
 
             const now = (typeof performance !== "undefined") ? performance.now() : Date.now();
             const isPriority = text.includes("dispatched") || text.includes("TOUCHDOWN") || text.includes("Terra Firma") || text.includes("HARD-LIGHT") || text.includes("⚡") || text.includes("Missing") || text.includes("Scope:") || text.includes("Tier unlocked");
@@ -552,6 +569,12 @@
             this.bubbleElement.textContent = text;
             this.bubbleElement.style.display = "block";
             this.bubbleElement.style.opacity = "1";
+            requestAnimationFrame(() => {
+                if (this.bubbleElement) {
+                    this._cachedBubbleW = this.bubbleElement.offsetWidth || 280;
+                    this._cachedBubbleH = this.bubbleElement.offsetHeight || 44;
+                }
+            });
 
             if (typeof window !== "undefined" && window.SFX && typeof window.SFX.playThought === "function") {
                 const px = (window.player && window.player.pos) ? window.player.pos.x : null;
@@ -786,8 +809,8 @@
             const screenY = player.pos.y - scrollY;
 
             // Dynamically measure bubble bounds to guarantee collision-free clearance
-            const bubbleW = this.bubbleElement.offsetWidth || 280;
-            const bubbleH = this.bubbleElement.offsetHeight || 44;
+            const bubbleW = this._cachedBubbleW || 280;
+            const bubbleH = this._cachedBubbleH || 44;
 
             // Clamp bubble horizontally so it never clips viewport bounds
             const left = Math.max(16, Math.min(window.innerWidth - bubbleW - 20, screenX - bubbleW / 2));
@@ -814,6 +837,10 @@
         // --- TRAINED WORKFLOW HANDLERS ---
         onFormFocus(el) {
             this.currentIntent = INTENTS.INSPECT_FORM_INPUT;
+            if (el) {
+                this._cachedFormInputRect = (typeof el.getBoundingClientRect === "function") ? el.getBoundingClientRect() : null;
+                this._cachedFormInputDom = el;
+            }
             const name = (el.getAttribute("name") || el.getAttribute("placeholder") || "").toLowerCase();
             if (name.includes("scope") || name.includes("budget")) {
                 this.emitThought("Selecting project parameters...", 2500);
@@ -831,6 +858,10 @@
             this.selectedScope = scope;
             this.lastScopeTime = (typeof performance !== "undefined") ? performance.now() : Date.now();
             this.currentIntent = INTENTS.CALIBRATE_SCOPE;
+            if (typeof document !== "undefined") {
+                const scopeEl = document.querySelector('select[name="scope"], .scope-pill');
+                if (scopeEl) this._cachedScopeRect = scopeEl.getBoundingClientRect();
+            }
             const intel = this.getScopeKnowledge(scope);
             if (intel) {
                 this.emitThought(intel.thought, 3200);
@@ -846,6 +877,10 @@
             this.selectedTier = tier;
             this.lastTierTime = (typeof performance !== "undefined") ? performance.now() : Date.now();
             this.currentIntent = INTENTS.VALIDATE_TIER;
+            if (typeof document !== "undefined") {
+                const budgetEl = document.querySelector('select[name="budget"], .tier-pill');
+                if (budgetEl) this._cachedTierRect = budgetEl.getBoundingClientRect();
+            }
             const intel = this.getTierKnowledge(tier);
             if (intel) {
                 this.emitThought(intel.thought, 3200);
@@ -874,10 +909,18 @@
         onFormReady() {
             this.isFormReady = true;
             this.currentIntent = INTENTS.PROMPT_SUBMIT;
+            if (typeof document !== "undefined") {
+                const submitEl = document.querySelector('#inquiry-form button[type="submit"]');
+                if (submitEl) {
+                    this._cachedSubmitRect = submitEl.getBoundingClientRect();
+                    this._cachedSubmitDom = submitEl;
+                }
+            }
             this.emitThought("Brief locked. Transmit when ready ↗", 3500);
         },
 
         onFormSubmit() {
+            this.isFormReady = false;
             this.currentIntent = INTENTS.CELEBRATE;
             this.isCelebrating = true;
             this.emitThought("Deal inquiry dispatched! 360° victory spin!", 4000);
@@ -899,6 +942,13 @@
             this.selectedProspect = prospect;
             this.lastProspectTime = (typeof performance !== "undefined") ? performance.now() : Date.now();
             this.currentIntent = INTENTS.AUDIT_PROSPECT;
+            if (typeof document !== "undefined") {
+                const selectedEl = document.querySelector('#queueList > div.bg-white\\/\\[0\\.08\\], #queueList > div');
+                if (selectedEl) {
+                    this._cachedProspectRect = selectedEl.getBoundingClientRect();
+                    this._cachedProspectDom = selectedEl;
+                }
+            }
             const lcp = prospect.lcpTime || "4.0s";
             const flaw = (prospect.flaws && prospect.flaws[0]) || "";
             let defectText = `Auditing ${prospect.name || "prospect"}: ${lcp} mobile latency.`;
@@ -984,7 +1034,12 @@
             // Touchdown zone check on Home (ALT: 0 FT) - true bedrock landing
             if ((playerPos.y >= 3470 && (groundedRail?.name?.includes("touchdown") || groundedRail?.y >= 3470)) ||
                 (playerPos.y >= 3350 && !groundedRail && !telemetry.allRails)) {
-                return INTENTS.CELEBRATE;
+                if (!this.hasCelebratedTouchdown) {
+                    this.hasCelebratedTouchdown = true;
+                    return INTENTS.CELEBRATE;
+                }
+            } else if (playerPos.y < 3200) {
+                this.hasCelebratedTouchdown = false;
             }
 
             // Active user scroll navigation takes precedence over stationary showcase
@@ -1222,8 +1277,12 @@
                             }
                         }
                         if (this.activeCustomRule.audioCue && typeof window !== "undefined" && window.SFX?.[this.activeCustomRule.audioCue]) {
-                            const px = (window.player && window.player.pos) ? window.player.pos.x : null;
-                            window.SFX[this.activeCustomRule.audioCue](px);
+                            const now = performance.now();
+                            if (!this._lastRuleAudioTime || now - this._lastRuleAudioTime > 3000) {
+                                const px = (window.player && window.player.pos) ? window.player.pos.x : null;
+                                window.SFX[this.activeCustomRule.audioCue](px);
+                                this._lastRuleAudioTime = now;
+                            }
                         }
                         break;
                     }
@@ -1251,13 +1310,12 @@
 
                 case INTENTS.CALIBRATE_SCOPE: {
                     const intel = this.getScopeKnowledge(this.selectedScope);
-                    const scopeEl = typeof document !== "undefined" ? document.querySelector('select[name="scope"], .scope-pill') : null;
-                    if (scopeEl) {
-                        const rect = scopeEl.getBoundingClientRect();
+                    if (this._cachedScopeRect) {
+                        const rect = this._cachedScopeRect;
                         const scrollYOffset = (typeof window !== "undefined") ? (window.scrollY || window.pageYOffset || 0) : 0;
                         const targetX = Math.round(rect.left + rect.width / 2);
                         const targetY = Math.round(rect.bottom + scrollYOffset);
-                        const rail = allRails.find(r => r.domElement === scopeEl || Math.abs(r.y - targetY) < 30);
+                        const rail = allRails.find(r => Math.abs(r.y - targetY) < 30);
                         result.targetRail = rail || currentRail;
                         result.targetX = targetX;
                         if (Math.abs(playerPos.x - targetX) > 15) {
@@ -1272,9 +1330,8 @@
                 }
 
                 case INTENTS.VALIDATE_TIER: {
-                    const budgetEl = typeof document !== "undefined" ? document.querySelector('select[name="budget"], .tier-pill') : null;
-                    if (budgetEl) {
-                        const rect = budgetEl.getBoundingClientRect();
+                    if (this._cachedTierRect) {
+                        const rect = this._cachedTierRect;
                         const scrollYOffset = (typeof window !== "undefined") ? (window.scrollY || window.pageYOffset || 0) : 0;
                         const targetX = Math.round(rect.left + rect.width / 2);
                         result.targetX = targetX;
@@ -1290,13 +1347,12 @@
                 }
 
                 case INTENTS.PROMPT_SUBMIT: {
-                    const submitEl = typeof document !== "undefined" ? document.querySelector('#inquiry-form button[type="submit"]') : null;
-                    if (submitEl) {
-                        const rect = submitEl.getBoundingClientRect();
+                    if (this._cachedSubmitRect) {
+                        const rect = this._cachedSubmitRect;
                         const scrollYOffset = (typeof window !== "undefined") ? (window.scrollY || window.pageYOffset || 0) : 0;
                         const targetX = Math.round(rect.left + rect.width / 2);
                         const targetY = Math.round(rect.bottom + scrollYOffset);
-                        const rail = allRails.find(r => r.domElement === submitEl || Math.abs(r.y - targetY) < 25);
+                        const rail = allRails.find(r => r.domElement === this._cachedSubmitDom || Math.abs(r.y - targetY) < 25);
                         result.targetRail = rail || currentRail;
                         result.targetX = targetX;
                         if (Math.abs(playerPos.x - targetX) > 20) {
@@ -1313,13 +1369,12 @@
                 }
 
                 case INTENTS.AUDIT_PROSPECT: {
-                    const selectedEl = typeof document !== "undefined" ? document.querySelector('#queueList > div.bg-white\\/\\[0\\.08\\], #queueList > div') : null;
-                    if (selectedEl) {
-                        const rect = selectedEl.getBoundingClientRect();
+                    if (this._cachedProspectRect) {
+                        const rect = this._cachedProspectRect;
                         const scrollYOffset = (typeof window !== "undefined") ? (window.scrollY || window.pageYOffset || 0) : 0;
                         const targetX = Math.round(rect.left + 80);
                         const targetY = Math.round(rect.bottom + scrollYOffset);
-                        const rail = allRails.find(r => r.domElement === selectedEl || Math.abs(r.y - targetY) < 20);
+                        const rail = allRails.find(r => r.domElement === this._cachedProspectDom || Math.abs(r.y - targetY) < 20);
                         result.targetRail = rail || currentRail;
                         result.targetX = targetX;
                         if (Math.abs(playerPos.x - targetX) > 20) {
@@ -1346,9 +1401,15 @@
                 }
 
                 case INTENTS.INSPECT_FORM_INPUT: {
-                    const el = (telemetry && telemetry.activeElement) || this.activeFocusedElement || (typeof document !== "undefined" ? document.querySelector("#inquiry-form input:focus, #inquiry-form textarea:focus, #inquiry-form button[type='submit'], #inquiry-card") : null);
-                    if (el) {
-                        const rect = (typeof el.getBoundingClientRect === "function") ? el.getBoundingClientRect() : { left: playerPos.x, right: playerPos.x + 100, width: 100, bottom: playerPos.y };
+                    const el = (telemetry && telemetry.activeElement) || this.activeFocusedElement || this._cachedFormInputDom;
+                    // Use cached rect if available, otherwise fallback to live measurement
+                    let rect = null;
+                    if (el && this._cachedFormInputRect && el === this._cachedFormInputDom) {
+                        rect = this._cachedFormInputRect;
+                    } else if (el && typeof el.getBoundingClientRect === "function") {
+                        rect = el.getBoundingClientRect();
+                    }
+                    if (el && rect) {
                         const scrollYOffset = (typeof window !== "undefined") ? (window.scrollY || window.pageYOffset || 0) : 0;
                         const targetX = Math.round(rect.left + Math.min(60, rect.width / 2));
                         const targetY = Math.round(rect.bottom + scrollYOffset);
@@ -1387,10 +1448,26 @@
 
                 case INTENTS.LEAD_DESCENT: {
                     if (currentRail) {
-                        const nextRails = allRails.filter(r => r.y > currentRail.y + 15 && r.y < currentRail.y + 700);
-                        nextRails.sort((a, b) => a.y - b.y);
-
-                        let target = nextRails.find(r => (r.xLeft <= currentRail.xRight + 150 && r.xRight >= currentRail.xLeft - 150)) || nextRails[0];
+                        let target = null;
+                        let bestY = Infinity;
+                        let fallbackTarget = null;
+                        let fallbackY = Infinity;
+                        for (let i = 0; i < allRails.length; i++) {
+                            const r = allRails[i];
+                            if (r.y > currentRail.y + 15 && r.y < currentRail.y + 700) {
+                                if (r.y < fallbackY) {
+                                    fallbackY = r.y;
+                                    fallbackTarget = r;
+                                }
+                                if (r.xLeft <= currentRail.xRight + 150 && r.xRight >= currentRail.xLeft - 150) {
+                                    if (r.y < bestY) {
+                                        bestY = r.y;
+                                        target = r;
+                                    }
+                                }
+                            }
+                        }
+                        if (!target) target = fallbackTarget;
 
                         if (target) {
                             result.targetRail = target;
@@ -1424,9 +1501,17 @@
 
                 case INTENTS.LEAD_ASCENT: {
                     if (currentRail) {
-                        const aboveRails = allRails.filter(r => r.y < currentRail.y - 15 && r.y > currentRail.y - 600);
-                        aboveRails.sort((a, b) => b.y - a.y);
-                        const target = aboveRails[0];
+                        let target = null;
+                        let bestY = -Infinity;
+                        for (let i = 0; i < allRails.length; i++) {
+                            const r = allRails[i];
+                            if (r.y < currentRail.y - 15 && r.y > currentRail.y - 600) {
+                                if (r.y > bestY) {
+                                    bestY = r.y;
+                                    target = r;
+                                }
+                            }
+                        }
                         if (target) {
                             result.targetRail = target;
                             const screenW = (typeof window !== "undefined") ? (window.innerWidth || 1200) : 1200;

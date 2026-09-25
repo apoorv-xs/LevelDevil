@@ -1,13 +1,13 @@
 const portfolioScripts = [
-  "sfx_synth.js?v=1016",
-  "sky_engine.js?v=1016",
-  "kaboom.js?v=1016",
-  "system1_brain.js?v=1016",
-  "three_engine.js?v=1016",
-  "player_3d.js?v=1016",
-  "player.js?v=1016",
-  "portfolio_engine.js?v=1016",
-  "collision_editor.js?v=1016"
+  "sfx_synth.js?v=1017",
+  "sky_engine.js?v=1017",
+  "kaboom.js?v=1017",
+  "system1_brain.js?v=1017",
+  "three_engine.js?v=1017",
+  "player_3d.js?v=1017",
+  "player.js?v=1017",
+  "portfolio_engine.js?v=1017",
+  "collision_editor.js?v=1017"
 ];
 
 function isSalesRoute(pathname = window.location.pathname) {
@@ -210,8 +210,8 @@ if (isSalesRoute()) {
   loadSalesRoute().then(() => {
     return loadPortfolio();
   }).catch((error) => {
-    document.body.textContent = "Sales view unavailable.";
-    console.error(error);
+    console.warn("[Shell] 3D companion scripts failed to load, degrading gracefully:", error);
+    // Keep the Sales form interactive — do NOT destroy the DOM
   });
 } else {
   loadPortfolio().catch((error) => {

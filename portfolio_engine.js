@@ -410,6 +410,8 @@ onLoad(() => {
     // Smooth Airborne Thruster Hover-Glide Navigation Controller
     window.smoothGlideTo = function (targetX, targetY, duration = 650, callback) {
         if (!player) return;
+        const glideId = Symbol();
+        window._currentGlideId = glideId;
         window.isAirborneGlide = true;
         if (window.Player3D && typeof window.Player3D.setThrusterActive === "function") {
             window.Player3D.setThrusterActive(true);
@@ -419,6 +421,7 @@ onLoad(() => {
         const startTime = performance.now();
 
         function stepGlide(now) {
+            if (window._currentGlideId !== glideId) return;
             const elapsed = now - startTime;
             const progress = Math.min(1, elapsed / duration);
             // Ease out cubic
@@ -440,6 +443,10 @@ onLoad(() => {
                 }
                 player.grounded = true;
                 player.vy = 0;
+                // Bind to nearest matching rail
+                player.currentRail = (window.landingRails || landingRails || []).find(r => 
+                    Math.abs(r.y - targetY) <= 8 && r.xLeft <= targetX + 20 && r.xRight >= targetX - 20
+                ) || null;
                 if (window.SFX && typeof window.SFX.playLand === "function") {
                     window.SFX.playLand(player.pos.x);
                 }
@@ -479,7 +486,7 @@ onLoad(() => {
 
     function syncDOM(force = false) {
         if (!force && getCurrentPage() === "home" && localStorage.getItem("apoorv_custom_rails_v4")) {
-            if (loadSavedRails()) return;
+            if (typeof loadSavedRails === "function" && loadSavedRails()) return;
         }
 
         const scrollY = window.scrollY || window.pageYOffset || 0;
@@ -512,6 +519,33 @@ onLoad(() => {
             landingRails = generatePageRails().concat(hardLightRails);
             window.landingRails = landingRails;
         }
+
+        const baseRails = landingRails.filter(r => !r.isHardLight && typeof r.xLeft === "number" && typeof r.xRight === "number");
+        const gaps = [];
+        for (let i = 0; i < baseRails.length; i++) {
+            const r1 = baseRails[i];
+            for (let j = i + 1; j < baseRails.length; j++) {
+                const r2 = baseRails[j];
+                if (Math.abs(r1.y - r2.y) > 30) continue;
+                const bridgeY = Math.round((r1.y + r2.y) / 2);
+                let gapLeft = 0;
+                let gapRight = 0;
+                if (r2.xLeft > r1.xRight) {
+                    gapLeft = r1.xRight;
+                    gapRight = r2.xLeft;
+                } else if (r1.xLeft > r2.xRight) {
+                    gapLeft = r2.xRight;
+                    gapRight = r1.xLeft;
+                } else {
+                    continue;
+                }
+                const gapWidth = gapRight - gapLeft;
+                if (gapWidth >= 15 && gapWidth <= 220) {
+                    gaps.push({ gapLeft, gapRight, bridgeY });
+                }
+            }
+        }
+        window._precomputedChasmGaps = gaps;
 
         // Keep grounded player pinned to their active rail
         if (player && player.grounded && player.currentRail) {
@@ -602,6 +636,7 @@ onLoad(() => {
     // Safety Watchdogs: ensure BB-8 remains visible and anchored if fonts or layouts shift
     [400, 1200, 2500].forEach(delay => {
         setTimeout(() => {
+            if (window.controlMode === "manual" || (player && player.pos.y > 600)) return;
             if (!player) return;
             const currentScroll = (typeof window !== "undefined") ? (window.scrollY || 0) : 0;
             const screenY = player.pos.y - currentScroll;
@@ -655,40 +690,17 @@ onLoad(() => {
         const px = p.pos.x;
         const py = p.pos.y;
 
-        const baseRails = rails.filter(r => !r.isHardLight && typeof r.xLeft === "number" && typeof r.xRight === "number");
+        const gaps = window._precomputedChasmGaps || [];
+        for (const gap of gaps) {
+            if (Math.abs(py - gap.bridgeY) > 80) continue;
+            const { gapLeft, gapRight, bridgeY } = gap;
+            
+            const isNearLeft = (px >= gapLeft - 75 && px <= gapLeft + 25);
+            const isNearRight = (px <= gapRight + 75 && px >= gapRight - 25);
+            const isOverGap = (px >= gapLeft - 10 && px <= gapRight + 10);
 
-        for (let i = 0; i < baseRails.length; i++) {
-            const r1 = baseRails[i];
-
-            for (let j = i + 1; j < baseRails.length; j++) {
-                const r2 = baseRails[j];
-                if (Math.abs(r1.y - r2.y) > 30) continue;
-
-                const bridgeY = Math.round((r1.y + r2.y) / 2);
-                if (Math.abs(py - bridgeY) > 80) continue;
-
-                let gapLeft = 0;
-                let gapRight = 0;
-                if (r2.xLeft > r1.xRight) {
-                    gapLeft = r1.xRight;
-                    gapRight = r2.xLeft;
-                } else if (r1.xLeft > r2.xRight) {
-                    gapLeft = r2.xRight;
-                    gapRight = r1.xLeft;
-                } else {
-                    continue;
-                }
-
-                const gapWidth = gapRight - gapLeft;
-                if (gapWidth >= 15 && gapWidth <= 220) {
-                    const isNearLeft = (px >= gapLeft - 75 && px <= gapLeft + 25);
-                    const isNearRight = (px <= gapRight + 75 && px >= gapRight - 25);
-                    const isOverGap = (px >= gapLeft - 10 && px <= gapRight + 10);
-
-                    if (isNearLeft || isNearRight || isOverGap) {
-                        arch.deployLaserBridge(gapLeft, gapRight, bridgeY, rails, p);
-                    }
-                }
+            if (isNearLeft || isNearRight || isOverGap) {
+                arch.deployLaserBridge(gapLeft, gapRight, bridgeY, rails, p);
             }
         }
     }
@@ -882,7 +894,8 @@ onLoad(() => {
             const playerScreenY = player.pos.y - currentScrollY;
             const maxScroll = cachedMaxScroll || Math.max(0, document.documentElement.scrollHeight - vh);
 
-            const isMovingDown = player.vy > 10 || (window.isPhysicalKeyDown && (window.isPhysicalKeyDown("down") || window.isPhysicalKeyDown("s"))) || (typeof isKeyDown === "function" && (isKeyDown("down") || isKeyDown("s")));
+            const isAutonomousDown = window.controlMode === "autonomous" && playerScreenY > vh * 0.65 && player.grounded;
+            const isMovingDown = player.vy > 10 || isAutonomousDown || (window.isPhysicalKeyDown && (window.isPhysicalKeyDown("down") || window.isPhysicalKeyDown("s"))) || (typeof isKeyDown === "function" && (isKeyDown("down") || isKeyDown("s")));
             if (isMovingDown && playerScreenY > vh * 0.65) {
                 const targetScroll = player.pos.y - vh * 0.45;
                 const clampedTarget = Math.min(maxScroll, Math.max(0, targetScroll));

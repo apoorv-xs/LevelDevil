@@ -191,7 +191,7 @@
         isCurious: false,
         curiousStartTime: 0,
         gazeTargetWorld: null,
-        lastX: 0,
+        lastX: null,
         currentRollZ: 0,
         headTiltZ: 0,
 
@@ -253,18 +253,19 @@
 
             window.mousePos2D = window.mousePos2D || { x: window.innerWidth / 2, y: window.innerHeight / 2, active: false };
 
-            window.addEventListener("pointermove", (e) => {
+            this._onPointerMove = (e) => {
                 const scrollY = window.scrollY || window.pageYOffset || 0;
                 window.mousePos2D.x = e.clientX;
                 window.mousePos2D.y = e.clientY + scrollY; // World coordinate
                 window.mousePos2D.active = true;
                 window.mousePos2D.lastMoveTime = performance.now();
-            }, { passive: true });
+            };
+            window.addEventListener("pointermove", this._onPointerMove, { passive: true });
 
             const raycaster = (typeof THREE !== "undefined") ? new THREE.Raycaster() : null;
             const pointerVec = (typeof THREE !== "undefined") ? new THREE.Vector2() : null;
 
-            window.addEventListener("pointerdown", (e) => {
+            this._onPointerDown = (e) => {
                 // If clicking an interactive form element or HUD button, let it handle
                 if (e.target && e.target.closest && e.target.closest("input, textarea, select, button, a, .bb8-hud-btn")) return;
 
@@ -290,7 +291,8 @@
                 if (!this.isCelebrating && Math.random() > 0.6) {
                     this.nod();
                 }
-            }, { passive: false });
+            };
+            window.addEventListener("pointerdown", this._onPointerDown, { passive: false });
         },
 
         setThrusterActive(active) {
@@ -393,7 +395,8 @@
             // Black ink outline material (Inverted hull technique)
             const inkOutlineMat = new THREE.MeshBasicMaterial({
                 color: 0x17120f,
-                side: THREE.BackSide
+                side: THREE.BackSide,
+                depthWrite: false
             });
 
             // Gunmetal / Silver detailing
@@ -538,8 +541,8 @@
             // Antenna beacon LED (Pulsing cyan/orange status light)
             const ledGeo = new THREE.SphereGeometry(0.022, 10, 10);
             this.antennaLed = new THREE.Mesh(ledGeo, ledMat);
-            this.antennaLed.position.set(-0.11, 0.48 + 0.48, -0.06);
-            this.headGroup.add(this.antennaLed);
+            this.antennaLed.position.set(0, 0.24, 0);
+            this.tallAntenna.add(this.antennaLed);
 
             // Short stub antenna
             const shortAntGeo = new THREE.CylinderGeometry(0.014, 0.018, 0.24, 12);
@@ -563,9 +566,10 @@
 
         // --- REAL-TIME FRAME SYNCHRONIZATION WITH 2D KABOOM PLAYER ---
         syncWith2D(guy) {
-            if (AstromechArchitect) {
-                AstromechArchitect.update(0.016, guy, (typeof window !== "undefined" ? window.landingRails : null));
-            }
+            // REMOVED: AstromechArchitect.update(...) - Sole driver should be portfolio_engine.js
+            
+            const frameDt = Math.min((performance.now() - (this._lastSyncTime || performance.now())) / 1000, 0.05);
+            this._lastSyncTime = performance.now();
 
             if (!this.isCreated || !guy || !guy.exists || !guy.exists()) {
                 if (this.root) this.root.visible = false;
@@ -596,12 +600,17 @@
 
             // Calculate horizontal delta for ball rolling
             const deltaX = targetPos.x - this.lastX;
-            this.lastX = targetPos.x;
-
-            if (isGrounded && Math.abs(deltaX) > 0.0001) {
-                // Roll sphere: Delta theta = -deltaX / radius
-                this.currentRollZ -= (deltaX / 0.65) * 1.25;
-                this.bodyBall.rotation.z = this.currentRollZ;
+            
+            if (this.lastX === null || Math.abs(deltaX) > 5) {
+                this.lastX = targetPos.x;
+                // skip rotation this frame
+            } else {
+                this.lastX = targetPos.x;
+                if (isGrounded && Math.abs(deltaX) > 0.0001) {
+                    // Roll sphere: Delta theta = -deltaX / radius
+                    this.currentRollZ -= (deltaX / 0.65) * 1.25;
+                    this.bodyBall.rotation.z = this.currentRollZ;
+                }
             }
 
             // 4. Momentum Tilt & Emotive Gestures
@@ -611,8 +620,8 @@
                 if (elapsed < 1.6) {
                     const leapHeight = Math.sin((elapsed / 1.6) * Math.PI) * 2.2;
                     this.root.position.y = targetPos.y + leapHeight;
-                    this.bodyBall.rotation.y += 0.25;
-                    this.headGroup.rotation.y += 0.28;
+                    this.bodyBall.rotation.y += 15.0 * frameDt;
+                    this.headGroup.rotation.y += 16.8 * frameDt;
                     targetTiltZ = Math.sin(elapsed * 12) * 0.25;
                     if (this.antennaLed) {
                         const strobe = Math.sin(elapsed * 24) > 0 ? 0xffd700 : 0x00ffff;
@@ -676,6 +685,11 @@
                         const shiftY = Math.max(-0.012, Math.min(0.012, dy * 0.002));
                         this.primaryLens.position.x = shiftX;
                         this.primaryLens.position.y = 0.25 + shiftY;
+                    }
+                } else if (!isRecent && !window.mousePos2D.active) {
+                    if (this.primaryLens) {
+                        this.primaryLens.position.x += (0 - this.primaryLens.position.x) * 0.05;
+                        this.primaryLens.position.y += (0.25 - this.primaryLens.position.y) * 0.05;
                     }
                 }
             }
@@ -774,6 +788,16 @@
             this.tallAntenna = null;
             this.shortAntenna = null;
             this.isCreated = false;
+            
+            if (this._onPointerMove) {
+                window.removeEventListener('pointermove', this._onPointerMove);
+                this._onPointerMove = null;
+            }
+            if (this._onPointerDown) {
+                window.removeEventListener('pointerdown', this._onPointerDown);
+                this._onPointerDown = null;
+            }
+            this._pointerBound = false;
         }
     };
 
@@ -835,7 +859,7 @@
                 positions[i * 3 + 2] = origin3d.z + (Math.random() - 0.5) * 0.3;
                 velocities.push({
                     vx: (Math.random() - 0.5) * 5.5,
-                    vy: Math.random() * 6.5 + 2.5,
+                    vy: -(Math.random() * 6.5 + 2.5),
                     vz: (Math.random() - 0.5) * 3.5
                 });
             }
@@ -1053,6 +1077,10 @@
                 xRight,
                 width,
                 y: platformY,
+                cx: px,           // ADD: center X for 3D positioning
+                y2d: platformY,    // ADD: 2D Y for 3D positioning
+                w2d: width,        // ADD: 2D width for scale sync
+                len3d: len3d || (width * 0.05),  // ADD: initial 3D length for scale reference
                 trap: false,
                 isHardLight: true,
                 isBridge: false,
@@ -1286,7 +1314,7 @@
                 const remaining = rail.duration - elapsed;
 
                 // Electric pulse & smooth decay pulse-out
-                if (rail.materials && rail.materials.length >= 4) {
+                if (rail.materials && rail.materials.length >= 3) {
                     const pulse = 0.82 + 0.18 * Math.sin(now * 0.012 + rail.cx * 0.02);
 
                     if (remaining <= 1500) {
@@ -1295,15 +1323,15 @@
                         const flash = 0.5 + 0.5 * Math.sin(now * flashSpeed);
                         const alpha = Math.max(0, remaining / 1500) * flash;
 
-                        rail.materials[0].opacity = 0.90 * alpha; // beam
-                        rail.materials[1].opacity = 0.95 * alpha; // core
-                        rail.materials[2].opacity = 0.95 * alpha; // endcaps
-                        rail.materials[3].opacity = 0.45 * alpha; // shelf
+                        if (rail.materials[0]) rail.materials[0].opacity = 0.90 * alpha; // beam
+                        if (rail.materials[1]) rail.materials[1].opacity = 0.95 * alpha; // core
+                        if (rail.materials[2]) rail.materials[2].opacity = 0.95 * alpha; // endcaps
+                        if (rail.materials[3]) rail.materials[3].opacity = 0.45 * alpha; // shelf
                     } else {
-                        rail.materials[0].opacity = 0.88 * pulse;
-                        rail.materials[1].opacity = 0.95 * pulse;
-                        rail.materials[2].opacity = 1.0;
-                        rail.materials[3].opacity = 0.45 * pulse;
+                        if (rail.materials[0]) rail.materials[0].opacity = 0.88 * pulse;
+                        if (rail.materials[1]) rail.materials[1].opacity = 0.95 * pulse;
+                        if (rail.materials[2]) rail.materials[2].opacity = 1.0;
+                        if (rail.materials[3]) rail.materials[3].opacity = 0.45 * pulse;
                     }
                 }
 

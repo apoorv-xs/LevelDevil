@@ -207,9 +207,15 @@
   </main>
 
   <!-- THREE.JS 3D CANVAS & COMPANION ENGINE -->
-  <canvas id="three-canvas"></canvas>
+  <canvas id="three-canvas" aria-hidden="true"></canvas>
   <div id="game-container">
-    <canvas id="game-canvas"></canvas>
+    <canvas id="game-canvas" aria-hidden="true"></canvas>
+  </div>
+  <div id="mobile-controls" style="display:none">
+    <button id="btn-left" class="mobile-ctrl-btn" aria-label="Move Left">‹</button>
+    <button id="btn-right" class="mobile-ctrl-btn" aria-label="Move Right">›</button>
+    <button id="btn-construct" class="mobile-ctrl-btn construct-btn" aria-label="Deploy Platform">F</button>
+    <button id="btn-jump" class="mobile-ctrl-btn jump-btn" aria-label="Jump">▲</button>
   </div>
 
   <script src="/three.min.js"></script>

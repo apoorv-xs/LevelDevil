@@ -721,7 +721,7 @@
       </button>
 
       <!-- Audio SFX Toggle -->
-      <button id="sfx-toggle-btn" onclick="toggleAudioSFX()" title="Toggle Sound Effects" class="topbar-btn sfx-btn font-arcade text-[10px] px-2 py-1 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] transition cursor-pointer">
+      <button id="sfx-toggle-btn" title="Toggle Sound Effects" class="topbar-btn sfx-btn font-arcade text-[10px] px-2 py-1 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] transition cursor-pointer">
         [ 🔊 SFX ]
       </button>
 
@@ -840,15 +840,15 @@
               <span id="leadQueuePosition" class="text-[10px] font-arcade text-[#17120f] bg-[#fff1bd] border-2 border-[#17120f] px-2.5 py-1 shadow-[1px_1px_0_#17120f]">Lead 1 of 65</span>
               <span id="activeRating" class="text-[10px] bg-[#fff1bd] text-[#17120f] font-arcade px-2 py-1 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f]">★ 4.8</span>
               <span id="activeType" class="text-[10px] font-arcade px-2 py-1 bg-[#fffdf1] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f]">UPGRADE</span>
-              <span id="activeFee" class="text-[10px] font-arcade px-2 py-1 bg-[#d4edda] text-[#155724] border-2 border-[#17120f] font-bold shadow-[1px_1px_0_#17120f]">Floor ₹50,000</span>
+              <span id="activeFee" data-kaboom-body="true" class="text-[10px] font-arcade px-2 py-1 bg-[#d4edda] text-[#155724] border-2 border-[#17120f] font-bold shadow-[1px_1px_0_#17120f]">Floor ₹50,000</span>
               <span id="currentLockStatus" class="text-[10px] font-arcade px-2 py-1 bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f]">Ready</span>
             </div>
             <!-- Stepper Controls -->
             <div class="inline-flex bg-[#fffdf1] border-2 border-[#17120f] p-0.5 shadow-[2px_2px_0_#17120f]">
-              <button id="btnPrevLeadHero" onclick="advanceLead(-1)" title="Previous Prospect (K)" class="px-3 py-1 text-xs font-arcade text-[#17120f] hover:bg-[#fce566] transition flex items-center gap-1">
+              <button id="btnPrevLeadHero" data-kaboom-body="true" onclick="advanceLead(-1)" title="Previous Prospect (K)" class="px-3 py-1 text-xs font-arcade text-[#17120f] hover:bg-[#fce566] transition flex items-center gap-1">
                 <span>&larr; Prev</span>
               </button>
-              <button id="btnNextLeadHero" onclick="advanceLead(1)" title="Next Prospect (J)" class="px-3 py-1 text-xs font-arcade text-[#17120f] hover:bg-[#fce566] transition flex items-center gap-1">
+              <button id="btnNextLeadHero" data-kaboom-body="true" onclick="advanceLead(1)" title="Next Prospect (J)" class="px-3 py-1 text-xs font-arcade text-[#17120f] hover:bg-[#fce566] transition flex items-center gap-1">
                 <span>Next &rarr;</span>
               </button>
             </div>
@@ -856,7 +856,7 @@
 
           <!-- Middle Row: Lead Title & Full Details -->
           <div class="space-y-1.5">
-            <h1 id="activeName" class="text-sm sm:text-base md:text-lg font-bold text-[#17120f] tracking-tight leading-snug font-arcade">Select a Prospect</h1>
+            <h1 id="activeName" data-kaboom-body="true" class="text-sm sm:text-base md:text-lg font-bold text-[#17120f] tracking-tight leading-snug font-arcade">Select a Prospect</h1>
             <p class="text-xs text-[#17120f]/80 flex items-center gap-2 flex-wrap font-mono">
               <span>Stakeholder: <strong id="activeDM" class="text-[#17120f] font-bold">--</strong></span>
               <span class="text-[#17120f]/40">•</span>
@@ -986,6 +986,7 @@
 
           <textarea 
             id="callNotesInput" 
+            data-kaboom-body="true"
             rows="3" 
             placeholder="Private technical notes, meeting follow-ups, or client requirements (auto-saved locally)..." 
             class="w-full bg-[#fffdf1] border-2 border-[#17120f] p-3 text-xs text-[#17120f] placeholder-[#17120f]/50 font-mono shadow-[inset_2px_2px_0_rgba(23,18,15,0.06)]"
@@ -996,7 +997,7 @@
               <button id="btnPrevLeadHandoff" onclick="advanceLead(-1)" title="Previous Prospect (K)" class="px-3 py-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] font-arcade text-[10px] shadow-[2px_2px_0_#17120f] transition">
                 &larr; Prev
               </button>
-              <button id="btnNextLeadHandoff" onclick="saveAndNext()" title="Save Notes & Advance (J)" class="px-3.5 py-1.5 bg-[#fce566] hover:bg-[#fff1bd] text-[#17120f] border-2 border-[#17120f] font-arcade text-[10px] font-bold shadow-[2px_2px_0_#17120f] transition">
+              <button id="btnNextLeadHandoff" data-kaboom-body="true" onclick="saveAndNext()" title="Save Notes & Advance (J)" class="px-3.5 py-1.5 bg-[#fce566] hover:bg-[#fff1bd] text-[#17120f] border-2 border-[#17120f] font-arcade text-[10px] font-bold shadow-[2px_2px_0_#17120f] transition">
                 Save & Next &rarr;
               </button>
             </div>
@@ -1008,7 +1009,7 @@
 
         <!-- COMPATIBILITY HOOKS (Hidden from UI, preserving 100% app.js stability) -->
         <div class="hidden" aria-hidden="true">
-          <a id="callActionBtn" href="#"><span id="callPhoneText"></span></a>
+          <a id="callActionBtn" data-kaboom-body="true" href="#"><span id="callPhoneText"></span></a>
           <div id="callTimerBox"><span id="callTimerDigits">00:00</span></div>
           <div id="lockedBadge"></div>
           <div id="scriptContentBox"></div>
@@ -1961,16 +1962,21 @@
   </div>
 
   <!-- THREE.JS 3D CANVAS & COMPANION ENGINE OVERLAYS -->
-  <canvas id="three-canvas"></canvas>
+  <canvas id="three-canvas" aria-hidden="true"></canvas>
   <div id="game-container">
-    <canvas id="game-canvas"></canvas>
+    <canvas id="game-canvas" aria-hidden="true"></canvas>
+  </div>
+  <div id="mobile-controls" style="display:none">
+    <button id="btn-left" class="mobile-ctrl-btn" aria-label="Move Left">‹</button>
+    <button id="btn-right" class="mobile-ctrl-btn" aria-label="Move Right">›</button>
+    <button id="btn-construct" class="mobile-ctrl-btn construct-btn" aria-label="Deploy Platform">F</button>
+    <button id="btn-jump" class="mobile-ctrl-btn jump-btn" aria-label="Jump">▲</button>
   </div>
 
   <script src="/sales-config.js"></script>
   <script src="/sales-auth.js"></script>
   <script src="prospects_data.js"></script>
   <script src="custom_prospects.js"></script>
-  <script src="/system1_brain.js?v=1015"></script>
   <script src="app.js"></script>
   <script src="/three.min.js"></script>
   <script src="/shell.js"></script>

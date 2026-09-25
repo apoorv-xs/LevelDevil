@@ -172,7 +172,12 @@
     startAmbient() {
       if (this.ambientActive || this.muted) return;
       const ctx = this.getAudioContext();
-      if (!ctx || ctx.state !== "running" || this.ambientActive) return;
+      if (!ctx) return;
+      if (ctx.state !== "running") {
+        ctx.resume().catch(() => {});
+        return;
+      }
+      if (this.ambientActive) return;
 
       try {
         const now = ctx.currentTime;
@@ -346,7 +351,11 @@
     playJump(panX) {
       if (this.muted) return;
       const ctx = this.getAudioContext();
-      if (!ctx || ctx.state !== "running") return;
+      if (!ctx) return;
+      if (ctx.state !== "running") {
+        ctx.resume().catch(() => {});
+        return;
+      }
 
       try {
         const now = ctx.currentTime;
@@ -379,7 +388,11 @@
     playLand(panX) {
       if (this.muted) return;
       const ctx = this.getAudioContext();
-      if (!ctx || ctx.state !== "running") return;
+      if (!ctx) return;
+      if (ctx.state !== "running") {
+        ctx.resume().catch(() => {});
+        return;
+      }
 
       try {
         const now = ctx.currentTime;
@@ -415,7 +428,11 @@
     playConstruct(panX) {
       if (this.muted) return;
       const ctx = this.getAudioContext();
-      if (!ctx || ctx.state !== "running") return;
+      if (!ctx) return;
+      if (ctx.state !== "running") {
+        ctx.resume().catch(() => {});
+        return;
+      }
 
       try {
         const now = ctx.currentTime;
@@ -465,7 +482,11 @@
     playWeld(panX) {
       if (this.muted) return;
       const ctx = this.getAudioContext();
-      if (!ctx || ctx.state !== "running") return;
+      if (!ctx) return;
+      if (ctx.state !== "running") {
+        ctx.resume().catch(() => {});
+        return;
+      }
 
       try {
         const now = ctx.currentTime;
@@ -502,7 +523,11 @@
     playThought(panX) {
       if (this.muted) return;
       const ctx = this.getAudioContext();
-      if (!ctx || ctx.state !== "running") return;
+      if (!ctx) return;
+      if (ctx.state !== "running") {
+        ctx.resume().catch(() => {});
+        return;
+      }
 
       try {
         const now = ctx.currentTime;
@@ -545,7 +570,11 @@
     playCelebrate(panX) {
       if (this.muted) return;
       const ctx = this.getAudioContext();
-      if (!ctx || ctx.state !== "running") return;
+      if (!ctx) return;
+      if (ctx.state !== "running") {
+        ctx.resume().catch(() => {});
+        return;
+      }
 
       try {
         const notes = [523.25, 659.25, 783.99, 1046.50];
@@ -579,7 +608,11 @@
     playAlert(panX) {
       if (this.muted) return;
       const ctx = this.getAudioContext();
-      if (!ctx || ctx.state !== "running") return;
+      if (!ctx) return;
+      if (ctx.state !== "running") {
+        ctx.resume().catch(() => {});
+        return;
+      }
 
       try {
         const now = ctx.currentTime;
@@ -610,7 +643,11 @@
     playClick(panX) {
       if (this.muted) return;
       const ctx = this.getAudioContext();
-      if (!ctx || ctx.state !== "running") return;
+      if (!ctx) return;
+      if (ctx.state !== "running") {
+        ctx.resume().catch(() => {});
+        return;
+      }
 
       try {
         const now = ctx.currentTime;
@@ -633,6 +670,13 @@
         osc.start(now);
         osc.stop(now + 0.045);
       } catch (e) {}
+    }
+    
+    dispose() {
+      if (this.ctx) {
+        this.ctx.close().catch(() => {});
+        this.ctx = null;
+      }
     }
   }
 

@@ -135,7 +135,7 @@
             const isMobile = screenW < 768;
             const scale = isMobile ? 0.38 : 1.0;
             const renderW = Math.round(this.w * scale);
-            if (this.x - renderW > screenW + 80) {
+            if (this.x > screenW + 60) {
                 this.x = -renderW - 60;
             }
         }
@@ -208,6 +208,14 @@
             this.initClouds();
             this.initStars();
             this.initMountains();
+
+            const scanTile = document.createElement('canvas');
+            scanTile.width = 4;
+            scanTile.height = 4;
+            const sctx = scanTile.getContext('2d');
+            sctx.fillStyle = 'rgba(23, 18, 15, 0.035)';
+            sctx.fillRect(0, 0, 4, 1.5);
+            this._scanPattern = this.ctx.createPattern(scanTile, 'repeat');
 
             this.isRunning = true;
             this.lastTime = performance.now();
@@ -360,9 +368,9 @@
             ctx.fillRect(0, 0, w, h);
 
             // 2. RETRO HORIZONTAL SCANLINES (Warm tactile paper grain)
-            ctx.fillStyle = "rgba(23, 18, 15, 0.035)";
-            for (let y = 0; y < h; y += 4) {
-                ctx.fillRect(0, y, w, 1.5);
+            if (this._scanPattern) {
+                ctx.fillStyle = this._scanPattern;
+                ctx.fillRect(0, 0, w, h);
             }
 
             // 3. HIGH ALTITUDE STRATOSPHERE STARS & TELEMETRY TICKS (ALT: 10,000 - 8,000 FT)
