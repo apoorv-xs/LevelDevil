@@ -458,6 +458,26 @@
       font-family: "Press Start 2P", monospace !important;
       font-size: 10px !important;
     }
+    @media (max-width: 640px) {
+      .retro-workspace #adminModal button,
+      .retro-workspace #proposalModal button,
+      .retro-workspace #clientTeardownModal button,
+      .retro-workspace #shortcutsModal button {
+        font-size: 8px !important;
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+      }
+    }
+    .retro-workspace #adminModal .admin-tab-btn.active {
+      background: var(--accent) !important;
+      color: var(--ink) !important;
+      box-shadow: 1px 1px 0 var(--ink) !important;
+      transform: translate(1px, 1px);
+    }
+    .retro-workspace #adminModal .admin-tab-btn:not(.active) {
+      background: var(--cream) !important;
+      color: rgba(23, 18, 15, 0.75) !important;
+    }
 
     /* Universal Color Overrides for Retro Paper & Ink */
     .retro-workspace .text-white,
@@ -595,7 +615,7 @@
       display: inline-block !important;
     }
 
-    /* Fail-Safe Modal & Auth Gate Overlay Styling */
+    /* Fail-Safe Modal & Auth Gate Overlay Styling (z-index 1000 above Three.js canvas & Kaboom) */
     #authGateOverlay {
       position: fixed !important;
       inset: 0 !important;
@@ -612,14 +632,23 @@
       align-items: center !important;
       justify-content: center !important;
       padding: 16px !important;
-      z-index: 50 !important;
+      z-index: 1000 !important;
+    }
+    #adminModal,
+    #shortcutsModal,
+    #proposalModal,
+    #clientTeardownModal,
+    #laymanAnalogyModal,
+    #csvImportModal {
+      z-index: 1000 !important;
     }
     #authGateOverlay.hidden,
     #adminModal.hidden,
     #shortcutsModal.hidden,
     #proposalModal.hidden,
     #clientTeardownModal.hidden,
-    #laymanAnalogyModal.hidden {
+    #laymanAnalogyModal.hidden,
+    #csvImportModal.hidden {
       display: none !important;
     }
     #authGateSignInBox,
@@ -1208,7 +1237,7 @@
   <!-- MODALS & OVERLAYS -->
 
   <!-- 1. AUTH GATE OVERLAY -->
-  <div id="authGateOverlay" onclick="handleAuthBackdropClick(event)" class="hidden fixed inset-0 bg-[#090A0E]/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
+  <div id="authGateOverlay" onclick="handleAuthBackdropClick(event)" class="hidden fixed inset-0 bg-[#090A0E]/80 backdrop-blur-md flex items-center justify-center p-4 z-[1000]">
     <!-- View 1: Sign-In Box (Unauthenticated) -->
     <div id="authGateSignInBox" class="studio-panel-elevated rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5 border border-white/10">
       <div class="flex items-center justify-between">
@@ -1363,7 +1392,7 @@
   </div>
 
   <!-- 2. LAYMAN ANALOGY MODAL -->
-  <div id="laymanAnalogyModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+  <div id="laymanAnalogyModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[1000]">
     <div class="studio-panel-elevated rounded-2xl max-w-lg w-full p-6 space-y-4 border border-white/10 shadow-2xl">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -1395,7 +1424,7 @@
   </div>
 
   <!-- 3. CLIENT TEARDOWN MODAL -->
-  <div id="clientTeardownModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+  <div id="clientTeardownModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[1000]">
     <div class="studio-panel-elevated rounded-2xl max-w-xl w-full p-6 space-y-4 border border-white/10 shadow-2xl">
       <div class="flex items-center justify-between">
         <div>
@@ -1420,7 +1449,7 @@
   </div>
 
   <!-- 4. PROPOSAL BRIEF MODAL -->
-  <div id="proposalModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+  <div id="proposalModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[1000]">
     <div class="studio-panel-elevated rounded-2xl max-w-2xl w-full p-6 space-y-4 border border-white/10 shadow-2xl flex flex-col max-h-[90vh]">
       <div class="flex items-center justify-between">
         <div>
@@ -1448,7 +1477,7 @@
 
 
   <!-- 6. OWNER ADMIN CONSOLE MODAL (5 Operational Tabs) -->
-  <div id="adminModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50">
+  <div id="adminModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-[1000]">
     <div class="studio-panel-elevated rounded-xl sm:rounded-2xl max-w-4xl w-full p-3 sm:p-5 lg:p-6 space-y-3 sm:space-y-4 border border-white/10 shadow-2xl flex flex-col max-h-[95vh] sm:max-h-[92vh] overflow-hidden">
       <!-- Header -->
       <div class="flex items-center justify-between border-b border-white/10 pb-2.5 sm:pb-3 gap-2">
@@ -1488,25 +1517,27 @@
 
       <!-- Admin Tab Switchers -->
       <div class="flex border-b border-white/10 gap-1.5 sm:gap-2 font-mono text-[11px] sm:text-xs overflow-x-auto pb-1.5 shrink-0 custom-scrollbar">
-        <button id="btnAdminTabGemini" onclick="switchAdminTab('gemini')" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white text-neutral-950 font-semibold transition shrink-0 shadow-sm">Gemini AI & Scout</button>
-        <button id="btnAdminTabIngest" onclick="switchAdminTab('ingest')" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Bulk Ingestion</button>
-        <button id="btnAdminTabLogs" onclick="switchAdminTab('logs')" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>📡</span><span>Leads & Logs</span></button>
-        <button id="btnAdminTabSync" onclick="switchAdminTab('sync')" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Cloud Sync</button>
-        <button id="btnAdminTabUsers" onclick="switchAdminTab('users')" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Worker Logins</button>
-        <button id="btnAdminTabBrain" onclick="switchAdminTab('brain')" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>🧠</span><span>Brain Studio</span></button>
+        <button id="btnAdminTabGemini" onclick="switchAdminTab('gemini')" class="admin-tab-btn active px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white text-neutral-950 font-semibold transition shrink-0 shadow-sm">Gemini AI & Scout</button>
+        <button id="btnAdminTabIngest" onclick="switchAdminTab('ingest')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Bulk Ingestion</button>
+        <button id="btnAdminTabLogs" onclick="switchAdminTab('logs')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>📡</span><span>Leads & Logs</span></button>
+        <button id="btnAdminTabSync" onclick="switchAdminTab('sync')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Cloud Sync</button>
+        <button id="btnAdminTabUsers" onclick="switchAdminTab('users')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Worker Logins</button>
+        <button id="btnAdminTabBrain" onclick="switchAdminTab('brain')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>🧠</span><span>Brain Studio</span></button>
       </div>
 
       <!-- Tab 1: Gemini AI -->
       <div id="adminTabGemini" class="flex-1 overflow-y-auto space-y-4 custom-scrollbar">
         <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
-          <div class="flex items-center justify-between">
+          <div class="flex flex-wrap items-center justify-between gap-1.5">
             <label class="text-xs font-mono text-neutral-300 font-bold">Gemini API Key (Stored locally):</label>
             <span id="geminiKeyStatusBadge" class="text-[10px] font-mono text-neutral-500">Key Status: Unconfigured</span>
           </div>
-          <div class="flex gap-2">
-            <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." class="flex-1 bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-white/30" />
-            <button onclick="saveGeminiApiKeyUI()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition">Save Key</button>
-            <button onclick="testGeminiConnectionUI()" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-neutral-200 font-mono text-xs transition">Test</button>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." class="flex-1 min-w-0 bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-white/30" />
+            <div class="flex gap-2 shrink-0">
+              <button onclick="saveGeminiApiKeyUI()" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition">Save Key</button>
+              <button onclick="testGeminiConnectionUI()" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-neutral-200 font-mono text-xs transition">Test</button>
+            </div>
           </div>
         </div>
 
@@ -1526,7 +1557,7 @@
               <option value="Luxury Salon">Luxury Salon</option>
             </select>
           </div>
-          <button onclick="runAiScoutFromUI()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold shadow transition">
+          <button onclick="runAiScoutFromUI()" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold shadow transition">
             <span id="aiScoutBtnText">Audit & Inject Lead with Gemini</span>
           </button>
         </div>
@@ -1545,7 +1576,7 @@
             </select>
             <input type="number" id="adminBatchCount" value="5" min="1" max="15" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white" />
           </div>
-          <button id="btnRunBatchWorker" onclick="runBatchScoutFromAdmin()" class="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-mono text-xs font-bold shadow transition">
+          <button id="btnRunBatchWorker" onclick="runBatchScoutFromAdmin()" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-mono text-xs font-bold shadow transition">
             <span id="batchWorkerBtnText">Run Autonomous Worker Now</span>
           </button>
         </div>
@@ -1558,11 +1589,11 @@
       <!-- Tab 2: Ingestion -->
       <div id="adminTabIngest" class="hidden flex-1 overflow-y-auto space-y-3 custom-scrollbar">
         <textarea id="agentJsonInput" rows="6" placeholder="Paste prospect JSON schema array..." class="w-full bg-[#15161B] border border-white/10 rounded-xl p-3 text-xs font-mono text-slate-200 focus:outline-none focus:border-white/30"></textarea>
-        <div class="flex gap-2">
-          <button onclick="ingestAgentProspects()" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold shadow transition">
+        <div class="flex flex-col sm:flex-row gap-2">
+          <button onclick="ingestAgentProspects()" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold shadow transition">
             Ingest Leads into Queue
           </button>
-          <button onclick="insertSampleProspectTemplate()" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-300 font-mono text-xs transition border border-white/10">
+          <button onclick="insertSampleProspectTemplate()" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-300 font-mono text-xs transition border border-white/10">
             Load Sample JSON
           </button>
         </div>
@@ -1630,8 +1661,8 @@
       <div id="adminTabSync" class="hidden flex-1 overflow-y-auto space-y-4 custom-scrollbar">
         <!-- Cloud Firestore (Spark Plan Free Tier) -->
         <div class="bg-[#101114] border border-blue-900/30 rounded-xl p-4 space-y-3">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
+          <div class="flex flex-wrap items-center justify-between gap-1.5">
+            <div class="flex flex-wrap items-center gap-1.5">
               <span class="text-xs font-mono text-white font-bold">☁️ Cloud Firestore (Spark Plan):</span>
               <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950/60 text-blue-300 border border-blue-800/40">100% Free Tier</span>
               <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/60">AUTO-SYNC</span>
@@ -1643,11 +1674,11 @@
             <div>Security: <span class="text-emerald-400">Strict RBAC Gated to apoorvxs@gmail.com</span></div>
             <div class="text-[10px] text-blue-300/70 pt-1">Prospects auto-sync to Cloud Firestore on login. Real-time live sync across all devices.</div>
           </div>
-          <div class="pt-1 flex flex-wrap gap-2">
-            <button id="seedFirestoreBtn" onclick="uploadProspectsToFirestore()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+          <div class="pt-1 flex flex-col sm:flex-row flex-wrap gap-2">
+            <button id="seedFirestoreBtn" onclick="uploadProspectsToFirestore()" class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
               <span>🚀 Force Re-Sync to Firestore</span>
             </button>
-            <button onclick="exportProspectsJSON()" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 border border-white/10 font-mono text-xs transition cursor-pointer">
+            <button onclick="exportProspectsJSON()" class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 border border-white/10 font-mono text-xs transition flex items-center justify-center cursor-pointer">
               <span>⬇️ Download JSON Backup</span>
             </button>
           </div>
@@ -1655,8 +1686,8 @@
 
         <!-- Google Sheets Live Bridge (100% Free) -->
         <div class="bg-[#101114] border border-emerald-800/40 rounded-xl p-4 space-y-3">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
+          <div class="flex flex-wrap items-center justify-between gap-1.5">
+            <div class="flex flex-wrap items-center gap-1.5">
               <span class="text-xs font-mono text-white font-bold">📊 Google Sheets Export:</span>
               <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-800/40">1-Click</span>
             </div>
@@ -1666,15 +1697,17 @@
             Export your live prospect data to Google Sheets with zero setup. No Apps Script needed.
           </div>
           <div class="flex flex-col sm:flex-row gap-2">
-            <input type="text" id="gsheetWebhookUrlInput" placeholder="https://script.google.com/macros/s/.../exec?key=..." class="flex-1 bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-white/30" />
-            <button onclick="saveGoogleSheetsWebhookUI()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition whitespace-nowrap cursor-pointer">Save & Connect</button>
-            <button onclick="pullFromGoogleSheetUI()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition whitespace-nowrap cursor-pointer">🔄 Pull Sheet Rows</button>
+            <input type="text" id="gsheetWebhookUrlInput" placeholder="https://script.google.com/macros/s/.../exec?key=..." class="flex-1 min-w-0 bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-white/30" />
+            <div class="flex gap-2 shrink-0">
+              <button onclick="saveGoogleSheetsWebhookUI()" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition whitespace-nowrap cursor-pointer">Save & Connect</button>
+              <button onclick="pullFromGoogleSheetUI()" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition whitespace-nowrap cursor-pointer">🔄 Pull Rows</button>
+            </div>
           </div>
-          <div class="pt-2 border-t border-white/5 flex flex-wrap gap-2">
-            <button onclick="openGoogleSheet1Click()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition cursor-pointer">
+          <div class="pt-2 border-t border-white/5 flex flex-col sm:flex-row flex-wrap gap-2">
+            <button onclick="openGoogleSheet1Click()" class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1">
               <span>📊 Export CSV & Open Google Sheets</span>
             </button>
-            <button onclick="openCsvImportModal()" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 border border-white/10 font-mono text-xs transition cursor-pointer">
+            <button onclick="openCsvImportModal()" class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 border border-white/10 font-mono text-xs transition cursor-pointer flex items-center justify-center gap-1">
               <span>📥 Paste / Import CSV</span>
             </button>
           </div>
@@ -1686,9 +1719,9 @@
             <span class="text-xs font-mono text-neutral-300 font-bold">Firebase Realtime Sync:</span>
             <span id="firebaseSyncStatusBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-neutral-400 border border-white/5">Local Broadcast Active</span>
           </div>
-          <div class="flex gap-2">
-            <input type="text" id="firebaseDbUrlInput" placeholder="https://your-project.firebaseio.com" class="flex-1 bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-white/30" />
-            <button onclick="saveFirebaseDbUrlUI()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition">Save & Connect</button>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input type="text" id="firebaseDbUrlInput" placeholder="https://your-project.firebaseio.com" class="flex-1 min-w-0 bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-white/30" />
+            <button onclick="saveFirebaseDbUrlUI()" class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition">Save & Connect</button>
           </div>
         </div>
       </div>
@@ -1702,7 +1735,7 @@
             <input type="text" id="newWorkerDisplayName" placeholder="Display Name" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white" />
             <input type="password" id="newWorkerPassword" placeholder="Password" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white" />
             <div class="sm:col-span-3">
-              <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition">
+              <button type="submit" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition">
                 Create Worker Account
               </button>
             </div>
@@ -1836,9 +1869,9 @@
               </div>
             </div>
 
-            <div class="flex items-center justify-between pt-1">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-1">
               <span class="text-[10px] font-mono text-neutral-400">Node will be hot-reloaded into memory and persisted locally & to Cloud Firestore.</span>
-              <button type="submit" class="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-mono text-xs font-bold shadow-lg shadow-purple-900/30 transition flex items-center gap-1.5 cursor-pointer">
+              <button type="submit" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-mono text-xs font-bold shadow-lg shadow-purple-900/30 transition flex items-center justify-center gap-1.5 cursor-pointer">
                 <span>⚡</span><span>Train Neural Node (Sub-1ms)</span>
               </button>
             </div>
@@ -1853,8 +1886,8 @@
               <span id="brainExplorerCountBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-neutral-400 border border-white/10">0 Nodes</span>
             </div>
             <!-- Search & Filter Controls -->
-            <div class="flex items-center gap-2">
-              <input type="text" id="brainSearchInput" oninput="renderBrainKnowledgeExplorer()" placeholder="Filter nodes by keyword or id..." class="bg-[#15161B] border border-white/10 rounded-lg px-2.5 py-1 text-xs font-mono text-white focus:outline-none focus:border-purple-500/40 w-48 sm:w-60" />
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+              <input type="text" id="brainSearchInput" oninput="renderBrainKnowledgeExplorer()" placeholder="Filter nodes by keyword or id..." class="w-full sm:w-60 bg-[#15161B] border border-white/10 rounded-lg px-2.5 py-1 text-xs font-mono text-white focus:outline-none focus:border-purple-500/40" />
               <select id="brainCategoryFilter" onchange="renderBrainKnowledgeExplorer()" class="bg-[#15161B] border border-white/10 rounded-lg px-2 py-1 text-xs font-mono text-white focus:outline-none">
                 <option value="all">All Categories</option>
                 <option value="project">Projects</option>
@@ -1875,25 +1908,25 @@
 
         <!-- 4. Cloud Checkpoints & Dataset Operations -->
         <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
-          <div class="flex items-center justify-between">
+          <div class="flex flex-wrap items-center justify-between gap-1.5">
             <span class="text-xs font-mono text-neutral-300 font-bold">Dataset Checkpoints & Cloud Firestore:</span>
             <span id="brainDatasetStatus" class="text-[10px] font-mono text-neutral-400">Status: In-Memory + Local Storage</span>
           </div>
-          <div class="flex flex-wrap gap-2">
-            <button onclick="pushBrainToFirestoreUI()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+          <div class="flex flex-col sm:flex-row flex-wrap gap-2">
+            <button onclick="pushBrainToFirestoreUI()" class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
               <span>☁️</span><span>Push to Cloud Firestore</span>
             </button>
-            <button onclick="syncBrainFromFirestoreUI()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+            <button onclick="syncBrainFromFirestoreUI()" class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
               <span>🔄</span><span>Sync from Cloud</span>
             </button>
-            <button onclick="exportBrainDatasetUI()" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-neutral-200 border border-white/10 font-mono text-xs transition flex items-center gap-1.5 cursor-pointer">
+            <button onclick="exportBrainDatasetUI()" class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-neutral-200 border border-white/10 font-mono text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
               <span>💾</span><span>Export JSON Checkpoint</span>
             </button>
-            <label class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-neutral-200 border border-white/10 font-mono text-xs transition flex items-center gap-1.5 cursor-pointer">
+            <label class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-neutral-200 border border-white/10 font-mono text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
               <span>📂</span><span>Import JSON</span>
               <input type="file" id="brainJsonFileInput" accept=".json" onchange="importBrainDatasetUI(event)" class="hidden" />
             </label>
-            <button onclick="resetBrainToFactoryUI()" class="px-3 py-1.5 rounded-lg bg-red-900/40 hover:bg-red-800/60 text-red-200 border border-red-800/40 font-mono text-xs transition flex items-center gap-1.5 ml-auto cursor-pointer">
+            <button onclick="resetBrainToFactoryUI()" class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-red-900/40 hover:bg-red-800/60 text-red-200 border border-red-800/40 font-mono text-xs transition flex items-center justify-center gap-1.5 sm:ml-auto cursor-pointer">
               <span>⚠️</span><span>Reset to Factory</span>
             </button>
           </div>
@@ -1903,7 +1936,7 @@
   </div>
 
   <!-- Modal: CSV Paste Import -->
-  <div id="csvImportModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="csvImportModal" class="hidden fixed inset-0 z-[1000] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-[#0b0c0e] border border-white/10 rounded-2xl w-full max-w-xl p-5 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between">
         <h3 class="text-sm font-mono font-bold text-white flex items-center gap-2">
