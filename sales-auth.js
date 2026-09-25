@@ -35,6 +35,9 @@
         if (!window.firebase?.firestore) {
           await load("firebase-firestore-compat.js");
         }
+        if (typeof window.firebase?.firestore?.setLogLevel === "function") {
+          window.firebase.firestore.setLogLevel("error");
+        }
         const app = window.firebase.app();
         const db = window.firebase.firestore(app);
         try {
