@@ -560,6 +560,17 @@
                     this.onCallStateChange(true);
                 }
             });
+
+            // Listen for Escape key to dismiss Guidance HUD or active thought bubble
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" || e.keyCode === 27) {
+                    if (this.bubbleElement && this.bubbleElement.classList.contains("hud-active")) {
+                        this.closeHUD();
+                    } else if (this.bubbleElement && this.bubbleElement.style.display !== "none" && this.bubbleElement.style.opacity !== "0") {
+                        this.hideThought();
+                    }
+                }
+            });
         },
 
         emitThought(text, duration = 3200) {
@@ -657,8 +668,36 @@
                 </div>
             `;
             this.bubbleElement.classList.add("hud-active");
+            this.bubbleElement.setAttribute("role", "dialog");
+            this.bubbleElement.setAttribute("aria-modal", "false");
+            this.bubbleElement.setAttribute("aria-label", title || "BB-8 Co-Pilot Guidance");
             this.bubbleElement.style.display = "block";
             this.bubbleElement.style.opacity = "1";
+
+            // Pause auto-dismiss when hovering over or reading HUD
+            if (!this.bubbleElement._hasHudHoverPause && typeof this.bubbleElement.addEventListener === "function") {
+                this.bubbleElement._hasHudHoverPause = true;
+                this.bubbleElement.addEventListener("mouseenter", () => {
+                    if (this.bubbleElement?.classList?.contains("hud-active") && this.bubbleTimeout) {
+                        clearTimeout(this.bubbleTimeout);
+                        this.bubbleTimeout = null;
+                    }
+                });
+                this.bubbleElement.addEventListener("mouseleave", () => {
+                    if (this.bubbleElement?.classList?.contains("hud-active") && !this.bubbleTimeout) {
+                        this.bubbleTimeout = setTimeout(() => this.closeHUD(), 6000);
+                    }
+                });
+            }
+
+            // Keyboard Accessibility: Focus the close button or first action button inside the HUD
+            const deferFocus = (typeof requestAnimationFrame === "function") ? requestAnimationFrame : (cb) => setTimeout(cb, 0);
+            deferFocus(() => {
+                const targetBtn = this.bubbleElement?.querySelector?.(".bb8-hud-close, .bb8-hud-btn");
+                if (targetBtn && typeof targetBtn.focus === "function") {
+                    targetBtn.focus();
+                }
+            });
 
             if (this.bubbleTimeout) clearTimeout(this.bubbleTimeout);
             this.bubbleTimeout = setTimeout(() => {
@@ -679,13 +718,25 @@
 
         closeHUD() {
             if (!this.bubbleElement) return;
+            if (this.bubbleTimeout) clearTimeout(this.bubbleTimeout);
             this.bubbleElement.classList.remove("hud-active");
+            this.bubbleElement.removeAttribute("role");
+            this.bubbleElement.removeAttribute("aria-modal");
+            this.bubbleElement.removeAttribute("aria-label");
             this.bubbleElement.style.opacity = "0";
             setTimeout(() => {
                 if (this.bubbleElement && this.bubbleElement.style.opacity === "0") {
                     this.bubbleElement.style.display = "none";
                 }
             }, 300);
+
+            // Restore focus to summon button if active
+            const guideBtn = (typeof document !== "undefined" && typeof document.getElementById === "function")
+                ? (document.getElementById("bb8-guide-btn") || document.getElementById("btnBB8Guide"))
+                : null;
+            if (guideBtn && typeof guideBtn.focus === "function") {
+                guideBtn.focus();
+            }
         },
 
         startMission(missionId) {

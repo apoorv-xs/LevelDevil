@@ -725,10 +725,13 @@ describe("System 1 Decision Brain", () => {
       expect(mockBubble.style.opacity).toBe("0");
     });
 
-    it("includes close button in Guidance HUD markup", () => {
+    it("includes close button and dialog accessibility attributes in Guidance HUD markup", () => {
+      const attributes = {};
       const mockBubble = {
         innerHTML: "",
-        classList: { add: () => {}, contains: () => false },
+        classList: { add: () => {}, contains: () => false, remove: () => {} },
+        setAttribute: (k, v) => { attributes[k] = v; },
+        removeAttribute: (k) => { delete attributes[k]; },
         style: {}
       };
       globalThis.document = { body: { classList: { contains: () => false } } };
@@ -737,6 +740,12 @@ describe("System 1 Decision Brain", () => {
       System1Brain.showGuidanceHUD();
       expect(mockBubble.innerHTML).toContain("bb8-hud-close");
       expect(mockBubble.innerHTML).toContain("closeHUD()");
+      expect(attributes.role).toBe("dialog");
+      expect(attributes["aria-modal"]).toBe("false");
+      expect(attributes["aria-label"]).toBeDefined();
+
+      System1Brain.closeHUD();
+      expect(attributes.role).toBeUndefined();
       delete globalThis.document;
       delete globalThis.window;
     });
@@ -759,6 +768,7 @@ describe("System 1 Decision Brain", () => {
       expect(shellCss).toContain(".bb8-hud-close");
       expect(shellCss).toContain(".btn-toggle-ctrls");
       expect(shellCss).toContain(".controls-minimized");
+      expect(shellCss).toContain("prefers-reduced-motion");
     });
   });
 });

@@ -198,6 +198,16 @@
         celebrateVictory() {
             if (!this.isCreated) return;
             if (this.isCelebrating) return;
+            const prefersReduced = (typeof window !== "undefined" && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+            if (prefersReduced) {
+                this.pulseAntenna(0xffd700, 1000);
+                this.nod();
+                if (typeof window !== "undefined" && window.SFX && typeof window.SFX.playCelebrate === "function") {
+                    const bb8X = this.root ? (this.root.position.x / (typeof this.getScale === "function" ? this.getScale() : 0.05)) : null;
+                    window.SFX.playCelebrate(bb8X);
+                }
+                return;
+            }
             this.isCelebrating = true;
             this.celebrateStartTime = performance.now();
             if (this.antennaLed) {
@@ -289,6 +299,23 @@
             };
             window.addEventListener("pointermove", this._onPointerMove, { passive: true });
 
+            const triggerBB8Interaction = () => {
+                if (typeof window.SFX?.playThought === "function") {
+                    window.SFX.playThought(window.player?.pos?.x);
+                }
+                if (window.System1Brain && typeof window.System1Brain.showGuidanceHUD === "function") {
+                    if (window.System1Brain.bubbleElement?.classList?.contains("hud-active")) {
+                        window.System1Brain.closeHUD();
+                        this.nod();
+                    } else {
+                        this.celebrateVictory();
+                        window.System1Brain.showGuidanceHUD();
+                    }
+                } else {
+                    this.celebrateVictory();
+                }
+            };
+
             this._onPointerDown = (e) => {
                 // If clicking an interactive form element or HUD button, let it handle
                 if (e.target && e.target.closest && e.target.closest("input, textarea, select, button, a, .bb8-hud-btn, .bb8-hud-close")) return;
@@ -298,32 +325,45 @@
                     pointerVec.y = -(e.clientY / window.innerHeight) * 2 + 1;
                     raycaster.setFromCamera(pointerVec, window.Engine3D.camera);
                     const hits = raycaster.intersectObject(this.root, true);
-                    if (hits && hits.length > 0) {
+                    const isHit = hits && hits.length > 0;
+
+                    if (e.pointerType === "touch") {
+                        // On mobile touch, record touch start coordinates to distinguish intentional tap from scrolling swipe
+                        this._touchStartX = e.clientX;
+                        this._touchStartY = e.clientY;
+                        this._touchStartHit = isHit;
+                        return;
+                    }
+
+                    if (isHit) {
                         e.stopPropagation();
-                        if (typeof window.SFX?.playThought === "function") {
-                            window.SFX.playThought(window.player?.pos?.x);
-                        }
-                        if (window.System1Brain && typeof window.System1Brain.showGuidanceHUD === "function") {
-                            if (window.System1Brain.bubbleElement?.classList?.contains("hud-active")) {
-                                window.System1Brain.closeHUD();
-                                this.nod();
-                            } else {
-                                this.celebrateVictory();
-                                window.System1Brain.showGuidanceHUD();
-                            }
-                        } else {
-                            this.celebrateVictory();
-                        }
+                        triggerBB8Interaction();
                         return;
                     }
                 }
 
-                this.pulseAntenna(0xffd700, 220);
-                if (!this.isCelebrating && Math.random() > 0.6) {
-                    this.nod();
+                if (e.pointerType !== "touch") {
+                    this.pulseAntenna(0xffd700, 220);
+                    if (!this.isCelebrating && Math.random() > 0.6) {
+                        this.nod();
+                    }
                 }
             };
             window.addEventListener("pointerdown", this._onPointerDown, { passive: false });
+
+            this._onPointerUp = (e) => {
+                if (e.pointerType === "touch" && this._touchStartHit) {
+                    const dist = Math.hypot(e.clientX - (this._touchStartX || 0), e.clientY - (this._touchStartY || 0));
+                    this._touchStartHit = false;
+                    // Intentional tap threshold (< 12px movement). If user swiped to scroll, dist will exceed this.
+                    if (dist < 12) {
+                        if (e.target && e.target.closest && e.target.closest("input, textarea, select, button, a, .bb8-hud-btn, .bb8-hud-close")) return;
+                        e.stopPropagation();
+                        triggerBB8Interaction();
+                    }
+                }
+            };
+            window.addEventListener("pointerup", this._onPointerUp, { passive: true });
         },
 
         setThrusterActive(active) {
@@ -836,6 +876,10 @@
             if (this._onPointerDown) {
                 window.removeEventListener('pointerdown', this._onPointerDown);
                 this._onPointerDown = null;
+            }
+            if (this._onPointerUp) {
+                window.removeEventListener('pointerup', this._onPointerUp);
+                this._onPointerUp = null;
             }
             this._pointerBound = false;
         }

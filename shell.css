@@ -655,6 +655,23 @@
   box-shadow: 1px 1px 0 var(--ink, #17120f);
 }
 
+.companion-bubble .bb8-hud-btn:focus-visible,
+.companion-bubble .bb8-hud-close:focus-visible,
+.topbar-btn:focus-visible {
+  outline: 2px solid var(--purple, #6d3bb8) !important;
+  outline-offset: 2px !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .companion-bubble {
+    transition: none !important;
+    animation: none !important;
+  }
+  .btn-dir, .topbar-btn, .bb8-hud-btn, .bb8-hud-close, .btn-toggle-ctrls {
+    transition: none !important;
+  }
+}
+
 /* --- MOBILE CONTROLS & CONSTRUCT BUTTON --- */
 #mobile-controls {
   position: fixed;
