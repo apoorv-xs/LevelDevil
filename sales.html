@@ -47,6 +47,7 @@
 
     <!-- Right: Google Sign-In Action & SFX Toggle -->
     <div class="topbar-actions">
+      <button id="bb8-guide-btn" class="topbar-btn guide-btn" onclick="window.System1Brain?.showGuidanceHUD?.()" aria-label="Summon BB-8 Guide" title="Summon BB-8 Guide">[ 🤖 GUIDE ]</button>
       <button id="sfx-toggle-btn" class="topbar-btn sfx-btn" aria-label="Toggle Sound Effects" title="Toggle Sound Effects">[ 🔊 SFX ]</button>
       <div id="topbar-auth-state">
         <button id="topbar-sign-in" type="button" class="topbar-btn topbar-btn-primary" title="Sign in with Google" style="display:inline-flex; align-items:center; gap:8px; cursor:pointer;">
@@ -211,10 +212,15 @@
     <canvas id="game-canvas" aria-hidden="true"></canvas>
   </div>
   <div id="mobile-controls">
-    <button id="btn-left" class="btn-dir" aria-label="Move Left">‹</button>
-    <button id="btn-right" class="btn-dir" aria-label="Move Right">›</button>
-    <button id="btn-construct" class="construct-btn" aria-label="Construct Hard-Light Platform">F</button>
-    <button id="btn-jump" class="jump-btn" aria-label="Jump">▲</button>
+    <div class="mobile-ctrl-cluster" style="display: flex; gap: 10px;">
+      <button id="btn-left" class="btn-dir" aria-label="Move Left">‹</button>
+      <button id="btn-right" class="btn-dir" aria-label="Move Right">›</button>
+    </div>
+    <div class="mobile-ctrl-cluster" style="display: flex; gap: 10px;">
+      <button id="btn-construct" class="btn-dir btn-construct" aria-label="Construct Hard-Light Platform">F</button>
+      <button id="btn-jump" class="btn-dir jump-btn" aria-label="Jump">▲</button>
+    </div>
+    <button id="btn-toggle-ctrls" class="btn-dir btn-toggle-ctrls" title="Toggle Controls" aria-label="Toggle Mobile Controls">✕</button>
   </div>
 
   <script src="/three.min.js"></script>

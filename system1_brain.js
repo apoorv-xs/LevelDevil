@@ -28,7 +28,7 @@
             id: "eravex",
             match: ["eravex", "webgpu", "flagship", "project-card-1", "featured-project-card", "featured"],
             yRange: [500, 1210],
-            thought: "ERAVEX 3D Studio: WebGPU compute, procedural GLSL & raymarched SDFs.",
+            thought: "Have a look at ERAVEX: WebGPU compute & procedural shaders at 60 FPS!",
             action: "inspect"
         },
         {
@@ -36,7 +36,7 @@
             match: ["maison", "luxury", "project-card-2"],
             yRange: [1210, 1620],
             xRange: [0, 720],
-            thought: "Maison Anima: Luxury 3D digital showcase. Sub-5MB Draco delivery.",
+            thought: "Maison Anima: Luxury 3D digital showcase with sub-5MB Draco delivery.",
             action: "inspect"
         },
         {
@@ -44,28 +44,28 @@
             match: ["level devil", "level-devil", "spatial", "portfolio", "project-card-3", "active-canvas"],
             yRange: [1210, 1620],
             xRange: [720, 9999],
-            thought: "Level Devil Engine: 2.5D spatial physics with 60 FPS platforming.",
+            thought: "Level Devil Engine: 2.5D spatial physics you can platform across!",
             action: "nod"
         },
         {
             id: "jarvis",
             match: ["jarvis", "bridge", "loopback", "zero-cost", "zero-api"],
             yRange: [1620, 2050],
-            thought: "Jarvis: Zero-cost LLM gateway proxy & Chrome automation bridge.",
+            thought: "Jarvis: Zero-cost LLM gateway proxy & browser automation bridge.",
             action: "inspect"
         },
         {
             id: "capabilities",
             match: ["capability", "capabilities", "standards", "performance"],
             yRange: [2050, 2450],
-            thought: "Engineering Standards: 60 FPS floor, sub-5MB Draco payloads, zero memory leaks.",
+            thought: "Curious about our benchmarks? We lock 60 FPS with sub-5MB Draco payloads.",
             action: "nod"
         },
         {
             id: "dispatches",
             match: ["dispatches", "principles", "notes", "project-card-4"],
             yRange: [2450, 2950],
-            thought: "Dispatches: Pure mathematical performance over agency bloat.",
+            thought: "Our engineering creed: pure mathematical performance over agency bloat.",
             action: "nod"
         }
     ];
@@ -481,6 +481,15 @@
                 el.style.display = "none";
                 document.body.appendChild(el);
             }
+            if (!el._hasDismissHandler) {
+                el._hasDismissHandler = true;
+                el.addEventListener("click", (e) => {
+                    if (e.target && e.target.closest && e.target.closest(".bb8-hud-btn, .bb8-hud-close")) return;
+                    if (!this.bubbleElement?.classList?.contains("hud-active")) {
+                        this.hideThought();
+                    }
+                });
+            }
             this.bubbleElement = el;
         },
 
@@ -633,9 +642,9 @@
                 title = "⚡ BB-8 NAVIGATOR";
                 buttonsHtml = `
                     <div class="bb8-hud-buttons">
-                        <button onclick="window.System1Brain.startMission('work')" class="bb8-hud-btn">🚀 Selected Work</button>
-                        <button onclick="window.System1Brain.startMission('capabilities')" class="bb8-hud-btn">🛠 60 FPS Standards</button>
-                        <button onclick="window.System1Brain.startMission('contact')" class="bb8-hud-btn">↗ Initiate Contract</button>
+                        <button onclick="window.System1Brain.startMission('work')" class="bb8-hud-btn">🚀 Flagship Case Studies</button>
+                        <button onclick="window.System1Brain.startMission('capabilities')" class="bb8-hud-btn">⚡ 60 FPS Standards</button>
+                        <button onclick="window.System1Brain.startMission('contact')" class="bb8-hud-btn">💼 Initiate Contract</button>
                         <button onclick="window.Player3D?.celebrateVictory?.(); window.System1Brain.closeHUD();" class="bb8-hud-btn">🤖 Droid 360° Spin</button>
                     </div>
                 `;
@@ -643,7 +652,7 @@
 
             this.bubbleElement.innerHTML = `
                 <div class="bb8-hud-content">
-                    <div class="bb8-hud-title">${title}</div>
+                    <div class="bb8-hud-title"><span>${title}</span><button onclick="window.System1Brain.closeHUD()" class="bb8-hud-close" aria-label="Close Guide">✕</button></div>
                     ${buttonsHtml}
                 </div>
             `;
@@ -655,6 +664,17 @@
             this.bubbleTimeout = setTimeout(() => {
                 this.closeHUD();
             }, 10000);
+        },
+
+        hideThought() {
+            if (!this.bubbleElement) return;
+            if (this.bubbleTimeout) clearTimeout(this.bubbleTimeout);
+            this.bubbleElement.style.opacity = "0";
+            setTimeout(() => {
+                if (this.bubbleElement && this.bubbleElement.style.opacity === "0") {
+                    this.bubbleElement.style.display = "none";
+                }
+            }, 200);
         },
 
         closeHUD() {

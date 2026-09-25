@@ -170,6 +170,22 @@ if (btnConstruct) {
     btnConstruct.addEventListener("mousedown", doConstruct);
 }
 
+const btnToggleCtrls = document.getElementById("btn-toggle-ctrls");
+if (btnToggleCtrls) {
+    const onToggleCtrls = (e) => {
+        if (e.cancelable) e.preventDefault();
+        e.stopPropagation();
+        const mobileCtrls = document.getElementById("mobile-controls");
+        if (mobileCtrls) {
+            const isMin = mobileCtrls.classList.toggle("controls-minimized");
+            btnToggleCtrls.textContent = isMin ? "🎮" : "✕";
+            btnToggleCtrls.setAttribute("aria-label", isMin ? "Expand Mobile Controls" : "Collapse Mobile Controls");
+        }
+    };
+    btnToggleCtrls.addEventListener("click", onToggleCtrls);
+    btnToggleCtrls.addEventListener("touchstart", onToggleCtrls, { passive: false });
+}
+
 // Window-level release listeners to prevent mobile sticky drag lockout outside button boundary
 const releaseMobileControls = (e) => {
     if (e && e.touches && e.touches.length > 0) return;

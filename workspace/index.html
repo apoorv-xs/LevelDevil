@@ -1967,10 +1967,15 @@
     <canvas id="game-canvas" aria-hidden="true"></canvas>
   </div>
   <div id="mobile-controls">
-    <button id="btn-left" class="btn-dir" aria-label="Move Left">‹</button>
-    <button id="btn-right" class="btn-dir" aria-label="Move Right">›</button>
-    <button id="btn-construct" class="construct-btn" aria-label="Construct Hard-Light Platform">F</button>
-    <button id="btn-jump" class="jump-btn" aria-label="Jump">▲</button>
+    <div class="mobile-ctrl-cluster" style="display: flex; gap: 10px;">
+      <button id="btn-left" class="btn-dir" aria-label="Move Left">‹</button>
+      <button id="btn-right" class="btn-dir" aria-label="Move Right">›</button>
+    </div>
+    <div class="mobile-ctrl-cluster" style="display: flex; gap: 10px;">
+      <button id="btn-construct" class="btn-dir btn-construct" aria-label="Construct Hard-Light Platform">F</button>
+      <button id="btn-jump" class="btn-dir jump-btn" aria-label="Jump">▲</button>
+    </div>
+    <button id="btn-toggle-ctrls" class="btn-dir btn-toggle-ctrls" title="Toggle Controls" aria-label="Toggle Mobile Controls">✕</button>
   </div>
 
   <script src="/sales-config.js"></script>

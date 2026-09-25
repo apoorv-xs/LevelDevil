@@ -63,7 +63,7 @@ describe("System 1 Brain Studio Admin Console Interface Contracts", () => {
     it("loads system1_brain.js via shell.js in workspace/index.html", () => {
       // system1_brain.js is now loaded by shell.js (not a redundant direct tag) to prevent double-execution
       const shellJsContent = fs.readFileSync(path.resolve(__dirname, "../../shell.js"), "utf-8");
-      expect(shellJsContent).toContain("system1_brain.js?v=1019");
+      expect(shellJsContent).toContain("system1_brain.js?v=1020");
       // Both shell.js and app.js must be present
       const shellIndex = htmlContent.indexOf('src="/shell.js"');
       const appIndex = htmlContent.indexOf('src="app.js"');

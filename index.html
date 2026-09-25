@@ -528,6 +528,7 @@
                 <span class="topbar-dot"></span>
                 <span><span id="live-fps">60.0</span> FPS</span>
             </div>
+            <button id="bb8-guide-btn" class="topbar-btn guide-btn" onclick="window.System1Brain?.showGuidanceHUD?.()" aria-label="Summon BB-8 Guide" title="Summon BB-8 Guide">[ 🤖 GUIDE ]</button>
             <button id="sfx-toggle-btn" class="topbar-btn sfx-btn" aria-label="Toggle Sound Effects" title="Toggle Sound Effects">[ 🔊 SFX ]</button>
             <a href="/sales" class="topbar-btn topbar-btn-primary hide-mobile" title="Inquire for Contracts">
                 <span>INQUIRE</span>
@@ -849,14 +850,15 @@
 
     <!-- MOBILE CONTROLS -->
     <div id="mobile-controls">
-        <div style="display: flex; gap: 10px;">
+        <div class="mobile-ctrl-cluster" style="display: flex; gap: 10px;">
             <button class="btn-dir" id="btn-left" aria-label="Move Left">&lt;</button>
             <button class="btn-dir" id="btn-right" aria-label="Move Right">&gt;</button>
         </div>
-        <div style="display: flex; gap: 10px;">
+        <div class="mobile-ctrl-cluster" style="display: flex; gap: 10px;">
             <button class="btn-dir btn-construct" id="btn-construct" title="Hard-Light Laser Springboard" aria-label="Construct Hard-Light Platform">F</button>
-            <button class="btn-dir" id="btn-jump" aria-label="Jump">^</button>
+            <button class="btn-dir jump-btn" id="btn-jump" aria-label="Jump">^</button>
         </div>
+        <button class="btn-dir btn-toggle-ctrls" id="btn-toggle-ctrls" title="Toggle Controls" aria-label="Toggle Mobile Controls">✕</button>
     </div>
 
     <script src="shell.js"></script>

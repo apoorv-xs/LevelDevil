@@ -1,4 +1,6 @@
 import { describe, expect, it, beforeEach } from "vitest";
+import fs from "fs";
+import path from "path";
 import { System1Brain, INTENTS } from "../../system1_brain.js";
 
 describe("System 1 Decision Brain", () => {
@@ -711,4 +713,53 @@ describe("System 1 Decision Brain", () => {
       System1Brain.resetToFactory();
     });
   });
+
+  describe("User-Centered Design (UCD) Features", () => {
+    it("provides hideThought() for rapid thought bubble dismissal", () => {
+      expect(typeof System1Brain.hideThought).toBe("function");
+      const mockBubble = {
+        style: { opacity: "1", display: "block" }
+      };
+      System1Brain.bubbleElement = mockBubble;
+      System1Brain.hideThought();
+      expect(mockBubble.style.opacity).toBe("0");
+    });
+
+    it("includes close button in Guidance HUD markup", () => {
+      const mockBubble = {
+        innerHTML: "",
+        classList: { add: () => {}, contains: () => false },
+        style: {}
+      };
+      globalThis.document = { body: { classList: { contains: () => false } } };
+      globalThis.window = { location: { pathname: "/" } };
+      System1Brain.bubbleElement = mockBubble;
+      System1Brain.showGuidanceHUD();
+      expect(mockBubble.innerHTML).toContain("bb8-hud-close");
+      expect(mockBubble.innerHTML).toContain("closeHUD()");
+      delete globalThis.document;
+      delete globalThis.window;
+    });
+
+    it("verifies universal guide button, minimizer controls, and shell CSS", () => {
+      const indexHtml = fs.readFileSync(path.resolve(__dirname, "../../index.html"), "utf-8");
+      const salesHtml = fs.readFileSync(path.resolve(__dirname, "../../sales.html"), "utf-8");
+      const workspaceHtml = fs.readFileSync(path.resolve(__dirname, "../../workspace/index.html"), "utf-8");
+      const shellCss = fs.readFileSync(path.resolve(__dirname, "../../shell.css"), "utf-8");
+
+      expect(indexHtml).toContain('id="bb8-guide-btn"');
+      expect(salesHtml).toContain('id="bb8-guide-btn"');
+      expect(workspaceHtml).toContain('id="btnBB8Guide"');
+
+      expect(indexHtml).toContain('id="btn-toggle-ctrls"');
+      expect(salesHtml).toContain('id="btn-toggle-ctrls"');
+      expect(workspaceHtml).toContain('id="btn-toggle-ctrls"');
+
+      expect(shellCss).toContain(".guide-btn");
+      expect(shellCss).toContain(".bb8-hud-close");
+      expect(shellCss).toContain(".btn-toggle-ctrls");
+      expect(shellCss).toContain(".controls-minimized");
+    });
+  });
 });
+

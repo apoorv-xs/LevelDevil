@@ -253,21 +253,45 @@
 
             window.mousePos2D = window.mousePos2D || { x: window.innerWidth / 2, y: window.innerHeight / 2, active: false };
 
+            const raycaster = (typeof THREE !== "undefined") ? new THREE.Raycaster() : null;
+            const pointerVec = (typeof THREE !== "undefined") ? new THREE.Vector2() : null;
+            this._isHovered = false;
+
             this._onPointerMove = (e) => {
                 const scrollY = window.scrollY || window.pageYOffset || 0;
                 window.mousePos2D.x = e.clientX;
                 window.mousePos2D.y = e.clientY + scrollY; // World coordinate
                 window.mousePos2D.active = true;
                 window.mousePos2D.lastMoveTime = performance.now();
+
+                // Interactive Hover Affordance on BB-8 mesh (UCD Upgrade)
+                if (this.root && raycaster && pointerVec && window.Engine3D && window.Engine3D.camera) {
+                    pointerVec.x = (e.clientX / window.innerWidth) * 2 - 1;
+                    pointerVec.y = -(e.clientY / window.innerHeight) * 2 + 1;
+                    raycaster.setFromCamera(pointerVec, window.Engine3D.camera);
+                    const hits = raycaster.intersectObject(this.root, true);
+                    const isOver = hits && hits.length > 0;
+                    if (isOver !== this._isHovered) {
+                        this._isHovered = isOver;
+                        if (isOver) {
+                            document.body.style.cursor = "pointer";
+                            this.pulseAntenna(0xffd700, 350);
+                            if (!this.isCelebrating && Math.random() > 0.4) {
+                                this.curiousInspect();
+                            }
+                        } else {
+                            if (document.body.style.cursor === "pointer") {
+                                document.body.style.cursor = "";
+                            }
+                        }
+                    }
+                }
             };
             window.addEventListener("pointermove", this._onPointerMove, { passive: true });
 
-            const raycaster = (typeof THREE !== "undefined") ? new THREE.Raycaster() : null;
-            const pointerVec = (typeof THREE !== "undefined") ? new THREE.Vector2() : null;
-
             this._onPointerDown = (e) => {
                 // If clicking an interactive form element or HUD button, let it handle
-                if (e.target && e.target.closest && e.target.closest("input, textarea, select, button, a, .bb8-hud-btn")) return;
+                if (e.target && e.target.closest && e.target.closest("input, textarea, select, button, a, .bb8-hud-btn, .bb8-hud-close")) return;
 
                 if (this.root && raycaster && pointerVec && window.Engine3D && window.Engine3D.camera) {
                     pointerVec.x = (e.clientX / window.innerWidth) * 2 - 1;
