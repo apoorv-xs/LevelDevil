@@ -550,9 +550,9 @@ onLoad(() => {
         const page = getCurrentPage();
         let targetEl = null;
         if (page === "home") {
-            targetEl = document.querySelector('h1[data-kaboom-body="true"]') || document.querySelector('h1');
+            targetEl = document.querySelector('h1[data-kaboom-body="true"]') || document.querySelector('h1') || document.querySelector('.role-badge');
         } else if (page === "sales") {
-            targetEl = document.querySelector('.hero h1') || document.querySelector('h1');
+            targetEl = document.querySelector('.hero h1') || document.querySelector('h1') || document.querySelector('#inquiry-card');
         } else if (page === "workspace") {
             targetEl = document.querySelector('header.topbar') || document.querySelector('.city-tab') || document.querySelector('#queueSearchInput');
         }
@@ -561,7 +561,11 @@ onLoad(() => {
             const r = targetEl.getBoundingClientRect();
             const scrollY = window.scrollY || window.pageYOffset || 0;
             const targetY = Math.round(r.bottom + scrollY);
-            player.pos.x = Math.round(r.left + Math.min(120, r.width / 2));
+            const screenW = (typeof window !== "undefined") ? (window.innerWidth || 1200) : 1200;
+            const minX = 40;
+            const maxX = Math.max(minX, screenW - 40);
+            const desiredX = Math.round(r.left + Math.min(120, r.width / 2));
+            player.pos.x = Math.max(minX, Math.min(maxX, desiredX));
             player.pos.y = targetY;
             player.vy = 0;
             if (player.vel) {
@@ -569,7 +573,7 @@ onLoad(() => {
                 player.vel.y = 0;
             }
             player.grounded = true;
-            const matchingRail = landingRails.find(rail => rail.domElement === targetEl || (rail.xLeft <= player.pos.x && rail.xRight >= player.pos.x && Math.abs(rail.y - targetY) <= 8));
+            const matchingRail = landingRails.find(rail => rail.domElement === targetEl || (rail.xLeft <= player.pos.x && rail.xRight >= player.pos.x && Math.abs(rail.y - targetY) <= 12));
             player.currentRail = matchingRail || null;
             console.log(`Placed BB-8 on initial rail for [${page}]:`, player.pos.x, player.pos.y);
         }
@@ -594,6 +598,21 @@ onLoad(() => {
     } else {
         activatePhysics();
     }
+
+    // Safety Watchdogs: ensure BB-8 remains visible and anchored if fonts or layouts shift
+    [400, 1200, 2500].forEach(delay => {
+        setTimeout(() => {
+            if (!player) return;
+            const currentScroll = (typeof window !== "undefined") ? (window.scrollY || 0) : 0;
+            const screenY = player.pos.y - currentScroll;
+            const vh = (typeof window !== "undefined") ? (window.innerHeight || 800) : 800;
+            if (currentScroll <= 20 && (screenY > vh - 40 || screenY < 50)) {
+                console.warn("Safety Watchdog: Re-anchoring BB-8 on hero rail after layout settle.");
+                syncDOM(true);
+                placePlayerInitial();
+            }
+        }, delay);
+    });
 
     const resizeObserver = new ResizeObserver(() => {
         syncDOM();
@@ -1013,14 +1032,54 @@ onLoad(() => {
             window.System1Brain.updateBubblePosition(player);
         }
 
+        // --- PHASE 2: ACTIVE VIEWPORT LEASH & HORIZONTAL CLAMPING ---
+        // Enforce horizontal bounds every frame (prevents mobile off-screen drift)
+        if (player && isPhysicsActive && !isRespawning) {
+            const screenW = window.innerWidth || 1200;
+            const minX = 30;
+            const maxX = Math.max(minX, screenW - 30);
+            if (player.pos.x < minX) player.pos.x = minX;
+            if (player.pos.x > maxX) player.pos.x = maxX;
+        }
+
+        // Active Viewport Soft-Tether: if BB-8 is off-screen for >1.2s, smoothGlideTo nearest visible rail
+        if (player && isPhysicsActive && !isRespawning && !window.isAirborneGlide) {
+            const screenY = player.pos.y - currentScrollY;
+            const isOffScreen = screenY < -50 || screenY > window.innerHeight + 50;
+            if (isOffScreen) {
+                if (!window._bb8OffScreenStart) {
+                    window._bb8OffScreenStart = performance.now();
+                } else if (performance.now() - window._bb8OffScreenStart > 1200 && window.smoothGlideTo) {
+                    // Find nearest visible rail
+                    const focusY = currentScrollY + window.innerHeight * 0.45;
+                    let bestRail = null;
+                    let bestDist = Infinity;
+                    for (const r of landingRails) {
+                        if (r.y >= currentScrollY + 60 && r.y <= currentScrollY + window.innerHeight - 80) {
+                            const d = Math.abs(r.y - focusY);
+                            if (d < bestDist) { bestDist = d; bestRail = r; }
+                        }
+                    }
+                    if (bestRail) {
+                        const screenW = window.innerWidth || 1200;
+                        const tx = Math.max(35, Math.min(screenW - 35, bestRail.xLeft + Math.min(120, bestRail.width / 2)));
+                        window.smoothGlideTo(tx, bestRail.y, 550);
+                        window._bb8OffScreenStart = null;
+                    }
+                }
+            } else {
+                window._bb8OffScreenStart = null;
+            }
+        }
+
         camPos(window.innerWidth / 2, currentScrollY + window.innerHeight / 2);
 
         const viewTop = currentScrollY;
         const viewBottom = currentScrollY + window.innerHeight;
 
-        // Out of bounds Recovery (relaxed kill plane to allow inter-section leaps)
+        // Out of bounds Recovery (tightened kill plane for faster rescue)
         const pageMaxY = Math.max(document.documentElement.scrollHeight + 300, 3650);
-        const isFarBelowView = player.pos.y > viewBottom + 900;
+        const isFarBelowView = player.pos.y > viewBottom + 400;
         const isPastBedrockVoid = player.pos.y > pageMaxY;
         const isAboveCeiling = player.pos.y < -300;
 

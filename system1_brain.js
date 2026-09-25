@@ -1011,10 +1011,7 @@
                 return INTENTS.SHOWCASE_PROJECT;
             }
 
-            if (dwellTime > 4.0) {
-                return INTENTS.LEAD_DESCENT;
-            }
-
+            // Dwell on hero or reading area keeps BB-8 perched attentively with the visitor
             return INTENTS.IDLE_PERCH;
         },
 
@@ -1126,9 +1123,9 @@
                 if (wsIntent !== INTENTS.IDLE_PERCH) return wsIntent;
             }
 
-            // Universal catch up sprint if BB-8 is far off-screen
+            // Universal catch up sprint if BB-8 drifts off-screen
             const playerScreenY = playerPos.y - scrollY;
-            if (playerScreenY < -200 || playerScreenY > viewportHeight + 450) {
+            if (playerScreenY < -60 || playerScreenY > viewportHeight + 60) {
                 return INTENTS.CATCH_UP_SPRINT;
             }
 
@@ -1185,7 +1182,21 @@
                     }
                     if (bestRail) {
                         result.targetRail = bestRail;
-                        result.targetX = bestRail.xLeft + bestRail.width / 2;
+                        const screenW = (typeof window !== "undefined") ? (window.innerWidth || 1200) : 1200;
+                        const minX = 35;
+                        const maxX = Math.max(minX, screenW - 35);
+                        result.targetX = Math.max(minX, Math.min(maxX, bestRail.xLeft + Math.min(120, bestRail.width / 2)));
+
+                        // Airborne thruster glide directly back into visible frame if significantly displaced
+                        if (typeof window !== "undefined" && window.smoothGlideTo && !window.isAirborneGlide && Math.abs(playerPos.y - targetY) > 90) {
+                            window.smoothGlideTo(result.targetX, bestRail.y, 550, () => {
+                                if (window.System1Brain?.emitThought) {
+                                    window.System1Brain.emitThought("Reconnected with visitor viewport.", 2200);
+                                }
+                            });
+                            break;
+                        }
+
                         if (playerPos.x < result.targetX - 20) result.moveX = 1;
                         else if (playerPos.x > result.targetX + 20) result.moveX = -1;
                         if (playerPos.y > targetY + 200 && isGrounded) {
@@ -1383,9 +1394,10 @@
 
                         if (target) {
                             result.targetRail = target;
-                            const minX = Math.max(target.xLeft + 20, Math.min(target.xRight - 20, currentRail.xLeft));
-                            const maxX = Math.min(target.xRight - 20, Math.max(target.xLeft + 20, currentRail.xRight));
-                            const chosenX = Math.round((minX + maxX) / 2);
+                            const screenW = (typeof window !== "undefined") ? (window.innerWidth || 1200) : 1200;
+                            const minX = Math.max(35, Math.min(target.xLeft + 20, target.xRight - 20));
+                            const maxX = Math.min(screenW - 35, Math.max(target.xRight - 20, target.xLeft + 20));
+                            const chosenX = (maxX >= minX) ? Math.round((minX + maxX) / 2) : Math.max(35, Math.min(screenW - 35, target.xLeft + 20));
                             result.targetX = chosenX;
 
                             const dx = chosenX - playerPos.x;
@@ -1417,7 +1429,8 @@
                         const target = aboveRails[0];
                         if (target) {
                             result.targetRail = target;
-                            result.targetX = target.xLeft + target.width / 2;
+                            const screenW = (typeof window !== "undefined") ? (window.innerWidth || 1200) : 1200;
+                            result.targetX = Math.max(35, Math.min(screenW - 35, target.xLeft + target.width / 2));
                             if (Math.abs(playerPos.x - result.targetX) > 25) {
                                 result.moveX = Math.sign(result.targetX - playerPos.x);
                             }

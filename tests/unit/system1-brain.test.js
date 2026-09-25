@@ -86,6 +86,26 @@ describe("System 1 Decision Brain", () => {
     expect(System1Brain.classifyIntent(telemetry)).toBe(INTENTS.CELEBRATE);
   });
 
+  it("stays in IDLE_PERCH during extended dwell time (no autonomous abandonment)", () => {
+    const telemetry = {
+      scrollY: 0,
+      viewportFocusY: 400,
+      viewportHeight: 900,
+      userScrollSpeed: 0,
+      dwellTime: 12.0, // User has been idle for 12 seconds
+      currentRail: { xLeft: 200, xRight: 800, y: 336, trap: "normal", name: "H1" },
+      groundedRail: { xLeft: 200, xRight: 800, y: 336, trap: "normal", name: "H1" },
+      playerPos: { x: 400, y: 336 },
+      activeElement: null,
+      page: "home",
+      isGrounded: true
+    };
+    const intent = System1Brain.classifyIntent(telemetry);
+    // BB-8 must NEVER descend just because the visitor is reading
+    expect(intent).not.toBe(INTENTS.LEAD_DESCENT);
+    expect([INTENTS.IDLE_PERCH, INTENTS.SHOWCASE_PROJECT]).toContain(intent);
+  });
+
   it("classifies LEAD_DESCENT when visitor is scrolling down", () => {
     const telemetry = {
       scrollY: 200,
