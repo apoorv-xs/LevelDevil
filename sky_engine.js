@@ -142,8 +142,11 @@
 
         draw(ctx, scrollY, screenH, screenW = 1200) {
             if (!this.cachedCanvas) return;
-            const isMobile = screenW < 768;
-            const scale = isMobile ? Math.min(0.48, (screenW / 1200) * 1.1) : 1.0;
+            // On mobile viewports (< 768px), cards occupy 92% of screen width;
+            // background cloud cutouts clip into awkward white tabs at the margins.
+            if (screenW < 768) return;
+
+            const scale = 1.0;
             const renderW = Math.round(this.w * scale);
             const renderH = Math.round(this.h * scale);
             const drawY = this.baseY - scrollY * this.pRatio;

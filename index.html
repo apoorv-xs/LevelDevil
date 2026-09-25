@@ -441,7 +441,7 @@
 
         @media (max-width: 640px) {
             main.portfolio-shell {
-                padding: calc(54px + 1rem) 1rem 4rem;
+                padding: calc(54px + 1rem) 1rem 8.5rem;
                 overflow-x: hidden;
                 max-width: 100vw;
                 box-sizing: border-box;
@@ -462,10 +462,10 @@
         /* --- CANVAS OVERLAYS --- */
         #sky-canvas {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
             z-index: 0;
             pointer-events: none;
             outline: none;
@@ -474,10 +474,10 @@
 
         #three-canvas, #babylon-canvas {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
             z-index: 50; /* Above DOM background, below game container */
             pointer-events: none;
             outline: none;
@@ -486,18 +486,19 @@
 
         #game-container {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
             z-index: 100;
             pointer-events: none; /* Let clicks pass through to DOM */
         }
 
         #game-canvas {
             display: block;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
             background: transparent;
         }
     </style>
