@@ -133,26 +133,30 @@
         update(dt, screenW) {
             this.x += this.driftSpeed * dt;
             const isMobile = screenW < 768;
-            const scale = isMobile ? Math.min(0.48, (screenW / 1200) * 1.1) : 1.0;
+            const scale = isMobile ? 0.38 : 1.0;
             const renderW = Math.round(this.w * scale);
-            if (this.x - renderW > screenW + 100) {
-                this.x = -renderW - 80;
+            if (this.x - renderW > screenW + 80) {
+                this.x = -renderW - 60;
             }
         }
 
         draw(ctx, scrollY, screenH, screenW = 1200) {
             if (!this.cachedCanvas) return;
-            // On mobile viewports (< 768px), cards occupy 92% of screen width;
-            // background cloud cutouts clip into awkward white tabs at the margins.
-            if (screenW < 768) return;
-
-            const scale = 1.0;
+            const isMobile = screenW < 768;
+            const scale = isMobile ? 0.38 : 1.0;
             const renderW = Math.round(this.w * scale);
             const renderH = Math.round(this.h * scale);
             const drawY = this.baseY - scrollY * this.pRatio;
             // Frustum cull
             if (drawY + renderH < -50 || drawY > screenH + 50) return;
+
+            ctx.save();
+            if (isMobile) {
+                // Soft atmospheric cloud layer opacity on mobile (mist effect, zero harsh edges)
+                ctx.globalAlpha = 0.36;
+            }
             ctx.drawImage(this.cachedCanvas, Math.round(this.x), Math.round(drawY), renderW, renderH);
+            ctx.restore();
         }
     }
 
@@ -410,9 +414,10 @@
                 const alpha = Math.min(1, Math.max(0, mountainProgress * 2));
                 ctx.save();
                 ctx.globalAlpha = alpha;
-                // Parallax rise from bottom: rises into bottom of screen as scroll finishes
-                const mountainH = Math.min(260, (w / 1200) * 320);
-                const mountainY = h - mountainH * Math.min(1, mountainProgress * 1.2) + 20;
+                const isMobile = w < 768;
+                // On mobile, give mountains real vertical presence (rises 220px from bottom)
+                const mountainH = isMobile ? Math.min(220, Math.round(h * 0.30)) : Math.min(260, (w / 1200) * 320);
+                const mountainY = h - mountainH * Math.min(1, mountainProgress * 1.15) + (isMobile ? 10 : 20);
                 ctx.drawImage(this.mountainCanvas, 0, Math.round(mountainY), w, mountainH);
                 ctx.restore();
             }
@@ -420,32 +425,37 @@
             // 7. BEDROCK TOUCHDOWN RUNWAY MARKINGS (Stratum 5 / Ground Approach)
             if (scrollProgress > 0.88) {
                 const groundProgress = Math.min(1, (scrollProgress - 0.88) / 0.12);
-                const runwayY = h - groundProgress * 160;
+                const isMobile = w < 768;
+                const runwayH = isMobile ? 180 : 160;
+                const runwayY = h - groundProgress * runwayH;
                 ctx.save();
                 ctx.fillStyle = "#17120f";
-                ctx.fillRect(0, runwayY, w, 200);
+                ctx.fillRect(0, runwayY, w, runwayH + 60);
 
                 // Zebra threshold approach bars
                 ctx.fillStyle = "#fce566";
-                const barW = Math.max(16, Math.min(24, Math.floor(w / 18)));
-                const barGap = Math.max(12, Math.floor(barW * 0.8));
+                const barW = isMobile ? 14 : Math.max(16, Math.min(24, Math.floor(w / 18)));
+                const barGap = isMobile ? 10 : Math.max(12, Math.floor(barW * 0.8));
                 const totalBars = Math.floor(w / (barW + barGap));
                 for (let i = 0; i < totalBars; i++) {
-                    ctx.fillRect(i * (barW + barGap) + 12, runwayY + 16, barW, 40);
+                    ctx.fillRect(i * (barW + barGap) + 8, runwayY + (isMobile ? 12 : 16), barW, isMobile ? 32 : 40);
                 }
 
                 // Runway centerline dashes
                 ctx.fillStyle = "#fffdf1";
-                for (let x = 20; x < w; x += 80) {
-                    ctx.fillRect(x, runwayY + 75, 40, 5);
+                const dashStep = isMobile ? 55 : 80;
+                const dashW = isMobile ? 30 : 40;
+                for (let x = 12; x < w; x += dashStep) {
+                    ctx.fillRect(x, runwayY + (isMobile ? 56 : 75), dashW, 4);
                 }
                 ctx.restore();
             }
 
-            // 8. TACTICAL AVIATION MARGIN RULERS (LEFT & RIGHT SCREEN BORDERS)
-            // Rendered along the margins (desktop only, w >= 960px)
+            // 8. TACTICAL AVIATION MARGIN RULERS (DESKTOP HUD & MOBILE ALTITUDE GUTTER)
             if (w >= 960) {
                 this.renderAviationTelemetryRulers(ctx, w, h, scrollY, maxScroll, scrollProgress);
+            } else {
+                this.renderMobileAltitudeGutter(ctx, w, h, scrollY, maxScroll, scrollProgress);
             }
         },
 
@@ -527,6 +537,58 @@
             ctx.fillText(`VSI : -1200 FPM`, cardX + 10, cardY + 46);
             ctx.fillText(`WND : 24 KT 270°`, cardX + 10, cardY + 60);
             ctx.fillText(`AIR : 60.0 FPS`, cardX + 10, cardY + 74);
+
+            ctx.restore();
+        },
+
+        renderMobileAltitudeGutter(ctx, w, h, scrollY, maxScroll, scrollProgress) {
+            ctx.save();
+            const rulerX = 5;
+            const topY = 88; // Below 54px topbar + 26px mobile flight tape + 8px margin
+            const botY = h - 60;
+            const tapeH = Math.max(120, botY - topY);
+
+            // Subtle vertical flight rail in left margin
+            ctx.strokeStyle = "rgba(23, 18, 15, 0.22)";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(rulerX, topY);
+            ctx.lineTo(rulerX, botY);
+            ctx.stroke();
+
+            // Altitude ticks (10K down to 0K)
+            const ticks = [
+                { label: "10K", ratio: 0.00 },
+                { label: "8K",  ratio: 0.20 },
+                { label: "6K",  ratio: 0.40 },
+                { label: "4K",  ratio: 0.60 },
+                { label: "2K",  ratio: 0.80 },
+                { label: "0K",  ratio: 1.00 }
+            ];
+
+            ctx.font = "6px 'Press Start 2P', monospace";
+            ctx.fillStyle = "rgba(23, 18, 15, 0.40)";
+
+            for (const t of ticks) {
+                const ty = topY + t.ratio * tapeH;
+                ctx.beginPath();
+                ctx.moveTo(rulerX, ty);
+                ctx.lineTo(rulerX + 4, ty);
+                ctx.stroke();
+            }
+
+            // Dynamic Altimeter Bug (Red/Orange Triangle sliding with descent)
+            const bugY = topY + scrollProgress * tapeH;
+            ctx.fillStyle = "#eb5e28";
+            ctx.strokeStyle = "#17120f";
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.moveTo(rulerX - 2, bugY - 4);
+            ctx.lineTo(rulerX + 6, bugY);
+            ctx.lineTo(rulerX - 2, bugY + 4);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
 
             ctx.restore();
         },

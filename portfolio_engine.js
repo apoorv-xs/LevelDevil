@@ -895,7 +895,11 @@ onLoad(() => {
 
         // Altimeter Telemetry HUD (from 10,000 FT at stratosphere to 0 FT / TOUCHDOWN at bedrock)
         const altimeterPill = document.getElementById("altimeter-pill");
-        if (altimeterPill) {
+        const mobileAlt = document.getElementById("flight-tape-alt");
+        const mobileStratum = document.getElementById("flight-tape-stratum");
+        const mobileProgress = document.getElementById("flight-tape-progress");
+
+        if (altimeterPill || mobileAlt) {
             const maxScroll = cachedMaxScroll || Math.max(1, (document.documentElement?.scrollHeight || 4000) - window.innerHeight);
             const scrollProgress = Math.min(1, Math.max(0, currentScrollY / maxScroll));
             const bottomY = cachedBottomY;
@@ -906,14 +910,38 @@ onLoad(() => {
                 progress = 0;
             }
 
-            if (progress >= 0.98 || currentScrollY >= maxScroll - 20 || (player && player.pos.y >= bottomY - 60)) {
-                altimeterPill.textContent = "ALT: 0 FT / TOUCHDOWN";
+            const isTouchdown = progress >= 0.98 || currentScrollY >= maxScroll - 20 || (player && player.pos.y >= bottomY - 60);
+            const mobileVsi = document.getElementById("flight-tape-vsi");
+
+            if (isTouchdown) {
+                if (altimeterPill) altimeterPill.textContent = "ALT: 0 FT / TOUCHDOWN";
+                if (mobileAlt) mobileAlt.textContent = "0 FT";
+                if (mobileStratum) mobileStratum.textContent = "TOUCHDOWN";
+                if (mobileVsi) mobileVsi.textContent = "TERRA FIRMA";
+                if (mobileProgress) mobileProgress.style.width = "100%";
                 if (window.SFX && typeof window.SFX.updateAltitude === "function") {
                     window.SFX.updateAltitude(0);
                 }
             } else {
                 const alt = Math.max(0, Math.round((1 - progress) * 10000));
-                altimeterPill.textContent = `ALT: ${alt.toLocaleString()} FT`;
+                const altStr = `ALT: ${alt.toLocaleString()} FT`;
+                if (altimeterPill) altimeterPill.textContent = altStr;
+                if (mobileAlt) mobileAlt.textContent = altStr;
+                if (mobileVsi) mobileVsi.textContent = "-1200 FPM";
+
+                if (mobileStratum) {
+                    let stratum = "STRATOSPHERE";
+                    if (progress >= 0.85) stratum = "BEDROCK";
+                    else if (progress >= 0.62) stratum = "MOUNTAINS";
+                    else if (progress >= 0.38) stratum = "TROPOSPHERE";
+                    else if (progress >= 0.16) stratum = "CLOUDS";
+                    mobileStratum.textContent = stratum;
+                }
+
+                if (mobileProgress) {
+                    mobileProgress.style.width = `${Math.min(100, Math.round(progress * 100))}%`;
+                }
+
                 if (window.SFX && typeof window.SFX.updateAltitude === "function") {
                     window.SFX.updateAltitude(alt);
                 }

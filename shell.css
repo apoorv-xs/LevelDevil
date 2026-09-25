@@ -259,6 +259,72 @@
   box-shadow: 5px 5px 0 var(--shell-line);
 }
 
+/* --- MOBILE AVIATION FLIGHT TAPE HUD (DESCENT STORY) --- */
+.mobile-flight-tape {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-flight-tape {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 54px;
+    left: 0;
+    width: 100%;
+    height: 26px;
+    background: var(--shell-paper, #fffdf1);
+    border-bottom: 2px solid var(--shell-line, #17120f);
+    z-index: 95;
+    box-shadow: 0 2px 0 rgba(23, 18, 15, 0.08);
+    box-sizing: border-box;
+    pointer-events: auto;
+  }
+  .flight-tape-track {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    height: 23px;
+    font-family: "Press Start 2P", monospace;
+    font-size: 7px;
+    color: var(--shell-ink, #17120f);
+    letter-spacing: 0.01em;
+    padding: 0 6px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .flight-tape-icon {
+    color: #eb5e28;
+    font-size: 8.5px;
+  }
+  .flight-tape-stratum {
+    color: var(--shell-purple, #573353);
+    font-weight: bold;
+  }
+  .flight-tape-divider {
+    opacity: 0.4;
+    font-size: 6px;
+  }
+  .flight-tape-alt {
+    color: var(--shell-ink, #17120f);
+    font-weight: bold;
+  }
+  .flight-tape-vsi {
+    color: var(--shell-purple, #573353);
+    opacity: 0.75;
+    font-size: 6.5px;
+  }
+  .flight-tape-progress {
+    height: 3px;
+    width: 0%;
+    background: linear-gradient(90deg, #fce566, #e6a83b, #eb5e28);
+    transition: width 0.08s linear;
+  }
+}
+
 @media (max-width: 960px) {
   .topbar-brand-badge {
     display: none;
