@@ -35,6 +35,12 @@ body::after {
   z-index: 200;
 }
 
+@media (max-width: 768px) {
+  body::after {
+    display: none !important;
+  }
+}
+
 .shell {
   width: min(1160px, calc(100% - 32px));
   margin: 0 auto;

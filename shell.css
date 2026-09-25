@@ -268,8 +268,24 @@
 @media (max-width: 768px) {
   .topbar {
     padding: 0 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .topbar-center {
+    position: static !important;
+    left: auto !important;
+    transform: none !important;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .topbar-brand {
+    flex-shrink: 0;
   }
   .topbar-actions {
+    flex-shrink: 0;
     gap: 4px;
   }
   .topbar-brand-title {
@@ -284,8 +300,8 @@
     letter-spacing: 0.05em;
   }
   .site-nav a {
-    padding: 5px 6px;
-    font-size: 9px;
+    padding: 4px 6px;
+    font-size: 8.5px;
   }
   .sfx-btn {
     padding: 4px 6px;
@@ -293,16 +309,52 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
+  .altimeter-pill {
+    display: none !important;
+  }
   .topbar {
-    padding: 0 6px;
+    padding: 0 4px !important;
   }
   .site-nav a {
-    padding: 4px 5px;
-    font-size: 8px;
+    padding: 3px 4px !important;
+    font-size: 7.5px !important;
   }
   .topbar-brand-name {
-    font-size: 10px;
+    font-size: 9px !important;
+    letter-spacing: 0 !important;
+  }
+  .sfx-btn {
+    padding: 3px 4px !important;
+    font-size: 7.5px !important;
+  }
+  #topbar-sign-in,
+  #workspaceSignInBtnHeader {
+    padding: 3px 4px !important;
+    font-size: 7.5px !important;
+    gap: 3px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar {
+    padding: 0 3px !important;
+  }
+  .topbar-brand-name {
+    font-size: 8.5px !important;
+  }
+  .site-nav a {
+    padding: 2.5px 3.5px !important;
+    font-size: 7px !important;
+  }
+  .sfx-btn {
+    padding: 2.5px 4px !important;
+    font-size: 7px !important;
+  }
+  #topbar-sign-in,
+  #workspaceSignInBtnHeader {
+    padding: 2.5px 4px !important;
+    font-size: 7px !important;
   }
 }
 
@@ -358,10 +410,10 @@
 /* --- UNIVERSAL 3D CANVAS & COMPANION OVERLAYS --- */
 #sky-canvas {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
   z-index: 0;
   pointer-events: none;
   background: transparent;
@@ -370,10 +422,10 @@
 
 #three-canvas {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
   z-index: 50;
   pointer-events: none;
   background: transparent;
@@ -382,18 +434,19 @@
 
 #game-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
   z-index: 100;
   pointer-events: none;
 }
 
 #game-canvas {
   display: block;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
   background: transparent;
 }
 

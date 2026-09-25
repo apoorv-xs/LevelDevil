@@ -23,19 +23,20 @@
 
     // 5 Cohesive Warm Golden-Amber Strata (100% Brand-Locked to Level Devil --amber #e6a83b)
     const STRATA_PALETTES = [
-        // Stratum 1 (0 - 650px / 10,000 - 8,000 FT): Bright Golden Dawn Stratosphere
-        { y: 0, top: hexToRgb("#f6c962"), mid: hexToRgb("#f0b849"), bot: hexToRgb("#e6a83b") },
-        // Stratum 2 (650 - 1450px / 8,000 - 5,500 FT): Signature Level Devil Amber Flight Corridor
-        { y: 700, top: hexToRgb("#f0b849"), mid: hexToRgb("#e6a83b"), bot: hexToRgb("#e6a83b") },
-        // Stratum 3 (1450 - 2250px / 5,500 - 3,000 FT): Warm Troposphere Sunlight & Contours
-        { y: 1500, top: hexToRgb("#e6a83b"), mid: hexToRgb("#f6c962"), bot: hexToRgb("#fff1bd") },
-        // Stratum 4 (2250 - 3050px / 3,000 - 1,000 FT): Mountain Approach Warm Golden Ochre
-        { y: 2300, top: hexToRgb("#f6c962"), mid: hexToRgb("#e6a83b"), bot: hexToRgb("#d98f2d") },
-        // Stratum 5 (3050 - 3700px / 1,000 - 0 FT): Bedrock Touchdown Warm Terra Amber
-        { y: 3200, top: hexToRgb("#e6a83b"), mid: hexToRgb("#d98f2d"), bot: hexToRgb("#c87a22") }
+        // Stratum 1 (0.00 / 10,000 - 8,000 FT): Bright Golden Dawn Stratosphere
+        { ratio: 0.00, top: hexToRgb("#f6c962"), mid: hexToRgb("#f0b849"), bot: hexToRgb("#e6a83b") },
+        // Stratum 2 (0.22 / 8,000 - 5,500 FT): Signature Level Devil Amber Flight Corridor
+        { ratio: 0.22, top: hexToRgb("#f0b849"), mid: hexToRgb("#e6a83b"), bot: hexToRgb("#e6a83b") },
+        // Stratum 3 (0.48 / 5,500 - 3,000 FT): Warm Troposphere Sunlight & Contours
+        { ratio: 0.48, top: hexToRgb("#e6a83b"), mid: hexToRgb("#f6c962"), bot: hexToRgb("#fff1bd") },
+        // Stratum 4 (0.72 / 3,000 - 1,000 FT): Mountain Approach Warm Golden Ochre
+        { ratio: 0.72, top: hexToRgb("#f6c962"), mid: hexToRgb("#e6a83b"), bot: hexToRgb("#d98f2d") },
+        // Stratum 5 (0.90 / 1,000 - 0 FT): Bedrock Touchdown Warm Terra Amber
+        { ratio: 0.90, top: hexToRgb("#e6a83b"), mid: hexToRgb("#d98f2d"), bot: hexToRgb("#c87a22") }
     ];
 
     function getStrataGradient(scrollY, maxScroll, h) {
+        const progress = Math.min(1, Math.max(0, scrollY / Math.max(1, maxScroll)));
         let p1 = STRATA_PALETTES[0];
         let p2 = STRATA_PALETTES[1];
         let factor = 0;
@@ -43,12 +44,12 @@
         for (let i = 0; i < STRATA_PALETTES.length - 1; i++) {
             const cur = STRATA_PALETTES[i];
             const next = STRATA_PALETTES[i + 1];
-            if (scrollY >= cur.y && scrollY <= next.y) {
+            if (progress >= cur.ratio && progress <= next.ratio) {
                 p1 = cur;
                 p2 = next;
-                factor = (scrollY - cur.y) / (next.y - cur.y);
+                factor = (progress - cur.ratio) / Math.max(0.0001, (next.ratio - cur.ratio));
                 break;
-            } else if (scrollY > next.y && i === STRATA_PALETTES.length - 2) {
+            } else if (progress > next.ratio && i === STRATA_PALETTES.length - 2) {
                 p1 = next;
                 p2 = next;
                 factor = 1;
@@ -131,17 +132,24 @@
 
         update(dt, screenW) {
             this.x += this.driftSpeed * dt;
-            if (this.x - this.w > screenW + 150) {
-                this.x = -this.w - 100;
+            const isMobile = screenW < 768;
+            const scale = isMobile ? Math.min(0.48, (screenW / 1200) * 1.1) : 1.0;
+            const renderW = Math.round(this.w * scale);
+            if (this.x - renderW > screenW + 100) {
+                this.x = -renderW - 80;
             }
         }
 
-        draw(ctx, scrollY, screenH) {
+        draw(ctx, scrollY, screenH, screenW = 1200) {
             if (!this.cachedCanvas) return;
+            const isMobile = screenW < 768;
+            const scale = isMobile ? Math.min(0.48, (screenW / 1200) * 1.1) : 1.0;
+            const renderW = Math.round(this.w * scale);
+            const renderH = Math.round(this.h * scale);
             const drawY = this.baseY - scrollY * this.pRatio;
             // Frustum cull
-            if (drawY + this.h < -50 || drawY > screenH + 50) return;
-            ctx.drawImage(this.cachedCanvas, Math.round(this.x), Math.round(drawY));
+            if (drawY + renderH < -50 || drawY > screenH + 50) return;
+            ctx.drawImage(this.cachedCanvas, Math.round(this.x), Math.round(drawY), renderW, renderH);
         }
     }
 
@@ -212,8 +220,8 @@
             const dpr = Math.min(window.devicePixelRatio || 1, 2);
             this.canvas.width = Math.round(window.innerWidth * dpr);
             this.canvas.height = Math.round(window.innerHeight * dpr);
-            this.canvas.style.width = "100vw";
-            this.canvas.style.height = "100vh";
+            this.canvas.style.width = "100%";
+            this.canvas.style.height = "100%";
             if (this.ctx) {
                 this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             }
@@ -234,27 +242,28 @@
 
         initClouds() {
             const sw = window.innerWidth || 1200;
+            const docH = typeof document !== "undefined" ? Math.max(3500, document.documentElement.scrollHeight || 3500) : 3500;
             this.clouds = [
-                // Layer 1: Near Fast Clouds (Parallax 0.55) - Below hero corridor (baseY >= 650)
-                new SkyCloud(340, 170, 680, 0.55, 22, 0),
-                new SkyCloud(420, 200, 1100, 0.55, 28, 1),
-                new SkyCloud(360, 180, 1550, 0.55, 24, 2),
-                new SkyCloud(400, 190, 2000, 0.55, 26, 0),
-                new SkyCloud(350, 175, 2450, 0.55, 20, 1),
-                new SkyCloud(380, 190, 2900, 0.55, 25, 2),
+                // Layer 1: Near Fast Clouds (Parallax 0.55) - Distributed down the flight corridor
+                new SkyCloud(340, 170, docH * 0.18, 0.55, 22, 0),
+                new SkyCloud(420, 200, docH * 0.32, 0.55, 28, 1),
+                new SkyCloud(360, 180, docH * 0.46, 0.55, 24, 2),
+                new SkyCloud(400, 190, docH * 0.60, 0.55, 26, 0),
+                new SkyCloud(350, 175, docH * 0.74, 0.55, 20, 1),
+                new SkyCloud(380, 190, docH * 0.86, 0.55, 25, 2),
 
                 // Layer 2: Mid Slower Cloud Banks (Parallax 0.30)
-                new SkyCloud(520, 240, 720, 0.30, 12, 1),
-                new SkyCloud(560, 250, 1200, 0.30, 15, 2),
-                new SkyCloud(480, 220, 1680, 0.30, 11, 0),
-                new SkyCloud(540, 240, 2150, 0.30, 14, 1),
-                new SkyCloud(500, 230, 2600, 0.30, 12, 2),
-                new SkyCloud(560, 260, 3050, 0.30, 13, 0),
+                new SkyCloud(520, 240, docH * 0.20, 0.30, 12, 1),
+                new SkyCloud(560, 250, docH * 0.35, 0.30, 15, 2),
+                new SkyCloud(480, 220, docH * 0.50, 0.30, 11, 0),
+                new SkyCloud(540, 240, docH * 0.65, 0.30, 14, 1),
+                new SkyCloud(500, 230, docH * 0.78, 0.30, 12, 2),
+                new SkyCloud(560, 260, docH * 0.88, 0.30, 13, 0),
 
                 // Layer 3: Far Atmospheric Haze Whispers (Parallax 0.15)
-                new SkyCloud(680, 280, 800, 0.15, 6, 2),
-                new SkyCloud(720, 300, 1500, 0.15, 7, 0),
-                new SkyCloud(650, 270, 2300, 0.15, 5, 1)
+                new SkyCloud(680, 280, docH * 0.24, 0.15, 6, 2),
+                new SkyCloud(720, 300, docH * 0.45, 0.15, 7, 0),
+                new SkyCloud(650, 270, docH * 0.70, 0.15, 5, 1)
             ];
         },
 
@@ -368,7 +377,7 @@
             }
 
             // 4. TOPOGRAPHICAL ELEVATION CONTOUR LINES (Mid Troposphere)
-            if (scrollY > 600 && scrollY < 3200) {
+            if (scrollProgress > 0.15 && scrollProgress < 0.85) {
                 ctx.save();
                 ctx.strokeStyle = "rgba(23, 18, 15, 0.065)";
                 ctx.lineWidth = 1.2;
@@ -389,41 +398,43 @@
             // 5. PARALLAX PAPER CLOUDS (DRIFTING BEHIND CARDS)
             for (const cloud of this.clouds) {
                 cloud.update(dt, w);
-                cloud.draw(ctx, scrollY, h);
+                cloud.draw(ctx, scrollY, h, w);
             }
 
             // 6. RISING MOUNTAIN SILHOUETTES (Stratum 4 & 5 / Approaching Earth)
-            if (scrollY > 1200 && this.mountainCanvas) {
-                const alpha = Math.min(1, Math.max(0, (scrollY - 1200) / 1000));
+            if (scrollProgress > 0.45 && this.mountainCanvas) {
+                const mountainProgress = (scrollProgress - 0.45) / 0.55;
+                const alpha = Math.min(1, Math.max(0, mountainProgress * 2));
                 ctx.save();
                 ctx.globalAlpha = alpha;
-                // Parallax rise from bottom: as scrollY increases, mountain rises into view
-                const mountainY = h - (scrollY - 1200) * 0.18 + 120;
-                ctx.drawImage(this.mountainCanvas, 0, Math.round(mountainY), w, (w / 1920) * 420);
+                // Parallax rise from bottom: rises into bottom of screen as scroll finishes
+                const mountainH = Math.min(260, (w / 1200) * 320);
+                const mountainY = h - mountainH * Math.min(1, mountainProgress * 1.2) + 20;
+                ctx.drawImage(this.mountainCanvas, 0, Math.round(mountainY), w, mountainH);
                 ctx.restore();
             }
 
             // 7. BEDROCK TOUCHDOWN RUNWAY MARKINGS (Stratum 5 / Ground Approach)
-            if (scrollY > 2800) {
-                const groundProgress = Math.min(1, (scrollY - 2800) / 700);
-                const runwayY = h - groundProgress * 180;
+            if (scrollProgress > 0.88) {
+                const groundProgress = Math.min(1, (scrollProgress - 0.88) / 0.12);
+                const runwayY = h - groundProgress * 160;
                 ctx.save();
                 ctx.fillStyle = "#17120f";
                 ctx.fillRect(0, runwayY, w, 200);
 
                 // Zebra threshold approach bars
                 ctx.fillStyle = "#fce566";
-                const barW = 24;
-                const barGap = 20;
+                const barW = Math.max(16, Math.min(24, Math.floor(w / 18)));
+                const barGap = Math.max(12, Math.floor(barW * 0.8));
                 const totalBars = Math.floor(w / (barW + barGap));
                 for (let i = 0; i < totalBars; i++) {
-                    ctx.fillRect(i * (barW + barGap) + 12, runwayY + 20, barW, 45);
+                    ctx.fillRect(i * (barW + barGap) + 12, runwayY + 16, barW, 40);
                 }
 
                 // Runway centerline dashes
                 ctx.fillStyle = "#fffdf1";
-                for (let x = 30; x < w; x += 90) {
-                    ctx.fillRect(x, runwayY + 90, 50, 6);
+                for (let x = 20; x < w; x += 80) {
+                    ctx.fillRect(x, runwayY + 75, 40, 5);
                 }
                 ctx.restore();
             }

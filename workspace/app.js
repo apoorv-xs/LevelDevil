@@ -1432,7 +1432,7 @@ function selectProspect(id, playSoundEffect = false) {
   if (p && typeof window !== 'undefined' && window.System1Brain) {
     window.System1Brain.onProspectSelect?.(p);
   }
-  if (typeof window !== 'undefined' && window.innerWidth < 768) {
+  if (playSoundEffect && typeof window !== 'undefined' && window.innerWidth < 768) {
     showMobilePane('cockpit');
   }
 }
