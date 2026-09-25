@@ -2806,52 +2806,57 @@ function openAdminModal() {
   document.getElementById('adminCallbackCount').innerText = callbackCount;
   document.getElementById('adminDncCount').innerText = `${dncCount} DNC Blacklisted`;
 
-  // Populate Call Logs Table
+  // Populate Call Logs & Lead Explorer Table
   const tbody = document.getElementById('adminCallLogsBody');
   if (tbody) {
     tbody.innerHTML = '';
-    const activeLeads = PROSPECTS.filter(p => p.status !== 'available' || p.notes || p.discoveryTime);
-    const displayLeads = activeLeads.length > 0 ? activeLeads : PROSPECTS.slice(0, 15);
+    const displayLeads = PROSPECTS && PROSPECTS.length > 0 ? PROSPECTS : [];
 
     displayLeads.forEach(p => {
       const tr = document.createElement('tr');
-      tr.className = "hover:bg-white/[0.03] transition";
+      tr.className = "hover:bg-white/[0.04] transition";
 
-      let statusBadge = "bg-white/5 text-gray-400";
+      let statusBadge = "bg-white/5 text-gray-400 border border-white/5";
       if (p.status === 'discovery_booked') statusBadge = "bg-emerald-950/60 text-emerald-300 border border-emerald-700";
       else if (p.status === 'connected_callback') statusBadge = "bg-blue-950/60 text-blue-300 border border-blue-700";
       else if (p.status === 'blacklisted') statusBadge = "bg-rose-950/60 text-rose-300 border border-rose-700";
       else if (p.status === 'gatekeeper_rejection') statusBadge = "bg-amber-950/60 text-amber-300 border border-amber-700";
+
+      const isCustom = (p.id && String(p.id).startsWith('custom-')) || (window.CUSTOM_PROSPECTS && window.CUSTOM_PROSPECTS.some(cp => cp.id === p.id));
+      const sourceBadge = isCustom
+        ? '<span class="px-1.5 py-0.5 rounded bg-purple-950/60 text-purple-300 border border-purple-800 text-[9px] font-bold whitespace-nowrap">🟣 Custom Ingest</span>'
+        : '<span class="px-1.5 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-800 text-[9px] font-bold whitespace-nowrap">🟢 Core Dataset</span>';
 
       const safeName = escapeHTML(p.name);
       const safeCity = escapeHTML(p.city);
       const safePtype = escapeHTML(p.ptype);
       const safeDm = escapeHTML(p.dm);
       const safePhone = escapeHTML(p.phone);
-      const safeStatus = escapeHTML((p.status || '').replace('_', ' '));
-      const safeNotes = p.notes ? `"${escapeHTML(p.notes)}"` : '<span class="italic text-gray-600">No notes</span>';
-      const safeDiscovery = p.discoveryTime ? `<div class="text-emerald-400 text-[10px]">📅 ${escapeHTML(p.discoveryTime)}</div>` : '';
+      const safeStatus = escapeHTML((p.status || 'available').replace('_', ' '));
+      const safeNotes = p.notes ? `"${escapeHTML(p.notes)}"` : '';
+      const safeDiscovery = p.discoveryTime ? `<div class="text-emerald-400 text-[10px] mt-0.5">📅 ${escapeHTML(p.discoveryTime)}</div>` : '';
 
       tr.innerHTML = `
-        <td class="p-3">
-          <div class="font-bold text-white">${safeName}</div>
-          <div class="text-[10px] text-gray-500">${safeCity} • ${safePtype}</div>
+        <td class="p-2.5 sm:p-3">
+          <div class="font-bold text-white text-xs sm:text-sm leading-tight">${safeName}</div>
+          <div class="text-[10px] text-gray-400 mt-0.5">${safeCity} • ${safePtype}</div>
         </td>
-        <td class="p-3">
-          <div class="text-gray-300">${safeDm}</div>
-          <div class="text-[10px] text-gray-500">${safePhone}</div>
+        <td class="p-2.5 sm:p-3">
+          <div class="text-gray-300 text-xs">${safeDm}</div>
+          <div class="text-[10px] text-gray-500">${safePhone || 'No direct phone'}</div>
         </td>
-        <td class="p-3">
+        <td class="p-2.5 sm:p-3">
           <span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold ${statusBadge}">
             ${safeStatus}
           </span>
         </td>
-        <td class="p-3 max-w-[200px] truncate text-gray-400">
-          ${safeNotes}
+        <td class="p-2.5 sm:p-3 text-[10px]">
+          <div>${sourceBadge}</div>
+          ${safeNotes ? `<div class="text-slate-400 mt-1 truncate max-w-[180px] italic">${safeNotes}</div>` : ''}
           ${safeDiscovery}
         </td>
-        <td class="p-3 text-right">
-          <button class="open-lead-btn px-2 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 text-[10px] transition cursor-pointer">
+        <td class="p-2.5 sm:p-3 text-right">
+          <button class="open-lead-btn px-2.5 py-1 rounded bg-blue-600/40 hover:bg-blue-600 text-white border border-blue-400/50 text-[10px] font-bold transition cursor-pointer whitespace-nowrap">
             Open Lead →
           </button>
         </td>
