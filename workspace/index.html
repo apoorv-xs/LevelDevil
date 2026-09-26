@@ -997,6 +997,84 @@
             </div>
           </div>
 
+          <!-- CLOSER SOUNDBOARD & 1-TAP OBJECTION DEFENSE -->
+          <div class="border-2 border-[#17120f] bg-[#fffdf1] p-2.5 shadow-[2px_2px_0_#17120f] space-y-2">
+            <!-- Header with Quick Hotkeys & Defense Label -->
+            <div class="flex items-center justify-between">
+              <span class="font-arcade text-[10px] text-[#17120f] font-bold flex items-center gap-1.5">
+                <span>🛡️ CLOSER SOUNDBOARD & OBJECTION REBUTTALS</span>
+              </span>
+              <div class="hidden sm:flex items-center gap-1 font-mono text-[9px] text-[#17120f]/60">
+                <span>HOTKEYS:</span>
+                <kbd class="px-1 py-0.5 bg-[#fce566] text-[#17120f] border border-[#17120f] font-bold">1</kbd>
+                <kbd class="px-1 py-0.5 bg-[#fce566] text-[#17120f] border border-[#17120f] font-bold">2</kbd>
+                <kbd class="px-1 py-0.5 bg-[#fce566] text-[#17120f] border border-[#17120f] font-bold">3</kbd>
+                <kbd class="px-1 py-0.5 bg-[#fce566] text-[#17120f] border border-[#17120f] font-bold">SPC</kbd>
+                <kbd class="px-1 py-0.5 bg-[#fce566] text-[#17120f] border border-[#17120f] font-bold">J</kbd>
+                <kbd class="px-1 py-0.5 bg-[#fce566] text-[#17120f] border border-[#17120f] font-bold">K</kbd>
+                <kbd class="px-1 py-0.5 bg-[#fce566] text-[#17120f] border border-[#17120f] font-bold">D</kbd>
+              </div>
+            </div>
+
+            <!-- 1-Tap Quick Outcome Disposition Bar -->
+            <div class="grid grid-cols-3 gap-1.5 pt-0.5">
+              <button type="button" onclick="logOutcome('interested')" title="Log Interested [Hotkey: 1]" class="px-2 py-1 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1">
+                <span>[1]</span> <span>INTERESTED</span>
+              </button>
+              <button type="button" onclick="logOutcome('gatekeeper_rejection')" title="Log Busy / Callback [Hotkey: 2]" class="px-2 py-1 bg-[#fff3cd] hover:bg-[#ffeeba] text-[#856404] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1">
+                <span>[2]</span> <span>BUSY / CB</span>
+              </button>
+              <button type="button" onclick="logOutcome('not_interested')" title="Log Disqualified [Hotkey: 3]" class="px-2 py-1 bg-[#f8d7da] hover:bg-[#f5c6cb] text-[#721c24] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1">
+                <span>[3]</span> <span>DISQUALIFIED</span>
+              </button>
+            </div>
+
+            <!-- 6 Objection Soundboard Chips -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-1 pt-1 border-t border-[#17120f]/20">
+              <button type="button" id="btnObj0" onclick="toggleObjection(0)" class="objection-btn text-left text-[10px] px-2 py-1 rounded-none bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono transition truncate" title="Send Email / Brochure">
+                📄 Email/Brochure
+              </button>
+              <button type="button" id="btnObj1" onclick="toggleObjection(1)" class="objection-btn text-left text-[10px] px-2 py-1 rounded-none bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono transition truncate" title="Have Agency / Web Guy">
+                🏢 Have Agency
+              </button>
+              <button type="button" id="btnObj2" onclick="toggleObjection(2)" class="objection-btn text-left text-[10px] px-2 py-1 rounded-none bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono transition truncate" title="Not Investing Right Now">
+                💰 Not Investing
+              </button>
+              <button type="button" id="btnObj3" onclick="toggleObjection(3)" class="objection-btn text-left text-[10px] px-2 py-1 rounded-none bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono transition truncate" title="Practo / Zomato Enough">
+                🏥 Practo/Zomato
+              </button>
+              <button type="button" id="btnObj4" onclick="toggleObjection(4)" class="objection-btn text-left text-[10px] px-2 py-1 rounded-none bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono transition truncate" title="Nephew / Friend Built">
+                👨‍💻 Friend Built
+              </button>
+              <button type="button" id="btnObj5" onclick="toggleObjection(5)" class="objection-btn text-left text-[10px] px-2 py-1 rounded-none bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono transition truncate" title="Instagram is Enough">
+                📸 Instagram Only
+              </button>
+            </div>
+
+            <!-- Active Objection Preview & Rebuttal Box -->
+            <div id="objectionBox" class="hidden border-2 border-[#17120f] bg-[#fce566] p-3 shadow-[2px_2px_0_#17120f] space-y-2">
+              <div class="flex items-center justify-between border-b border-[#17120f]/30 pb-1">
+                <span class="font-arcade text-[10px] text-[#17120f] font-bold">REBUTTAL SCRIPT</span>
+                <div class="flex items-center gap-1.5">
+                  <span id="objectionLangIndicator" class="font-mono text-[9px] text-[#17120f]/80 uppercase">English</span>
+                  <button type="button" onclick="toggleObjectionLang()" class="px-1.5 py-0.5 bg-[#fffdf1] text-[#17120f] border border-[#17120f] font-mono text-[9px] font-bold hover:bg-white transition">
+                    🌐 EN/ML
+                  </button>
+                  <button type="button" onclick="closeObjectionBox()" class="px-1.5 py-0.5 bg-[#17120f] text-[#fffdf1] font-mono text-[9px] font-bold hover:bg-black transition">
+                    ✕
+                  </button>
+                </div>
+              </div>
+              <p id="objectionText" class="font-mono text-[11px] text-[#17120f] leading-relaxed italic bg-[#fffdf1] p-2 border border-[#17120f]"></p>
+              <div class="flex items-center justify-between pt-1">
+                <button type="button" onclick="appendActiveObjectionToNotes()" class="px-3 py-1 bg-[#17120f] hover:bg-[#2b221d] text-[#fffdf1] font-arcade text-[10px] font-bold shadow-[1px_1px_0_#fffdf1] transition flex items-center gap-1">
+                  <span>+</span> <span>APPEND TO CALL NOTES</span>
+                </button>
+                <span class="text-[9px] font-mono text-[#17120f]/70">Auto-saved to notes</span>
+              </div>
+            </div>
+          </div>
+
           <textarea 
             id="callNotesInput" 
             data-kaboom-body="true"
@@ -1008,10 +1086,10 @@
           <div class="flex items-center justify-between pt-1">
             <div class="flex items-center gap-2">
               <button id="btnPrevLeadHandoff" onclick="advanceLead(-1)" title="Previous Prospect (K)" class="px-3 py-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] font-arcade text-[10px] shadow-[2px_2px_0_#17120f] transition">
-                &larr; Prev
+                &larr; Prev (K)
               </button>
-              <button id="btnNextLeadHandoff" data-kaboom-body="true" onclick="saveAndNext()" title="Save Notes & Advance (J)" class="px-3.5 py-1.5 bg-[#fce566] hover:bg-[#fff1bd] text-[#17120f] border-2 border-[#17120f] font-arcade text-[10px] font-bold shadow-[2px_2px_0_#17120f] transition">
-                Save & Next &rarr;
+              <button id="btnNextLeadHandoff" data-kaboom-body="true" onclick="saveAndNext()" title="Save Notes & Advance (Space / J)" class="px-3.5 py-1.5 bg-[#fce566] hover:bg-[#fff1bd] text-[#17120f] border-2 border-[#17120f] font-arcade text-[10px] font-bold shadow-[2px_2px_0_#17120f] transition">
+                Save & Next &rarr; (Space)
               </button>
             </div>
             <button onclick="markDNC()" title="Blacklist" class="px-2.5 py-1 text-[10px] font-mono text-[#8f1727] hover:underline">
@@ -1031,13 +1109,6 @@
           <button id="tabModeChallenge"></button>
           <div id="scriptLangSelector"></div>
           <div id="livePhoneChallengeCard"></div>
-          <button id="btnObj0"></button>
-          <button id="btnObj1"></button>
-          <button id="btnObj2"></button>
-          <button id="btnObj3"></button>
-          <button id="btnObj4"></button>
-          <button id="btnObj5"></button>
-          <div id="objectionBox"><span id="objectionText"></span><span id="objectionLangIndicator"></span></div>
           <button id="recordVoiceBtn"><span id="recordDot"></span><span id="recordText"></span></button>
           <button id="aiTranscribeBtn"></button>
           <audio id="audioPlayback"></audio>

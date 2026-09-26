@@ -1282,7 +1282,7 @@ function signOutGoogle() {
   signOut();
 }
 
-// Minimal Keyboard Helpers (Escape to dismiss, / or Ctrl+K to search)
+// Minimal Keyboard Helpers (Escape to dismiss, / or Ctrl+K to search, Closer Hotkeys: 1/2/3/Space/J/K/D)
 function setupKeyboardShortcuts() {
   window.addEventListener('keydown', (e) => {
     if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
@@ -1300,6 +1300,32 @@ function setupKeyboardShortcuts() {
       closeProposalModal();
       closeClientTeardownModal();
       closeLaymanAnalogy();
+      if (typeof closeObjectionBox === 'function') closeObjectionBox();
+    } else if (e.key === '1') {
+      e.preventDefault();
+      logOutcome('interested');
+    } else if (e.key === '2') {
+      e.preventDefault();
+      logOutcome('gatekeeper_rejection');
+    } else if (e.key === '3') {
+      e.preventDefault();
+      logOutcome('not_interested');
+    } else if (e.key === ' ') {
+      e.preventDefault();
+      saveAndNext();
+    } else if (e.key.toLowerCase() === 'j') {
+      e.preventDefault();
+      advanceLead(1);
+    } else if (e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      advanceLead(-1);
+    } else if (e.key.toLowerCase() === 'd') {
+      e.preventDefault();
+      const callBtn = document.getElementById('callActionBtn');
+      if (callBtn && !callBtn.classList.contains('pointer-events-none')) {
+        callBtn.click();
+        handleCallInitiated();
+      }
     }
   });
 }
@@ -1727,7 +1753,13 @@ function renderActiveProspect() {
 
   // Populate saved notes or discovery input
   const notesInput = document.getElementById('callNotesInput');
-  if (notesInput) notesInput.value = p.notes || '';
+  if (notesInput) {
+    notesInput.value = p.notes || '';
+    if (!notesInput._hasSaveListener) {
+      notesInput.addEventListener('input', () => saveNotesLocally());
+      notesInput._hasSaveListener = true;
+    }
+  }
   const discoveryInput = document.getElementById('discoveryInput');
   if (discoveryInput) discoveryInput.value = p.discoveryTime || '';
 
@@ -2076,18 +2108,20 @@ function toggleObjection(index) {
   const btnObj3 = document.getElementById('btnObj3');
   const btnObj4 = document.getElementById('btnObj4');
   const btnObj5 = document.getElementById('btnObj5');
-  [btnObj0, btnObj1, btnObj2, btnObj3, btnObj4, btnObj5].forEach(btn => {
+  const allBtns = [btnObj0, btnObj1, btnObj2, btnObj3, btnObj4, btnObj5];
+  
+  allBtns.forEach(btn => {
     if (btn) {
-      btn.className = "objection-btn text-left text-xs px-2.5 py-2 rounded-lg bg-[#17181F] hover:bg-[#1D1E26] text-neutral-200 border border-white/[0.05] transition flex items-center justify-between";
+      btn.className = "objection-btn text-left text-[10px] px-2 py-1 rounded-none bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono transition truncate";
     }
   });
 
   if (activeObjectionIndex === index) {
-    box.classList.add('hidden');
+    if (box) box.classList.add('hidden');
     activeObjectionIndex = null;
   } else {
     activeObjectionIndex = index;
-    box.classList.remove('hidden');
+    if (box) box.classList.remove('hidden');
     const obj = OBJECTIONS[index];
     if (obj && textEl) {
       textEl.innerText = (activeLang === 'ml' && obj.ml) ? obj.ml : obj.en;
@@ -2095,10 +2129,51 @@ function toggleObjection(index) {
     if (langIndicator) {
       langIndicator.innerText = activeLang === 'ml' ? 'Malayalam (മലയാളം)' : (activeLang === 'manglish' ? 'Manglish' : 'English');
     }
-    const activeBtn = [btnObj0, btnObj1, btnObj2, btnObj3, btnObj4, btnObj5][index];
+    const activeBtn = allBtns[index];
     if (activeBtn) {
-      activeBtn.className = "objection-btn text-left text-xs px-2.5 py-2 rounded-lg bg-amber-500/15 hover:bg-amber-500/20 text-amber-200 border border-amber-400 font-semibold shadow-sm transition flex items-center justify-between";
+      activeBtn.className = "objection-btn text-left text-[10px] px-2 py-1 rounded-none bg-[#fce566] text-[#17120f] border-2 border-[#17120f] font-bold font-mono shadow-[1px_1px_0_#17120f] transition truncate";
     }
+  }
+}
+
+function closeObjectionBox() {
+  const box = document.getElementById('objectionBox');
+  if (box) box.classList.add('hidden');
+  activeObjectionIndex = null;
+  const btnObjs = [
+    document.getElementById('btnObj0'),
+    document.getElementById('btnObj1'),
+    document.getElementById('btnObj2'),
+    document.getElementById('btnObj3'),
+    document.getElementById('btnObj4'),
+    document.getElementById('btnObj5')
+  ];
+  btnObjs.forEach(btn => {
+    if (btn) {
+      btn.className = "objection-btn text-left text-[10px] px-2 py-1 rounded-none bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono transition truncate";
+    }
+  });
+}
+
+function toggleObjectionLang() {
+  setLang(activeLang === 'ml' ? 'en' : 'ml');
+}
+
+function appendActiveObjectionToNotes() {
+  if (activeObjectionIndex === null || !OBJECTIONS[activeObjectionIndex]) return;
+  const obj = OBJECTIONS[activeObjectionIndex];
+  const rebuttal = (activeLang === 'ml' && obj.ml) ? obj.ml : obj.en;
+  if (typeof appendObjectionToNotes === 'function') {
+    appendObjectionToNotes(obj.title, rebuttal);
+  }
+}
+
+function saveNotesLocally() {
+  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  const notesInput = document.getElementById('callNotesInput');
+  if (p && notesInput) {
+    p.notes = notesInput.value;
+    saveLeadOverride(p.id, { notes: p.notes });
   }
 }
 
@@ -4329,10 +4404,18 @@ function switchCockpitSubTab(tab) {
 if (typeof window !== 'undefined') {
   window.advanceLead = advanceLead;
   window.saveAndNext = saveAndNext;
+  window.saveNotesLocally = saveNotesLocally;
+  window.closeObjectionBox = closeObjectionBox;
+  window.toggleObjectionLang = toggleObjectionLang;
+  window.appendActiveObjectionToNotes = appendActiveObjectionToNotes;
 }
 if (typeof global !== 'undefined') {
   global.advanceLead = advanceLead;
   global.saveAndNext = saveAndNext;
+  global.saveNotesLocally = saveNotesLocally;
+  global.closeObjectionBox = closeObjectionBox;
+  global.toggleObjectionLang = toggleObjectionLang;
+  global.appendActiveObjectionToNotes = appendActiveObjectionToNotes;
 }
 
 // ============================================================================

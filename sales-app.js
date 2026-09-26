@@ -310,11 +310,86 @@ if (shell?.session?.resumeRedirect) {
     .catch((error) => setStatus(error instanceof Error ? error.message : "Unable to resume sign-in.", true));
 }
 
+function updateDeliverablesChecklist(scope = "Performance Sprint", budget = "$5k - $15k") {
+  const container = document.getElementById("engagement-deliverables-list");
+  const badge = document.getElementById("deliverables-tier-badge");
+  const turnaround = document.getElementById("deliverables-turnaround-badge");
+  if (!container) return;
+
+  const isSprint = scope === "Performance Sprint" || budget === "Under $1k";
+  const isFeature = scope === "3D Web Feature" || budget === "$1k - $5k";
+  const isConfigurator = scope === "Product Configurator";
+  const isEnterprise = scope === "Full Interactive Site" || budget === "$15k+";
+
+  let badgeText = "FLAGSHIP 3D BUILD";
+  let turnaroundText = "2–3 Weeks Turnaround";
+  let items = [
+    { title: "⚡ Rapid Response", desc: "Direct feedback & detailed architecture scoping within 24 hours." },
+    { title: "🎯 60 FPS Guarantee", desc: "Strict 16.6ms frame budget, DPR clamp, and zero GPU memory leaks." },
+    { title: "📦 Featherweight Delivery", desc: "Sub-5MB Draco/KTX2 payloads designed for instant mobile 4G loads." },
+    { title: "🛡 Milestone Security", desc: "Structured 50/25/25 milestone terms with staged preview environments." }
+  ];
+
+  if (isSprint) {
+    badgeText = "60 FPS PERFORMANCE SPRINT";
+    turnaroundText = "3–5 Business Days";
+    items = [
+      { title: "⚡ Frame Budget Lock", desc: "Full render loop profiling to eliminate dropped frames and stutter." },
+      { title: "🎯 Core Web Vitals", desc: "Mobile LCP reduced under 1.2s and layout shifts (CLS) eradicated." },
+      { title: "📦 Zero Memory Leaks", desc: "Full dispose() lifecycle hooks on all WebGL textures and buffers." },
+      { title: "🛡 Empirical Verification", desc: "Side-by-side 24 FPS vs 60 FPS benchmarks delivered before handoff." }
+    ];
+  } else if (isFeature) {
+    badgeText = "3D WEBUI & SHADER FEATURE";
+    turnaroundText = "1–2 Weeks Turnaround";
+    items = [
+      { title: "⚡ Custom GLSL Shaders", desc: "Branchless procedural fragment math and custom post-processing." },
+      { title: "🎯 Interactive Choreography", desc: "Camera lerp damping and tactile scroll-linked spatial transitions." },
+      { title: "📦 Mobile Touch Optimization", desc: "Touch-safe gestures and adaptive DPR clamping across all devices." },
+      { title: "🛡 Turnkey Delivery", desc: "Drop-in Three.js / WebGL component with clean API contracts." }
+    ];
+  } else if (isConfigurator) {
+    badgeText = "3D PRODUCT CONFIGURATOR";
+    turnaroundText = "2–3 Weeks Turnaround";
+    items = [
+      { title: "⚡ Real-Time Material Switcher", desc: "Physically-based rendering (PBR) with instant variant swaps." },
+      { title: "🎯 Orbit & Momentum Damping", desc: "Fluid 3D manipulation with smooth inertia and limits." },
+      { title: "📦 Featherweight Asset Pipeline", desc: "Meshopt + Draco geometry compression with KTX2 textures (< 5MB)." },
+      { title: "🛡 Milestone Security", desc: "Structured 50/25/25 milestone terms with staged preview environments." }
+    ];
+  } else if (isEnterprise) {
+    badgeText = "ENTERPRISE SPATIAL ECOSYSTEM";
+    turnaroundText = "4–6 Weeks Sprint";
+    items = [
+      { title: "⚡ Ground-Up WebGPU Pipeline", desc: "Next-generation compute shaders and high-density particle systems." },
+      { title: "🎯 Bespoke Spatial Experience", desc: "Multi-scene architectural narrative with sound design integration." },
+      { title: "📦 Sub-5MB Enterprise Payload", desc: "Maximum compression and streaming asset chunking." },
+      { title: "🛡 Dedicated Senior Engineering", desc: "Direct weekly architecture reviews and guaranteed SLA." }
+    ];
+  }
+
+  if (badge) badge.textContent = badgeText;
+  if (turnaround) turnaround.textContent = turnaroundText;
+
+  container.innerHTML = items.map(item => `
+    <div data-kaboom-body="true" style="padding:10px 12px; background:var(--cream); border:2px solid var(--ink);">
+      <strong>${item.title}:</strong> ${item.desc}
+    </div>
+  `).join("");
+}
+
 // --- 1-CLICK CHIP GROUPS & LIVE VALIDATION WORKFLOWS ---
 function initChipGroups() {
   // Scope chips
   const scopeSelect = document.getElementById("inquiry-scope");
   const scopeChips = document.querySelectorAll("#scope-chips .tier-chip");
+  const budgetSelect = document.getElementById("inquiry-budget");
+  const budgetChips = document.querySelectorAll("#budget-chips .tier-chip");
+
+  const syncDeliverables = () => {
+    updateDeliverablesChecklist(scopeSelect?.value, budgetSelect?.value);
+  };
+
   scopeChips.forEach((chip) => {
     chip.addEventListener("click", () => {
       const val = chip.dataset.val;
@@ -324,6 +399,7 @@ function initChipGroups() {
         scopeSelect.value = val;
         scopeSelect.dispatchEvent(new Event("change"));
       }
+      syncDeliverables();
     });
   });
   if (scopeSelect) {
@@ -331,12 +407,11 @@ function initChipGroups() {
       scopeChips.forEach((c) => {
         c.classList.toggle("active", c.dataset.val === scopeSelect.value);
       });
+      syncDeliverables();
     });
   }
 
   // Budget chips
-  const budgetSelect = document.getElementById("inquiry-budget");
-  const budgetChips = document.querySelectorAll("#budget-chips .tier-chip");
   budgetChips.forEach((chip) => {
     chip.addEventListener("click", () => {
       const val = chip.dataset.val;
@@ -346,6 +421,7 @@ function initChipGroups() {
         budgetSelect.value = val;
         budgetSelect.dispatchEvent(new Event("change"));
       }
+      syncDeliverables();
     });
   });
   if (budgetSelect) {
@@ -353,8 +429,11 @@ function initChipGroups() {
       budgetChips.forEach((c) => {
         c.classList.toggle("active", c.dataset.val === budgetSelect.value);
       });
+      syncDeliverables();
     });
   }
+
+  syncDeliverables();
 }
 
 function initLiveValidation() {
