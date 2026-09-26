@@ -4307,28 +4307,22 @@ function switchCockpitSubTab(tab) {
 
   if (tab === 'call') {
     if (callPane) {
-      callPane.classList.remove('hidden');
-      callPane.classList.add('flex');
+      callPane.classList.remove('subtab-hidden');
     }
     if (dossierPane) {
-      dossierPane.classList.add('hidden');
-      dossierPane.classList.remove('flex');
-      dossierPane.classList.add('xl:flex');
+      dossierPane.classList.add('subtab-hidden');
     }
-    if (btnCall) btnCall.className = "flex-1 py-1.5 rounded-md font-semibold text-neutral-950 bg-white shadow-sm transition text-center";
-    if (btnDossier) btnDossier.className = "flex-1 py-1.5 rounded-md font-medium text-neutral-400 hover:text-white transition text-center";
+    if (btnCall) btnCall.className = "flex-1 py-1.5 font-bold text-[#17120f] bg-[#fce566] transition text-center";
+    if (btnDossier) btnDossier.className = "flex-1 py-1.5 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center";
   } else if (tab === 'dossier') {
     if (callPane) {
-      callPane.classList.add('hidden');
-      callPane.classList.remove('flex');
-      callPane.classList.add('xl:flex');
+      callPane.classList.add('subtab-hidden');
     }
     if (dossierPane) {
-      dossierPane.classList.remove('hidden');
-      dossierPane.classList.add('flex');
+      dossierPane.classList.remove('subtab-hidden');
     }
-    if (btnDossier) btnDossier.className = "flex-1 py-1.5 rounded-md font-semibold text-neutral-950 bg-white shadow-sm transition text-center";
-    if (btnCall) btnCall.className = "flex-1 py-1.5 rounded-md font-medium text-neutral-400 hover:text-white transition text-center";
+    if (btnDossier) btnDossier.className = "flex-1 py-1.5 font-bold text-[#17120f] bg-[#fce566] transition text-center";
+    if (btnCall) btnCall.className = "flex-1 py-1.5 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center";
   }
 }
 

@@ -605,6 +605,16 @@
       #cockpitPane.mobile-pane-hidden { display: none !important; }
       #queuePane.mobile-pane-hidden { display: none !important; }
     }
+
+    /* Cockpit Sub-Panes Responsive (< 1280px vs >= 1280px) */
+    @media (max-width: 1279px) {
+      #dossierPane.subtab-hidden { display: none !important; }
+      #callConsolePane.subtab-hidden { display: none !important; }
+    }
+    @media (min-width: 1280px) {
+      #dossierPane { display: flex !important; }
+      #callConsolePane { display: flex !important; }
+    }
       #userImg {
       width: 24px !important;
       height: 24px !important;
@@ -1039,7 +1049,7 @@
       <!-- =============================================================== -->
       <!-- COLUMN 3 (RIGHT): EXECUTIVE INTELLIGENCE DOSSIER                -->
       <!-- =============================================================== -->
-      <div id="dossierPane" class="hidden xl:flex flex-col w-full xl:w-96 border-t xl:border-t-0 xl:border-l border-white/[0.06] bg-[#101114] overflow-y-auto p-4 sm:p-5 space-y-4 shrink-0 custom-scrollbar">
+      <div id="dossierPane" class="subtab-hidden xl:flex flex-col w-full xl:w-96 border-t xl:border-t-0 xl:border-l border-white/[0.06] bg-[#101114] overflow-y-auto p-4 sm:p-5 space-y-4 shrink-0 custom-scrollbar">
 
         <div class="flex items-center justify-between font-mono text-[11px] text-neutral-400 border-b border-white/[0.06] pb-2">
           <span class="uppercase font-bold tracking-wider text-neutral-300 flex items-center gap-1.5">
