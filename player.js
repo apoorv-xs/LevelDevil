@@ -33,6 +33,8 @@ function createPlayer(x, y) {
     };
 
     guy.triggerGround = (rail) => {
+        const landingVy = guy.vy;
+        guy.lastLandingVy = landingVy;
         guy.grounded = true;
         guy.currentRail = rail;
         guy.vy = 0;
@@ -42,7 +44,7 @@ function createPlayer(x, y) {
             try { navigator.vibrate(15); } catch (e) {}
         }
         groundCallbacks.forEach(cb => {
-            try { cb(rail); } catch (e) { console.error(e); }
+            try { cb(rail, landingVy); } catch (e) { console.error(e); }
         });
         guy.trigger("ground", rail);
     };
@@ -142,21 +144,17 @@ function createPlayer(x, y) {
 
     // --- SQUASH AND STRETCH EVENTS ---
     // Land (Squash)
-    guy.onGround(() => {
+    guy.onGround((rail, landingVy) => {
         // SQUASH: Short and Wide
         guy.scale = vec2(1.2, 0.8);
         tween(guy.scale, vec2(1, 1), 0.2, (val) => guy.scale = val, easings.easeOutElastic);
-        if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
-            window.triggerHaptic(15);
-        } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
-            try { navigator.vibrate(15); } catch (e) {}
-        }
         if (window.SFX && typeof window.SFX.playLand === "function") {
             window.SFX.playLand(guy.pos.x);
         }
         if (typeof window !== "undefined" && window.Engine3D && typeof window.Engine3D.triggerImpact === "function") {
-            const fallSpeed = Math.abs(guy.vy || 0);
-            const intensity = fallSpeed > 300 ? Math.min(2.0, fallSpeed / 350) : 0.65;
+            const rawSpeed = landingVy !== undefined ? landingVy : (guy.lastLandingVy || guy.vy || 0);
+            const fallSpeed = Math.abs(rawSpeed);
+            const intensity = fallSpeed > 250 ? Math.min(2.0, fallSpeed / 350) : 0.65;
             window.Engine3D.triggerImpact(intensity);
         }
     });

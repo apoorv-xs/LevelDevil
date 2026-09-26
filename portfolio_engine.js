@@ -50,6 +50,9 @@ function triggerManualControl() {
     if (isTypingInForm()) return;
     window._currentGlideId = null;
     window.isAirborneGlide = false;
+    if (window.Player3D && typeof window.Player3D.setThrusterActive === "function") {
+        window.Player3D.setThrusterActive(false);
+    }
     window.controlMode = "manual";
     if (manualTimeout) {
         clearTimeout(manualTimeout);
@@ -450,7 +453,12 @@ onLoad(() => {
         const startTime = performance.now();
 
         function stepGlide(now) {
-            if (window._currentGlideId !== glideId) return;
+            if (window._currentGlideId !== glideId) {
+                if (window.Player3D && typeof window.Player3D.setThrusterActive === "function") {
+                    window.Player3D.setThrusterActive(false);
+                }
+                return;
+            }
             const elapsed = now - startTime;
             const progress = Math.min(1, elapsed / duration);
             // Ease out cubic
@@ -470,12 +478,19 @@ onLoad(() => {
                 if (window.Player3D && typeof window.Player3D.setThrusterActive === "function") {
                     window.Player3D.setThrusterActive(false);
                 }
-                player.grounded = true;
-                player.vy = 0;
-                // Bind to nearest matching rail
-                player.currentRail = (window.landingRails || landingRails || []).find(r => 
+                const foundRail = (window.landingRails || landingRails || []).find(r => 
                     Math.abs(r.y - targetY) <= 35 && r.xLeft <= targetX + 40 && r.xRight >= targetX - 40
                 ) || null;
+                player.currentRail = foundRail;
+                player.grounded = Boolean(foundRail);
+                player.vy = 0;
+                if (player.vel) {
+                    player.vel.x = 0;
+                    player.vel.y = 0;
+                }
+                if (foundRail) {
+                    player.pos.y = foundRail.y;
+                }
                 if (window.SFX && typeof window.SFX.playLand === "function") {
                     window.SFX.playLand(player.pos.x);
                 }
@@ -792,6 +807,9 @@ onLoad(() => {
     function respawnPlayer() {
         window._currentGlideId = null;
         window.isAirborneGlide = false;
+        if (window.Player3D && typeof window.Player3D.setThrusterActive === "function") {
+            window.Player3D.setThrusterActive(false);
+        }
         isRespawning = true;
         player.vy = 0;
         if (player.vel) {

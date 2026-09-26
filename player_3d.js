@@ -195,16 +195,43 @@
         currentRollZ: 0,
         headTiltZ: 0,
 
+        getScale() {
+            if (typeof window !== "undefined" && window.Engine3D && typeof window.Engine3D.getScale === "function") {
+                return window.Engine3D.getScale();
+            }
+            return 0.05;
+        },
+
+        get2DPos() {
+            if (typeof window !== "undefined" && window.player && window.player.pos) {
+                return { x: window.player.pos.x, y: window.player.pos.y };
+            }
+            if (typeof window !== "undefined" && window.guy && window.guy.pos) {
+                return { x: window.guy.pos.x, y: window.guy.pos.y };
+            }
+            if (this.root) {
+                const scale = this.getScale();
+                const screenW = (typeof window !== "undefined" && window.innerWidth) ? window.innerWidth : 1200;
+                const screenH = (typeof window !== "undefined" && window.innerHeight) ? window.innerHeight : 800;
+                const scrollY = (typeof window !== "undefined") ? (window.scrollY || window.pageYOffset || 0) : 0;
+                return {
+                    x: (this.root.position.x / scale) + (screenW / 2),
+                    y: (-this.root.position.y / scale) + (screenH / 2) + scrollY
+                };
+            }
+            return { x: 200, y: 400 };
+        },
+
         celebrateVictory() {
             if (!this.isCreated) return;
             if (this.isCelebrating) return;
+            const pos2d = this.get2DPos();
             const prefersReduced = (typeof window !== "undefined" && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
             if (prefersReduced) {
                 this.pulseAntenna(0xffd700, 1000);
                 this.nod();
                 if (typeof window !== "undefined" && window.SFX && typeof window.SFX.playCelebrate === "function") {
-                    const bb8X = this.root ? (this.root.position.x / (typeof this.getScale === "function" ? this.getScale() : 0.05)) : null;
-                    window.SFX.playCelebrate(bb8X);
+                    window.SFX.playCelebrate(pos2d.x);
                 }
                 return;
             }
@@ -214,14 +241,11 @@
                 this.antennaLed.material.color.setHex(0xffd700);
             }
             if (typeof window !== "undefined" && window.SFX && typeof window.SFX.playCelebrate === "function") {
-                const bb8X = this.root ? (this.root.position.x / (typeof this.getScale === "function" ? this.getScale() : 0.05)) : null;
-                window.SFX.playCelebrate(bb8X);
+                window.SFX.playCelebrate(pos2d.x);
             }
-            // Deploy Celebratory Hard-Light Laser Salute & Fireworks
-            const bb8X = this.root ? (this.root.position.x / (typeof this.getScale === "function" ? this.getScale() : 0.05)) : ((typeof window !== "undefined" && window.player && window.player.pos) ? window.player.pos.x : 200);
-            const bb8Y = this.root ? (-this.root.position.y / (typeof this.getScale === "function" ? this.getScale() : 0.05)) : ((typeof window !== "undefined" && window.player && window.player.pos) ? window.player.pos.y : 400);
+            // Deploy Celebratory Hard-Light Laser Salute & Fireworks centered on BB-8
             if (AstromechArchitect && typeof AstromechArchitect.deployLaserSalute === "function") {
-                AstromechArchitect.deployLaserSalute(bb8X, bb8Y);
+                AstromechArchitect.deployLaserSalute(pos2d.x, pos2d.y);
             }
         },
 
