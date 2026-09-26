@@ -88,6 +88,7 @@
     <nav class="action-rail" aria-label="Sales actions">
       <a href="#inquiry-card" data-kaboom-body="true">Project inquiry</a>
       <a href="#engagement-card" data-kaboom-body="true">Direct engagement</a>
+      <a href="#booking-box" onclick="openConsultationModal(); return false;" data-kaboom-body="true" style="color:var(--purple-dark); font-weight:700;">📅 15-Min Strategy Call</a>
     </nav>
 
     <p id="status" class="status" role="status" aria-live="polite"></p>
@@ -193,6 +194,24 @@
           </div>
         </div>
 
+        <!-- DIRECT 15-MIN STRATEGY CONSULTATION TRIGGER -->
+        <div id="booking-box" data-kaboom-body="true" style="margin-top:1.25rem; padding:14px; background:var(--white); border:2px solid var(--ink); box-shadow:3px 3px 0 var(--purple);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+            <span style="font-family:'Press Start 2P', monospace; font-size:9px; color:var(--purple-dark); letter-spacing:0.04em;">
+              📅 1-ON-1 STRATEGY CALL
+            </span>
+            <span style="font-family:'Courier Prime', monospace; font-size:11px; color:var(--ink); font-weight:700; background:var(--cream); padding:2px 6px; border:1px solid var(--ink);">
+              ⚡ Direct Screen Share
+            </span>
+          </div>
+          <p style="margin:8px 0 12px 0; font-family:'Courier Prime', monospace; font-size:13px; line-height:1.5; color:var(--ink);">
+            Need a direct 15-minute screen walkthrough of your site's 60 FPS bottlenecks, WebGL spatial architecture, or high-margin project specs before submitting?
+          </p>
+          <button type="button" id="btn-open-consultation" onclick="openConsultationModal()" data-kaboom-body="true" style="width:100%; display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:11px 14px; background:var(--purple); color:var(--white); font-family:'Press Start 2P', monospace; font-size:10px; font-weight:700; border:2px solid var(--ink); box-shadow:3px 3px 0 var(--ink); cursor:pointer; transition:transform 0.1s, box-shadow 0.1s;">
+            [ 📅 BOOK 15-MIN STRATEGY CALL ]
+          </button>
+        </div>
+
         <div style="margin-top:1.5rem; padding-top:1.25rem; border-top:2px dashed var(--ink);">
           <p style="font-family:'Press Start 2P', monospace; font-size:10px; color:var(--purple-dark); margin:0 0 10px 0;">
             DIRECT DISPATCH
@@ -212,6 +231,105 @@
       </div>
     </section>
   </main>
+
+  <!-- STRATEGY CONSULTATION BOOKING MODAL -->
+  <div id="consultationModal" class="consultation-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="consult-modal-title">
+    <div class="consultation-modal-card" data-kaboom-body="true">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid var(--ink); padding-bottom:10px; margin-bottom:16px;">
+        <div>
+          <span style="font-family:'Press Start 2P', monospace; font-size:9px; color:var(--purple-dark);">DIRECT ENGAGEMENT</span>
+          <h3 id="consult-modal-title" style="margin:4px 0 0 0; font-family:'Press Start 2P', monospace; font-size:12px; line-height:1.4; color:var(--ink);">
+            15-MIN STRATEGY WALKTHROUGH
+          </h3>
+        </div>
+        <button type="button" id="btn-close-consultation" onclick="closeConsultationModal()" aria-label="Close modal" style="background:var(--ink); color:var(--white); border:2px solid var(--ink); font-family:'Press Start 2P', monospace; font-size:10px; padding:4px 8px; cursor:pointer;">
+          ✕
+        </button>
+      </div>
+
+      <div id="consult-form-container">
+        <p style="font-family:'Courier Prime', monospace; font-size:13px; line-height:1.5; color:var(--ink); margin-bottom:14px;">
+          Lock in a direct 1-on-1 engineering screen share with Apoorv A S. We'll diagnose performance bottlenecks, review spatial 3D architecture, or outline high-ticket project deliverables in real time.
+        </p>
+
+        <form id="consultation-form" onsubmit="handleConsultationSubmit(event)">
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <label style="display:flex; flex-direction:column; gap:4px;">
+              <span class="field-header"><span>Your Name</span><span id="consult-feedback-name" class="field-feedback"></span></span>
+              <input type="text" id="consult-name" required placeholder="Your name or organization" style="width:100%; padding:8px 10px; background:var(--white); border:2px solid var(--ink); font-family:'Courier Prime', monospace; font-size:13px;">
+            </label>
+
+            <label style="display:flex; flex-direction:column; gap:4px;">
+              <span class="field-header"><span>Work Email</span><span id="consult-feedback-email" class="field-feedback"></span></span>
+              <input type="email" id="consult-email" required placeholder="name@company.com" style="width:100%; padding:8px 10px; background:var(--white); border:2px solid var(--ink); font-family:'Courier Prime', monospace; font-size:13px;">
+            </label>
+
+            <label style="display:flex; flex-direction:column; gap:4px;">
+              <span class="field-header"><span>Meeting Focus</span></span>
+              <div class="chip-group" id="consult-focus-chips" role="radiogroup" style="display:flex; flex-wrap:wrap; gap:6px;">
+                <button type="button" class="tier-chip active" data-val="60 FPS Performance Audit">⚡ 60 FPS Audit</button>
+                <button type="button" class="tier-chip" data-val="3D WebGL Spatial Feature">✨ 3D Feature</button>
+                <button type="button" class="tier-chip" data-val="Product Configurator">📦 Configurator</button>
+                <button type="button" class="tier-chip" data-val="Full WebGPU Architecture">🌐 WebGPU Build</button>
+              </div>
+              <input type="hidden" id="consult-focus" value="60 FPS Performance Audit">
+            </label>
+
+            <label style="display:flex; flex-direction:column; gap:4px;">
+              <span class="field-header"><span>Target Website / Repository (Optional)</span></span>
+              <input type="url" id="consult-url" placeholder="https://example.com" style="width:100%; padding:8px 10px; background:var(--white); border:2px solid var(--ink); font-family:'Courier Prime', monospace; font-size:13px;">
+            </label>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+              <label style="display:flex; flex-direction:column; gap:4px;">
+                <span class="field-header"><span>Preferred Date & Time</span></span>
+                <input type="datetime-local" id="consult-datetime" required style="width:100%; padding:8px 10px; background:var(--white); border:2px solid var(--ink); font-family:'Courier Prime', monospace; font-size:12px;">
+              </label>
+
+              <label style="display:flex; flex-direction:column; gap:4px;">
+                <span class="field-header"><span>Detected Timezone</span></span>
+                <input type="text" id="consult-timezone" readonly style="width:100%; padding:8px 10px; background:var(--cream); border:2px solid var(--ink); font-family:'Courier Prime', monospace; font-size:12px; color:var(--ink); font-weight:700;">
+              </label>
+            </div>
+
+            <label style="display:flex; flex-direction:column; gap:4px;">
+              <span class="field-header"><span>Key Questions or Objectives</span></span>
+              <textarea id="consult-notes" rows="2" placeholder="Briefly describe what you'd like to achieve on the call..." style="width:100%; padding:8px 10px; background:var(--white); border:2px solid var(--ink); font-family:'Courier Prime', monospace; font-size:12px;"></textarea>
+            </label>
+
+            <div style="margin-top:6px; display:flex; flex-direction:column; gap:8px;">
+              <button type="submit" id="consult-submit-btn" style="width:100%; padding:12px; background:var(--purple); color:var(--white); font-family:'Press Start 2P', monospace; font-size:10px; font-weight:700; border:2px solid var(--ink); box-shadow:3px 3px 0 var(--ink); cursor:pointer;">
+                [ ⚡ CONFIRM & OPEN GOOGLE MEET INVITE ]
+              </button>
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; font-family:'Courier Prime', monospace; font-size:11px; opacity:0.8;">
+                <span>🔒 Privacy: Direct email & calendar invite only.</span>
+                <a href="mailto:apoorvxs@gmail.com?subject=Direct%2015-Min%20Consultation%20Request" style="color:var(--purple-dark); font-weight:700;">Or Email Directly ↗</a>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Confirmation view once booked -->
+      <div id="consult-confirmation" class="hidden" style="text-align:center; padding:16px 0;">
+        <div style="font-size:36px; margin-bottom:8px;">🎉</div>
+        <h4 style="font-family:'Press Start 2P', monospace; font-size:12px; color:var(--ink); margin:0 0 8px 0;">
+          CONSULTATION FORMATTED!
+        </h4>
+        <p id="consult-confirm-text" style="font-family:'Courier Prime', monospace; font-size:13px; line-height:1.5; color:var(--ink); max-width:440px; margin:0 auto 16px auto;">
+          Your 15-minute engineering strategy walkthrough has been created. Click below to add it directly to your Google Calendar with pre-configured Google Meet coordinates.
+        </p>
+        <div style="display:flex; flex-direction:column; gap:10px; max-width:420px; margin:0 auto;">
+          <a id="consult-calendar-link" href="#" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px 16px; background:var(--purple); color:var(--white); text-decoration:none; font-family:'Press Start 2P', monospace; font-size:10px; font-weight:700; border:2px solid var(--ink); box-shadow:3px 3px 0 var(--ink);">
+            [ 📅 OPEN IN GOOGLE CALENDAR ↗ ]
+          </a>
+          <button type="button" onclick="closeConsultationModal()" style="padding:8px 12px; background:var(--white); color:var(--ink); border:2px solid var(--ink); font-family:'Courier Prime', monospace; font-size:12px; font-weight:700; cursor:pointer;">
+            Close Window
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- THREE.JS 3D CANVAS & COMPANION ENGINE -->
   <canvas id="three-canvas" aria-hidden="true"></canvas>

@@ -414,3 +414,50 @@ pre {
   border-top: 2px solid var(--ink, #17120f);
 }
 
+/* ==========================================================================
+   STRATEGY CONSULTATION MODAL (15-MIN GOOGLE MEET / CALENDAR)
+   ========================================================================== */
+.consultation-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(23, 18, 15, 0.75);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: modalFadeIn 0.15s ease-out;
+}
+
+.consultation-modal-backdrop.hidden {
+  display: none !important;
+}
+
+.consultation-modal-card {
+  width: 100%;
+  max-width: 580px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--white);
+  border: 4px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--purple);
+  padding: 24px;
+  position: relative;
+  z-index: 1001;
+}
+
+@media (max-width: 600px) {
+  .consultation-modal-card {
+    padding: 16px;
+    box-shadow: 5px 5px 0 var(--purple);
+  }
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+

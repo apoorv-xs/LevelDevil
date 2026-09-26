@@ -499,9 +499,188 @@ function initLiveValidation() {
   msgInp?.addEventListener("blur", validateMessage);
 }
 
+// ============================================================================
+// DIRECT 15-MINUTE STRATEGY CONSULTATION CONTROLLER (GOOGLE MEET / CALENDAR)
+// ============================================================================
+function openConsultationModal() {
+  const modal = document.getElementById("consultationModal");
+  if (!modal) return;
+  modal.classList.remove("hidden");
+
+  // Reset confirmation state if re-opening
+  const formBox = document.getElementById("consult-form-container");
+  const confirmBox = document.getElementById("consult-confirmation");
+  if (formBox) formBox.classList.remove("hidden");
+  if (confirmBox) confirmBox.classList.add("hidden");
+
+  // Auto-fill from signed-in user if available
+  const nameInp = document.getElementById("consult-name");
+  const emailInp = document.getElementById("consult-email");
+  const user = shell?.session?.user || window.currentUser;
+  if (user) {
+    if (nameInp && !nameInp.value) nameInp.value = user.displayName || user.name || "";
+    if (emailInp && !emailInp.value) emailInp.value = user.email || "";
+  }
+
+  // Detect and display user timezone
+  const tzInp = document.getElementById("consult-timezone");
+  if (tzInp) {
+    try {
+      tzInp.value = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+    } catch (e) {
+      tzInp.value = "UTC";
+    }
+  }
+
+  // Pre-fill tomorrow 14:00 if empty
+  const dtInp = document.getElementById("consult-datetime");
+  if (dtInp && !dtInp.value) {
+    const tomorrow = new Date(Date.now() + 24 * 3600 * 1000);
+    tomorrow.setHours(14, 0, 0, 0);
+    const pad = n => String(n).padStart(2, '0');
+    dtInp.value = `${tomorrow.getFullYear()}-${pad(tomorrow.getMonth() + 1)}-${pad(tomorrow.getDate())}T${pad(tomorrow.getHours())}:${pad(tomorrow.getMinutes())}`;
+    dtInp.min = new Date().toISOString().slice(0, 16);
+  }
+
+  if (nameInp) nameInp.focus();
+}
+
+function closeConsultationModal() {
+  const modal = document.getElementById("consultationModal");
+  if (modal) modal.classList.add("hidden");
+  const triggerBtn = document.getElementById("btn-open-consultation");
+  if (triggerBtn) triggerBtn.focus();
+}
+
+function initConsultationChips() {
+  const chips = document.querySelectorAll("#consult-focus-chips .tier-chip");
+  const hiddenInp = document.getElementById("consult-focus");
+  chips.forEach(chip => {
+    chip.addEventListener("click", () => {
+      chips.forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      const val = chip.getAttribute("data-val");
+      if (hiddenInp && val) hiddenInp.value = val;
+    });
+  });
+}
+
+function generateGoogleCalendarUrl({ name, email, focus, url, datetime, notes }) {
+  let startDate = new Date(datetime);
+  if (isNaN(startDate.getTime())) {
+    startDate = new Date(Date.now() + 24 * 3600 * 1000);
+  }
+  const endDate = new Date(startDate.getTime() + 15 * 60 * 1000); // 15 mins
+  const formatGCalDate = d => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+
+  const title = encodeURIComponent(`15-Min Strategy Walkthrough: ${name} & Apoorv A S`);
+  const details = encodeURIComponent(
+    `15-Minute Engineering Strategy Consultation\n\n` +
+    `Client: ${name} (${email})\n` +
+    `Focus Area: ${focus || 'General 3D/Performance Exploration'}\n` +
+    `Target URL/Repo: ${url || 'N/A'}\n` +
+    `Objectives: ${notes || 'N/A'}\n\n` +
+    `Host: Apoorv A S (apoorvxs@gmail.com)\n` +
+    `Platform: Google Meet\n\n` +
+    `Portfolio: https://apoorv.qzz.io`
+  );
+  const dates = `${formatGCalDate(startDate)}/${formatGCalDate(endDate)}`;
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&add=${encodeURIComponent(email)}&add=apoorvxs@gmail.com`;
+}
+
+async function handleConsultationSubmit(event) {
+  event.preventDefault();
+  const name = document.getElementById("consult-name")?.value?.trim() || "";
+  const email = document.getElementById("consult-email")?.value?.trim() || "";
+  const focus = document.getElementById("consult-focus")?.value || "60 FPS Performance Audit";
+  const url = document.getElementById("consult-url")?.value?.trim() || "";
+  const datetime = document.getElementById("consult-datetime")?.value || "";
+  const timezone = document.getElementById("consult-timezone")?.value || "UTC";
+  const notes = document.getElementById("consult-notes")?.value?.trim() || "";
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    alert("Please provide a valid email address so we can confirm the calendar invitation.");
+    return;
+  }
+
+  const consultData = { name, email, focus, url, datetime, timezone, notes, timestamp: new Date().toISOString() };
+
+  // Save locally
+  try {
+    const saved = JSON.parse(localStorage.getItem("apoorv_consultations") || "[]");
+    saved.unshift(consultData);
+    localStorage.setItem("apoorv_consultations", JSON.stringify(saved.slice(0, 20)));
+  } catch (e) {}
+
+  // Dispatch webhook notification if available
+  const webhookUrl = window.SALES_PLATFORM_CONFIG?.webhookUrl;
+  if (webhookUrl && webhookUrl.includes("discord.com/api/webhooks")) {
+    fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: "Apoorv Strategy Radar",
+        avatar_url: "https://apoorv.qzz.io/favicon.ico",
+        embeds: [{
+          title: "📅 15-Minute Strategy Walkthrough Requested!",
+          color: 0x6d3bb8,
+          fields: [
+            { name: "👤 Client", value: name || "N/A", inline: true },
+            { name: "✉️ Email", value: email || "N/A", inline: true },
+            { name: "🎯 Focus", value: focus || "N/A", inline: true },
+            { name: "⏰ Preferred Time", value: `${datetime} (${timezone})`, inline: true },
+            { name: "🔗 Target URL", value: url || "None provided", inline: true },
+            { name: "📝 Notes", value: notes || "None provided" }
+          ],
+          footer: { text: "Direct Strategy Engine • apoorv.qzz.io/sales" },
+          timestamp: new Date().toISOString()
+        }]
+      })
+    }).catch(() => {});
+  }
+
+  // Generate Google Calendar Link
+  const calUrl = generateGoogleCalendarUrl(consultData);
+  const calLink = document.getElementById("consult-calendar-link");
+  if (calLink) calLink.href = calUrl;
+
+  const confirmText = document.getElementById("consult-confirm-text");
+  if (confirmText) {
+    confirmText.innerHTML = `Your walkthrough for <strong>${name}</strong> regarding <strong>${focus}</strong> on <strong>${datetime.replace('T', ' ')}</strong> (${timezone}) is ready. Click below to add it to Google Calendar with pre-configured Google Meet coordinates.`;
+  }
+
+  // Switch to confirmation view
+  const formBox = document.getElementById("consult-form-container");
+  const confirmBox = document.getElementById("consult-confirmation");
+  if (formBox) formBox.classList.add("hidden");
+  if (confirmBox) confirmBox.classList.remove("hidden");
+
+  // Companion celebration if active
+  if (window.System1Brain?.emitThought) {
+    window.System1Brain.emitThought("⚡ Strategy walkthrough confirmed!");
+  }
+}
+
+// Global modal dismiss on Escape key
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    closeConsultationModal();
+  }
+});
+
 // Initial initialization
 initChipGroups();
 initLiveValidation();
+initConsultationChips();
 syncAuthState();
+
+// Export controllers for global / inline access
+if (typeof window !== "undefined") {
+  window.openConsultationModal = openConsultationModal;
+  window.closeConsultationModal = closeConsultationModal;
+  window.handleConsultationSubmit = handleConsultationSubmit;
+  window.generateGoogleCalendarUrl = generateGoogleCalendarUrl;
+}
 
 
