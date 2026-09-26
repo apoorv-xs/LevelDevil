@@ -4337,349 +4337,78 @@ if (typeof global !== 'undefined') {
 
 // ============================================================================
 // SYSTEM 1 BRAIN STUDIO (OWNER DYNAMIC TRAINING & KNOWLEDGE CONTROLLER)
+// Delegated to modular workspace/brain_studio.js
 // ============================================================================
 
-let brainTelemetryInterval = null;
-
 function handleBrainCategoryChange() {
-  const cat = document.getElementById('trainCategory')?.value;
-  const altGroup = document.getElementById('trainAltitudeGroup');
-  const idInput = document.getElementById('trainNodeId');
-  const thoughtInput = document.getElementById('trainThoughtText');
-
-  if (cat === 'custom_trigger') {
-    if (altGroup) altGroup.classList.remove('hidden');
-    if (idInput) idInput.placeholder = 'e.g. trigger_deep_runway_alert';
-    if (thoughtInput) thoughtInput.placeholder = 'e.g. ⚡ TOUCHDOWN DETECTED // TERRA FIRMA LOCKED';
-  } else if (cat === 'project') {
-    if (altGroup) altGroup.classList.add('hidden');
-    if (idInput) idInput.placeholder = 'e.g. cyber_punk_showcase';
-    if (thoughtInput) thoughtInput.placeholder = 'e.g. ⚡ ANALYZING PROCEDURAL SHADER GRAPH...';
-  } else if (cat === 'scope') {
-    if (altGroup) altGroup.classList.add('hidden');
-    if (idInput) idInput.placeholder = 'e.g. 3D E-Commerce Headless / WebGPU Pipeline';
-    if (thoughtInput) thoughtInput.placeholder = 'e.g. Calibrating real-time 60 FPS WebGL asset pipeline.';
-  } else if (cat === 'tier') {
-    if (altGroup) altGroup.classList.add('hidden');
-    if (idInput) idInput.placeholder = 'e.g. Tier 2: ₹1,50,000 Custom WebGL';
-    if (thoughtInput) thoughtInput.placeholder = 'e.g. Recommended tier for interactive high-converting 3D experiences.';
-  } else if (cat === 'defect') {
-    if (altGroup) altGroup.classList.add('hidden');
-    if (idInput) idInput.placeholder = 'e.g. LCP > 4.5s Bottleneck';
-    if (thoughtInput) thoughtInput.placeholder = 'e.g. Critical DOM weight detected. Full headless refactor suggested.';
+  if (typeof BrainStudio !== 'undefined' && BrainStudio.handleBrainCategoryChange) {
+    return BrainStudio.handleBrainCategoryChange();
   }
 }
 
 function startBrainTelemetryPolling() {
-  stopBrainTelemetryPolling();
-  updateBrainTelemetryView();
-  brainTelemetryInterval = setInterval(updateBrainTelemetryView, 500);
+  if (typeof BrainStudio !== 'undefined' && BrainStudio.startBrainTelemetryPolling) {
+    return BrainStudio.startBrainTelemetryPolling();
+  }
 }
 
 function stopBrainTelemetryPolling() {
-  if (brainTelemetryInterval) {
-    clearInterval(brainTelemetryInterval);
-    brainTelemetryInterval = null;
-  }
-}
-
-function updateBrainTelemetryView() {
-  const brain = typeof window !== 'undefined' ? window.System1Brain : null;
-  if (!brain) return;
-
-  const intentEl = document.getElementById('telemetryIntentVal');
-  const thoughtEl = document.getElementById('telemetryThoughtVal');
-  const nodesEl = document.getElementById('telemetryTotalNodesVal');
-  const cloudEl = document.getElementById('telemetryCloudStatusVal');
-
-  if (intentEl) {
-    intentEl.innerText = brain.lastThought ? "ACTIVE_TELEMETRY" : "IDLE_PERCH";
-  }
-  if (thoughtEl) {
-    const txt = brain.lastThought || "Autonomous sensory sweep active.";
-    thoughtEl.innerText = txt;
-    thoughtEl.title = txt;
-  }
-  if (nodesEl && brain.getAllKnowledge) {
-    const list = brain.getAllKnowledge();
-    nodesEl.innerText = `${list.length} Active`;
-  }
-  if (cloudEl) {
-    const hasFirestore = Boolean(window.SALES_PLATFORM_AUTH?.getFirestore);
-    cloudEl.innerText = hasFirestore ? "Firestore Active" : "Local Sync Ready";
+  if (typeof BrainStudio !== 'undefined' && BrainStudio.stopBrainTelemetryPolling) {
+    return BrainStudio.stopBrainTelemetryPolling();
   }
 }
 
 function renderBrainStudio() {
-  updateBrainTelemetryView();
-  startBrainTelemetryPolling();
-  renderBrainKnowledgeExplorer();
+  if (typeof BrainStudio !== 'undefined' && BrainStudio.renderBrainStudio) {
+    return BrainStudio.renderBrainStudio();
+  }
 }
 
 function renderBrainKnowledgeExplorer() {
-  const listContainer = document.getElementById('brainKnowledgeList');
-  const countBadge = document.getElementById('brainExplorerCountBadge');
-  if (!listContainer) return;
-
-  const brain = typeof window !== 'undefined' ? window.System1Brain : null;
-  if (!brain || !brain.getAllKnowledge) {
-    listContainer.innerHTML = '<div class="text-xs font-mono text-neutral-500 italic p-3">System 1 Brain module loading...</div>';
-    return;
+  if (typeof BrainStudio !== 'undefined' && BrainStudio.renderBrainKnowledgeExplorer) {
+    return BrainStudio.renderBrainKnowledgeExplorer();
   }
-
-  const allNodes = brain.getAllKnowledge();
-  const filterCat = document.getElementById('brainCategoryFilter')?.value || 'all';
-  const query = (document.getElementById('brainSearchInput')?.value || '').toLowerCase().trim();
-
-  const filtered = allNodes.filter(node => {
-    // Category filter
-    if (filterCat === 'trained' && node.source !== 'trained') return false;
-    if (filterCat !== 'all' && filterCat !== 'trained' && node.category !== filterCat) return false;
-
-    // Search query filter
-    if (!query) return true;
-    const matchStr = [
-      node.id,
-      node.name,
-      node.category,
-      node.thought,
-      node.source,
-      ...(node.keywords || []),
-      ...(node.tags || [])
-    ].filter(Boolean).join(' ').toLowerCase();
-
-    return matchStr.includes(query);
-  });
-
-  if (countBadge) {
-    countBadge.innerText = `${filtered.length} / ${allNodes.length} Nodes`;
-  }
-
-  if (filtered.length === 0) {
-    listContainer.innerHTML = `
-      <div class="bg-[#15161B] border border-white/5 rounded-xl p-6 text-center text-xs font-mono text-neutral-500">
-        No neural knowledge nodes matching "${query || filterCat}".
-      </div>
-    `;
-    return;
-  }
-
-  listContainer.innerHTML = filtered.map(node => {
-    const isCustom = node.source === 'trained';
-    const sourceBadge = isCustom
-      ? `<span class="text-[9px] font-mono px-2 py-0.5 rounded bg-purple-950/70 text-purple-300 border border-purple-700/50 font-bold uppercase tracking-wider">🟣 Custom Trained</span>`
-      : `<span class="text-[9px] font-mono px-2 py-0.5 rounded bg-emerald-950/70 text-emerald-300 border border-emerald-800/50 font-bold uppercase tracking-wider">🟢 Factory Standard</span>`;
-
-    const catBadge = `<span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-neutral-300 border border-white/10 uppercase">${node.category}</span>`;
-    const actionBadge = node.action && node.action !== 'none'
-      ? `<span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-950/60 text-cyan-300 border border-cyan-800/40">Action: ${node.action}</span>`
-      : '';
-    const audioBadge = node.audioCue && node.audioCue !== 'none'
-      ? `<span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-950/60 text-amber-300 border border-amber-800/40">Audio: ${node.audioCue}</span>`
-      : '';
-
-    const keywordsList = Array.isArray(node.keywords) && node.keywords.length > 0
-      ? `<div class="text-[10px] font-mono text-neutral-400 mt-1"><span class="text-neutral-500">Keywords:</span> ${node.keywords.join(', ')}</div>`
-      : '';
-
-    const spatialRange = node.match && (node.match.yMin != null || node.match.yMax != null)
-      ? `<div class="text-[10px] font-mono text-cyan-400 mt-1"><span class="text-neutral-500">Altitude Trigger:</span> Y: ${node.match.yMin ?? 0}px - ${node.match.yMax ?? '∞'}px</div>`
-      : '';
-
-    const deleteBtn = isCustom
-      ? `<button onclick="handleDeleteTrainedNode('${node.id}', '${node.category}')" class="text-[10px] font-mono px-2 py-1 rounded bg-red-950/40 text-red-300 border border-red-800/40 hover:bg-red-900/60 transition cursor-pointer">Delete</button>`
-      : '';
-
-    return `
-      <div class="bg-[#15161B] border border-white/5 hover:border-white/15 rounded-xl p-3 space-y-2 transition">
-        <div class="flex items-center justify-between gap-2">
-          <div class="flex items-center gap-2 flex-wrap">
-            <span class="text-xs font-mono font-bold text-white">${node.name || node.id}</span>
-            ${sourceBadge}
-            ${catBadge}
-            ${actionBadge}
-            ${audioBadge}
-          </div>
-          ${deleteBtn}
-        </div>
-        ${keywordsList}
-        ${spatialRange}
-        <div class="bg-[#101114] border border-white/5 rounded-lg p-2 text-xs font-mono text-amber-300/90 italic">
-          "${node.thought || 'Autonomous state trigger.'}"
-        </div>
-      </div>
-    `;
-  }).join('');
 }
 
 function handleTrainBrainSubmit(event) {
-  event.preventDefault();
-  playSound('click');
-  const brain = typeof window !== 'undefined' ? window.System1Brain : null;
-  if (!brain || !brain.trainNode) {
-    alert("System 1 Brain is not initialized.");
-    return;
+  if (typeof BrainStudio !== 'undefined' && BrainStudio.handleTrainBrainSubmit) {
+    return BrainStudio.handleTrainBrainSubmit(event);
   }
-
-  const id = document.getElementById('trainNodeId')?.value.trim();
-  const category = document.getElementById('trainCategory')?.value;
-  const page = document.getElementById('trainPage')?.value || '*';
-  const rawKeywords = document.getElementById('trainMatchKeywords')?.value || '';
-  const keywords = rawKeywords.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-  const thought = document.getElementById('trainThoughtText')?.value.trim();
-  const action = document.getElementById('trainAction')?.value || 'none';
-  const audioCue = document.getElementById('trainAudioCue')?.value || 'none';
-  const rawJump = document.getElementById('trainJumpForce')?.value;
-  const jumpForce = rawJump ? parseFloat(rawJump) : 480;
-
-  if (!id || !thought) {
-    alert("Please provide both a Node Identifier and Thought Speech Balloon text.");
-    return;
-  }
-
-  let nodePayload = {
-    id,
-    name: id.toUpperCase(),
-    category,
-    page,
-    thought,
-    action,
-    audioCue,
-    jumpForce,
-    keywords
-  };
-
-  if (category === 'custom_trigger') {
-    const rawYMin = document.getElementById('trainYMin')?.value;
-    const rawYMax = document.getElementById('trainYMax')?.value;
-    nodePayload.match = {
-      keywords,
-      yMin: rawYMin ? parseFloat(rawYMin) : null,
-      yMax: rawYMax ? parseFloat(rawYMax) : null
-    };
-  }
-
-  brain.trainNode(nodePayload, true);
-  showNotification(`⚡ Neural Node [${id}] trained and hot-reloaded!`);
-  playSound('celebrate');
-
-  renderBrainStudio();
-
-  // Reset inputs
-  const idEl = document.getElementById('trainNodeId');
-  const thoughtEl = document.getElementById('trainThoughtText');
-  const kwEl = document.getElementById('trainMatchKeywords');
-  if (idEl) idEl.value = '';
-  if (thoughtEl) thoughtEl.value = '';
-  if (kwEl) kwEl.value = '';
 }
 
 function handleDeleteTrainedNode(id, category) {
-  playSound('click');
-  const brain = typeof window !== 'undefined' ? window.System1Brain : null;
-  if (!brain || !brain.deleteTrainedNode) return;
-
-  const deleted = brain.deleteTrainedNode(id, category);
-  if (deleted) {
-    showNotification(`🗑️ Custom trained node [${id}] removed.`);
-    renderBrainStudio();
+  if (typeof BrainStudio !== 'undefined' && BrainStudio.handleDeleteTrainedNode) {
+    return BrainStudio.handleDeleteTrainedNode(id, category);
   }
 }
 
 function exportBrainDatasetUI() {
-  playSound('click');
-  const brain = typeof window !== 'undefined' ? window.System1Brain : null;
-  if (!brain || !brain.exportJSON) return;
-
-  const jsonStr = brain.exportJSON();
-  const blob = new Blob([jsonStr], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `system1_brain_knowledge_${Date.now()}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showNotification('💾 System 1 Brain checkpoint exported as JSON!');
+  if (typeof BrainStudio !== 'undefined' && BrainStudio.exportBrainDatasetUI) {
+    return BrainStudio.exportBrainDatasetUI();
+  }
 }
 
 function importBrainDatasetUI(event) {
-  const file = event.target?.files?.[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const content = e.target?.result;
-      const brain = typeof window !== 'undefined' ? window.System1Brain : null;
-      if (!brain || !brain.importJSON) return;
-
-      brain.importJSON(content);
-      showNotification('📂 Brain checkpoint restored successfully!');
-      playSound('celebrate');
-      renderBrainStudio();
-    } catch (err) {
-      alert(`Checkpoint Import Error: ${err.message}`);
-    }
-  };
-  reader.readAsText(file);
+  if (typeof BrainStudio !== 'undefined' && BrainStudio.importBrainDatasetUI) {
+    return BrainStudio.importBrainDatasetUI(event);
+  }
 }
 
 function resetBrainToFactoryUI() {
-  playSound('click');
-  const confirmed = confirm("Are you sure you want to reset all custom trained neural weights to factory defaults? This will erase all custom trained nodes.");
-  if (!confirmed) return;
-
-  const brain = typeof window !== 'undefined' ? window.System1Brain : null;
-  if (brain && brain.resetToFactory) {
-    brain.resetToFactory();
-    showNotification('⚠️ System 1 Brain reset to factory neural weights.');
-    renderBrainStudio();
+  if (typeof BrainStudio !== 'undefined' && BrainStudio.resetBrainToFactoryUI) {
+    return BrainStudio.resetBrainToFactoryUI();
   }
 }
 
 async function pushBrainToFirestoreUI() {
-  playSound('click');
-  const brain = typeof window !== 'undefined' ? window.System1Brain : null;
-  if (!brain || !brain.pushToFirestore) return;
-
-  try {
-    if (window.SALES_PLATFORM_AUTH?.getFirestore) {
-      showNotification('☁️ Syncing knowledge nodes to Cloud Firestore...');
-      const db = await window.SALES_PLATFORM_AUTH.getFirestore();
-      await brain.pushToFirestore(db);
-      showNotification('✅ All knowledge nodes saved to Cloud Firestore!');
-      playSound('celebrate');
-      updateBrainTelemetryView();
-    } else {
-      showNotification('Cloud Firestore auth adapter not initialized.', 'error');
-    }
-  } catch (err) {
-    console.error("Firestore push error:", err);
-    showNotification(`Firestore push failed: ${err.message}`, 'error');
+  if (typeof BrainStudio !== 'undefined' && BrainStudio.pushBrainToFirestoreUI) {
+    return BrainStudio.pushBrainToFirestoreUI();
   }
 }
 
 async function syncBrainFromFirestoreUI() {
-  playSound('click');
-  const brain = typeof window !== 'undefined' ? window.System1Brain : null;
-  if (!brain || !brain.syncWithFirestore) return;
-
-  try {
-    if (window.SALES_PLATFORM_AUTH?.getFirestore) {
-      showNotification('🔄 Pulling knowledge nodes from Cloud Firestore...');
-      const db = await window.SALES_PLATFORM_AUTH.getFirestore();
-      await brain.syncWithFirestore(db);
-      showNotification('✅ Knowledge graph synchronized from Cloud Firestore!');
-      playSound('celebrate');
-      renderBrainStudio();
-    } else {
-      showNotification('Cloud Firestore auth adapter not initialized.', 'error');
-    }
-  } catch (err) {
-    console.error("Firestore sync error:", err);
-    showNotification(`Firestore sync failed: ${err.message}`, 'error');
+  if (typeof BrainStudio !== 'undefined' && BrainStudio.syncBrainFromFirestoreUI) {
+    return BrainStudio.syncBrainFromFirestoreUI();
   }
 }
 
