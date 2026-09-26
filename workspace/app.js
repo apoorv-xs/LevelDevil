@@ -2582,6 +2582,77 @@ function exportProspectsJSON() {
   showNotification('📥 Prospects JSON backup downloaded.');
 }
 
+function exportActiveQueueCsv() {
+  if (typeof playSound === 'function') playSound('click');
+  const filtered = PROSPECTS.filter(item => (activeCityFilter === 'All' || item.city === activeCityFilter) && matchSearch(item));
+  if (!filtered.length) {
+    showNotification('⚠️ No matching prospects in current queue to export.');
+    return;
+  }
+
+  const headers = [
+    "ID",
+    "Name",
+    "Decision Maker",
+    "Phone",
+    "City",
+    "Category",
+    "Prospect Type",
+    "Status",
+    "Floor Fee",
+    "Speed Score",
+    "LCP Time",
+    "Tech Stack",
+    "Website",
+    "Notes",
+    "Discovery Time",
+    "Locked By",
+    "Updated At"
+  ];
+
+  const escapeCsv = (str) => {
+    if (str === null || str === undefined) return '""';
+    const text = String(str).replace(/"/g, '""');
+    return `"${text}"`;
+  };
+
+  const rows = filtered.map(p => [
+    escapeCsv(p.id),
+    escapeCsv(p.name),
+    escapeCsv(p.dm),
+    escapeCsv(p.phone || p.tel),
+    escapeCsv(p.city),
+    escapeCsv(p.cat),
+    escapeCsv(p.ptype),
+    escapeCsv(p.status),
+    escapeCsv(p.fee),
+    escapeCsv(p.speedScore),
+    escapeCsv(p.lcpTime),
+    escapeCsv(p.techStack),
+    escapeCsv(p.site),
+    escapeCsv(p.notes),
+    escapeCsv(p.discoveryTime),
+    escapeCsv(p.lockedBy),
+    escapeCsv(p.updatedAt || new Date().toISOString())
+  ].join(','));
+
+  const csvContent = [headers.map(h => `"${h}"`).join(','), ...rows].join('\r\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const territoryTag = activeCityFilter.toLowerCase().replace(/\s+/g, '_');
+  const dateTag = new Date().toISOString().slice(0, 10);
+  a.download = `sprintdial_prospects_${territoryTag}_${dateTag}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  if (typeof playSound === 'function') playSound('chime');
+  showNotification(`📥 Exported ${filtered.length} leads (${activeCityFilter}) to CSV!`);
+}
+
 // ==========================================
 // GOOGLE SHEETS TWO-WAY BRIDGE & CSV ENGINE
 // ==========================================
@@ -4408,6 +4479,7 @@ if (typeof window !== 'undefined') {
   window.closeObjectionBox = closeObjectionBox;
   window.toggleObjectionLang = toggleObjectionLang;
   window.appendActiveObjectionToNotes = appendActiveObjectionToNotes;
+  window.exportActiveQueueCsv = exportActiveQueueCsv;
 }
 if (typeof global !== 'undefined') {
   global.advanceLead = advanceLead;
@@ -4416,6 +4488,7 @@ if (typeof global !== 'undefined') {
   global.closeObjectionBox = closeObjectionBox;
   global.toggleObjectionLang = toggleObjectionLang;
   global.appendActiveObjectionToNotes = appendActiveObjectionToNotes;
+  global.exportActiveQueueCsv = exportActiveQueueCsv;
 }
 
 // ============================================================================

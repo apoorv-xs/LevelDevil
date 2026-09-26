@@ -789,15 +789,25 @@
     <!-- COLUMN 1: PROSPECT QUEUE (Sidebar: 300px - 320px)                 -->
     <!-- ================================================================= -->
     <div id="queuePane" class="w-full md:w-80 lg:w-88 h-full md:h-auto flex-1 md:flex-initial border-r-2 border-[#17120f] bg-[#fff4c9] flex flex-col overflow-hidden" data-kaboom-body="true">
-      <!-- Territory Filter Segmented Control -->
-      <div class="p-2 border-b-2 border-[#17120f] flex items-center justify-between gap-1.5 bg-[#fff1bd]" data-kaboom-body="true">
-        <div class="flex bg-[#fffdf1] p-0.5 text-xs border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade">
-          <button onclick="filterCity('All')" class="city-tab active px-1.5 sm:px-2 py-1 font-bold text-[#17120f] bg-[#fce566] transition" data-kaboom-body="true">All</button>
-          <button onclick="filterCity('Kochi')" class="city-tab px-1.5 sm:px-2 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition" data-kaboom-body="true">Kochi</button>
-          <button onclick="filterCity('Bangalore')" class="city-tab px-1.5 sm:px-2 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition" data-kaboom-body="true">BLR</button>
-          <button onclick="filterCity('Hyderabad')" class="city-tab px-1.5 sm:px-2 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition" data-kaboom-body="true">HYD</button>
+      <!-- Territory Filter Segmented Control & Queue CSV Export -->
+      <div class="p-2 border-b-2 border-[#17120f] flex flex-col gap-1.5 bg-[#fff1bd]" data-kaboom-body="true">
+        <div class="flex items-center justify-between gap-1.5">
+          <div class="flex bg-[#fffdf1] p-0.5 text-xs border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade">
+            <button onclick="filterCity('All')" class="city-tab active px-1.5 sm:px-2 py-1 font-bold text-[#17120f] bg-[#fce566] transition" data-kaboom-body="true">All</button>
+            <button onclick="filterCity('Kochi')" class="city-tab px-1.5 sm:px-2 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition" data-kaboom-body="true">Kochi</button>
+            <button onclick="filterCity('Bangalore')" class="city-tab px-1.5 sm:px-2 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition" data-kaboom-body="true">BLR</button>
+            <button onclick="filterCity('Hyderabad')" class="city-tab px-1.5 sm:px-2 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition" data-kaboom-body="true">HYD</button>
+          </div>
+          <span id="leadCountBadge" class="text-[9px] sm:text-[10px] font-arcade text-[#17120f] bg-[#fffdf1] px-1.5 py-1 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] shrink-0 whitespace-nowrap">60 Leads</span>
         </div>
-        <span id="leadCountBadge" class="text-[9px] sm:text-[10px] font-arcade text-[#17120f] bg-[#fffdf1] px-1.5 py-1 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] shrink-0 whitespace-nowrap">60 Leads</span>
+        <button 
+          id="btnExportQueueCsv" 
+          type="button"
+          onclick="exportActiveQueueCsv()" 
+          title="Export current territory and filtered queue to CSV spreadsheet"
+          class="w-full py-1 px-2 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[9px] font-bold flex items-center justify-center gap-1.5 transition">
+          <span>📥</span> <span>EXPORT ACTIVE QUEUE (CSV)</span>
+        </button>
       </div>
 
       <!-- Search Input -->
