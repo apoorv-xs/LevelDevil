@@ -250,4 +250,112 @@ describe("Astromech Architect Engine", () => {
       expect(engine).toContain("rail.isHardLight");
     });
   });
+
+  describe("BB-8 Celebratory Hard-Light Laser Salute & Haptics Engine", () => {
+    it("deploys dual vertical cyan laser beams and fireworks particle sparks upon salute", () => {
+      const mockScene = { add: vi.fn(), remove: vi.fn() };
+      const mockThree = {
+        Vector3: class {
+          constructor(x = 0, y = 0, z = 0) { this.x = x; this.y = y; this.z = z; }
+          set(x, y, z) { this.x = x; this.y = y; this.z = z; return this; }
+        },
+        Group: class {
+          constructor() { this.name = ""; this.position = { set: vi.fn(), copy: vi.fn() }; this.scale = { set: vi.fn() }; }
+          add() {}
+        },
+        Mesh: class {
+          constructor(geo, mat) { this.position = { x: 0 }; }
+        },
+        CylinderGeometry: class {
+          constructor() {}
+          dispose() {}
+        },
+        BufferGeometry: class {
+          setAttribute() {}
+          dispose() {}
+        },
+        BufferAttribute: class {
+          constructor() {}
+        },
+        MeshBasicMaterial: class {
+          constructor() { this.opacity = 1; }
+          dispose() {}
+        },
+        PointsMaterial: class {
+          constructor() { this.opacity = 1; }
+          dispose() {}
+        },
+        Points: class {
+          constructor() {}
+        },
+        AdditiveBlending: 2
+      };
+
+      global.THREE = mockThree;
+      AstromechArchitect.init(mockScene);
+
+      const salute = AstromechArchitect.deployLaserSalute(250, 450);
+
+      expect(salute).toBeDefined();
+      expect(mockScene.add).toHaveBeenCalled();
+      expect(AstromechArchitect.activeBeams.length).toBe(1);
+      const activeBeam = AstromechArchitect.activeBeams[0];
+      expect(activeBeam.isLaserSalute).toBe(true);
+      expect(activeBeam.beamHeight).toBe(7.5);
+      expect(activeBeam.duration).toBe(1600);
+      expect(activeBeam.x2d).toBe(250);
+      expect(activeBeam.y2d).toBe(450);
+
+      // Fireworks sparks spawned (3 bursts: 0x4deeea, 0xfce566, 0x00ffff)
+      expect(AstromechArchitect.activeSparks.length).toBe(3);
+
+      // Full disposal cleans up salute and sparks
+      AstromechArchitect.dispose();
+      expect(AstromechArchitect.activeBeams.length).toBe(0);
+      expect(AstromechArchitect.activeSparks.length).toBe(0);
+      expect(mockScene.remove).toHaveBeenCalled();
+
+      delete global.THREE;
+    });
+
+    it("triggers haptic vibration patterns across tactile touchpoints", () => {
+      const hapticMock = vi.fn();
+      if (typeof window !== "undefined") {
+        window.triggerHaptic = hapticMock;
+      }
+
+      AstromechArchitect.constructPlatform({ pos: { x: 100, y: 200 } }, []);
+      expect(hapticMock).toHaveBeenCalledWith([25, 40, 25]);
+    });
+
+    it("verifies haptic and laser salute contracts across codebase", () => {
+      const read = (file) => fs.readFileSync(new URL(`../../${file}`, import.meta.url), "utf8");
+      const shell = read("shell.js");
+      const player = read("player.js");
+      const player3d = read("player_3d.js");
+      const sales = read("sales-app.js");
+      const workspace = read("workspace/app.js");
+
+      // Shell defines safe triggerHaptic
+      expect(shell).toContain("function triggerHaptic");
+      expect(shell).toContain("navigator.vibrate");
+
+      // Player triggers 15ms haptic pulse on landing
+      expect(player).toContain("triggerHaptic(15)");
+
+      // Player3D deploys laser salute on victory celebration
+      expect(player3d).toContain("deployLaserSalute");
+      expect(player3d).toContain("isLaserSalute");
+
+      // Sales triggers 40ms haptic and celebrateVictory on inquiry dispatch and consultation
+      expect(sales).toContain("triggerHaptic(40)");
+      expect(sales).toContain("celebrateVictory");
+
+      // Workspace triggers 35ms double-pulse and celebrateVictory on discovery booking
+      expect(workspace).toContain("triggerHaptic([35, 50, 35])");
+      expect(workspace).toContain("triggerHaptic([35, 40, 35])");
+      expect(workspace).toContain("celebrateVictory");
+    });
+  });
 });
+

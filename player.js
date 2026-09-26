@@ -36,6 +36,11 @@ function createPlayer(x, y) {
         guy.grounded = true;
         guy.currentRail = rail;
         guy.vy = 0;
+        if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
+            window.triggerHaptic(15);
+        } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+            try { navigator.vibrate(15); } catch (e) {}
+        }
         groundCallbacks.forEach(cb => {
             try { cb(rail); } catch (e) { console.error(e); }
         });
@@ -141,6 +146,11 @@ function createPlayer(x, y) {
         // SQUASH: Short and Wide
         guy.scale = vec2(1.2, 0.8);
         tween(guy.scale, vec2(1, 1), 0.2, (val) => guy.scale = val, easings.easeOutElastic);
+        if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
+            window.triggerHaptic(15);
+        } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+            try { navigator.vibrate(15); } catch (e) {}
+        }
         if (window.SFX && typeof window.SFX.playLand === "function") {
             window.SFX.playLand(guy.pos.x);
         }

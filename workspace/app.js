@@ -2231,8 +2231,24 @@ function logOutcome(status) {
 
   if (status === 'discovery_booked') {
     playSound('chime');
+    if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
+      window.triggerHaptic([35, 50, 35]);
+    } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+      try { navigator.vibrate([35, 50, 35]); } catch (e) {}
+    }
+    if (window.Player3D && typeof window.Player3D.celebrateVictory === "function") {
+      window.Player3D.celebrateVictory();
+    }
+    if (window.System1Brain && typeof window.System1Brain.emitThought === "function") {
+      window.System1Brain.emitThought("⚡ DISCOVERY BOOKED! HARD-LIGHT SALUTE ONLINE!");
+    }
     alert(`🎉 DISCOVERY BOOKED WITH ${p.name}! Set the time below and tap "Open Google Calendar & Meet Invite".`);
   } else {
+    if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
+      window.triggerHaptic([35, 40, 35]);
+    } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+      try { navigator.vibrate([35, 40, 35]); } catch (e) {}
+    }
     playSound('click');
     showNotification(`Logged outcome '${status.replace('_', ' ')}' by ${currentUser?.name || 'Caller'}`);
   }
@@ -2370,6 +2386,11 @@ function copyTeardownLink() {
 }
 
 function saveAndNext() {
+  if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
+    window.triggerHaptic([35, 40, 35]);
+  } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+    try { navigator.vibrate([35, 40, 35]); } catch (e) {}
+  }
   playSound('click');
   stopCallTimer();
   const p = PROSPECTS.find(item => item.id === selectedProspectId);
@@ -2384,6 +2405,9 @@ function saveAndNext() {
       broadcastUnlock(p.id, 'discovery_booked');
       saveLeadOverride(p.id, { status: 'discovery_booked', notes, discoveryTime });
       playSound('chime');
+      if (window.Player3D && typeof window.Player3D.celebrateVictory === "function") {
+        window.Player3D.celebrateVictory();
+      }
       showNotification(`🎉 Discovery booked for ${p.name} at ${discoveryTime}!`);
     } else {
       broadcastUnlock(p.id, p.status);

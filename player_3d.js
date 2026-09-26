@@ -217,6 +217,12 @@
                 const bb8X = this.root ? (this.root.position.x / (typeof this.getScale === "function" ? this.getScale() : 0.05)) : null;
                 window.SFX.playCelebrate(bb8X);
             }
+            // Deploy Celebratory Hard-Light Laser Salute & Fireworks
+            const bb8X = this.root ? (this.root.position.x / (typeof this.getScale === "function" ? this.getScale() : 0.05)) : ((typeof window !== "undefined" && window.player && window.player.pos) ? window.player.pos.x : 200);
+            const bb8Y = this.root ? (-this.root.position.y / (typeof this.getScale === "function" ? this.getScale() : 0.05)) : ((typeof window !== "undefined" && window.player && window.player.pos) ? window.player.pos.y : 400);
+            if (AstromechArchitect && typeof AstromechArchitect.deployLaserSalute === "function") {
+                AstromechArchitect.deployLaserSalute(bb8X, bb8Y);
+            }
         },
 
         curiousInspect() {
@@ -827,6 +833,10 @@
             return AstromechArchitect.weldSurface(rail, contactX);
         },
 
+        deployLaserSalute(originX, originY) {
+            return AstromechArchitect.deployLaserSalute(originX, originY);
+        },
+
         dispose() {
             if (AstromechArchitect) {
                 AstromechArchitect.dispose(typeof window !== "undefined" ? window.player : null, typeof window !== "undefined" ? window.landingRails : null);
@@ -1087,11 +1097,89 @@
             });
         },
 
+        // BB-8 Celebratory Hard-Light Laser Salute: Dual vertical cyan laser beams upward with pulsing neon glow and fireworks particle sparks
+        deployLaserSalute(originX, originY) {
+            const scene = this.getScene();
+            if (!scene || typeof THREE === "undefined") return null;
+
+            const x2d = (typeof originX === "number") ? originX : ((typeof window !== "undefined" && window.player && window.player.pos) ? window.player.pos.x : 200);
+            const y2d = (typeof originY === "number") ? originY : ((typeof window !== "undefined" && window.player && window.player.pos) ? window.player.pos.y : 400);
+
+            // 1. Fireworks spark bursts shooting outward in celebration (miniature astromech fireworks)
+            this.spawnSparkBurst(x2d, y2d - 15, 24, 0x4deeea, false);
+            this.spawnSparkBurst(x2d, y2d - 25, 18, 0xfce566, false);
+            this.spawnSparkBurst(x2d, y2d - 35, 16, 0x00ffff, false);
+
+            // 2. Dual vertical cyan laser beams upward with pulsing neon glow
+            const beamHeight = 7.5;
+            const group = new THREE.Group();
+            group.name = "laserSaluteGroup";
+            const geometries = [];
+            const materials = [];
+
+            // Outer cyan neon glow beam (#4deeea)
+            const glowMat = new THREE.MeshBasicMaterial({
+                color: 0x4deeea,
+                transparent: true,
+                opacity: 0.88,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            // Inner core pure bright laser beam (#ffffff)
+            const coreMat = new THREE.MeshBasicMaterial({
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.95,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            materials.push(glowMat, coreMat);
+
+            const glowGeo = new THREE.CylinderGeometry(0.08, 0.12, beamHeight, 8);
+            const coreGeo = new THREE.CylinderGeometry(0.03, 0.04, beamHeight, 8);
+            geometries.push(glowGeo, coreGeo);
+
+            // Two vertical laser beams placed symmetrically (-0.35 and +0.35 on X)
+            [-0.35, 0.35].forEach((offsetX) => {
+                const glowMesh = new THREE.Mesh(glowGeo, glowMat);
+                glowMesh.position.x = offsetX;
+                group.add(glowMesh);
+
+                const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+                coreMesh.position.x = offsetX;
+                group.add(coreMesh);
+            });
+
+            const p3d = this.to3DVec(x2d, y2d, 0.15);
+            group.position.set(p3d.x, p3d.y + (beamHeight / 2) + 0.9, p3d.z);
+            group.scale.set(1.0, 0.05, 1.0);
+            scene.add(group);
+
+            this.activeBeams.push({
+                group,
+                geometries,
+                materials,
+                isLaserSalute: true,
+                x2d,
+                y2d,
+                beamHeight,
+                createdAt: performance.now(),
+                duration: 1600
+            });
+            return group;
+        },
+
         // Player Construct Tool ('F' Hotkey / Laser Springboard)
         constructPlatform(player, landingRails) {
             const now = performance.now();
             if (this.lastConstructTime && (now - this.lastConstructTime < 350)) return null;
             this.lastConstructTime = now;
+
+            if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
+                window.triggerHaptic([25, 40, 25]);
+            } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+                try { navigator.vibrate([25, 40, 25]); } catch (e) {}
+            }
 
             const px = player ? player.pos.x : 0;
             const py = player ? player.pos.y : 0;
@@ -1478,7 +1566,22 @@
 
                 const progress = elapsed / beam.duration;
 
-                if (beam.isFlash) {
+                if (beam.isLaserSalute) {
+                    // BB-8 Celebratory Hard-Light Laser Salute: Animate vertical laser pillars with pulsing neon glow
+                    const p3d = this.to3DVec(beam.x2d, beam.y2d, 0.15);
+                    beam.group.position.x = p3d.x;
+                    beam.group.position.y = p3d.y + (beam.beamHeight / 2) + 0.9;
+
+                    // Progressive rapid stretch upward in first 20%, then hold
+                    const scaleY = Math.min(1.0, progress * 5.0);
+                    beam.group.scale.y = scaleY;
+
+                    // Pulsing neon glow & smooth fade out in the last 45%
+                    const pulse = 0.82 + 0.18 * Math.sin(now * 0.025);
+                    const fade = progress < 0.55 ? 1.0 : Math.max(0, (1.0 - progress) / 0.45);
+                    if (beam.materials[0]) beam.materials[0].opacity = 0.88 * pulse * fade;
+                    if (beam.materials[1]) beam.materials[1].opacity = 0.95 * pulse * fade;
+                } else if (beam.isFlash) {
                     // Update flash position with scroll
                     const p3d = this.to3DVec(beam.cx, beam.y2d, 0.06);
                     beam.group.position.x = p3d.x;

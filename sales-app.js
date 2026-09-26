@@ -100,6 +100,14 @@ async function submitPublicForm(event, path, successMessage) {
     await request(path, { method: "POST", body: JSON.stringify(values) });
     form.reset();
     setStatus(successMessage);
+    if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
+      window.triggerHaptic(40);
+    } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+      try { navigator.vibrate(40); } catch (e) {}
+    }
+    if (window.Player3D && typeof window.Player3D.celebrateVictory === "function") {
+      window.Player3D.celebrateVictory();
+    }
     if (submit) {
       submit.classList.add("success");
       submit.textContent = "[ ✓ INQUIRY DISPATCHED ]";
@@ -117,6 +125,14 @@ async function submitPublicForm(event, path, successMessage) {
     if (webhookDelivered) {
       form.reset();
       setStatus("Inquiry dispatched via notification rail! Apoorv will follow up within 24 hours.");
+      if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
+        window.triggerHaptic(40);
+      } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+        try { navigator.vibrate(40); } catch (e) {}
+      }
+      if (window.Player3D && typeof window.Player3D.celebrateVictory === "function") {
+        window.Player3D.celebrateVictory();
+      }
       if (submit) {
         submit.classList.add("success");
         submit.textContent = "[ ✓ INQUIRY DISPATCHED ]";
@@ -656,7 +672,17 @@ async function handleConsultationSubmit(event) {
   if (formBox) formBox.classList.add("hidden");
   if (confirmBox) confirmBox.classList.remove("hidden");
 
-  // Companion celebration if active
+  // Haptic pulse & companion laser salute
+  if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
+    window.triggerHaptic(40);
+  } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+    try { navigator.vibrate(40); } catch (e) {}
+  }
+  if (window.Player3D && typeof window.Player3D.celebrateVictory === "function") {
+    window.Player3D.celebrateVictory();
+  }
+
+  // Companion celebration thought if active
   if (window.System1Brain?.emitThought) {
     window.System1Brain.emitThought("⚡ Strategy walkthrough confirmed!");
   }

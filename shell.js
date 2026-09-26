@@ -22,6 +22,17 @@ function isHomeRoute(pathname = window.location.pathname) {
   return !isSalesRoute(pathname) && !isWorkspaceRoute(pathname);
 }
 
+function triggerHaptic(pattern = 15) {
+  if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+    try {
+      navigator.vibrate(pattern);
+    } catch (e) {}
+  }
+}
+if (typeof window !== "undefined") {
+  window.triggerHaptic = triggerHaptic;
+}
+
 function setActiveNavigation(root = document) {
   const sales = isSalesRoute();
   const workspace = isWorkspaceRoute();

@@ -703,6 +703,11 @@ onLoad(() => {
     // --- ASTROMECH ARCHITECT INTEGRATION (Hard-Light Laser Bridging & Construct Tool) ---
     function triggerConstructPlatform() {
         if (!player) return;
+        if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
+            window.triggerHaptic([25, 40, 25]);
+        } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+            try { navigator.vibrate([25, 40, 25]); } catch (e) {}
+        }
         const arch = window.AstromechArchitect || (window.Player3D && window.Player3D.architect);
         if (arch && typeof arch.constructPlatform === "function") {
             arch.constructPlatform(player, landingRails);
