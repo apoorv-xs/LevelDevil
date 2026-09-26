@@ -692,7 +692,7 @@
 <body class="retro-workspace h-full flex flex-col font-sans antialiased select-none overflow-x-hidden overflow-y-hidden">
 
   <!-- TOP APP BAR (54px Retro Brutalist Navigation) -->
-  <header class="topbar relative h-[54px] bg-[#fff4c9] border-b-[3px] border-[#17120f] px-3 sm:px-5 flex items-center justify-between shrink-0 z-30 overflow-hidden shadow-[0_4px_0_#17120f]" data-kaboom-body="true">
+  <header class="topbar relative h-[54px] bg-[#fff4c9] border-b-[3px] border-[#17120f] px-3 sm:px-5 flex items-center justify-between shrink-0 z-30 shadow-[0_4px_0_#17120f]" data-kaboom-body="true">
     <!-- Left: Studio Brand -->
     <div class="flex items-center gap-3">
       <a href="/" class="topbar-brand flex items-center hover:opacity-90 transition" aria-label="Apoorv">
@@ -706,7 +706,7 @@
       <nav class="site-nav" aria-label="Primary navigation">
         <a href="/">Home</a>
         <a href="/sales">Contact</a>
-        <a href="/workspace/" aria-current="page">Workspace</a>
+        <a href="/workspace/" aria-current="page"><span class="nav-label-full">Workspace</span><span class="nav-label-short">Work</span></a>
       </nav>
       <!-- Hidden telemetry hooks for script compatibility -->
       <div id="dialProgressBar" class="hidden"></div>
@@ -722,7 +722,7 @@
 
       <!-- Audio SFX Toggle -->
       <button id="sfx-toggle-btn" title="Toggle Sound Effects" aria-label="Toggle Sound Effects" class="topbar-btn sfx-btn font-arcade text-[10px] px-2 py-1 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] transition cursor-pointer">
-        [ 🔊 SFX ]
+        <span class="sfx-bracket">[ </span><span class="sfx-icon">🔊</span><span class="sfx-label"> SFX</span><span class="sfx-bracket"> ]</span>
       </button>
 
       <!-- Sign In Trigger (Visible when unauthenticated / guest) -->
@@ -735,6 +735,9 @@
         <span class="w-2 h-2 rounded-full bg-emerald-500 border border-[#17120f]" style="width:8px;height:8px;border-radius:9999px;display:inline-block;"></span>
         <span class="admin-label-full">Admin Console</span><span class="admin-label-short">Admin</span>
       </button>
+
+      <!-- Mobile Menu Trigger -->
+      <button id="mobile-menu-btn" class="topbar-btn mobile-menu-btn" aria-label="Open Navigation Menu" title="Open Navigation Menu" onclick="window.toggleMobileMenu?.()">[ ☰<span class="menu-label"> MENU</span> ]</button>
 
       <!-- User Chip & Logout (Gated to Authenticated Session) -->
       <div id="userChipHeader" class="hidden items-center gap-2 pl-2 border-l-2 border-[#17120f]">

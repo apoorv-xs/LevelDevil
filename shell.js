@@ -205,16 +205,177 @@ window.APP_SHELL.session = {
   }
 };
 
+// --- RETRO BRUTALIST MOBILE ARCADE DRAWER ---
+function initMobileDrawer() {
+  if (typeof document === "undefined") return;
+  if (!document.getElementById("mobile-menu-drawer") && document.body) {
+    const isSales = isSalesRoute();
+    const isWs = isWorkspaceRoute();
+    const isHome = isHomeRoute();
+
+    const drawer = document.createElement("div");
+    drawer.id = "mobile-menu-drawer";
+    drawer.className = "mobile-menu-drawer";
+    drawer.setAttribute("role", "dialog");
+    drawer.setAttribute("aria-modal", "true");
+    drawer.setAttribute("aria-label", "Navigation Menu");
+    drawer.setAttribute("aria-hidden", "true");
+
+    drawer.innerHTML = `
+      <div class="mobile-drawer-backdrop" onclick="window.closeMobileMenu()"></div>
+      <div class="mobile-drawer-panel">
+        <div class="mobile-drawer-header">
+          <div class="mobile-drawer-title">// ARCADE NAV SYSTEM</div>
+          <button class="mobile-drawer-close" onclick="window.closeMobileMenu()" aria-label="Close Navigation Menu">[ ✕ CLOSE ]</button>
+        </div>
+
+        <nav class="mobile-drawer-nav" aria-label="Mobile Primary Navigation">
+          <a href="/" class="mobile-drawer-link ${isHome ? 'active' : ''}" data-route="home">
+            <span class="drawer-link-num">01</span>
+            <span class="drawer-link-title">HOME PORTFOLIO</span>
+            <span class="drawer-link-tag">[ 2.5D SKY ]</span>
+          </a>
+          <a href="/sales" class="mobile-drawer-link ${isSales ? 'active' : ''}" data-route="sales">
+            <span class="drawer-link-num">02</span>
+            <span class="drawer-link-title">CONTACT & INQUIRIES</span>
+            <span class="drawer-link-tag">[ BRIEF ]</span>
+          </a>
+          <a href="/workspace/" class="mobile-drawer-link ${isWs ? 'active' : ''}" data-route="workspace">
+            <span class="drawer-link-num">03</span>
+            <span class="drawer-link-title">CLIENT WORKSPACE</span>
+            <span class="drawer-link-tag">[ COCKPIT ]</span>
+          </a>
+        </nav>
+
+        <div class="mobile-drawer-footer">
+          <div class="drawer-footer-title">// HARDWARE PROTOCOLS</div>
+          <div class="drawer-footer-actions">
+            <button id="drawer-bb8-guide" class="mobile-drawer-btn" onclick="window.openDrawerGuide()">
+              <span class="drawer-btn-icon">🤖</span>
+              <span class="drawer-btn-label">BB-8 CO-PILOT HUD</span>
+              <span class="drawer-btn-status">READY</span>
+            </button>
+            <button id="drawer-sfx-toggle" class="mobile-drawer-btn" onclick="window.toggleDrawerSFX()">
+              <span id="drawer-sfx-icon" class="drawer-btn-icon">${window.SFX?.isMuted?.() ? '🔇' : '🔊'}</span>
+              <span id="drawer-sfx-text" class="drawer-btn-label">${window.SFX?.isMuted?.() ? 'SOUND FX: MUTED' : 'SOUND FX: ACTIVE'}</span>
+              <span class="drawer-btn-status">TOGGLE</span>
+            </button>
+            <button id="drawer-auth-btn" class="mobile-drawer-btn" onclick="window.openDrawerAuth()">
+              <span class="drawer-btn-icon">🔑</span>
+              <span id="drawer-auth-text" class="drawer-btn-label">CLIENT / OWNER AUTH</span>
+              <span class="drawer-btn-status">LOGIN</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(drawer);
+  }
+
+  window.openMobileMenu = () => {
+    const drawer = document.getElementById("mobile-menu-drawer");
+    if (!drawer) return;
+    drawer.classList.add("open");
+    drawer.setAttribute("aria-hidden", "false");
+    document.body.classList.add("drawer-open");
+    const isSales = isSalesRoute();
+    const isWs = isWorkspaceRoute();
+    const isHome = isHomeRoute();
+    drawer.querySelectorAll(".mobile-drawer-link").forEach(link => {
+      const r = link.getAttribute("data-route");
+      if ((r === "home" && isHome) || (r === "sales" && isSales) || (r === "workspace" && isWs)) {
+        link.classList.add("active");
+      } else {
+        link.classList.remove("active");
+      }
+    });
+    const muted = window.SFX?.isMuted?.();
+    const drawerIcon = document.getElementById("drawer-sfx-icon");
+    const drawerText = document.getElementById("drawer-sfx-text");
+    if (drawerIcon) drawerIcon.textContent = muted ? "🔇" : "🔊";
+    if (drawerText) drawerText.textContent = muted ? "SOUND FX: MUTED" : "SOUND FX: ACTIVE";
+    window.SFX?.playClick?.();
+  };
+
+  window.closeMobileMenu = () => {
+    const drawer = document.getElementById("mobile-menu-drawer");
+    if (!drawer) return;
+    drawer.classList.remove("open");
+    drawer.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("drawer-open");
+    window.SFX?.playClick?.();
+  };
+
+  window.toggleMobileMenu = () => {
+    const drawer = document.getElementById("mobile-menu-drawer");
+    if (drawer && drawer.classList.contains("open")) {
+      window.closeMobileMenu();
+    } else {
+      window.openMobileMenu();
+    }
+  };
+
+  window.openDrawerGuide = () => {
+    window.closeMobileMenu();
+    setTimeout(() => {
+      window.System1Brain?.showGuidanceHUD?.();
+    }, 150);
+  };
+
+  window.toggleDrawerSFX = () => {
+    if (window.SFX?.toggle) {
+      window.SFX.toggle();
+    }
+  };
+
+  window.openDrawerAuth = () => {
+    window.closeMobileMenu();
+    if (isWorkspaceRoute()) {
+      if (typeof window.openAuthGate === "function") window.openAuthGate();
+    } else if (isSalesRoute()) {
+      const signInBtn = document.getElementById("topbar-sign-in");
+      if (signInBtn) signInBtn.click();
+    } else {
+      window.location.href = "/workspace/";
+    }
+  };
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      const drawer = document.getElementById("mobile-menu-drawer");
+      if (drawer && drawer.classList.contains("open")) {
+        window.closeMobileMenu();
+      }
+    }
+  });
+
+  document.querySelectorAll("#mobile-menu-btn, .mobile-menu-btn").forEach(btn => {
+    btn.onclick = (e) => {
+      if (e) e.preventDefault();
+      window.toggleMobileMenu();
+    };
+  });
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initMobileDrawer);
+} else {
+  initMobileDrawer();
+}
+
 setActiveNavigation();
 if (isSalesRoute()) {
   loadSalesRoute().then(() => {
+    initMobileDrawer();
     return loadPortfolio();
   }).catch((error) => {
     console.warn("[Shell] 3D companion scripts failed to load, degrading gracefully:", error);
     // Keep the Sales form interactive — do NOT destroy the DOM
   });
 } else {
-  loadPortfolio().catch((error) => {
+  loadPortfolio().then(() => {
+    initMobileDrawer();
+  }).catch((error) => {
     const status = document.createElement("p");
     status.className = "shell-status";
     status.textContent = error.message;

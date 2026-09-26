@@ -298,7 +298,6 @@ onLoad(() => {
             const touchdownZone = { el: document.querySelector('.touchdown-zone'), mode: 'bottom', name: 'DIV.touchdown-zone' };
 
             const homeDefinitions = [
-                topbar,
                 heroBadge, heroH1, heroHook, heroControls, heroBtn1, heroBtn2,
                 heroAsideRoof, heroAsideP, ...heroAsideLis, heroAsideBase,
                 selectedWorkHeader,
@@ -353,7 +352,7 @@ onLoad(() => {
             const engagementBase = { el: engagementCard, mode: 'bottom', name: 'ARTICLE#engagement-card::base' };
 
             const salesDefinitions = [
-                topbar, heroH1, ...contactChips, ...actionRails,
+                heroH1, ...contactChips, ...actionRails,
                 inquiryRoof, googleBtn, nameInput, emailInput, scopeSelect, budgetSelect, msgTextarea, submitBtn, inquiryBase,
                 engagementRoof, ...engagementBoxes, engagementBase
             ].filter(d => d.el);
@@ -407,7 +406,7 @@ onLoad(() => {
             const notesBase = { el: notesPanel, mode: 'bottom', name: 'DIV.notes-panel::base' };
 
             const wsDefinitions = [
-                topbar, ...cityTabs, searchInput,
+                ...cityTabs, searchInput,
                 heroRoof, btnPrev, btnNext, activeName, timingBadge, currentLock, activeFee, activeRating, leadQueuePos, heroBase,
                 flawsRoof, btnTeardown, btnAnalogy, flawsBase,
                 notesRoof, callActionBtn, ...objBtns, callNotes, saveBtn, notesBase
@@ -618,7 +617,7 @@ onLoad(() => {
         } else if (page === "sales") {
             targetEl = document.querySelector('.hero h1') || document.querySelector('h1') || document.querySelector('#inquiry-card');
         } else if (page === "workspace") {
-            targetEl = document.querySelector('header.topbar') || document.querySelector('.city-tab') || document.querySelector('#queueSearchInput');
+            targetEl = document.querySelector('#leadCockpit') || document.querySelector('.city-tab') || document.querySelector('#queueSearchInput');
         }
 
         if (targetEl && player) {
