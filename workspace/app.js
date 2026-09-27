@@ -20,9 +20,8 @@ function isApoorvOwnerEmail(email) {
   const normalized = email.toLowerCase().trim();
   const withoutDots = normalized.replace(/\./g, '');
   return normalized === 'apoorvxs@gmail.com' ||
-         withoutDots.startsWith('apoorvxs@') ||
-         withoutDots.startsWith('apoorvstudentid@') ||
-         normalized.includes('apoorv');
+         withoutDots === 'apoorvxs@gmailcom' ||
+         withoutDots.startsWith('apoorvxs@');
 }
 
 const OBJECTIONS = [
@@ -1264,6 +1263,7 @@ function onAuthVerified() {
 }
 
 function signOut() {
+  currentUser = null;
   localStorage.removeItem('sprintdial_user');
   localStorage.removeItem('sprintdial_google_user');
   try {
@@ -1274,7 +1274,9 @@ function signOut() {
   if (typeof window.firebase?.auth === 'function') {
     try { window.firebase.auth().signOut(); } catch(e) {}
   }
-  currentUser = null;
+  if (typeof window.SALES_PLATFORM_AUTH?.getAuth === 'function') {
+    window.SALES_PLATFORM_AUTH.getAuth().then(a => a.signOut?.()).catch(() => {});
+  }
   location.reload();
 }
 
@@ -1386,7 +1388,15 @@ function handleSearch(val) {
 
 function matchSearch(p) {
   if (!searchQuery) return true;
-  return (p.name || "").toLowerCase().includes(searchQuery) || (p.dm || "").toLowerCase().includes(searchQuery);
+  const q = searchQuery.trim();
+  if (!q) return true;
+  return (
+    (p.name || "").toLowerCase().includes(q) ||
+    (p.dm || "").toLowerCase().includes(q) ||
+    (p.city || "").toLowerCase().includes(q) ||
+    (p.specialty || "").toLowerCase().includes(q) ||
+    (p.phone || p.tel || "").toLowerCase().includes(q)
+  );
 }
 
 function renderQueue() {
@@ -2811,8 +2821,8 @@ function exportToGoogleSheetsCSV() {
       escapeCsv(p.city),
       escapeCsv(p.name),
       escapeCsv(p.dm),
-      escapeCsv(p.phone),
-      escapeCsv(p.wa),
+      escapeCsv(p.phone || p.tel || ''),
+      escapeCsv(p.wa || p.whatsapp || p.phone || p.tel || ''),
       escapeCsv(p.site),
       escapeCsv(p.cat),
       escapeCsv(p.fee),

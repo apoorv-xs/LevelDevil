@@ -582,17 +582,21 @@ function initConsultationChips() {
 }
 
 function generateGoogleCalendarUrl({ name, email, focus, url, datetime, notes }) {
-  let startDate = new Date(datetime);
-  if (isNaN(startDate.getTime())) {
+  let startDate;
+  if (datetime) {
+    startDate = new Date(datetime);
+  }
+  if (!startDate || isNaN(startDate.getTime())) {
     startDate = new Date(Date.now() + 24 * 3600 * 1000);
+    startDate.setHours(14, 0, 0, 0);
   }
   const endDate = new Date(startDate.getTime() + 15 * 60 * 1000); // 15 mins
   const formatGCalDate = d => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
 
-  const title = encodeURIComponent(`15-Min Strategy Walkthrough: ${name} & Apoorv A S`);
+  const title = encodeURIComponent(`15-Min Strategy Walkthrough: ${name || 'Client'} & Apoorv A S`);
   const details = encodeURIComponent(
     `15-Minute Engineering Strategy Consultation\n\n` +
-    `Client: ${name} (${email})\n` +
+    `Client: ${name || 'N/A'} (${email || 'N/A'})\n` +
     `Focus Area: ${focus || 'General 3D/Performance Exploration'}\n` +
     `Target URL/Repo: ${url || 'N/A'}\n` +
     `Objectives: ${notes || 'N/A'}\n\n` +
@@ -600,8 +604,12 @@ function generateGoogleCalendarUrl({ name, email, focus, url, datetime, notes })
     `Platform: Google Meet\n\n` +
     `Portfolio: https://apoorv.qzz.io`
   );
+  const location = encodeURIComponent('Google Meet Video Call');
   const dates = `${formatGCalDate(startDate)}/${formatGCalDate(endDate)}`;
-  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&add=${encodeURIComponent(email)}&add=apoorvxs@gmail.com`;
+  let gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`;
+  if (email) gcalUrl += `&add=${encodeURIComponent(email)}`;
+  gcalUrl += `&add=apoorvxs@gmail.com`;
+  return gcalUrl;
 }
 
 async function handleConsultationSubmit(event) {
