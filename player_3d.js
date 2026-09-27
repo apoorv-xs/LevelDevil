@@ -1201,8 +1201,6 @@
 
             if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
                 window.triggerHaptic([25, 40, 25]);
-            } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
-                try { navigator.vibrate([25, 40, 25]); } catch (e) {}
             }
 
             const px = player ? player.pos.x : 0;

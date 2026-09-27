@@ -40,8 +40,6 @@ function createPlayer(x, y) {
         guy.vy = 0;
         if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
             window.triggerHaptic(15);
-        } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
-            try { navigator.vibrate(15); } catch (e) {}
         }
         groundCallbacks.forEach(cb => {
             try { cb(rail, landingVy); } catch (e) { console.error(e); }

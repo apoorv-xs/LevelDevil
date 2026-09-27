@@ -552,9 +552,6 @@ onLoad(() => {
     initClickToSummon();
 
     function syncDOM(force = false) {
-        if (!force && getCurrentPage() === "home" && localStorage.getItem("apoorv_custom_rails_v4")) {
-            if (typeof loadSavedRails === "function" && loadSavedRails()) return;
-        }
 
         const scrollY = window.scrollY || window.pageYOffset || 0;
         let needsRebuild = false;
@@ -743,8 +740,6 @@ onLoad(() => {
         if (!player) return;
         if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
             window.triggerHaptic([25, 40, 25]);
-        } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
-            try { navigator.vibrate([25, 40, 25]); } catch (e) {}
         }
         const arch = window.AstromechArchitect || (window.Player3D && window.Player3D.architect);
         if (arch && typeof arch.constructPlatform === "function") {
@@ -1250,12 +1245,4 @@ onLoad(() => {
             resetToAutonomous();
         }
     });
-
-    if (typeof onKeyPress === "function") {
-        onKeyPress("f", () => {
-            if (!isTypingInForm()) {
-                triggerConstructPlatform();
-            }
-        });
-    }
 });

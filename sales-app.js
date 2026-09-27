@@ -102,8 +102,6 @@ async function submitPublicForm(event, path, successMessage) {
     setStatus(successMessage);
     if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
       window.triggerHaptic(40);
-    } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
-      try { navigator.vibrate(40); } catch (e) {}
     }
     if (window.Player3D && typeof window.Player3D.celebrateVictory === "function") {
       window.Player3D.celebrateVictory();
@@ -127,8 +125,6 @@ async function submitPublicForm(event, path, successMessage) {
       setStatus("Inquiry dispatched via notification rail! Apoorv will follow up within 24 hours.");
       if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
         window.triggerHaptic(40);
-      } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
-        try { navigator.vibrate(40); } catch (e) {}
       }
       if (window.Player3D && typeof window.Player3D.celebrateVictory === "function") {
         window.Player3D.celebrateVictory();
@@ -683,8 +679,6 @@ async function handleConsultationSubmit(event) {
   // Haptic pulse & companion laser salute
   if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
     window.triggerHaptic(40);
-  } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
-    try { navigator.vibrate(40); } catch (e) {}
   }
   if (window.Player3D && typeof window.Player3D.celebrateVictory === "function") {
     window.Player3D.celebrateVictory();

@@ -138,82 +138,16 @@ let audioChunks = [];
 let isRecording = false;
 let recordedAudioBlob = null;
 
-// Audio Synthesizer (Web Audio API - 100% zero-dependency sound effects)
-let audioCtx = null;
-let userHasInteracted = false;
-
-if (typeof window !== 'undefined') {
-  const onUserGesture = () => {
-    userHasInteracted = true;
-    ['pointerdown', 'keydown', 'touchstart', 'click'].forEach(evt => {
-      window.removeEventListener(evt, onUserGesture);
-    });
-  };
-  ['pointerdown', 'keydown', 'touchstart', 'click'].forEach(evt => {
-    window.addEventListener(evt, onUserGesture, { passive: true, once: true });
-  });
-}
-
-function getAudioContext() {
-  if (!userHasInteracted) return null;
-  if (!audioCtx) {
-    const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtxClass) return null;
-    audioCtx = new AudioCtxClass();
-  }
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume().catch(() => {});
-  }
-  return audioCtx;
-}
-
+// Audio Routing (Delegated to global zero-payload DroidSynthEngine window.SFX)
 function playSound(type) {
-  if (!userHasInteracted) return;
-  if (window.SFX) {
+  if (typeof window !== 'undefined' && window.SFX) {
     if (window.SFX.isMuted()) return;
     if (type === 'click') { window.SFX.playClick(); return; }
-    if (type === 'chime') { window.SFX.playCelebrate(); return; }
-  }
-  if (!soundEnabled) return;
-  try {
-    const ctx = getAudioContext();
-    if (!ctx || ctx.state !== 'running') return;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    if (type === 'click') {
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(600, ctx.currentTime);
-      gain.gain.setValueAtTime(0.04, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.05);
-    } else if (type === 'chime') {
-      // Victory discovery chime (major chord arpeggio)
-      [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.connect(g);
-        g.connect(ctx.destination);
-        o.type = 'triangle';
-        o.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.08);
-        g.gain.setValueAtTime(0.08, ctx.currentTime + i * 0.08);
-        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.08 + 0.35);
-        o.start(ctx.currentTime + i * 0.08);
-        o.stop(ctx.currentTime + i * 0.08 + 0.35);
-      });
-    } else if (type === 'lock') {
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(220, ctx.currentTime);
-      gain.gain.setValueAtTime(0.05, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.15);
-    }
-  } catch(e) {
-    // Audio context not allowed before gesture
+    if (type === 'chime' || type === 'celebrate') { window.SFX.playCelebrate(); return; }
+    if (type === 'lock' || type === 'alert') { window.SFX.playAlert(); return; }
+    if (type === 'jump') { window.SFX.playJump(); return; }
+    if (type === 'land') { window.SFX.playLand(); return; }
+    if (type === 'construct') { window.SFX.playConstruct(); return; }
   }
 }
 
@@ -2187,39 +2121,7 @@ function saveNotesLocally() {
   }
 }
 
-function showLaymanAnalogy(key) {
-  playSound('click');
-  activeAnalogyKey = key;
-  const modal = document.getElementById('laymanAnalogyModal');
-  const icon = document.getElementById('laymanAnalogyIcon');
-  const title = document.getElementById('laymanAnalogyTitle');
-  const cat = document.getElementById('laymanAnalogyCategory');
-  const metaphor = document.getElementById('laymanAnalogyMetaphor');
-  const talkingPoint = document.getElementById('laymanAnalogyTalkingPoint');
 
-  const item = LAYMAN_ANALOGIES[key];
-  if (!item || !modal) return;
-
-  if (icon) icon.innerText = item.icon;
-  if (title) title.innerText = item.title;
-  if (cat) cat.innerText = item.category;
-
-  if (metaphor) {
-    metaphor.innerText = (activeLang === 'ml' && item.metaphorMl) ? item.metaphorMl : item.metaphor;
-  }
-  if (talkingPoint) {
-    talkingPoint.innerText = (activeLang === 'ml' && item.talkingPointMl) ? item.talkingPointMl : item.talkingPoint;
-  }
-
-  modal.classList.remove('hidden');
-}
-
-function closeLaymanAnalogy() {
-  playSound('click');
-  activeAnalogyKey = null;
-  const modal = document.getElementById('laymanAnalogyModal');
-  if (modal) modal.classList.add('hidden');
-}
 
 // Outcome Logging & Progress Bar
 function logOutcome(status) {
@@ -2243,8 +2145,6 @@ function logOutcome(status) {
     playSound('chime');
     if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
       window.triggerHaptic([35, 50, 35]);
-    } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
-      try { navigator.vibrate([35, 50, 35]); } catch (e) {}
     }
     if (window.Player3D && typeof window.Player3D.celebrateVictory === "function") {
       window.Player3D.celebrateVictory();
@@ -2256,8 +2156,6 @@ function logOutcome(status) {
   } else {
     if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
       window.triggerHaptic([35, 40, 35]);
-    } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
-      try { navigator.vibrate([35, 40, 35]); } catch (e) {}
     }
     playSound('click');
     showNotification(`Logged outcome '${status.replace('_', ' ')}' by ${currentUser?.name || 'Caller'}`);
@@ -2398,8 +2296,6 @@ function copyTeardownLink() {
 function saveAndNext() {
   if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
     window.triggerHaptic([35, 40, 35]);
-  } else if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
-    try { navigator.vibrate([35, 40, 35]); } catch (e) {}
   }
   playSound('click');
   stopCallTimer();
@@ -4525,115 +4421,34 @@ if (typeof global !== 'undefined') {
   global.exportActiveQueueCsv = exportActiveQueueCsv;
 }
 
-// ============================================================================
-// SYSTEM 1 BRAIN STUDIO (OWNER DYNAMIC TRAINING & KNOWLEDGE CONTROLLER)
-// Delegated to modular workspace/brain_studio.js
-// ============================================================================
-
-function handleBrainCategoryChange() {
-  if (typeof BrainStudio !== 'undefined' && BrainStudio.handleBrainCategoryChange) {
-    return BrainStudio.handleBrainCategoryChange();
-  }
-}
-
-function startBrainTelemetryPolling() {
-  if (typeof BrainStudio !== 'undefined' && BrainStudio.startBrainTelemetryPolling) {
-    return BrainStudio.startBrainTelemetryPolling();
-  }
-}
-
-function stopBrainTelemetryPolling() {
-  if (typeof BrainStudio !== 'undefined' && BrainStudio.stopBrainTelemetryPolling) {
-    return BrainStudio.stopBrainTelemetryPolling();
-  }
-}
-
-function renderBrainStudio() {
-  if (typeof BrainStudio !== 'undefined' && BrainStudio.renderBrainStudio) {
-    return BrainStudio.renderBrainStudio();
-  }
-}
-
-function renderBrainKnowledgeExplorer() {
-  if (typeof BrainStudio !== 'undefined' && BrainStudio.renderBrainKnowledgeExplorer) {
-    return BrainStudio.renderBrainKnowledgeExplorer();
-  }
-}
-
-function handleTrainBrainSubmit(event) {
-  if (typeof BrainStudio !== 'undefined' && BrainStudio.handleTrainBrainSubmit) {
-    return BrainStudio.handleTrainBrainSubmit(event);
-  }
-}
-
-function handleDeleteTrainedNode(id, category) {
-  if (typeof BrainStudio !== 'undefined' && BrainStudio.handleDeleteTrainedNode) {
-    return BrainStudio.handleDeleteTrainedNode(id, category);
-  }
-}
-
-function exportBrainDatasetUI() {
-  if (typeof BrainStudio !== 'undefined' && BrainStudio.exportBrainDatasetUI) {
-    return BrainStudio.exportBrainDatasetUI();
-  }
-}
-
-function importBrainDatasetUI(event) {
-  if (typeof BrainStudio !== 'undefined' && BrainStudio.importBrainDatasetUI) {
-    return BrainStudio.importBrainDatasetUI(event);
-  }
-}
-
-function resetBrainToFactoryUI() {
-  if (typeof BrainStudio !== 'undefined' && BrainStudio.resetBrainToFactoryUI) {
-    return BrainStudio.resetBrainToFactoryUI();
-  }
-}
-
-async function pushBrainToFirestoreUI() {
-  if (typeof BrainStudio !== 'undefined' && BrainStudio.pushBrainToFirestoreUI) {
-    return BrainStudio.pushBrainToFirestoreUI();
-  }
-}
-
-async function syncBrainFromFirestoreUI() {
-  if (typeof BrainStudio !== 'undefined' && BrainStudio.syncBrainFromFirestoreUI) {
-    return BrainStudio.syncBrainFromFirestoreUI();
-  }
-}
-
 if (typeof window !== 'undefined') {
-  window.handleBrainCategoryChange = handleBrainCategoryChange;
-  window.renderBrainStudio = renderBrainStudio;
-  window.renderBrainKnowledgeExplorer = renderBrainKnowledgeExplorer;
-  window.handleTrainBrainSubmit = handleTrainBrainSubmit;
-  window.handleDeleteTrainedNode = handleDeleteTrainedNode;
-  window.exportBrainDatasetUI = exportBrainDatasetUI;
-  window.importBrainDatasetUI = importBrainDatasetUI;
-  window.resetBrainToFactoryUI = resetBrainToFactoryUI;
-  window.pushBrainToFirestoreUI = pushBrainToFirestoreUI;
-  window.syncBrainFromFirestoreUI = syncBrainFromFirestoreUI;
-  window.startBrainTelemetryPolling = startBrainTelemetryPolling;
-  window.stopBrainTelemetryPolling = stopBrainTelemetryPolling;
   window.openAuthGate = openAuthGate;
   window.closeAuthGate = closeAuthGate;
   window.handleAuthBackdropClick = handleAuthBackdropClick;
 }
 if (typeof global !== 'undefined') {
-  global.handleBrainCategoryChange = handleBrainCategoryChange;
-  global.renderBrainStudio = renderBrainStudio;
-  global.renderBrainKnowledgeExplorer = renderBrainKnowledgeExplorer;
-  global.handleTrainBrainSubmit = handleTrainBrainSubmit;
-  global.handleDeleteTrainedNode = handleDeleteTrainedNode;
-  global.exportBrainDatasetUI = exportBrainDatasetUI;
-  global.importBrainDatasetUI = importBrainDatasetUI;
-  global.resetBrainToFactoryUI = resetBrainToFactoryUI;
-  global.pushBrainToFirestoreUI = pushBrainToFirestoreUI;
-  global.syncBrainFromFirestoreUI = syncBrainFromFirestoreUI;
-  global.startBrainTelemetryPolling = startBrainTelemetryPolling;
-  global.stopBrainTelemetryPolling = stopBrainTelemetryPolling;
   global.openAuthGate = openAuthGate;
   global.closeAuthGate = closeAuthGate;
   global.handleAuthBackdropClick = handleAuthBackdropClick;
 }
+
+// Forward Brain Studio handlers to window and global scopes from modular workspace/brain_studio.js
+[
+  "handleBrainCategoryChange",
+  "startBrainTelemetryPolling",
+  "stopBrainTelemetryPolling",
+  "renderBrainStudio",
+  "renderBrainKnowledgeExplorer",
+  "handleTrainBrainSubmit",
+  "handleDeleteTrainedNode",
+  "exportBrainDatasetUI",
+  "importBrainDatasetUI",
+  "resetBrainToFactoryUI",
+  "pushBrainToFirestoreUI",
+  "syncBrainFromFirestoreUI"
+].forEach((fn) => {
+  const handler = (...args) => (typeof BrainStudio !== 'undefined' && BrainStudio[fn]) ? BrainStudio[fn](...args) : undefined;
+  if (typeof window !== 'undefined') window[fn] = handler;
+  if (typeof global !== 'undefined') global[fn] = handler;
+});
 
