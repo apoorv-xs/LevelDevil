@@ -20,6 +20,7 @@
       this.ambientActive = false;
       this.currentAltitude = 10000;
       this._hasUserGesture = false;
+      this._isResumingAmbient = false;
 
       // Load initial mute state from localStorage
       if (typeof window !== "undefined" && window.localStorage) {
@@ -185,9 +186,14 @@
       const ctx = this.getAudioContext();
       if (!ctx) return;
       if (ctx.state !== "running") {
+        if (this._isResumingAmbient) return;
+        this._isResumingAmbient = true;
         ctx.resume().then(() => {
+          this._isResumingAmbient = false;
           if (!this.muted && !this.ambientActive) this.startAmbient();
-        }).catch(() => {});
+        }).catch(() => {
+          this._isResumingAmbient = false;
+        });
         return;
       }
       if (this.ambientActive) return;
@@ -246,6 +252,7 @@
      * Smoothly stops and cleans up ambient drone nodes to guarantee zero memory leaks
      */
     stopAmbient() {
+      this._isResumingAmbient = false;
       if (!this.ambientActive) return;
       const ctx = this.ctx;
       const now = ctx ? ctx.currentTime : 0;
@@ -356,21 +363,33 @@
       };
     }
 
+    /**
+     * Executes sound synthesis immediately if AudioContext is running,
+     * or queues execution after resume() resolves so the first note after
+     * mobile tab wake/suspension is never dropped in silence (CRIT-04).
+     */
+    _runWhenReady(fn) {
+      if (this.muted) return;
+      const ctx = this.getAudioContext(true);
+      if (!ctx) return;
+      if (ctx.state === "running") {
+        try { fn(ctx); } catch (e) {}
+      } else {
+        ctx.resume().then(() => {
+          if (!this.muted && ctx.state === "running") {
+            try { fn(ctx); } catch (e) {}
+          }
+        }).catch(() => {});
+      }
+    }
+
     // --- PROCEDURAL DROID SFX SYNTHESIS PRESETS ---
 
     /**
      * Jump: Playful ascending BB-8 chirping whistle glide (520Hz -> 880Hz)
      */
     playJump(panX) {
-      if (this.muted) return;
-      const ctx = this.getAudioContext();
-      if (!ctx) return;
-      if (ctx.state !== "running") {
-        ctx.resume().catch(() => {});
-        return;
-      }
-
-      try {
+      this._runWhenReady((ctx) => {
         const now = ctx.currentTime;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -392,22 +411,14 @@
         this._autoDisconnect(osc, panner, gain);
         osc.start(now);
         osc.stop(now + 0.15);
-      } catch (e) {}
+      });
     }
 
     /**
      * Land: Low-pass cushioned mechanical contact thud (180Hz -> 80Hz)
      */
     playLand(panX) {
-      if (this.muted) return;
-      const ctx = this.getAudioContext();
-      if (!ctx) return;
-      if (ctx.state !== "running") {
-        ctx.resume().catch(() => {});
-        return;
-      }
-
-      try {
+      this._runWhenReady((ctx) => {
         const now = ctx.currentTime;
         const osc = ctx.createOscillator();
         const filter = ctx.createBiquadFilter();
@@ -432,22 +443,14 @@
         this._autoDisconnect(osc, panner, filter, gain);
         osc.start(now);
         osc.stop(now + 0.10);
-      } catch (e) {}
+      });
     }
 
     /**
      * Construct: High-tech hard-light laser springboard deployment ping (1400Hz -> 450Hz)
      */
     playConstruct(panX) {
-      if (this.muted) return;
-      const ctx = this.getAudioContext();
-      if (!ctx) return;
-      if (ctx.state !== "running") {
-        ctx.resume().catch(() => {});
-        return;
-      }
-
-      try {
+      this._runWhenReady((ctx) => {
         const now = ctx.currentTime;
         // Primary laser beam carrier
         const osc = ctx.createOscillator();
@@ -486,22 +489,14 @@
         sub.start(now);
         osc.stop(now + 0.19);
         sub.stop(now + 0.19);
-      } catch (e) {}
+      });
     }
 
     /**
      * Weld: Modulated electrical spark sizzle crackle
      */
     playWeld(panX) {
-      if (this.muted) return;
-      const ctx = this.getAudioContext();
-      if (!ctx) return;
-      if (ctx.state !== "running") {
-        ctx.resume().catch(() => {});
-        return;
-      }
-
-      try {
+      this._runWhenReady((ctx) => {
         const now = ctx.currentTime;
         const osc = ctx.createOscillator();
         const filter = ctx.createBiquadFilter();
@@ -527,22 +522,14 @@
         this._autoDisconnect(osc, panner, filter, gain);
         osc.start(now);
         osc.stop(now + 0.11);
-      } catch (e) {}
+      });
     }
 
     /**
      * Thought: Inquisitive conversational droid double-warble
      */
     playThought(panX) {
-      if (this.muted) return;
-      const ctx = this.getAudioContext();
-      if (!ctx) return;
-      if (ctx.state !== "running") {
-        ctx.resume().catch(() => {});
-        return;
-      }
-
-      try {
+      this._runWhenReady((ctx) => {
         const now = ctx.currentTime;
         const panner = this._createPanner(ctx, panX, now);
         const dest = panner || this.masterGain;
@@ -574,22 +561,14 @@
         this._autoDisconnect(osc2, panner, gain2);
         osc2.start(now + 0.09);
         osc2.stop(now + 0.20);
-      } catch (e) {}
+      });
     }
 
     /**
      * Celebrate: Triumphant 4-tone ascending pentatonic fanfare (C5 -> E5 -> G5 -> C6)
      */
     playCelebrate(panX) {
-      if (this.muted) return;
-      const ctx = this.getAudioContext();
-      if (!ctx) return;
-      if (ctx.state !== "running") {
-        ctx.resume().catch(() => {});
-        return;
-      }
-
-      try {
+      this._runWhenReady((ctx) => {
         const notes = [523.25, 659.25, 783.99, 1046.50];
         const panner = this._createPanner(ctx, panX, ctx.currentTime);
         const dest = panner || this.masterGain;
@@ -616,22 +595,14 @@
           osc.start(now);
           osc.stop(now + 0.30);
         });
-      } catch (e) {}
+      });
     }
 
     /**
      * Alert: Caution dual-tone warning boop
      */
     playAlert(panX) {
-      if (this.muted) return;
-      const ctx = this.getAudioContext();
-      if (!ctx) return;
-      if (ctx.state !== "running") {
-        ctx.resume().catch(() => {});
-        return;
-      }
-
-      try {
+      this._runWhenReady((ctx) => {
         const now = ctx.currentTime;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -651,22 +622,14 @@
         this._autoDisconnect(osc, panner, gain);
         osc.start(now);
         osc.stop(now + 0.19);
-      } catch (e) {}
+      });
     }
 
     /**
      * Click: Tactile retro mechanical switch click
      */
     playClick(panX) {
-      if (this.muted) return;
-      const ctx = this.getAudioContext();
-      if (!ctx) return;
-      if (ctx.state !== "running") {
-        ctx.resume().catch(() => {});
-        return;
-      }
-
-      try {
+      this._runWhenReady((ctx) => {
         const now = ctx.currentTime;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -686,10 +649,12 @@
         this._autoDisconnect(osc, panner, gain);
         osc.start(now);
         osc.stop(now + 0.045);
-      } catch (e) {}
+      });
     }
     
     dispose() {
+      this._isResumingAmbient = false;
+      this.stopAmbient();
       if (this.ctx) {
         this.ctx.close().catch(() => {});
         this.ctx = null;

@@ -289,6 +289,59 @@ describe("Procedural Droid Synth Sound Engine (0 KB Audio Payload)", () => {
       expect(mockCtx.createOscillator).toHaveBeenCalled();
     });
 
+    it("queues and synthesizes sounds after ctx.resume() resolves when context is suspended (CRIT-04)", async () => {
+      let resolveResume;
+      const resumePromise = new Promise((resolve) => { resolveResume = resolve; });
+      mockCtx.state = "suspended";
+      mockCtx.resume = vi.fn(() => resumePromise);
+
+      const engine = new DroidSynthEngine();
+      engine.setMuted(false);
+
+      // Trigger sound while suspended
+      engine.playJump();
+      expect(mockCtx.resume).toHaveBeenCalled();
+      expect(mockCtx.createOscillator).not.toHaveBeenCalled();
+
+      // Resolve resume and switch state to running
+      mockCtx.state = "running";
+      resolveResume();
+      await resumePromise;
+      await Promise.resolve(); // flush microtask queue
+
+      expect(mockCtx.createOscillator).toHaveBeenCalled();
+    });
+
+    it("prevents duplicate ambient oscillators via _isResumingAmbient latch when context is suspended (MED-03)", async () => {
+      let resolveResume;
+      const resumePromise = new Promise((resolve) => { resolveResume = resolve; });
+      mockCtx.state = "suspended";
+      mockCtx.resume = vi.fn(() => resumePromise);
+
+      const engine = new DroidSynthEngine();
+      engine.setMuted(false);
+      engine.getAudioContext(); // initializes context and consumes initial resume
+      mockCtx.resume.mockClear();
+
+      // Call startAmbient multiple times rapidly while suspended
+      engine.startAmbient();
+      engine.startAmbient();
+      engine.startAmbient();
+
+      // ctx.resume should only be called ONCE due to _isResumingAmbient latch
+      expect(mockCtx.resume).toHaveBeenCalledTimes(1);
+
+      // Resolve resume and switch to running
+      mockCtx.state = "running";
+      resolveResume();
+      await resumePromise;
+      await Promise.resolve(); // flush microtasks
+
+      // Now ambient starts cleanly once
+      expect(engine.ambientActive).toBe(true);
+      expect(mockCtx.createOscillator).toHaveBeenCalledTimes(2); // osc1 and osc2
+    });
+
     it("attaches onended lifecycle hook to cleanly disconnect nodes and prevent memory leaks", () => {
       const engine = new DroidSynthEngine();
       engine.setMuted(false);

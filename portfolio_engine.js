@@ -202,10 +202,33 @@ if (btnToggleCtrls) {
 
 // Window-level release listeners to prevent mobile sticky drag lockout outside button boundary
 const releaseMobileControls = (e) => {
-    if (e && e.touches && e.touches.length > 0) return;
-    if (window.mobileLeftDown || window.mobileRightDown) {
+    let hasLeftTouch = false;
+    let hasRightTouch = false;
+
+    if (e && e.touches && e.touches.length > 0) {
+        const leftRect = (btnLeft && typeof btnLeft.getBoundingClientRect === "function") ? btnLeft.getBoundingClientRect() : null;
+        const rightRect = (btnRight && typeof btnRight.getBoundingClientRect === "function") ? btnRight.getBoundingClientRect() : null;
+
+        for (let i = 0; i < e.touches.length; i++) {
+            const t = e.touches[i];
+            if (leftRect && t.clientX >= leftRect.left && t.clientX <= leftRect.right &&
+                t.clientY >= leftRect.top && t.clientY <= leftRect.bottom) {
+                hasLeftTouch = true;
+            }
+            if (rightRect && t.clientX >= rightRect.left && t.clientX <= rightRect.right &&
+                t.clientY >= rightRect.top && t.clientY <= rightRect.bottom) {
+                hasRightTouch = true;
+            }
+        }
+    }
+
+    if (!hasLeftTouch && window.mobileLeftDown) {
         window.mobileLeftDown = false;
+    }
+    if (!hasRightTouch && window.mobileRightDown) {
         window.mobileRightDown = false;
+    }
+    if (!window.mobileLeftDown && !window.mobileRightDown) {
         resetToAutonomous();
     }
 };
