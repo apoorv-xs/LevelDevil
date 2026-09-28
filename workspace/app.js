@@ -5836,12 +5836,100 @@ if (typeof global !== 'undefined') {
   global.sendWhatsAppTeardown = sendWhatsAppTeardown;
 }
 
+/* ==========================================================================
+   FORENSIC SESSION WATERMARK GENERATOR
+   Renders subtle diagonal attribution across confidential dossiers
+   ========================================================================== */
+function initForensicWatermark() {
+  if (typeof document === 'undefined') return;
+  const dossier = document.getElementById('dossierPane');
+  if (!dossier) return;
+
+  let canvas = dossier.querySelector('canvas.forensic-watermark-overlay');
+  if (!canvas) {
+    canvas = document.createElement('canvas');
+    canvas.className = 'forensic-watermark-overlay';
+    canvas.setAttribute('aria-hidden', 'true');
+    dossier.appendChild(canvas);
+  }
+
+  function renderWatermark() {
+    if (!canvas || !dossier) return;
+    const w = dossier.scrollWidth || dossier.offsetWidth || 380;
+    const h = dossier.scrollHeight || dossier.offsetHeight || 1200;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w;
+      canvas.height = h;
+    }
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, w, h);
+
+    const email = (currentUser && currentUser.email) ||
+      (typeof localStorage !== 'undefined' && JSON.parse(localStorage.getItem('sprintdial_user') || '{}').email) ||
+      'CONFIDENTIAL';
+    const sessionId = (typeof window !== 'undefined' && window._shieldSessionId) ||
+      (window._shieldSessionId = Math.random().toString(36).substring(2, 8).toUpperCase());
+    const dateStr = new Date().toISOString().split('T')[0];
+    const watermarkText = `${email} • #${sessionId} • ${dateStr} • APOORV.QZZ.IO`;
+
+    ctx.save();
+    ctx.font = '10px monospace';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.045)';
+    ctx.rotate(-25 * Math.PI / 180);
+
+    const stepX = 260;
+    const stepY = 110;
+    const startX = -h;
+    const endX = w + h;
+    const startY = -h;
+    const endY = h * 2;
+
+    for (let y = startY; y < endY; y += stepY) {
+      for (let x = startX; x < endX; x += stepX) {
+        ctx.fillText(watermarkText, x, y);
+      }
+    }
+    ctx.restore();
+  }
+
+  renderWatermark();
+  if (typeof window !== 'undefined') {
+    if (window._watermarkResizeHandler) {
+      window.removeEventListener('resize', window._watermarkResizeHandler);
+    }
+    window._watermarkResizeHandler = () => {
+      requestAnimationFrame(renderWatermark);
+    };
+    window.addEventListener('resize', window._watermarkResizeHandler);
+  }
+
+  // Re-render when active prospect switches
+  if (typeof MutationObserver !== 'undefined' && typeof window !== 'undefined' && !window._watermarkObserver) {
+    window._watermarkObserver = new MutationObserver(() => {
+      renderWatermark();
+    });
+    window._watermarkObserver.observe(dossier, { childList: true, subtree: false });
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.initForensicWatermark = initForensicWatermark;
+}
+if (typeof global !== 'undefined') {
+  global.initForensicWatermark = initForensicWatermark;
+}
+
 // Initial visibility check on load
 if (typeof document !== 'undefined') {
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', updateInstallAppVisibility);
+    document.addEventListener('DOMContentLoaded', () => {
+      updateInstallAppVisibility();
+      initForensicWatermark();
+    });
   } else {
     updateInstallAppVisibility();
+    initForensicWatermark();
   }
 }
 

@@ -991,15 +991,222 @@ function initUniversalFPS() {
   requestAnimationFrame(updateFPS);
 }
 
+/* ==========================================================================
+   ASYMMETRIC ALPHA CONTENT SHIELD ENGINE
+   Anti-Copy, Anti-Extraction, Screenshot Deterrence & Anti-Snipping Blur
+   ========================================================================== */
+
+function showShieldNotice(text) {
+  if (typeof document === "undefined") return;
+  let toast = document.getElementById("shieldNoticeToast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "shieldNoticeToast";
+    toast.setAttribute("role", "status");
+    toast.setAttribute("aria-live", "polite");
+    document.body.appendChild(toast);
+  }
+  toast.textContent = text;
+  toast.classList.add("visible");
+  if (window._shieldToastTimer) clearTimeout(window._shieldToastTimer);
+  window._shieldToastTimer = setTimeout(() => {
+    toast.classList.remove("visible");
+  }, 2800);
+}
+
+function triggerShieldStrobe() {
+  if (typeof document === "undefined") return;
+  let strobe = document.getElementById("shieldStrobeOverlay");
+  if (!strobe) {
+    strobe = document.createElement("div");
+    strobe.id = "shieldStrobeOverlay";
+    strobe.className = "shield-strobe-overlay";
+    strobe.setAttribute("aria-hidden", "true");
+    document.body.appendChild(strobe);
+  }
+  strobe.classList.add("flash");
+  setTimeout(() => {
+    strobe.classList.remove("flash");
+  }, 140);
+}
+
+function initContentShield() {
+  if (typeof window === "undefined" || window._contentShieldInitialized) return;
+  window._contentShieldInitialized = true;
+
+  // 1. Asset Drag Protection
+  document.addEventListener("dragstart", (e) => {
+    const target = e.target;
+    if (!target) return;
+    if (
+      target.tagName === "IMG" ||
+      target.tagName === "CANVAS" ||
+      (typeof target.closest === "function" && target.closest(".shield-protected"))
+    ) {
+      e.preventDefault();
+    }
+  });
+
+  // 2. Context Menu (Right Click) Guard
+  document.addEventListener("contextmenu", (e) => {
+    const target = e.target;
+    // Allow standard right-click context menu within input and textarea elements
+    if (
+      target &&
+      (target.tagName === "INPUT" ||
+       target.tagName === "TEXTAREA" ||
+       target.isContentEditable)
+    ) {
+      return;
+    }
+    const isProtected =
+      isWorkspaceRoute() ||
+      (typeof target?.closest === "function" &&
+        (target.closest(".shield-protected") ||
+         target.closest("#three-canvas") ||
+         target.closest("#game-canvas")));
+
+    if (isProtected) {
+      e.preventDefault();
+      showShieldNotice("🔒 Security Shield: Context inspection is disabled on protected surfaces.");
+    }
+  });
+
+  // 3. Selective Copy Event Interception & Attribution Poisoning
+  document.addEventListener("copy", (e) => {
+    const activeEl = document.activeElement;
+    // Usability Invariant: Typing or editing inside inputs/textareas must copy freely
+    if (
+      activeEl &&
+      (activeEl.tagName === "INPUT" ||
+       activeEl.tagName === "TEXTAREA" ||
+       activeEl.isContentEditable)
+    ) {
+      return;
+    }
+
+    const selection = window.getSelection ? window.getSelection() : null;
+    const selectedText = selection ? selection.toString() : "";
+    const anchorNode = selection && selection.anchorNode ? selection.anchorNode : null;
+    const parentEl = anchorNode ? (anchorNode.nodeType === 1 ? anchorNode : anchorNode.parentElement) : null;
+
+    const isInsideProtected =
+      isWorkspaceRoute() ||
+      (parentEl && typeof parentEl.closest === "function" && parentEl.closest(".shield-protected"));
+
+    if (isInsideProtected && selectedText.length > 0) {
+      e.preventDefault();
+      const legalAttribution =
+        "CONFIDENTIAL & PROPRIETARY // APOORV A S (apoorv.qzz.io). Unauthorized reproduction, scraping, or distribution is prohibited under the IT Act 2000 & Asymmetric Alpha Protocol.";
+      if (e.clipboardData) {
+        e.clipboardData.setData("text/plain", legalAttribution);
+      }
+      showShieldNotice("🛡️ Content Protected: Proprietary material cannot be extracted.");
+      if (window.System1Brain && typeof window.System1Brain.emitThought === "function") {
+        window.System1Brain.emitThought("🛡️ Content protected by Asymmetric Alpha Shield!", 2500);
+      }
+    }
+  });
+
+  // 4. PrintScreen Key Detection & Clipboard Purge
+  window.addEventListener("keyup", (e) => {
+    if (e.key === "PrintScreen" || e.keyCode === 44) {
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+        navigator.clipboard.writeText("").catch(() => {});
+      }
+      triggerShieldStrobe();
+      showShieldNotice("📸 Screen Capture Restricted // Clipboard purged.");
+    }
+  });
+
+  // 5. Shortcut Traps (Print, Save Page, View Source, DevTools on Workspace)
+  window.addEventListener("keydown", (e) => {
+    const isCtrlOrCmd = e.ctrlKey || e.metaKey;
+    const key = e.key ? e.key.toLowerCase() : "";
+
+    // Trap Print (Ctrl+P / Cmd+P)
+    if (isCtrlOrCmd && key === "p") {
+      e.preventDefault();
+      showShieldNotice("🖨️ Printing and PDF export are restricted.");
+      return;
+    }
+
+    // Trap Save Page (Ctrl+S / Cmd+S)
+    if (isCtrlOrCmd && key === "s") {
+      // Allow saving if user is typing inside an input/textarea
+      const activeEl = document.activeElement;
+      if (activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA")) {
+        return;
+      }
+      e.preventDefault();
+      showShieldNotice("💾 Source page saving is restricted.");
+      return;
+    }
+
+    // Trap View Source (Ctrl+U / Cmd+U)
+    if (isCtrlOrCmd && key === "u") {
+      e.preventDefault();
+      showShieldNotice("🔒 Source inspection is restricted.");
+      return;
+    }
+
+    // DevTools Lock strictly on /workspace/ route (keep public routes unblocked for prospective tech buyers)
+    if (isWorkspaceRoute()) {
+      if (
+        e.key === "F12" ||
+        (isCtrlOrCmd && e.shiftKey && (key === "i" || key === "j" || key === "c"))
+      ) {
+        e.preventDefault();
+        showShieldNotice("🔒 Developer tools disabled on confidential cockpit.");
+      }
+    }
+  });
+
+  // 6. Anti-Snipping Window Focus-Loss Blur (Active on Workspace)
+  function handleWindowBlur() {
+    if (!isWorkspaceRoute()) return;
+    const shieldEl = document.getElementById("antiSnippingShield");
+    if (shieldEl) shieldEl.classList.add("active");
+    const cockpit = document.getElementById("workspaceCockpitContainer");
+    if (cockpit) cockpit.classList.add("anti-snipping-blurred");
+  }
+
+  function handleWindowFocus() {
+    if (!isWorkspaceRoute()) return;
+    const shieldEl = document.getElementById("antiSnippingShield");
+    if (shieldEl) shieldEl.classList.remove("active");
+    const cockpit = document.getElementById("workspaceCockpitContainer");
+    if (cockpit) cockpit.classList.remove("anti-snipping-blurred");
+  }
+
+  window.addEventListener("blur", handleWindowBlur);
+  window.addEventListener("focus", handleWindowFocus);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      handleWindowBlur();
+    } else {
+      handleWindowFocus();
+    }
+  });
+}
+
+if (window.APP_SHELL) {
+  window.APP_SHELL.initContentShield = initContentShield;
+  window.APP_SHELL.showShieldNotice = showShieldNotice;
+  window.APP_SHELL.triggerShieldStrobe = triggerShieldStrobe;
+}
+
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
     initMobileDrawer();
     initUniversalFPS();
+    initContentShield();
     window.APP_SHELL?.initUniversalTopbar?.();
   });
 } else {
   initMobileDrawer();
   initUniversalFPS();
+  initContentShield();
   window.APP_SHELL?.initUniversalTopbar?.();
 }
 
