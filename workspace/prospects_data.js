@@ -1,9 +1,10 @@
-// SprintDial — Verified Prospect Dossier Dataset (60 Accounts)
+// Client Radar — Verified Prospect Dossier Dataset (60 Accounts)
 // Strictly On Apoorv's Behalf
 (function(root) {
   const dataset = [
   {
     "id": "p-1",
+    "rating": 4.8,
     "city": "Kochi",
     "name": "Smile Kochi Dental Clinic, Kadavanthara",
     "dm": "Dr. Anisha P John (CEO & Director)",
@@ -89,6 +90,7 @@
   },
   {
     "id": "p-2",
+    "rating": 4.9,
     "city": "Kochi",
     "name": "BEST DENTAL CLINIC, Elamakkara",
     "dm": "Dr. Midhula Sathyan (Chief Dental Surgeon & Endodontist)",
@@ -174,6 +176,7 @@
   },
   {
     "id": "p-3",
+    "rating": 4.7,
     "city": "Kochi",
     "name": "Luminous Dental Care, Kakkanad",
     "dm": "Dr. Aju Varghese (Chief Consultant)",
@@ -259,6 +262,7 @@
   },
   {
     "id": "p-4",
+    "rating": 4.8,
     "city": "Kochi",
     "name": "Dr Megha's Cloud Dental Care, Kakkanad",
     "dm": "Dr. Megha Rajesh (Founder & Chief Dental Surgeon)",
@@ -344,6 +348,7 @@
   },
   {
     "id": "p-5",
+    "rating": 4.6,
     "city": "Kochi",
     "name": "HEAD AND FACE Unisex Salon, Vennala",
     "dm": "Salon Director / Managing Partner",
@@ -429,6 +434,7 @@
   },
   {
     "id": "p-6",
+    "rating": 4.9,
     "city": "Kochi",
     "name": "Ashtamudi Wellness, Grand Mall, Edappally",
     "dm": "A.J. Shafeeq (Founder & Managing Director)",
@@ -514,6 +520,7 @@
   },
   {
     "id": "p-7",
+    "rating": 4.7,
     "city": "Kochi",
     "name": "L12 Salon, Jawahar Nagar, Vyttila",
     "dm": "Founder & Managing Director (L12 Management)",
@@ -599,6 +606,7 @@
   },
   {
     "id": "p-8",
+    "rating": 4.8,
     "city": "Kochi",
     "name": "Vintage Unisex Salon, Mullassery Canal Rd",
     "dm": "Founder & Managing Director",
@@ -684,6 +692,7 @@
   },
   {
     "id": "p-9",
+    "rating": 4.6,
     "city": "Kochi",
     "name": "Fusion Bay, Fort Kochi",
     "dm": "Chef Benny (Chef & Co-Owner)",
@@ -769,6 +778,7 @@
   },
   {
     "id": "p-10",
+    "rating": 4.7,
     "city": "Kochi",
     "name": "Brindhavan Vegetarian Restaurant, Palarivattom",
     "dm": "Arun S Reddy (Managing Director / Owner)",
@@ -854,6 +864,7 @@
   },
   {
     "id": "p-11",
+    "rating": 4.8,
     "city": "Kochi",
     "name": "The Biryani Store, Vyloppilly Lane, Kaloor",
     "dm": "Founder & Operations Partner",
@@ -939,6 +950,7 @@
   },
   {
     "id": "p-12",
+    "rating": 4.6,
     "city": "Kochi",
     "name": "Mehfil Biriyani, Hospital Rd, Ernakulam South",
     "dm": "Managing Partner / Owner",
@@ -1024,6 +1036,7 @@
   },
   {
     "id": "p-13",
+    "rating": 4.9,
     "city": "Kochi",
     "name": "Success Academy (SSC/Bank/PSC), Ravipuram / Valanjambalam",
     "dm": "Antony Terril (Founder & Director)",
@@ -1109,6 +1122,7 @@
   },
   {
     "id": "p-14",
+    "rating": 4.7,
     "city": "Kochi",
     "name": "Agni UPSC Academy, Kacheripady",
     "dm": "Academic Director & Founder",
@@ -1194,6 +1208,7 @@
   },
   {
     "id": "p-15",
+    "rating": 4.8,
     "city": "Kochi",
     "name": "Victor Growth (IAS/IPS/NDA), Ernakulam",
     "dm": "S. Vijay Jagadeesh (Founder & Chief Mentor)",
@@ -1279,6 +1294,7 @@
   },
   {
     "id": "p-16",
+    "rating": 4.9,
     "city": "Kochi",
     "name": "Casper Academy of Excellence (IELTS), Vyttila",
     "dm": "Biju M (Proprietor & Director)",
@@ -1364,6 +1380,7 @@
   },
   {
     "id": "p-17",
+    "rating": 4.8,
     "city": "Kochi",
     "name": "Paris De Boutique, Thammanam",
     "dm": "Anil Muhammed & Jamal Muhammed (Directors & Lead Designers)",
@@ -1449,6 +1466,7 @@
   },
   {
     "id": "p-18",
+    "rating": 4.7,
     "city": "Kochi",
     "name": "LANA Designer Boutique, Panampilly Nagar / Kochi",
     "dm": "Neenu Lijin (CEO & Chief Designer) & Lijin",
@@ -1534,6 +1552,7 @@
   },
   {
     "id": "p-19",
+    "rating": 4.6,
     "city": "Kochi",
     "name": "Silky Boutique, Vyttila",
     "dm": "Johar Tamton (Main Owner/Founder) & Yashin Johar (Managing Partner)",
@@ -1619,6 +1638,7 @@
   },
   {
     "id": "p-20",
+    "rating": 4.8,
     "city": "Kochi",
     "name": "d'Aisle Bridals, Panampilly Nagar",
     "dm": "Lead Bridal Designer & Founder",
@@ -1704,6 +1724,7 @@
   },
   {
     "id": "p-21",
+    "rating": 4.9,
     "city": "Bangalore",
     "name": "Dr. Dixit Cosmetic Dermatology Clinic (Koramangala)",
     "dm": "Dr. Rasya Dixit (Founding Dermatologist & Medical Director)",
@@ -1789,6 +1810,7 @@
   },
   {
     "id": "p-22",
+    "rating": 4.7,
     "city": "Bangalore",
     "name": "Ridgetop Dental International (Koramangala / Indiranagar)",
     "dm": "Dr. Srikanth Vasudevan (Founder & Chief Clinical Director)",
@@ -1874,6 +1896,7 @@
   },
   {
     "id": "p-23",
+    "rating": 4.8,
     "city": "Bangalore",
     "name": "Cutis Academy of Cutaneous Sciences (Vijayanagar)",
     "dm": "Dr. B. S. Chandrashekar (Chief Dermatologist & Managing Director)",
@@ -1959,6 +1982,7 @@
   },
   {
     "id": "p-24",
+    "rating": 4.9,
     "city": "Bangalore",
     "name": "Dental Solutions Bangalore (Indiranagar)",
     "dm": "Dr. Ramya Balasubramanian & Dr. Balasubramanya (Co-Founders & Clinical Directors)",
@@ -2044,6 +2068,7 @@
   },
   {
     "id": "p-25",
+    "rating": 4.8,
     "city": "Bangalore",
     "name": "Khosla Associates (Indiranagar)",
     "dm": "Sandeep Khosla (Founder & Principal Architect)",
@@ -2129,6 +2154,7 @@
   },
   {
     "id": "p-26",
+    "rating": 4.6,
     "city": "Bangalore",
     "name": "Cadence Architects (Jayanagar)",
     "dm": "Smaran Mallesh, Narendra Pirgal, Vikram Rajashekar (Founding Partners)",
@@ -2214,6 +2240,7 @@
   },
   {
     "id": "p-27",
+    "rating": 4.7,
     "city": "Bangalore",
     "name": "FADD Studio (St. Marks Road / Lavelle Road)",
     "dm": "Farah Ahmed & Dhaval Shellugar (Founders & Principal Designers)",
@@ -2299,6 +2326,7 @@
   },
   {
     "id": "p-28",
+    "rating": 4.9,
     "city": "Bangalore",
     "name": "Carafina Interior Designers (Indiranagar)",
     "dm": "Gaurav Aggarwal (Founder & Managing Director)",
@@ -2384,6 +2412,7 @@
   },
   {
     "id": "p-29",
+    "rating": 4.8,
     "city": "Bangalore",
     "name": "Biome Environmental Solutions (Sanjaynagar)",
     "dm": "Chitra Vishwanath (Founder & Principal Architect)",
@@ -2469,6 +2498,7 @@
   },
   {
     "id": "p-30",
+    "rating": 4.7,
     "city": "Bangalore",
     "name": "De Panache Interior Architects (HSR Layout / Lavelle Road)",
     "dm": "Atif (Founder & Managing Director)",
@@ -2554,6 +2584,7 @@
   },
   {
     "id": "p-31",
+    "rating": 4.9,
     "city": "Bangalore",
     "name": "Play Salon & Spa (Indiranagar)",
     "dm": "Neeru Radhakrishnan (Founder & Creative Director)",
@@ -2639,6 +2670,7 @@
   },
   {
     "id": "p-32",
+    "rating": 4.8,
     "city": "Bangalore",
     "name": "The Palms Spa (St. Marks Road / Off Lavelle Road)",
     "dm": "Managing Director / Spa Director",
@@ -2724,6 +2756,7 @@
   },
   {
     "id": "p-33",
+    "rating": 4.7,
     "city": "Bangalore",
     "name": "Soukya International Holistic Health Centre (Whitefield)",
     "dm": "Dr. Issac Mathai (Founder, Chairman & Medical Director)",
@@ -2809,6 +2842,7 @@
   },
   {
     "id": "p-34",
+    "rating": 4.6,
     "city": "Bangalore",
     "name": "Peaches The Styling Salon (Indiranagar)",
     "dm": "Deepa (Founder & Creative Stylist)",
@@ -2894,6 +2928,7 @@
   },
   {
     "id": "p-35",
+    "rating": 4.8,
     "city": "Bangalore",
     "name": "Farmlore (Bagalur / North Bangalore)",
     "dm": "Kaushik Raju (Founder & Owner) & Chef Johnson Ebenezer (Co-Founder & Chef Patron)",
@@ -2979,6 +3014,7 @@
   },
   {
     "id": "p-36",
+    "rating": 4.9,
     "city": "Bangalore",
     "name": "Grasshopper (Bannerghatta Road)",
     "dm": "Sonali Sattar & Himanshu Dimri (Founders & Owners)",
@@ -3064,6 +3100,7 @@
   },
   {
     "id": "p-37",
+    "rating": 4.7,
     "city": "Bangalore",
     "name": "Sunny’s Restaurant (Lavelle Road)",
     "dm": "Arjun Sajnani & Vivek Ubhayakar (Co-Founders & Owners)",
@@ -3149,6 +3186,7 @@
   },
   {
     "id": "p-38",
+    "rating": 4.8,
     "city": "Bangalore",
     "name": "Lupa Bengaluru (MG Road / Lavelle Road)",
     "dm": "Chef Manu Chandra & Chetan Rampal (Founders & Managing Partners)",
@@ -3234,6 +3272,7 @@
   },
   {
     "id": "p-39",
+    "rating": 4.9,
     "city": "Bangalore",
     "name": "The House of Angadi / Angadi Heritage (Sadashivanagar)",
     "dm": "K. Radharaman (Founder, CEO & Design Head)",
@@ -3319,6 +3358,7 @@
   },
   {
     "id": "p-40",
+    "rating": 4.8,
     "city": "Bangalore",
     "name": "Cinnamon Bangalore (Gangadhar Chetty Road / Ulsoor)",
     "dm": "Radhika Poddar (Founder & Creative Director)",
@@ -3404,6 +3444,7 @@
   },
   {
     "id": "p-41",
+    "rating": 4.7,
     "city": "Hyderabad",
     "name": "FMS International Dental Center, Jubilee Hills",
     "dm": "Dr. P. P. Reddy, Founder & Chief Executive Officer",
@@ -3489,6 +3530,7 @@
   },
   {
     "id": "p-42",
+    "rating": 4.8,
     "city": "Hyderabad",
     "name": "Dr. Gowds Dental Hospitals, Banjara Hills",
     "dm": "Dr. M. S. Gowd, Founder & Chairman / Dr. Vikas Gowd, Managing Director",
@@ -3574,6 +3616,7 @@
   },
   {
     "id": "p-43",
+    "rating": 4.9,
     "city": "Hyderabad",
     "name": "Science Of Skin Clinic, Jubilee Hills",
     "dm": "Dr. Sruthi Gondi, Founder & Managing Director",
@@ -3659,6 +3702,7 @@
   },
   {
     "id": "p-44",
+    "rating": 4.6,
     "city": "Hyderabad",
     "name": "Celestee Skin Laser and Hair Clinic, Jubilee Hills",
     "dm": "Dr. Raj Kirit E. P., Founder & Medical Director",
@@ -3744,6 +3788,7 @@
   },
   {
     "id": "p-45",
+    "rating": 4.7,
     "city": "Hyderabad",
     "name": "Dermiq Skin and Hair Clinic, Jubilee Hills",
     "dm": "Dr. Divyasree P & Dr. Lakshmi Divya, Co-Founders & Chief Dermatologists",
@@ -3829,6 +3874,7 @@
   },
   {
     "id": "p-46",
+    "rating": 4.8,
     "city": "Hyderabad",
     "name": "Oasis Fertility, Banjara Hills",
     "dm": "Dr. Durga G. Rao, Co-Founder & Medical Director / Kiran Gadela, Co-Founder & Managing Director",
@@ -3914,6 +3960,7 @@
   },
   {
     "id": "p-47",
+    "rating": 4.9,
     "city": "Hyderabad",
     "name": "MORIQ Interiors & Design Consultants, Banjara Hills",
     "dm": "Riyaz Quraishi & Simeen Quraishi, Founders & Principal Designers",
@@ -3999,6 +4046,7 @@
   },
   {
     "id": "p-48",
+    "rating": 4.8,
     "city": "Hyderabad",
     "name": "Aamir & Hameeda Interior Designers (AANDH), Banjara Hills",
     "dm": "Aamir Sharma & Hameeda Sharma, Founders & Principal Designers",
@@ -4084,6 +4132,7 @@
   },
   {
     "id": "p-49",
+    "rating": 4.7,
     "city": "Hyderabad",
     "name": "Urban Zen, Jubilee Hills",
     "dm": "Rohit Suraj, Founder & Principal Architect",
@@ -4169,6 +4218,7 @@
   },
   {
     "id": "p-50",
+    "rating": 4.9,
     "city": "Hyderabad",
     "name": "F+S Designs, Banjara Hills",
     "dm": "Faisal Vohra & Shamila Meeran, Founders & Principal Architects",
@@ -4254,6 +4304,7 @@
   },
   {
     "id": "p-51",
+    "rating": 4.8,
     "city": "Hyderabad",
     "name": "Spacefiction Studio, Jubilee Hills",
     "dm": "Baba Sajid & Puuja Sajid, Principal Architects & Co-Founders",
@@ -4339,6 +4390,7 @@
   },
   {
     "id": "p-52",
+    "rating": 4.7,
     "city": "Hyderabad",
     "name": "Mrunalini Rao Couture, Jubilee Hills",
     "dm": "Mrunalini Rao, Founder & Creative Director",
@@ -4424,6 +4476,7 @@
   },
   {
     "id": "p-53",
+    "rating": 4.6,
     "city": "Hyderabad",
     "name": "Anushree Reddy Flagship Boutique, Banjara Hills",
     "dm": "Anushree Reddy, Founder & Creative Director",
@@ -4509,6 +4562,7 @@
   },
   {
     "id": "p-54",
+    "rating": 4.8,
     "city": "Hyderabad",
     "name": "Jayanti Reddy Couture, Banjara Hills",
     "dm": "Jayanti Reddy, Founder & Creative Director",
@@ -4594,6 +4648,7 @@
   },
   {
     "id": "p-55",
+    "rating": 4.9,
     "city": "Hyderabad",
     "name": "Varun Chakkilam Atelier, Banjara Hills",
     "dm": "Varun Chakkilam, Founder & Head of Design",
@@ -4679,6 +4734,7 @@
   },
   {
     "id": "p-56",
+    "rating": 4.7,
     "city": "Hyderabad",
     "name": "Conçu (Luxury Patisserie & Cafe), Jubilee Hills",
     "dm": "Sahil Taneja & Swati Upadhyay, Co-Founders & Managing Directors",
@@ -4764,6 +4820,7 @@
   },
   {
     "id": "p-57",
+    "rating": 4.8,
     "city": "Hyderabad",
     "name": "Zero40 Brewing, Jubilee Hills",
     "dm": "Ananda Verma, Founder & Managing Director",
@@ -4849,6 +4906,7 @@
   },
   {
     "id": "p-58",
+    "rating": 4.9,
     "city": "Hyderabad",
     "name": "Tatva Fine Dining, Jubilee Hills",
     "dm": "Managing Partners / Directors, Operations & Brand Development",
@@ -4934,6 +4992,7 @@
   },
   {
     "id": "p-59",
+    "rating": 4.7,
     "city": "Hyderabad",
     "name": "Autumn Leaf Cafe, Jubilee Hills",
     "dm": "Dr. G. V. Rao & Deepa Rao, Founders & Managing Owners",
@@ -5019,6 +5078,7 @@
   },
   {
     "id": "p-60",
+    "rating": 4.8,
     "city": "Hyderabad",
     "name": "PAGE Academy & Junior College, Banjara Hills / Hitec City",
     "dm": "P. V. R. K. Murthy, Founder & Managing Director",

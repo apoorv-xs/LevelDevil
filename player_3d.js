@@ -305,7 +305,17 @@
                 window.mousePos2D.lastMoveTime = performance.now();
 
                 // Interactive Hover Affordance on BB-8 mesh (UCD Upgrade)
-                if (this.root && raycaster && pointerVec && window.Engine3D && window.Engine3D.camera) {
+                if (this.root && raycaster && pointerVec && window.Engine3D && window.Engine3D.camera && window.player) {
+                    const pxScreenX = window.player.pos.x;
+                    const pxScreenY = window.player.pos.y - scrollY;
+                    const distToPlayer = Math.hypot(e.clientX - pxScreenX, e.clientY - pxScreenY);
+                    if (distToPlayer > 65) {
+                        if (this._isHovered) {
+                            this._isHovered = false;
+                            if (document.body.style.cursor === "pointer") document.body.style.cursor = "";
+                        }
+                        return;
+                    }
                     pointerVec.x = (e.clientX / window.innerWidth) * 2 - 1;
                     pointerVec.y = -(e.clientY / window.innerHeight) * 2 + 1;
                     raycaster.setFromCamera(pointerVec, window.Engine3D.camera);
@@ -535,6 +545,9 @@
                 opacity: 0.35
             });
             this.groundShadow = new THREE.Mesh(shadowGeo, shadowMat);
+            this.groundShadow.name = "groundShadow";
+            this.groundShadow.castShadow = false;
+            this.groundShadow.receiveShadow = false;
             this.groundShadow.rotation.x = -Math.PI / 2;
             this.groundShadow.position.y = 0.02;
             this.groundShadow.scale.set(1.0, 0.45, 1.0);
@@ -672,7 +685,7 @@
             const frameDt = Math.min((performance.now() - (this._lastSyncTime || performance.now())) / 1000, 0.05);
             this._lastSyncTime = performance.now();
 
-            if (!this.isCreated || !guy || !guy.exists || !guy.exists()) {
+            if (!this.isCreated || !guy || (typeof guy.exists === "function" && !guy.exists())) {
                 if (this.root) this.root.visible = false;
                 return;
             }
@@ -803,7 +816,9 @@
 
             // 6. Jump & Airborne Dynamics + Contact Shadow
             if (!isGrounded || this.isThrusterActive) {
-                if (this.isThrusterActive && Math.random() > 0.4) {
+                const nowTime = performance.now();
+                if (this.isThrusterActive && (!this._lastThrusterSpark || nowTime - this._lastThrusterSpark > 120)) {
+                    this._lastThrusterSpark = nowTime;
                     AstromechArchitect.spawnSparkBurst(guy.pos.x, guy.pos.y + 10, 3, 0x4deeea, true);
                 }
                 // Airborne: Dome lifts slightly on magnetic cushion, slight wobble
@@ -892,6 +907,8 @@
             this.antennaLed = null;
             this.tallAntenna = null;
             this.shortAntenna = null;
+            this.primaryLens = null;
+            this.secondarySensor = null;
             this.isCreated = false;
             
             this.lastX = null;
@@ -927,6 +944,8 @@
         activeBeams: [],
         lastConstructTime: 0,
         lastWeldTime: 0,
+        _scratchVec1: (typeof THREE !== "undefined") ? new THREE.Vector3() : null,
+        _scratchVec2: (typeof THREE !== "undefined") ? new THREE.Vector3() : null,
 
         init(scene) {
             this.scene = scene || (typeof window !== "undefined" && window.Engine3D && window.Engine3D.scene) || null;
@@ -950,13 +969,13 @@
             return 0.05;
         },
 
-        to3DVec(x2d, y2d, z = 0) {
+        to3DVec(x2d, y2d, z = 0, target = null) {
             if (typeof window !== "undefined" && window.Engine3D && typeof window.Engine3D.to3DVec === "function") {
-                const target = (typeof THREE !== "undefined") ? new THREE.Vector3() : null;
-                const v = window.Engine3D.to3DVec(x2d, y2d, z, target);
-                return v;
+                const dest = target || ((typeof THREE !== "undefined") ? new THREE.Vector3() : null);
+                return window.Engine3D.to3DVec(x2d, y2d, z, dest);
             }
             if (typeof THREE !== "undefined") {
+                if (target) return target.set(x2d * 0.05, -y2d * 0.05, z);
                 return new THREE.Vector3(x2d * 0.05, -y2d * 0.05, z);
             }
             return { x: x2d * 0.05, y: -y2d * 0.05, z };
@@ -1493,7 +1512,7 @@
 
                 // Update 3D position anchored to 2D coordinates across scroll
                 if (rail.group) {
-                    const p3d = this.to3DVec(rail.cx, rail.y2d, 0);
+                    const p3d = this.to3DVec(rail.cx, rail.y2d, 0, this._scratchVec1);
                     rail.group.position.x = p3d.x;
                     rail.group.position.y = p3d.y;
 
@@ -1590,7 +1609,7 @@
 
                 if (beam.isLaserSalute) {
                     // BB-8 Celebratory Hard-Light Laser Salute: Animate vertical laser pillars with pulsing neon glow
-                    const p3d = this.to3DVec(beam.x2d, beam.y2d, 0.15);
+                    const p3d = this.to3DVec(beam.x2d, beam.y2d, 0.15, this._scratchVec1);
                     beam.group.position.x = p3d.x;
                     beam.group.position.y = p3d.y + (beam.beamHeight / 2) + 0.9;
 
@@ -1605,7 +1624,7 @@
                     if (beam.materials[1]) beam.materials[1].opacity = 0.95 * pulse * fade;
                 } else if (beam.isFlash) {
                     // Update flash position with scroll
-                    const p3d = this.to3DVec(beam.cx, beam.y2d, 0.06);
+                    const p3d = this.to3DVec(beam.cx, beam.y2d, 0.06, this._scratchVec1);
                     beam.group.position.x = p3d.x;
                     beam.group.position.y = p3d.y;
 
@@ -1616,15 +1635,15 @@
                 } else if (beam.isTargeting) {
                     // Targeting pulse beam scroll sync & lookAt
                     if (typeof beam.fromX === "number") {
-                        const from3d = this.to3DVec(beam.fromX, beam.fromY, 0.3);
-                        const to3d = this.to3DVec(beam.toX, beam.toY, 0.1);
+                        const from3d = this.to3DVec(beam.fromX, beam.fromY, 0.3, this._scratchVec1);
+                        const to3d = this.to3DVec(beam.toX, beam.toY, 0.1, this._scratchVec2);
                         beam.group.position.copy(from3d);
                         beam.group.lookAt(to3d);
                     }
                     if (beam.materials[0]) beam.materials[0].opacity = (1.0 - progress);
                 } else {
                     // Downward beam scroll sync
-                    const p3d = this.to3DVec(beam.x2d, beam.y2d, 0.1);
+                    const p3d = this.to3DVec(beam.x2d, beam.y2d, 0.1, this._scratchVec1);
                     beam.group.position.x = p3d.x;
                     beam.group.position.y = p3d.y;
                     if (beam.materials) {

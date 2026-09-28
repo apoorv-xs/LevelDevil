@@ -40,7 +40,7 @@ test.describe("System 1 Decision Brain - Multi-Page Workflows", () => {
   });
 
   test("Sales (/sales) classifies scope, tier, and validation alerts", async ({ page }) => {
-    await page.goto("http://localhost:5173/sales", { waitUntil: "networkidle" });
+    await page.goto("http://localhost:5173/sales", { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(1500);
 
     // Select scope
@@ -63,9 +63,10 @@ test.describe("System 1 Decision Brain - Multi-Page Workflows", () => {
   });
 
   test("Workspace (/workspace/) provides open workspace with sign-in trigger and dismissable modal", async ({ page }) => {
-    await page.goto("http://localhost:5173/workspace/", { waitUntil: "networkidle" });
+    await page.goto("http://localhost:5173/workspace/", { waitUntil: "domcontentloaded" });
     const signInBtn = page.locator("#workspaceSignInBtnHeader");
     await expect(signInBtn).toBeVisible();
+    await page.waitForTimeout(1000);
     await signInBtn.click();
     const authOverlay = page.locator("#authGateOverlay");
     await expect(authOverlay).toBeVisible();
@@ -84,7 +85,7 @@ test.describe("System 1 Decision Brain - Multi-Page Workflows", () => {
         role: 'owner'
       }));
     });
-    await page.goto("http://localhost:5173/workspace/", { waitUntil: "networkidle" });
+    await page.goto("http://localhost:5173/workspace/", { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(1000);
     const adminBtn = page.locator("#adminBtnHeader");
     await expect(adminBtn).toHaveClass(/hidden/);
@@ -101,7 +102,7 @@ test.describe("System 1 Decision Brain - Multi-Page Workflows", () => {
         sub: 'mock-owner'
       }));
     });
-    await page.goto("http://localhost:5173/workspace/", { waitUntil: "networkidle" });
+    await page.goto("http://localhost:5173/workspace/", { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(2000);
 
     // Select second prospect

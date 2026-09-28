@@ -358,13 +358,18 @@
             const maxScroll = Math.max(1, document.documentElement.scrollHeight - h);
             const scrollProgress = Math.min(1, Math.max(0, scrollY / maxScroll));
 
-            // 1. DYNAMIC 5-STRATA ATMOSPHERIC GRADIENT
-            const gradientColors = getStrataGradient(scrollY, maxScroll, h);
-            const skyGrad = ctx.createLinearGradient(0, 0, 0, h);
-            skyGrad.addColorStop(0, gradientColors.top);
-            skyGrad.addColorStop(0.55, gradientColors.mid);
-            skyGrad.addColorStop(1, gradientColors.bot);
-            ctx.fillStyle = skyGrad;
+            // 1. DYNAMIC 5-STRATA ATMOSPHERIC GRADIENT (Cached to eliminate 3,600 allocations/min)
+            if (!this._cachedSkyGrad || Math.abs(scrollY - (this._lastGradScrollY || 0)) > 2 || h !== this._lastGradH || maxScroll !== this._lastGradMaxScroll) {
+                const gradientColors = getStrataGradient(scrollY, maxScroll, h);
+                this._cachedSkyGrad = ctx.createLinearGradient(0, 0, 0, h);
+                this._cachedSkyGrad.addColorStop(0, gradientColors.top);
+                this._cachedSkyGrad.addColorStop(0.55, gradientColors.mid);
+                this._cachedSkyGrad.addColorStop(1, gradientColors.bot);
+                this._lastGradScrollY = scrollY;
+                this._lastGradH = h;
+                this._lastGradMaxScroll = maxScroll;
+            }
+            ctx.fillStyle = this._cachedSkyGrad;
             ctx.fillRect(0, 0, w, h);
 
             // 2. RETRO HORIZONTAL SCANLINES (Warm tactile paper grain)
@@ -431,7 +436,7 @@
             }
 
             // 7. TACTICAL AVIATION MARGIN RULERS (DESKTOP HUD & MOBILE ALTITUDE GUTTER)
-            if (w >= 960) {
+            if (w >= 1280) {
                 this.renderAviationTelemetryRulers(ctx, w, h, scrollY, maxScroll, scrollProgress);
             } else {
                 this.renderMobileAltitudeGutter(ctx, w, h, scrollY, maxScroll, scrollProgress);
@@ -591,6 +596,7 @@
             this.mountainCanvas = null;
             this.ctx = null;
             this._scanPattern = null;
+            this._cachedSkyGrad = null;
         }
     };
 

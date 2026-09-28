@@ -26,6 +26,7 @@ function createPlayer(x, y) {
     let lastAirJumpTime = 0;
 
     guy.isGrounded = () => guy.grounded;
+    guy.exists = () => true;
 
     const groundCallbacks = [];
     guy.onGround = (cb) => {

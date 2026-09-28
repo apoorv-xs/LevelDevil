@@ -61,7 +61,7 @@ function triggerManualControl() {
 }
 
 // Window-level key listeners ensuring manual keyboard input works everywhere (DEF-01)
-window.addEventListener("keydown", (e) => {
+let _portfolioKeyDownHandler = (e) => {
     if (isTypingInForm()) return;
     const key = e.key.toLowerCase();
     if (key === "f") {
@@ -80,9 +80,10 @@ window.addEventListener("keydown", (e) => {
     if (["a", "d", "w", "s", "left", "right", "up", "down", "space"].some(k => activeKeys.has(k))) {
         triggerManualControl();
     }
-});
+};
+window.addEventListener("keydown", _portfolioKeyDownHandler);
 
-window.addEventListener("keyup", (e) => {
+let _portfolioKeyUpHandler = (e) => {
     const key = e.key.toLowerCase();
     activeKeys.delete(key);
     if (key === "arrowleft") activeKeys.delete("left");
@@ -94,14 +95,16 @@ window.addEventListener("keyup", (e) => {
     if (!["a", "d", "w", "s", "left", "right", "up", "down", "space"].some(k => activeKeys.has(k))) {
         resetToAutonomous();
     }
-});
+};
+window.addEventListener("keyup", _portfolioKeyUpHandler);
 
 // Track mouse position for companion 3D head/eye gaze
 window.mousePos2D = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-window.addEventListener("mousemove", (e) => {
+let _portfolioMouseMoveHandler = (e) => {
     window.mousePos2D.x = e.clientX;
     window.mousePos2D.y = e.clientY;
-});
+};
+window.addEventListener("mousemove", _portfolioMouseMoveHandler);
 
 // Mobile control state flags
 window.mobileLeftDown = false;
@@ -236,6 +239,20 @@ window.addEventListener("pointerup", releaseMobileControls);
 window.addEventListener("mouseup", releaseMobileControls);
 window.addEventListener("touchend", releaseMobileControls);
 window.addEventListener("touchcancel", releaseMobileControls);
+window.addEventListener("touchmove", releaseMobileControls, { passive: true });
+
+// Active User Scroll Guard (ensures programmatic camera tracking never fights or hijacks user scroll gestures)
+let isUserActivelyScrolling = false;
+let userScrollReleaseTimer = null;
+const onUserScrollGesture = () => {
+    isUserActivelyScrolling = true;
+    if (userScrollReleaseTimer) clearTimeout(userScrollReleaseTimer);
+    userScrollReleaseTimer = setTimeout(() => {
+        isUserActivelyScrolling = false;
+    }, 600);
+};
+window.addEventListener("wheel", onUserScrollGesture, { passive: true });
+window.addEventListener("touchmove", onUserScrollGesture, { passive: true });
 
 // Wait for next frame so player.js is loaded
 onLoad(() => {
@@ -324,7 +341,7 @@ onLoad(() => {
             const touchdownZone = { el: document.querySelector('.touchdown-zone'), mode: 'bottom', name: 'DIV.touchdown-zone' };
 
             const homeDefinitions = [
-                heroBadge, heroH1, heroHook, heroControls, heroBtn1, heroBtn2,
+                topbar, heroBadge, heroH1, heroHook, heroControls, heroBtn1, heroBtn2,
                 heroAsideRoof, heroAsideP, ...heroAsideLis, heroAsideBase,
                 selectedWorkHeader,
                 featuredRoof, featuredPill, featuredValidation, featuredLaunchBtn, featuredBase,
@@ -378,7 +395,7 @@ onLoad(() => {
             const engagementBase = { el: engagementCard, mode: 'bottom', name: 'ARTICLE#engagement-card::base' };
 
             const salesDefinitions = [
-                heroH1, ...contactChips, ...actionRails,
+                topbar, heroH1, ...contactChips, ...actionRails,
                 inquiryRoof, googleBtn, nameInput, emailInput, scopeSelect, budgetSelect, msgTextarea, submitBtn, inquiryBase,
                 engagementRoof, ...engagementBoxes, engagementBase
             ].filter(d => d.el);
@@ -622,6 +639,24 @@ onLoad(() => {
 
     let cachedMaxScroll = 0;
     let cachedBottomY = 3488;
+    let _lastRenderedAlt = -1;
+    let _lastRenderedStratum = "";
+    let _lastRenderedProgress = -1;
+
+    const _reusableTelemetry = {
+        scrollY: 0,
+        viewportFocusY: 0,
+        viewportHeight: 0,
+        userScrollSpeed: 0,
+        dwellTime: 0,
+        currentRail: null,
+        groundedRail: null,
+        allRails: null,
+        playerPos: { x: 0, y: 0 },
+        activeElement: null,
+        page: "",
+        isGrounded: false
+    };
 
     function updateCachedDimensions() {
         if (typeof window === "undefined" || typeof document === "undefined") return;
@@ -713,16 +748,17 @@ onLoad(() => {
         }, delay);
     });
 
-    const resizeObserver = new ResizeObserver(() => {
+    _portfolioResizeObserver = new ResizeObserver(() => {
         syncDOM();
         updateCachedDimensions();
     });
-    document.querySelectorAll('[data-kaboom-body="true"]').forEach(el => { resizeObserver.observe(el); });
-    resizeObserver.observe(document.body);
-    window.addEventListener("resize", () => {
+    document.querySelectorAll('[data-kaboom-body="true"]').forEach(el => { _portfolioResizeObserver.observe(el); });
+    _portfolioResizeObserver.observe(document.body);
+    _portfolioResizeHandler = () => {
         syncDOM();
         updateCachedDimensions();
-    });
+    };
+    window.addEventListener("resize", _portfolioResizeHandler);
 
     // Note: Pillar 5 removes duplicate window.Engine3D.init() call.
     // Engine3D auto-initializes itself in babylon_engine.js.
@@ -738,6 +774,9 @@ onLoad(() => {
     // --- ASTROMECH ARCHITECT INTEGRATION (Hard-Light Laser Bridging & Construct Tool) ---
     function triggerConstructPlatform() {
         if (!player) return;
+        if (window.System1Brain && typeof window.System1Brain.closeHUD === "function") {
+            window.System1Brain.closeHUD();
+        }
         if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
             window.triggerHaptic([25, 40, 25]);
         }
@@ -926,8 +965,8 @@ onLoad(() => {
 
                     for (const rail of landingRails) {
                         if (player.pos.x >= rail.xLeft - 10 && player.pos.x <= rail.xRight + 10) {
-                            // Swept interval check: yPrev <= rail.y <= yNext
-                            if (yPrev <= rail.y + 0.1 && rail.y <= yNext + 0.5) {
+                            // Swept interval check: yPrev <= rail.y <= yNext with generous sub-step margin
+                            if (yPrev <= rail.y + 2.0 && rail.y <= yNext + 2.0) {
                                 if (rail.y < bestY) {
                                     bestY = rail.y;
                                     bestRail = rail;
@@ -954,20 +993,22 @@ onLoad(() => {
         }
 
         // Dual-Driven Camera Tracking:
-        // As player actively moves/falls downwards, auto-scroll when entering bottom 65% of viewport
-        // Guarded against scrolling when typing in form inputs or calibrating scope (DEF-03)
+        // Programmatic camera tracking is strictly restricted to MANUAL control mode (active arrow keys/WASD)
+        // In autonomous mode or while the visitor is actively scrolling, the user retains 100% sovereign scroll control.
         const isFormInteracting = isTypingInForm() || Boolean(window.System1Brain && (
             window.System1Brain.currentIntent === "INSPECT_FORM_INPUT" ||
             window.System1Brain.currentIntent === "CALIBRATE_SCOPE" ||
             window.System1Brain.currentIntent === "ALERT_VALIDATION"
         ));
-        if (isPhysicsActive && !isRespawning && player && !isFormInteracting) {
+        const canCameraAutoScroll = isPhysicsActive && !isRespawning && player && !isFormInteracting &&
+            window.controlMode === "manual" && !isUserActivelyScrolling && getCurrentPage() !== "workspace";
+
+        if (canCameraAutoScroll) {
             const vh = window.innerHeight;
             const playerScreenY = player.pos.y - currentScrollY;
             const maxScroll = cachedMaxScroll || Math.max(0, document.documentElement.scrollHeight - vh);
 
-            const isAutonomousDown = window.controlMode === "autonomous" && playerScreenY > vh * 0.65 && player.grounded;
-            const isMovingDown = player.vy > 10 || isAutonomousDown || (window.isPhysicalKeyDown && (window.isPhysicalKeyDown("down") || window.isPhysicalKeyDown("s"))) || (typeof isKeyDown === "function" && (isKeyDown("down") || isKeyDown("s")));
+            const isMovingDown = player.vy > 10 || (window.isPhysicalKeyDown && (window.isPhysicalKeyDown("down") || window.isPhysicalKeyDown("s"))) || (typeof isKeyDown === "function" && (isKeyDown("down") || isKeyDown("s")));
             if (isMovingDown && playerScreenY > vh * 0.65) {
                 const targetScroll = player.pos.y - vh * 0.45;
                 const clampedTarget = Math.min(maxScroll, Math.max(0, targetScroll));
@@ -1008,20 +1049,32 @@ onLoad(() => {
             const mobileVsi = document.getElementById("flight-tape-vsi");
 
             if (isTouchdown) {
-                if (altimeterPill) altimeterPill.textContent = "ALT: 0 FT";
-                if (mobileAlt) mobileAlt.textContent = "0 FT";
-                if (mobileStratum) mobileStratum.textContent = "TOUCHDOWN";
-                if (mobileVsi) mobileVsi.textContent = "TERRA FIRMA";
-                if (mobileProgress) mobileProgress.style.width = "100%";
-                if (window.SFX && typeof window.SFX.updateAltitude === "function") {
-                    window.SFX.updateAltitude(0);
+                if (_lastRenderedAlt !== 0) {
+                    _lastRenderedAlt = 0;
+                    if (altimeterPill) altimeterPill.textContent = "ALT: 0 FT";
+                    if (mobileAlt) mobileAlt.textContent = "0 FT";
+                    if (mobileVsi) mobileVsi.textContent = "TERRA FIRMA";
+                    if (mobileProgress) mobileProgress.style.width = "100%";
+                    if (window.SFX && typeof window.SFX.updateAltitude === "function") {
+                        window.SFX.updateAltitude(0);
+                    }
+                }
+                if (_lastRenderedStratum !== "TOUCHDOWN") {
+                    _lastRenderedStratum = "TOUCHDOWN";
+                    if (mobileStratum) mobileStratum.textContent = "TOUCHDOWN";
                 }
             } else {
                 const alt = Math.max(0, Math.round((1 - progress) * 10000));
-                const altStr = `ALT: ${alt.toLocaleString()} FT`;
-                if (altimeterPill) altimeterPill.textContent = altStr;
-                if (mobileAlt) mobileAlt.textContent = altStr;
-                if (mobileVsi) mobileVsi.textContent = "-1200 FPM";
+                if (alt !== _lastRenderedAlt) {
+                    _lastRenderedAlt = alt;
+                    const altStr = `ALT: ${alt.toLocaleString()} FT`;
+                    if (altimeterPill) altimeterPill.textContent = altStr;
+                    if (mobileAlt) mobileAlt.textContent = altStr;
+                    if (mobileVsi) mobileVsi.textContent = "-1200 FPM";
+                    if (window.SFX && typeof window.SFX.updateAltitude === "function") {
+                        window.SFX.updateAltitude(alt);
+                    }
+                }
 
                 if (mobileStratum) {
                     let stratum = "STRATOSPHERE";
@@ -1029,15 +1082,18 @@ onLoad(() => {
                     else if (progress >= 0.62) stratum = "MOUNTAINS";
                     else if (progress >= 0.38) stratum = "TROPOSPHERE";
                     else if (progress >= 0.16) stratum = "CLOUDS";
-                    mobileStratum.textContent = stratum;
+                    if (stratum !== _lastRenderedStratum) {
+                        _lastRenderedStratum = stratum;
+                        mobileStratum.textContent = stratum;
+                    }
                 }
 
-                if (mobileProgress) {
-                    mobileProgress.style.width = `${Math.min(100, Math.round(progress * 100))}%`;
-                }
-
-                if (window.SFX && typeof window.SFX.updateAltitude === "function") {
-                    window.SFX.updateAltitude(alt);
+                const progressPct = Math.min(100, Math.round(progress * 100));
+                if (progressPct !== _lastRenderedProgress) {
+                    _lastRenderedProgress = progressPct;
+                    if (mobileProgress) {
+                        mobileProgress.style.width = `${progressPct}%`;
+                    }
                 }
             }
         }
@@ -1064,23 +1120,22 @@ onLoad(() => {
 
         // Autonomous System 1 Decision Brain Execution
         if (!window.isAirborneGlide && window.controlMode === "autonomous" && isPhysicsActive && !isRespawning && player) {
-            const telemetry = {
-                scrollY: currentScrollY,
-                viewportFocusY: currentScrollY + window.innerHeight * 0.45,
-                viewportHeight: window.innerHeight,
-                userScrollSpeed: (dtTotal > 0) ? (scrollDelta / dtTotal) : 0,
-                dwellTime: dwellDuration,
-                currentRail: player.currentRail,
-                groundedRail: player.currentRail,
-                allRails: landingRails,
-                playerPos: { x: player.pos.x, y: player.pos.y },
-                activeElement: document.activeElement,
-                page: getCurrentPage(),
-                isGrounded: player.grounded
-            };
+            _reusableTelemetry.scrollY = currentScrollY;
+            _reusableTelemetry.viewportFocusY = currentScrollY + window.innerHeight * 0.45;
+            _reusableTelemetry.viewportHeight = window.innerHeight;
+            _reusableTelemetry.userScrollSpeed = (dtTotal > 0) ? (scrollDelta / dtTotal) : 0;
+            _reusableTelemetry.dwellTime = dwellDuration;
+            _reusableTelemetry.currentRail = player.currentRail;
+            _reusableTelemetry.groundedRail = player.currentRail;
+            _reusableTelemetry.allRails = landingRails;
+            _reusableTelemetry.playerPos.x = player.pos.x;
+            _reusableTelemetry.playerPos.y = player.pos.y;
+            _reusableTelemetry.activeElement = document.activeElement;
+            _reusableTelemetry.page = getCurrentPage();
+            _reusableTelemetry.isGrounded = player.grounded;
 
             if (window.System1Brain && window.System1Brain.evaluate) {
-                const cmd = window.System1Brain.evaluate(dtTotal, telemetry);
+                const cmd = window.System1Brain.evaluate(dtTotal, _reusableTelemetry);
                 if (cmd.action === "celebrate") {
                     if (window.Player3D && typeof window.Player3D.celebrateVictory === "function") {
                         window.Player3D.celebrateVictory();
@@ -1246,3 +1301,56 @@ onLoad(() => {
         }
     });
 });
+
+window.PortfolioEngine = {
+    dispose() {
+        if (typeof _portfolioKeyDownHandler === "function") {
+            window.removeEventListener("keydown", _portfolioKeyDownHandler);
+            _portfolioKeyDownHandler = null;
+        }
+        if (typeof _portfolioKeyUpHandler === "function") {
+            window.removeEventListener("keyup", _portfolioKeyUpHandler);
+            _portfolioKeyUpHandler = null;
+        }
+        if (typeof _portfolioMouseMoveHandler === "function") {
+            window.removeEventListener("mousemove", _portfolioMouseMoveHandler);
+            _portfolioMouseMoveHandler = null;
+        }
+        if (typeof releaseMobileControls === "function") {
+            window.removeEventListener("pointerup", releaseMobileControls);
+            window.removeEventListener("mouseup", releaseMobileControls);
+            window.removeEventListener("touchend", releaseMobileControls);
+            window.removeEventListener("touchcancel", releaseMobileControls);
+            window.removeEventListener("touchmove", releaseMobileControls);
+        }
+        if (typeof _portfolioResizeHandler === "function") {
+            window.removeEventListener("resize", _portfolioResizeHandler);
+            _portfolioResizeHandler = null;
+        }
+        if (_portfolioResizeObserver && typeof _portfolioResizeObserver.disconnect === "function") {
+            _portfolioResizeObserver.disconnect();
+            _portfolioResizeObserver = null;
+        }
+        if (typeof stopLoop === "function") {
+            stopLoop();
+        } else if (typeof window.stopLoop === "function") {
+            window.stopLoop();
+        }
+        if (manualTimeout) {
+            clearTimeout(manualTimeout);
+            manualTimeout = null;
+        }
+        if (typeof onUserScrollGesture === "function") {
+            window.removeEventListener("wheel", onUserScrollGesture);
+            window.removeEventListener("touchmove", onUserScrollGesture);
+        }
+        if (userScrollReleaseTimer) {
+            clearTimeout(userScrollReleaseTimer);
+            userScrollReleaseTimer = null;
+        }
+        isUserActivelyScrolling = false;
+        window.landingRails = [];
+        window.isAirborneGlide = false;
+        window._currentGlideId = null;
+    }
+};

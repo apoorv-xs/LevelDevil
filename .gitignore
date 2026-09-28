@@ -18,7 +18,7 @@ v2/
 *.key
 *.p12
 *service_account*.json
-*credentials*.json
 *prospects_export*.json
 *.csv
+scratch/
 

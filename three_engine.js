@@ -43,8 +43,7 @@
             });
             this.renderer.setSize(window.innerWidth, window.innerHeight, false);
             this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-            this.renderer.shadowMap.enabled = true;
-            this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            this.renderer.shadowMap.enabled = false;
 
             // 2. Create Main Scene
             this.scene = new THREE.Scene();
@@ -62,19 +61,10 @@
             this.ambientLight = new THREE.HemisphereLight(0xfff7e6, 0x5c4224, 0.9);
             this.scene.add(this.ambientLight);
 
-            // Directional Sun Light (Casting Soft Shadows on Z-Plane)
+            // Directional Sun Light
             this.sunLight = new THREE.DirectionalLight(0xffffff, 1.4);
             this.sunLight.position.set(-10, 20, 15);
-            this.sunLight.castShadow = true;
-            this.sunLight.shadow.mapSize.width = 1024;
-            this.sunLight.shadow.mapSize.height = 1024;
-            this.sunLight.shadow.camera.near = 0.5;
-            this.sunLight.shadow.camera.far = 120;
-            this.sunLight.shadow.camera.left = -35;
-            this.sunLight.shadow.camera.right = 35;
-            this.sunLight.shadow.camera.top = 35;
-            this.sunLight.shadow.camera.bottom = -35;
-            this.sunLight.shadow.bias = -0.0005;
+            this.sunLight.castShadow = false;
             this.scene.add(this.sunLight);
 
             // 5. Window Resize Handler
@@ -146,9 +136,13 @@
             }
             if (this.renderer) {
                 const gl = typeof this.renderer.getContext === "function" ? this.renderer.getContext() : null;
-                const isContextLost = gl && typeof gl.isContextLost === "function" ? gl.isContextLost() : false;
+                if (typeof this.renderer.forceContextLoss === "function") {
+                    this.renderer.forceContextLoss();
+                } else if (gl) {
+                    gl.getExtension("WEBGL_lose_context")?.loseContext();
+                }
                 this.renderer.dispose();
-                if (isContextLost && this.canvas && this.canvas.parentNode) {
+                if (this.canvas && this.canvas.parentNode) {
                     this.canvas.parentNode.removeChild(this.canvas);
                 }
                 this.canvas = null;

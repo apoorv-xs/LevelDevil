@@ -11,9 +11,6 @@
   <!-- Universal Retro Typography & Global Shell Styling -->
   <link rel="stylesheet" href="/fonts.css">
   <link rel="stylesheet" href="/shell.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Press+Start+2P&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -595,6 +592,14 @@
     .hidden { display: none !important; }
     .admin-label-short { display: none; }
     .admin-label-full { display: inline; }
+    .user-header-email { display: inline-block; }
+    .user-header-badge { display: inline-block; }
+    @media (max-width: 1200px) {
+      .user-header-badge { display: none !important; }
+    }
+    @media (max-width: 900px) {
+      .user-header-email { display: none !important; }
+    }
     @media (max-width: 640px) {
       .admin-label-full { display: none !important; }
       .admin-label-short { display: inline !important; }
@@ -649,8 +654,10 @@
     #proposalModal,
     #clientTeardownModal,
     #laymanAnalogyModal,
-    #csvImportModal {
-      z-index: 1000 !important;
+    #csvImportModal,
+    #installAppModal,
+    #onboardingDisclaimer {
+      z-index: 1050 !important;
     }
     #authGateOverlay.hidden,
     #adminModal.hidden,
@@ -658,7 +665,9 @@
     #proposalModal.hidden,
     #clientTeardownModal.hidden,
     #laymanAnalogyModal.hidden,
-    #csvImportModal.hidden {
+    #csvImportModal.hidden,
+    #installAppModal.hidden,
+    #onboardingDisclaimer.hidden {
       display: none !important;
     }
     #authGateSignInBox,
@@ -700,10 +709,11 @@
   </style>
 </head>
 <body class="retro-workspace h-full flex flex-col font-sans antialiased select-none overflow-x-hidden overflow-y-hidden">
+  <a href="#workspaceCockpitContainer" class="skip-link font-arcade">SKIP TO WORKSPACE [TAB]</a>
 
   <!-- TOP APP BAR (54px Retro Brutalist Navigation) -->
   <header class="topbar relative h-[54px] bg-[#fff4c9] border-b-[3px] border-[#17120f] px-3 sm:px-5 flex items-center justify-between shrink-0 z-30 shadow-[0_4px_0_#17120f]" data-kaboom-body="true">
-    <!-- Left: Studio Brand -->
+    <!-- Left: Brand Identity -->
     <div class="flex items-center gap-3">
       <a href="/" class="topbar-brand flex items-center hover:opacity-90 transition" aria-label="Apoorv">
         <span class="topbar-brand-name">APOORV</span>
@@ -725,41 +735,151 @@
 
     <!-- Right: Utility Controls & Admin -->
     <div class="topbar-actions flex items-center gap-1.5 sm:gap-2">
+      <!-- Real-Time WebGL Performance Benchmark -->
+      <div class="topbar-badge hide-mobile" title="Real-Time WebGL Performance Benchmark">
+        <span class="topbar-dot"></span>
+        <span><span id="live-fps">60.0</span> FPS</span>
+      </div>
+
       <!-- Interactive BB-8 Co-Pilot Tour Trigger -->
-      <button id="btnBB8Guide" onclick="window.System1Brain?.showGuidanceHUD?.()" title="Summon BB-8 Guided Missions" aria-label="BB-8 Guidance HUD" class="topbar-btn font-arcade text-[10px] px-2.5 py-1 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] transition flex items-center gap-1.5 cursor-pointer">
-        <span>🤖</span><span class="hidden sm:inline">CO-PILOT</span>
-      </button>
+      <button id="btnBB8Guide" class="topbar-btn guide-btn" onclick="window.System1Brain?.showGuidanceHUD?.()" aria-label="Summon BB-8 Guide" title="Summon BB-8 Guide">[ 🤖<span class="guide-label"> GUIDE</span> ]</button>
 
       <!-- Audio SFX Toggle -->
-      <button id="sfx-toggle-btn" title="Toggle Sound Effects" aria-label="Toggle Sound Effects" class="topbar-btn sfx-btn font-arcade text-[10px] px-2 py-1 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] transition cursor-pointer">
-        <span class="sfx-bracket">[ </span><span class="sfx-icon">🔊</span><span class="sfx-label"> SFX</span><span class="sfx-bracket"> ]</span>
-      </button>
+      <button id="sfx-toggle-btn" class="topbar-btn sfx-btn" aria-label="Toggle Sound Effects" title="Toggle Sound Effects">[ 🔊<span class="sfx-label"> SFX</span> ]</button>
 
       <!-- Sign In Trigger (Visible when unauthenticated / guest) -->
-      <button id="workspaceSignInBtnHeader" onclick="openAuthGate()" class="px-2.5 py-1 text-[10px] font-arcade bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] transition flex items-center gap-1.5 cursor-pointer">
-        <span>🔑</span> <span class="admin-label-full">Sign In / Sales Rep</span><span class="admin-label-short">Sign In</span>
+      <button id="workspaceSignInBtnHeader" onclick="openAuthGate()" class="topbar-btn topbar-btn-primary flex items-center gap-1.5 cursor-pointer" title="Sign in with Google">
+        <svg width="13" height="13" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+        <span class="sign-in-text font-arcade text-[10px]">SIGN IN</span>
       </button>
 
       <!-- Owner Admin Trigger (Gated strictly to Owner) -->
-      <button id="adminBtnHeader" onclick="openAdminModal()" class="hidden px-2.5 py-1 text-[10px] font-arcade bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] transition items-center gap-1.5 cursor-pointer">
+      <button id="adminBtnHeader" onclick="openAdminModal()" class="topbar-admin-btn hidden px-2.5 py-1 text-[10px] font-arcade bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] transition items-center gap-1.5 cursor-pointer">
         <span class="w-2 h-2 rounded-full bg-emerald-500 border border-[#17120f]" style="width:8px;height:8px;border-radius:9999px;display:inline-block;"></span>
         <span class="admin-label-full">Admin Console</span><span class="admin-label-short">Admin</span>
       </button>
 
-      <!-- Mobile Menu Trigger -->
-      <button id="mobile-menu-btn" class="topbar-btn mobile-menu-btn" aria-label="Open Navigation Menu" title="Open Navigation Menu" onclick="window.toggleMobileMenu?.()">[ ☰<span class="menu-label"> MENU</span> ]</button>
+      <!-- Install Mobile App Trigger (Strictly visible once signed in & verified) -->
+      <button id="workspaceInstallAppBtn" onclick="handleInstallAppClick()" class="topbar-btn install-app-btn hidden" aria-label="Install Mobile App" title="Install Workspace as Mobile App">
+        <span class="font-arcade text-[10px] flex items-center gap-1"><span>📲</span><span class="install-label hide-mobile"> APP</span></span>
+      </button>
 
-      <!-- User Chip & Logout (Gated to Authenticated Session) -->
-      <div id="userChipHeader" class="hidden items-center gap-2 pl-2 border-l-2 border-[#17120f]">
-        <img id="userImg" width="24" height="24" src="https://ui-avatars.com/api/?name=Apoorv&background=fff1bd&color=17120f" class="w-6 h-6 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] object-cover" alt="User" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'%2317120f\'%3E%3Cpath d=\'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\'/%3E%3C/svg%3E';">
-        <span id="userEmail" class="text-[11px] font-mono text-[#17120f] hidden xl:inline">apoorvxs@gmail.com</span>
-        <button onclick="signOutGoogle()" title="Sign Out" aria-label="Sign Out" class="p-1 text-xs text-[#17120f] hover:text-[#8f1727] transition cursor-pointer">
-          <svg class="w-3.5 h-3.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-            <polyline points="16 17 21 12 16 7"></polyline>
-            <line x1="21" y1="12" x2="9" y2="12"></line>
+      <!-- Mobile Menu Trigger -->
+      <button id="mobile-menu-btn" class="topbar-btn mobile-menu-btn" aria-label="Open Navigation Menu" title="Open Navigation Menu" aria-expanded="false" aria-controls="mobile-menu-drawer" onclick="window.toggleMobileMenu?.()">[ ☰<span class="menu-label"> MENU</span> ]</button>
+
+      <!-- User Chip & Profile Dropdown Container (Gated to Authenticated Session) -->
+      <div id="userChipHeader" class="topbar-user-container hidden relative items-center gap-2 pl-2 border-l-2 border-[#17120f]">
+        <!-- Interactive Trigger Button -->
+        <button id="userProfileTrigger" type="button" onclick="toggleProfileDropdown()" aria-haspopup="true" aria-expanded="false" class="topbar-user-chip flex items-center gap-2 px-2 py-1 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] transition cursor-pointer select-none active:translate-x-[1px] active:translate-y-[1px]">
+          <div class="relative flex items-center justify-center">
+            <img id="userImg" width="24" height="24" src="https://ui-avatars.com/api/?name=Apoorv&background=fff1bd&color=17120f" class="w-6 h-6 border border-[#17120f] shadow-[1px_1px_0_#17120f] object-cover" alt="User" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=User&background=fff1bd&color=17120f';">
+            <span class="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-emerald-500 border border-[#17120f] rounded-full" title="Online"></span>
+          </div>
+          <span id="userTopName" class="topbar-user-name text-[11px] font-mono font-bold text-[#17120f] max-w-[130px] truncate">Apoorv</span>
+          <span id="userEmail" class="hidden">apoorvxs@gmail.com</span>
+          <svg id="profileDropdownCaret" class="w-3 h-3 text-[#17120f] transition-transform duration-150" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
           </svg>
         </button>
+
+        <!-- Retro Brutalist Profile & Sales Telemetry Dropdown -->
+        <div id="userProfileDropdown" class="hidden absolute right-0 top-[calc(100%+8px)] w-80 sm:w-96 max-w-[calc(100vw-24px)] bg-[#fffdf1] border-[3px] border-[#17120f] shadow-[6px_6px_0_#17120f] z-50 p-4 space-y-3.5 select-none" role="menu" aria-label="User Profile & Sales Telemetry">
+          <!-- 1. Profile Identity Header -->
+          <div class="flex items-center gap-3 pb-3 border-b-2 border-[#17120f]">
+            <img id="dropdownUserImg" width="40" height="40" src="https://ui-avatars.com/api/?name=Apoorv&background=fff1bd&color=17120f" class="w-10 h-10 border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] object-cover" alt="User" referrerpolicy="no-referrer">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-1">
+                <span id="dropdownUserName" class="font-arcade text-xs font-bold text-[#17120f] truncate">Apoorv</span>
+                <span id="dropdownRolePill" class="text-[8px] font-arcade px-1.5 py-0.5 bg-[#fce566] border border-[#17120f] text-[#17120f] shrink-0 font-bold">OWNER</span>
+              </div>
+              <p id="dropdownUserEmail" class="font-mono text-[11px] text-[#17120f]/80 truncate">apoorvxs@gmail.com</p>
+            </div>
+          </div>
+
+          <!-- 2. Real-Time Sales Telemetry Cockpit -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-arcade text-[9px] text-[#17120f] font-bold uppercase tracking-wider">📊 SALES TELEMETRY</span>
+              <span class="font-mono text-[9px] text-[#17120f]/70" id="profileShiftDate">Live Session</span>
+            </div>
+
+            <!-- 2x2 Telemetry Cards Grid -->
+            <div class="grid grid-cols-2 gap-2 text-[#17120f]">
+              <!-- Card 1: Total Calls / Dials -->
+              <div class="p-2 bg-[#fff4c9] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1">
+                <div class="flex items-center justify-between text-[9px] font-arcade">
+                  <span>📡 OUTREACH</span>
+                  <span id="profileDialsGoalText" class="font-mono text-[9px]">0/20</span>
+                </div>
+                <div class="font-arcade text-base font-black text-[#17120f]" id="profileDialsToday">0</div>
+                <div class="w-full bg-[#fffdf1] border border-[#17120f] h-2 overflow-hidden">
+                  <div id="profileDialProgressBar" class="bg-[#fce566] h-full transition-all duration-300" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <!-- Card 2: Successful / Booked -->
+              <div class="p-2 bg-[#d4edda] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1">
+                <div class="flex items-center justify-between text-[9px] font-arcade text-[#155724]">
+                  <span>🎉 BOOKED</span>
+                  <span id="profileWinRateBadge" class="font-mono text-[9px] font-bold">0% WIN</span>
+                </div>
+                <div class="font-arcade text-base font-black text-[#155724]" id="profileSuccessCount">0</div>
+                <p class="font-mono text-[9px] text-[#155724] truncate" id="profileBookedValue">₹0 Pipeline</p>
+              </div>
+
+              <!-- Card 3: Rejections -->
+              <div class="p-2 bg-[#f8d7da] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1">
+                <div class="flex items-center justify-between text-[9px] font-arcade text-[#721c24]">
+                  <span>🛑 REJECTIONS</span>
+                </div>
+                <div class="font-arcade text-base font-black text-[#721c24]" id="profileRejectionCount">0</div>
+                <p class="font-mono text-[9px] text-[#721c24] truncate" id="profileRejectionBreakdown">0 Disq • 0 Ineligible</p>
+              </div>
+
+              <!-- Card 4: Callbacks / In-Flight -->
+              <div class="p-2 bg-[#fff3cd] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1">
+                <div class="flex items-center justify-between text-[9px] font-arcade text-[#856404]">
+                  <span>⏱️ FOLLOW-UPS</span>
+                </div>
+                <div class="font-arcade text-base font-black text-[#856404]" id="profileCallbackCount">0</div>
+                <p class="font-mono text-[9px] text-[#856404] truncate">Follow-ups</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Quick Action Controls -->
+          <div class="space-y-1.5 pt-2 border-t-2 border-[#17120f]">
+            <div class="grid grid-cols-2 gap-1.5">
+              <button type="button" onclick="exportActiveQueueCsv()" title="Export current prospect radar queue to CSV spreadsheet" class="px-2 py-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-mono text-[10px] font-bold flex items-center justify-center gap-1 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
+                <span>📥</span> <span>Export CSV</span>
+              </button>
+              <button type="button" onclick="resetShiftDials()" title="Reset shift counter to zero" class="px-2 py-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-mono text-[10px] font-bold flex items-center justify-center gap-1 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
+                <span>🔄</span> <span>Reset Counter</span>
+              </button>
+            </div>
+
+            <!-- Owner Admin Console Jump (Strictly for Owner) -->
+            <button id="dropdownAdminBtn" type="button" onclick="closeProfileDropdown(); openAdminModal();" class="hidden w-full px-2 py-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[10px] items-center justify-center gap-2 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 border border-[#17120f]" style="width:8px;height:8px;border-radius:9999px;display:inline-block;"></span>
+              <span>OPEN ADMIN CONSOLE</span>
+            </button>
+
+            <!-- Install Mobile App in Dropdown (Visible when verified) -->
+            <button id="dropdownInstallAppBtn" type="button" onclick="closeProfileDropdown(); handleInstallAppClick();" class="hidden w-full px-2 py-1.5 bg-[#fce566] hover:bg-[#ffe040] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[10px] items-center justify-center gap-2 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
+              <span>📲</span> <span>INSTALL MOBILE APP</span>
+            </button>
+
+            <!-- Secure Sign Out Button -->
+            <button id="topbar-sign-out" type="button" onclick="signOutGoogle()" class="w-full px-2 py-2 bg-[#f8d7da] hover:bg-[#f5c6cb] text-[#721c24] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-[10px] font-bold flex items-center justify-center gap-2 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
+              <svg class="w-3.5 h-3.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              <span>SIGN OUT OF WORKSPACE</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </header>
@@ -770,8 +890,8 @@
     <span class="text-[10px] text-[#721c24]">Real-Time Collision Guard Active</span>
   </div>
 
-  <!-- MOBILE-RESPONSIVE VIEW SWITCHER TABS (< 768px) -->
-  <div class="md:hidden bg-[#fff4c9] border-b-2 border-[#17120f] px-3 py-1.5 flex items-center justify-center shrink-0">
+  <!-- MOBILE-RESPONSIVE VIEW SWITCHER TABS (< 768px, Gated to Active Cockpit) -->
+  <div id="mobileSwitcherTabs" class="hidden md:hidden bg-[#fff4c9] border-b-2 border-[#17120f] px-3 py-1.5 flex items-center justify-center shrink-0">
     <div class="flex bg-[#fffdf1] p-0.5 text-xs border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] w-full font-arcade">
       <button id="mobileTabQueue" onclick="showMobilePane('queue')" class="flex-1 py-1.5 font-bold text-[#17120f] bg-[#fce566] border border-[#17120f] transition text-center">
         Queue (<span id="mobileQueueCount">60</span>)
@@ -782,8 +902,171 @@
     </div>
   </div>
 
-  <!-- MAIN WORKSTATION CANVAS (3-Column Desktop Architecture) -->
-  <div class="flex-1 flex flex-col md:flex-row overflow-hidden pb-16 md:pb-0">
+  <!-- ================================================================= -->
+  <!-- VIEW 1: RESTRICTED ACCESS GATE (Guests / Unauthenticated)         -->
+  <!-- ================================================================= -->
+  <div id="workspaceGateContainer" class="flex-1 overflow-y-auto flex items-center justify-center p-4 sm:p-8 bg-[#fff4c9]">
+    <div class="max-w-xl w-full bg-[#fffdf1] border-[3px] border-[#17120f] shadow-[6px_6px_0_#17120f] p-6 sm:p-8 space-y-6 text-center" data-kaboom-body="true">
+      <div class="inline-flex items-center gap-2 px-3 py-1 bg-[#fff1bd] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] text-[10px] font-arcade uppercase text-[#17120f]">
+        <span>🔒</span>
+        <span>RESTRICTED ACCESS // CLIENT RADAR COCKPIT</span>
+      </div>
+
+      <div class="space-y-2">
+        <h1 class="text-xl sm:text-2xl font-black font-arcade text-[#17120f] tracking-tight leading-tight">
+          CLIENT INTELLIGENCE WORKSTATION
+        </h1>
+        <p class="text-xs sm:text-sm font-mono text-[#17120f]/80 leading-relaxed max-w-md mx-auto">
+          This portal contains proprietary market intelligence, client radar queues, and dossiers for Apoorv's custom 3D web engineering practice. Authentication is required to proceed.
+        </p>
+      </div>
+
+      <div class="pt-2 pb-1 flex flex-col items-center gap-3">
+        <button 
+          id="gateGoogleSignInBtn" 
+          type="button" 
+          onclick="handleWorkspaceGoogleAuth()" 
+          class="w-full sm:w-auto px-6 py-3 bg-[#fce566] hover:bg-[#ffe875] text-[#17120f] border-[3px] border-[#17120f] shadow-[4px_4px_0_#17120f] font-arcade text-xs font-bold flex items-center justify-center gap-3 transition cursor-pointer active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0_#17120f]">
+          <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          <span>CONTINUE WITH GOOGLE</span>
+        </button>
+
+        <div id="gateErrorMsg" class="hidden text-xs font-mono text-[#8f1727] bg-[#f8d7da] border-2 border-[#17120f] px-3 py-1.5"></div>
+
+        <button 
+          type="button" 
+          onclick="openAuthGate()" 
+          class="text-[11px] font-mono text-[#17120f]/70 hover:text-[#17120f] underline decoration-2 cursor-pointer mt-1">
+          Have an assigned Partner ID / Username? Sign in here →
+        </button>
+      </div>
+
+      <div class="border-t-2 border-[#17120f] pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-[#17120f]/70">
+        <span>Looking to commission a 3D web experience?</span>
+        <a href="/sales" class="px-3 py-1.5 bg-[#fffdf1] hover:bg-[#fff1bd] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-bold text-[11px] transition">
+          Direct Inquiries →
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- VIEW 2: OUTREACH PARTNER APPLICATION PORTAL                       -->
+  <!-- (Authenticated Google Users who are not yet approved partners)    -->
+  <!-- ================================================================= -->
+  <div id="workspaceApplicantContainer" class="hidden flex-1 overflow-y-auto flex items-center justify-center p-4 sm:p-8 bg-[#fff4c9]">
+    <div class="max-w-2xl w-full bg-[#fffdf1] border-[3px] border-[#17120f] shadow-[6px_6px_0_#17120f] p-6 sm:p-8 space-y-6" data-kaboom-body="true">
+      
+      <!-- Top Google Profile Strip -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b-2 border-[#17120f] gap-4">
+        <div class="flex items-center gap-3">
+          <img id="portalApplicantImg" src="https://ui-avatars.com/api/?name=User&background=fff1bd&color=17120f" class="w-12 h-12 border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] object-cover" alt="User">
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="portalApplicantName" class="font-black font-arcade text-sm text-[#17120f]">Visitor</span>
+              <span class="text-[9px] font-arcade px-2 py-0.5 bg-[#fce566] border border-[#17120f] text-[#17120f]">GOOGLE SSO</span>
+            </div>
+            <div id="portalApplicantEmail" class="text-xs font-mono text-[#17120f]/70">user@gmail.com</div>
+          </div>
+        </div>
+        <button onclick="signOutGoogle()" class="px-2.5 py-1 text-[10px] font-arcade bg-[#fffdf1] hover:bg-[#f8d7da] hover:text-[#8f1727] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] transition cursor-pointer">
+          [ 🚪 Sign Out ]
+        </button>
+      </div>
+
+      <!-- Clearance Notice Banner -->
+      <div class="p-4 bg-[#fff1bd] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] space-y-2">
+        <div class="flex items-center gap-2">
+          <span class="text-sm">🛡️</span>
+          <span class="font-arcade text-xs font-bold text-[#17120f] uppercase">Outreach Partner Access Required</span>
+        </div>
+        <p class="text-xs font-mono text-[#17120f]/80 leading-relaxed">
+          The Client Radar cockpit is reserved for active outreach partners and referral scouts. Connect local businesses, clinics, and brands with Apoorv's custom 3D web engineering and earn a 15% commission (₹7,500 on ₹50k base) on every closed deal.
+        </p>
+      </div>
+
+      <!-- Form (Shown when no pending application) -->
+      <form id="portalApplicationForm" onsubmit="handleRepApplicationSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-arcade font-bold text-[#17120f] mb-1.5">
+            🎯 TARGET TERRITORY & VERTICAL
+          </label>
+          <select id="portalApplicantTerritory" class="w-full bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] px-3 py-2 text-xs font-mono text-[#17120f] focus:outline-none focus:bg-[#fce566] transition">
+            <option value="Kochi">Kochi — High-Value Architecture Studios, Dental Clinics, Luxury Retail</option>
+            <option value="Bangalore">Bangalore — High-Growth D2C, Tech Startups, Spatial Web Experiences</option>
+            <option value="Hyderabad">Hyderabad — Enterprise Real Estate & Commercial Architecture</option>
+            <option value="Remote / Global">Remote / Global — High-Ticket WebGL/WebGPU Creative Engineering</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-arcade font-bold text-[#17120f] mb-1.5">
+            ⚡ HOW WILL YOU INTRODUCE CLIENTS TO APOORV? (EXPERIENCE / APPROACH)
+          </label>
+          <textarea 
+            id="portalApplicantPitch" 
+            rows="3" 
+            required 
+            placeholder="Tell us about your background, network in tech/retail/clinics, or how you plan to introduce clients to Apoorv's 60 FPS Three.js/WebGL systems..." 
+            class="w-full bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] p-3 text-xs font-mono text-[#17120f] placeholder-[#17120f]/40 focus:outline-none focus:bg-[#fce566] transition"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-arcade font-bold text-[#17120f] mb-1.5">
+            📱 WHATSAPP / CONTACT PHONE (OPTIONAL)
+          </label>
+          <input 
+            type="text" 
+            id="portalApplicantPhone" 
+            placeholder="+91 98765 43210 or +1 ..." 
+            class="w-full bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] px-3 py-2 text-xs font-mono text-[#17120f] placeholder-[#17120f]/40 focus:outline-none focus:bg-[#fce566] transition" />
+        </div>
+
+        <label class="flex items-start gap-2 text-xs font-mono text-[#17120f] cursor-pointer">
+          <input type="checkbox" id="portalApplicantConsent" required class="mt-0.5 cursor-pointer" />
+          <span>I consent to the collection and verification of my professional coordinates under the <button type="button" onclick="window.APP_SHELL?.openLegalModal?.('privacy')" class="underline font-bold">DPDP Act 2023</button> exclusively for outreach partner clearance.</span>
+        </label>
+
+        <button 
+          type="submit" 
+          id="portalSubmitAppBtn" 
+          class="w-full py-3 px-4 bg-[#fce566] hover:bg-[#ffe875] text-[#17120f] border-[3px] border-[#17120f] shadow-[4px_4px_0_#17120f] font-arcade text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0_#17120f]">
+          <span>🚀</span>
+          <span>APPLY FOR OUTREACH PARTNER ACCESS</span>
+        </button>
+      </form>
+
+      <!-- Status Banner (Shown when application is submitted / on file) -->
+      <div id="portalApplicantStatusBox" class="hidden p-5 bg-[#fffdf1] border-[3px] border-[#17120f] shadow-[4px_4px_0_#17120f] space-y-3">
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-3 h-3 bg-amber-400 border border-[#17120f] rounded-full animate-pulse"></span>
+          <span class="font-arcade text-xs font-bold text-[#17120f]">APPLICATION ON FILE // PENDING REVIEW</span>
+        </div>
+        <p id="portalApplicantStatusText" class="text-xs font-mono text-[#17120f]/80 leading-relaxed">
+          Your outreach partner request has been received. You will receive an update once approved.
+        </p>
+        <div class="p-3 bg-[#fff1bd] border-2 border-[#17120f] text-[11px] font-mono text-[#17120f]">
+          <strong>Clearance Target:</strong> <span id="portalApplicantStatusTerritory">--</span><br>
+          <strong>Submitted:</strong> <span id="portalApplicantStatusDate">--</span>
+        </div>
+      </div>
+
+      <!-- Footer: Client alternative -->
+      <div class="border-t-2 border-[#17120f] pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-[#17120f]/70">
+        <span>Looking to commission a project as a client?</span>
+        <a href="/sales" class="px-3 py-1.5 bg-[#fce566] hover:bg-[#ffe875] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-bold text-[11px] transition">
+          Direct Client Inquiries →
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- VIEW 3: MAIN WORKSTATION CANVAS (3-Column Desktop Architecture)   -->
+  <!-- (Gated strictly to Verified Callers and Owner)                    -->
+  <!-- ================================================================= -->
+  <main id="workspaceCockpitContainer" tabindex="-1" class="hidden flex-1 flex flex-col md:flex-row overflow-hidden pb-16 md:pb-0 outline-none">
 
     <!-- ================================================================= -->
     <!-- COLUMN 1: PROSPECT QUEUE (Sidebar: 300px - 320px)                 -->
@@ -800,6 +1083,15 @@
           </div>
           <span id="leadCountBadge" class="text-[9px] sm:text-[10px] font-arcade text-[#17120f] bg-[#fffdf1] px-1.5 py-1 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] shrink-0 whitespace-nowrap">60 Leads</span>
         </div>
+
+        <!-- Status / Disposition Filter Segmented Control -->
+        <div class="flex bg-[#fffdf1] p-0.5 text-[9px] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade">
+          <button id="statusTabAll" type="button" onclick="filterStatus('all')" class="status-tab active flex-1 py-1 font-bold text-[#17120f] bg-[#fce566] transition text-center" title="All Leads">ALL</button>
+          <button id="statusTabFresh" type="button" onclick="filterStatus('fresh')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center" title="Fresh / Untouched Leads">FRESH</button>
+          <button id="statusTabCallbacks" type="button" onclick="filterStatus('callbacks')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center" title="Scheduled Callbacks">CB</button>
+          <button id="statusTabInterested" type="button" onclick="filterStatus('interested')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center" title="Interested & Booked Leads">WINS</button>
+        </div>
+
         <button 
           id="btnExportQueueCsv" 
           type="button"
@@ -816,6 +1108,7 @@
           <input 
             type="text" 
             id="queueSearchInput" 
+            aria-label="Search prospect or hub"
             oninput="handleSearch(this.value)" 
             placeholder="Search prospect or hub..." 
             class="w-full bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] pl-8 pr-8 py-1.5 text-xs text-[#17120f] placeholder-[#17120f]/50 focus:outline-none focus:bg-[#fce566] transition font-mono"
@@ -861,7 +1154,7 @@
           <div class="flex items-center justify-between gap-2 flex-wrap border-b-2 border-[#17120f] pb-2.5">
             <div class="flex items-center gap-2 flex-wrap">
               <span id="leadQueuePosition" class="text-[10px] font-arcade text-[#17120f] bg-[#fff1bd] border-2 border-[#17120f] px-2.5 py-1 shadow-[1px_1px_0_#17120f]">Lead 1 of 65</span>
-              <span id="activeRating" class="text-[10px] bg-[#fff1bd] text-[#17120f] font-arcade px-2 py-1 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f]">★ 4.8</span>
+              <span id="activeRating" class="text-[10px] bg-[#fff1bd] text-[#17120f] font-arcade px-2 py-1 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f]">★ --</span>
               <span id="activeType" class="text-[10px] font-arcade px-2 py-1 bg-[#fffdf1] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f]">UPGRADE</span>
               <span id="activeFee" data-kaboom-body="true" class="text-[10px] font-arcade px-2 py-1 bg-[#d4edda] text-[#155724] border-2 border-[#17120f] font-bold shadow-[1px_1px_0_#17120f]">Floor ₹50,000</span>
               <span id="currentLockStatus" class="text-[10px] font-arcade px-2 py-1 bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f]">Ready</span>
@@ -898,6 +1191,22 @@
 
           <!-- Bottom Row: 1-Click Outreach Actions -->
           <div class="flex items-center gap-2 flex-wrap pt-1">
+            <!-- 1-Click Direct Phone Call Button -->
+            <a 
+              id="callActionBtn" 
+              data-kaboom-body="true"
+              href="#" 
+              onclick="handleCallInitiated()"
+              title="Call Prospect [Hotkey: D]"
+              class="px-3.5 py-2 bg-[#2e7d32] hover:bg-[#1b5e20] text-white border-2 border-[#17120f] font-arcade text-[10px] sm:text-xs shadow-[2px_2px_0_#17120f] transition flex items-center justify-center gap-1.5 font-bold cursor-pointer active:translate-x-[1px] active:translate-y-[1px]"
+            >
+              <svg class="w-3.5 h-3.5 text-white shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+              <span id="callPhoneText">Schedule Call</span>
+            </a>
+
+            <!-- WhatsApp Brief Button -->
             <a 
               id="whatsappActionBtn" 
               href="#" 
@@ -938,63 +1247,13 @@
           </div>
         </div>
 
-        <!-- 2. CLIENT TECHNICAL PERFORMANCE AUDIT -->
-        <div class="studio-panel rounded-none p-4 sm:p-5 space-y-3">
-          <div class="flex items-center justify-between border-b-2 border-[#17120f] pb-2">
-            <h2 class="font-arcade text-xs uppercase tracking-wider text-[#17120f] flex items-center gap-2">
-              <span>⚡ Technical Vulnerabilities & Core Web Vitals</span>
-            </h2>
-            <span class="text-[10px] font-arcade text-[#17120f] bg-[#fff1bd] border-2 border-[#17120f] px-2 py-0.5">Mobile 4G Benchmark</span>
-          </div>
-
-          <p class="text-xs text-[#17120f]/80 font-mono leading-relaxed">
-            Live diagnostic of mobile asset weight, cellular drop-offs, and compliance exposure detected on the prospect's production web infrastructure.
-          </p>
-
-          <!-- Detected Flaws Container -->
-          <div id="flawsContainer" class="flex items-center gap-2 flex-wrap pt-1"></div>
-        </div>
-
-        <!-- 3. CREATIVE ENGINEERING UPGRADE ARCHITECTURE -->
-        <div class="studio-panel-elevated rounded-none p-4 sm:p-5 space-y-3">
-          <div class="flex items-center justify-between border-b-2 border-[#17120f] pb-2">
-            <h2 class="font-arcade text-xs uppercase tracking-wider text-[#17120f] flex items-center gap-2">
-              <span>🛠️ 3D WebUI & High-Impact Conversion Solutions</span>
-            </h2>
-            <span class="text-[10px] font-arcade text-[#17120f] bg-[#fce566] border-2 border-[#17120f] px-2 py-0.5">Apoorv Studio Moat</span>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
-            <div class="bg-[#fffdf1] border-2 border-[#17120f] p-3 shadow-[2px_2px_0_#17120f] space-y-1">
-              <div class="font-arcade text-[10px] text-[#6d3bb8] font-bold">01 // SUB-0.8s LCP</div>
-              <h3 class="font-arcade text-[11px] text-[#17120f] font-bold">Instant Mobile Shell</h3>
-              <p class="text-xs text-[#17120f]/80 font-mono leading-normal">
-                Replaces slow WordPress/Elementor bundle with edge-cached headless static architecture, wiping out 4G client drop-off.
-              </p>
-            </div>
-
-            <div class="bg-[#fffdf1] border-2 border-[#17120f] p-3 shadow-[2px_2px_0_#17120f] space-y-1">
-              <div class="font-arcade text-[10px] text-[#2e7d32] font-bold">02 // ZERO COMMISSIONS</div>
-              <h3 class="font-arcade text-[11px] text-[#17120f] font-bold">WhatsApp Direct Portal</h3>
-              <p class="text-xs text-[#17120f]/80 font-mono leading-normal">
-                Eliminates 15%–25% aggregator fees (Practo/Zomato) with 1-tap thumb consultation booking straight to the stakeholder.
-              </p>
-            </div>
-
-            <div class="bg-[#fffdf1] border-2 border-[#17120f] p-3 shadow-[2px_2px_0_#17120f] space-y-1">
-              <div class="font-arcade text-[10px] text-[#8f1727] font-bold">03 // 60 FPS WEBGL</div>
-              <h3 class="font-arcade text-[11px] text-[#17120f] font-bold">Interactive 3D Feature</h3>
-              <p class="text-xs text-[#17120f]/80 font-mono leading-normal">
-                Embeds procedural 3D model showcases, luxury interactive material previewers, or spatial effects to establish market authority.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- 4. EXECUTIVE BRIEF & WORKBENCH NOTES -->
+        <!-- 2. CLOSER SOUNDBOARD, REBUTTALS & CALL NOTES (ABOVE THE FOLD) -->
         <div class="studio-panel rounded-none p-4 sm:p-5 space-y-3 shrink-0">
           <div class="flex items-center justify-between border-b-2 border-[#17120f] pb-2">
-            <h2 class="font-arcade text-xs uppercase tracking-wider text-[#17120f]">Outreach Schedule & Project Notes</h2>
+            <div class="flex items-center gap-2">
+              <h2 class="font-arcade text-xs uppercase tracking-wider text-[#17120f]">Outreach & Discovery Notes</h2>
+              <span id="notesSavedIndicator" class="text-[9px] font-mono text-emerald-700 font-bold opacity-0 transition-opacity duration-200">✓ Notes Saved</span>
+            </div>
             <div class="flex items-center gap-2">
               <input 
                 type="datetime-local" 
@@ -1012,7 +1271,7 @@
             <!-- Header with Quick Hotkeys & Defense Label -->
             <div class="flex items-center justify-between">
               <span class="font-arcade text-[10px] text-[#17120f] font-bold flex items-center gap-1.5">
-                <span>🛡️ CLOSER SOUNDBOARD & OBJECTION REBUTTALS</span>
+                <span>🛡️ STRATEGIC POSITIONING & OBJECTION DEFENSE</span>
               </span>
               <div class="hidden sm:flex items-center gap-1 font-mono text-[9px] text-[#17120f]/60">
                 <span>HOTKEYS:</span>
@@ -1031,7 +1290,7 @@
               <button type="button" onclick="logOutcome('interested')" title="Log Interested [Hotkey: 1]" class="px-2 py-1 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1">
                 <span>[1]</span> <span>INTERESTED</span>
               </button>
-              <button type="button" onclick="logOutcome('gatekeeper_rejection')" title="Log Busy / Callback [Hotkey: 2]" class="px-2 py-1 bg-[#fff3cd] hover:bg-[#ffeeba] text-[#856404] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1">
+              <button type="button" onclick="logOutcome('connected_callback')" title="Log Busy / Callback [Hotkey: 2]" class="px-2 py-1 bg-[#fff3cd] hover:bg-[#ffeeba] text-[#856404] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1">
                 <span>[2]</span> <span>BUSY / CB</span>
               </button>
               <button type="button" onclick="logOutcome('not_interested')" title="Log Disqualified [Hotkey: 3]" class="px-2 py-1 bg-[#f8d7da] hover:bg-[#f5c6cb] text-[#721c24] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1">
@@ -1078,7 +1337,7 @@
               <p id="objectionText" class="font-mono text-[11px] text-[#17120f] leading-relaxed italic bg-[#fffdf1] p-2 border border-[#17120f]"></p>
               <div class="flex items-center justify-between pt-1">
                 <button type="button" onclick="appendActiveObjectionToNotes()" class="px-3 py-1 bg-[#17120f] hover:bg-[#2b221d] text-[#fffdf1] font-arcade text-[10px] font-bold shadow-[1px_1px_0_#fffdf1] transition flex items-center gap-1">
-                  <span>+</span> <span>APPEND TO CALL NOTES</span>
+                  <span>+</span> <span>APPEND TO DISCOVERY NOTES</span>
                 </button>
                 <span class="text-[9px] font-mono text-[#17120f]/70">Auto-saved to notes</span>
               </div>
@@ -1108,9 +1367,61 @@
           </div>
         </div>
 
+        <!-- 3. CLIENT TECHNICAL PERFORMANCE AUDIT -->
+        <div class="studio-panel rounded-none p-4 sm:p-5 space-y-3">
+          <div class="flex items-center justify-between border-b-2 border-[#17120f] pb-2">
+            <h2 class="font-arcade text-xs uppercase tracking-wider text-[#17120f] flex items-center gap-2">
+              <span>⚡ Technical Vulnerabilities & Core Web Vitals</span>
+            </h2>
+            <span class="text-[10px] font-arcade text-[#17120f] bg-[#fff1bd] border-2 border-[#17120f] px-2 py-0.5">Mobile 4G Benchmark</span>
+          </div>
+
+          <p class="text-xs text-[#17120f]/80 font-mono leading-relaxed">
+            Live diagnostic of mobile asset weight, cellular drop-offs, and compliance exposure detected on the prospect's production web infrastructure.
+          </p>
+
+          <!-- Detected Flaws Container -->
+          <div id="flawsContainer" class="flex items-center gap-2 flex-wrap pt-1"></div>
+        </div>
+
+        <!-- 4. CREATIVE ENGINEERING UPGRADE ARCHITECTURE -->
+        <div class="studio-panel-elevated rounded-none p-4 sm:p-5 space-y-3">
+          <div class="flex items-center justify-between border-b-2 border-[#17120f] pb-2">
+            <h2 class="font-arcade text-xs uppercase tracking-wider text-[#17120f] flex items-center gap-2">
+              <span>🛠️ 3D WebUI & High-Impact Conversion Solutions</span>
+            </h2>
+            <span class="text-[10px] font-arcade text-[#17120f] bg-[#fce566] border-2 border-[#17120f] px-2 py-0.5">Apoorv Engineering Moat</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+            <div class="bg-[#fffdf1] border-2 border-[#17120f] p-3 shadow-[2px_2px_0_#17120f] space-y-1">
+              <div class="font-arcade text-[10px] text-[#6d3bb8] font-bold">01 // SUB-0.8s LCP</div>
+              <h3 id="moatSol1Title" class="font-arcade text-[11px] text-[#17120f] font-bold">Instant Mobile Shell</h3>
+              <p id="moatSol1Desc" class="text-xs text-[#17120f]/80 font-mono leading-normal">
+                Replaces slow WordPress/Elementor bundle with edge-cached headless static architecture, wiping out 4G client drop-off.
+              </p>
+            </div>
+
+            <div class="bg-[#fffdf1] border-2 border-[#17120f] p-3 shadow-[2px_2px_0_#17120f] space-y-1">
+              <div class="font-arcade text-[10px] text-[#2e7d32] font-bold">02 // ZERO COMMISSIONS</div>
+              <h3 id="moatSol2Title" class="font-arcade text-[11px] text-[#17120f] font-bold">WhatsApp Direct Portal</h3>
+              <p id="moatSol2Desc" class="text-xs text-[#17120f]/80 font-mono leading-normal">
+                Eliminates 15%–25% aggregator fees (Practo/Zomato) with 1-tap thumb consultation booking straight to the stakeholder.
+              </p>
+            </div>
+
+            <div class="bg-[#fffdf1] border-2 border-[#17120f] p-3 shadow-[2px_2px_0_#17120f] space-y-1">
+              <div class="font-arcade text-[10px] text-[#8f1727] font-bold">03 // 60 FPS WEBGL</div>
+              <h3 id="moatSol3Title" class="font-arcade text-[11px] text-[#17120f] font-bold">Interactive 3D Feature</h3>
+              <p id="moatSol3Desc" class="text-xs text-[#17120f]/80 font-mono leading-normal">
+                Embeds procedural 3D model showcases, luxury interactive material previewers, or spatial effects to establish market authority.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <!-- COMPATIBILITY HOOKS (Hidden from UI, preserving 100% app.js stability) -->
         <div class="hidden" aria-hidden="true">
-          <a id="callActionBtn" data-kaboom-body="true" href="#"><span id="callPhoneText"></span></a>
           <div id="callTimerBox"><span id="callTimerDigits">00:00</span></div>
           <div id="lockedBadge"></div>
           <div id="scriptContentBox"></div>
@@ -1207,7 +1518,7 @@
             <span class="text-[11px] font-mono text-neutral-400">Security Audit:</span>
             <span class="font-mono text-[11px] text-amber-300 flex items-center gap-1">
               <span id="securityAuditGrade">MODERATE</span>
-              <span id="securityAuditScore" class="text-neutral-500 text-[10px]">(42/100)</span>
+              <span id="securityAuditScore" class="text-neutral-500 text-[10px]">(--/100)</span>
             </span>
           </div>
         </div>
@@ -1285,7 +1596,7 @@
       </div>
 
     </div>
-  </div>
+  </main>
 
   <!-- STICKY BOTTOM THUMB-ZONE ACTION BAR (< 768px Mobile) -->
   <div class="md:hidden fixed bottom-0 left-0 right-0 bg-[#101114] border-t border-white/[0.08] px-2 py-2 flex items-center justify-between gap-1.5 z-40 shadow-2xl">
@@ -1352,7 +1663,7 @@
           <span class="font-bold font-mono text-sm tracking-tight text-white uppercase">APOORV // WORKBENCH</span>
         </div>
         <div class="flex items-center gap-2">
-          <span class="text-[10px] font-mono text-neutral-400 bg-white/5 px-2 py-0.5 rounded border border-white/5">Studio V3</span>
+          <span class="text-[10px] font-mono text-neutral-400 bg-white/5 px-2 py-0.5 rounded border border-white/5">Radar V3</span>
           <button id="closeAuthGateBtn" type="button" onclick="closeAuthGate()" class="text-neutral-500 hover:text-white font-mono text-base font-bold px-1.5 py-0.5 rounded hover:bg-white/10 transition cursor-pointer" title="Close">✕</button>
         </div>
       </div>
@@ -1360,7 +1671,7 @@
       <div class="space-y-1">
         <h2 class="text-base font-bold text-white tracking-tight">Workstation Access</h2>
         <p class="text-xs text-neutral-400 leading-relaxed">
-          Sign in with Google or your caller credentials to unlock live dialer calling and lead reservations.
+          Sign in with Google or your partner credentials to unlock client radar dossiers and lead reservations.
         </p>
       </div>
 
@@ -1377,13 +1688,13 @@
 
         <div class="flex items-center gap-3">
           <div class="h-px bg-white/10 flex-1"></div>
-          <span class="text-[10px] font-mono text-neutral-500 uppercase">Or Caller ID</span>
+          <span class="text-[10px] font-mono text-neutral-500 uppercase">Or Partner ID</span>
           <div class="h-px bg-white/10 flex-1"></div>
         </div>
 
         <form onsubmit="handleCredentialsAuth(event)" class="space-y-3">
           <div>
-            <label class="block text-[11px] font-mono text-neutral-400 mb-1">Username / Caller ID</label>
+            <label for="loginUsernameInput" class="block text-[11px] font-mono text-neutral-400 mb-1">Username / Partner ID</label>
             <input 
               type="text" 
               id="loginUsernameInput" 
@@ -1394,7 +1705,7 @@
 
           <div>
             <div class="flex justify-between items-center mb-1">
-              <label class="block text-[11px] font-mono text-neutral-400">Password</label>
+              <label for="loginPasswordInput" class="block text-[11px] font-mono text-neutral-400">Password</label>
             </div>
             <input 
               type="password" 
@@ -1407,7 +1718,7 @@
           <div id="loginErrorMsg" class="hidden text-xs text-rose-400 font-mono"></div>
 
           <button type="submit" class="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-mono text-xs font-bold transition border border-white/10 cursor-pointer">
-            Sign In with Caller ID →
+            Sign In with Partner ID →
           </button>
         </form>
 
@@ -1435,14 +1746,14 @@
       </div>
 
       <div class="text-xs font-mono text-neutral-300 leading-relaxed bg-[#101114] p-3 rounded-xl border border-white/5">
-        🔒 <strong class="text-white">Notice:</strong> The live calling dialer and prospect dossiers are restricted to active sales representatives. Select your path below:
+        🔒 <strong class="text-white">Notice:</strong> The prospect radar and audit dossiers are restricted to verified outreach partners. Select your path below:
       </div>
 
-      <!-- Path 1: Apply as Sales Rep -->
+      <!-- Path 1: Apply as Outreach Partner -->
       <div id="repApplicationSection" class="bg-[#101114] border border-blue-900/30 rounded-xl p-4 space-y-3">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-mono text-white font-bold">⚡ Apply for Sales Rep Clearance</span>
-          <span class="text-[10px] font-mono text-blue-400 font-bold">Commission Role</span>
+          <span class="text-xs font-mono text-white font-bold">⚡ Apply for Outreach Partner Access</span>
+          <span class="text-[10px] font-mono text-blue-400 font-bold">15% Commission Affiliate</span>
         </div>
         <form id="repApplicationForm" onsubmit="handleRepApplicationSubmit(event)" class="space-y-3">
           <div>
@@ -1455,19 +1766,19 @@
             </select>
           </div>
           <div>
-            <label class="block text-[10px] font-mono text-neutral-400 mb-1">Why do you want to represent Apoorv? (Experience / Pitch)</label>
-            <textarea id="applicantPitch" rows="2" required placeholder="Brief note on your sales background or why you can close WebGL/3D deals..." class="w-full bg-[#15161B] border border-white/10 rounded-lg p-2 text-xs font-mono text-white focus:outline-none focus:border-white/30"></textarea>
+            <label class="block text-[10px] font-mono text-neutral-400 mb-1">How will you introduce clients to Apoorv? (Experience / Approach)</label>
+            <textarea id="applicantPitch" rows="2" required placeholder="Brief note on your background or how you can introduce WebGL/3D clients..." class="w-full bg-[#15161B] border border-white/10 rounded-lg p-2 text-xs font-mono text-white focus:outline-none focus:border-white/30"></textarea>
           </div>
           <div>
             <label class="block text-[10px] font-mono text-neutral-400 mb-1">WhatsApp / Contact Phone (Optional)</label>
             <input type="text" id="applicantPhone" placeholder="+91 / +1 ..." class="w-full bg-[#15161B] border border-white/10 rounded-lg px-2.5 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-white/30" />
           </div>
           <button type="submit" id="submitAppBtn" class="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
-            <span>🚀 Submit Application to Apoorv</span>
+            <span>🚀 Apply for Outreach Partner Access</span>
           </button>
         </form>
         <div id="applicantSuccessMsg" class="hidden text-xs font-mono text-emerald-400 bg-emerald-950/40 p-2.5 rounded-lg border border-emerald-800/40">
-          ✅ Application submitted! Status: <strong class="text-white">PENDING OWNER REVIEW</strong>. Apoorv will review and unlock your workspace clearance.
+          ✅ Application submitted! Status: <strong class="text-white">PENDING REVIEW</strong>. Apoorv will review and unlock your workspace access.
         </div>
       </div>
 
@@ -1523,25 +1834,90 @@
     </div>
   </div>
 
-  <!-- 3. CLIENT TEARDOWN MODAL -->
+  <!-- 3. INTERACTIVE 3D TEARDOWN / TROJAN PITCH MODAL -->
   <div id="clientTeardownModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[1000]">
-    <div class="studio-panel-elevated rounded-2xl max-w-xl w-full p-6 space-y-4 border border-white/10 shadow-2xl">
-      <div class="flex items-center justify-between">
+    <div class="studio-panel-elevated rounded-2xl max-w-2xl w-full p-6 space-y-4 border border-white/10 shadow-2xl flex flex-col max-h-[90vh]">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
         <div>
-          <h3 class="text-base font-bold text-white">Client Technical Teardown</h3>
-          <p id="modalClientName" class="text-xs text-blue-400 font-mono">--</p>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 text-[9px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/40 rounded">⚡ TROJAN 3D PITCH</span>
+            <h3 class="text-base font-bold text-white">Interactive Client Teardown</h3>
+          </div>
+          <p id="modalClientName" class="text-xs text-blue-400 font-mono mt-0.5">--</p>
         </div>
-        <button onclick="closeClientTeardownModal()" class="text-neutral-400 hover:text-white text-lg">✕</button>
+        <button onclick="closeClientTeardownModal()" class="text-neutral-400 hover:text-white text-lg p-1" aria-label="Close Teardown Modal">✕</button>
       </div>
-      <div class="text-xs text-neutral-300 space-y-2">
-        <p>Current 4G Cellular Latency: <strong id="modalCurrentLcp" class="text-rose-400 font-mono">--</strong></p>
-        <p>Target Apoorv Headless Benchmark: <strong class="text-emerald-400 font-mono">0.8s (Instantaneous)</strong></p>
+
+      <!-- Teardown Telemetry Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+        <div class="p-3 bg-white/[0.03] border border-white/[0.08] rounded-lg">
+          <p class="text-[10px] text-neutral-400 font-mono">Mobile Latency</p>
+          <p id="modalCurrentLcp" class="text-rose-400 font-mono font-bold text-sm mt-0.5">--</p>
+          <span class="text-[9px] text-neutral-500">Benchmark: &lt; 0.8s</span>
+        </div>
+        <div class="p-3 bg-white/[0.03] border border-white/[0.08] rounded-lg">
+          <p class="text-[10px] text-neutral-400 font-mono">Google Speed</p>
+          <p id="modalSpeedScore" class="text-amber-400 font-mono font-bold text-sm mt-0.5">--</p>
+          <span class="text-[9px] text-neutral-500">Target: 99/100</span>
+        </div>
+        <div class="p-3 bg-white/[0.03] border border-white/[0.08] rounded-lg">
+          <p class="text-[10px] text-neutral-400 font-mono">Est. Revenue Leak</p>
+          <p id="modalRevenueLeak" class="text-rose-400 font-mono font-bold text-sm mt-0.5">--</p>
+          <span class="text-[9px] text-neutral-500">Mobile drop-off</span>
+        </div>
+        <div class="p-3 bg-white/[0.03] border border-white/[0.08] rounded-lg">
+          <p class="text-[10px] text-neutral-400 font-mono">Aggregator Bleed</p>
+          <p id="modalAggregatorBleed" class="text-amber-400 font-mono font-bold text-sm mt-0.5">--</p>
+          <span class="text-[9px] text-neutral-500">Commissions</span>
+        </div>
       </div>
-      <div class="pt-2 flex justify-end gap-2">
-        <button onclick="copyTeardownLink()" class="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-mono text-xs transition">
-          Copy Link
-        </button>
-        <button onclick="closeClientTeardownModal()" class="px-4 py-1.5 rounded-lg bg-white text-neutral-950 hover:bg-neutral-200 font-semibold font-mono text-xs transition">
+
+      <!-- Generated URL Box -->
+      <div class="space-y-1.5">
+        <label for="teardownShareUrl" class="text-[10px] font-mono uppercase text-neutral-400 flex items-center justify-between">
+          <span>Personalized Interactive 3D Teardown Link</span>
+          <span class="text-emerald-400 text-[9px]">● Live URL Ready</span>
+        </label>
+        <div class="flex items-center gap-2">
+          <input 
+            type="text" 
+            id="teardownShareUrl" 
+            readonly 
+            class="w-full px-3 py-2 bg-neutral-900/90 border border-white/20 rounded-lg text-xs font-mono text-neutral-200 select-all focus:outline-none focus:border-purple-400"
+            onclick="this.select()"
+          >
+          <button 
+            id="btnCopyTeardownLink"
+            onclick="copyTeardownLink()" 
+            class="px-4 py-2 bg-white text-neutral-950 hover:bg-neutral-200 font-mono text-xs font-semibold rounded-lg shrink-0 transition flex items-center gap-1.5"
+          >
+            <span>⚡ Copy</span>
+          </button>
+        </div>
+        <p class="text-[10px] text-neutral-400">When the client opens this link, they see an interactive 24 FPS vs 60 FPS performance comparison branded with their metrics.</p>
+      </div>
+
+      <!-- Quick Action Rails -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-white/10">
+        <div class="flex items-center gap-2">
+          <button 
+            onclick="previewTeardownPage()" 
+            class="px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-neutral-200 border border-white/[0.08] font-mono text-xs transition flex items-center gap-1.5"
+            title="Open interactive page in a new tab"
+          >
+            <span>👁️ Live Preview ↗</span>
+          </button>
+          <button 
+            onclick="sendWhatsAppTeardown()" 
+            class="px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 font-mono text-xs transition flex items-center gap-1.5"
+          >
+            <span>💬 Send WhatsApp</span>
+          </button>
+        </div>
+        <button 
+          onclick="closeClientTeardownModal()" 
+          class="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-mono text-xs transition"
+        >
           Close
         </button>
       </div>
@@ -1576,6 +1952,95 @@
   </div>
 
 
+  <!-- INSTALL MOBILE APP MODAL (PWA / WebAPK / iOS Add to Home Screen) -->
+  <div id="installAppModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-[1050]" role="dialog" aria-modal="true" aria-labelledby="installModalTitle">
+    <div class="bg-[#fff4c9] border-[3px] border-[#17120f] shadow-[8px_8px_0_#17120f] max-w-lg w-full p-4 sm:p-6 space-y-4 flex flex-col font-mono text-[#17120f] select-none">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b-2 border-[#17120f] pb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">📲</span>
+          <div>
+            <h2 id="installModalTitle" class="font-arcade text-xs sm:text-sm font-bold text-[#17120f]">INSTALL CLIENT RADAR APP</h2>
+            <p class="text-[10px] text-[#17120f]/80 font-mono mt-0.5">Standalone Full-Screen Cockpit • 0 Browser Chrome</p>
+          </div>
+        </div>
+        <button onclick="closeInstallAppModal()" aria-label="Close Install Window" class="w-8 h-8 bg-[#fffdf1] hover:bg-[#fce566] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-sm font-bold flex items-center justify-center cursor-pointer transition active:translate-x-[1px] active:translate-y-[1px]">✕</button>
+      </div>
+
+      <!-- App Banner Preview -->
+      <div class="p-3 bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] flex items-center gap-3">
+        <img src="/favicon.png" width="48" height="48" class="w-12 h-12 border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] bg-[#fce566] p-1 object-contain" alt="Client Radar Icon">
+        <div class="flex-1 min-w-0">
+          <div class="font-arcade text-[11px] font-bold text-[#17120f] truncate">CLIENT RADAR MOBILE</div>
+          <div class="text-[10px] text-[#17120f]/70 font-mono">SprintDial Cockpit • 60 FPS Engine</div>
+          <div class="inline-flex items-center gap-1.5 mt-1 text-[9px] font-arcade text-emerald-800 bg-emerald-100 border border-emerald-700 px-1.5 py-0.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> VERIFIED CALLER ACCREDITED
+          </div>
+        </div>
+      </div>
+
+      <!-- Platform-Specific Instruction Tabs -->
+      <div id="installPlatformTabs" class="flex border-2 border-[#17120f] bg-[#fffdf1]">
+        <button id="tabBtnAndroid" type="button" onclick="switchInstallTab('android')" class="flex-1 py-2 text-center font-arcade text-[10px] font-bold border-r-2 border-[#17120f] bg-[#fce566] transition cursor-pointer">
+          🤖 ANDROID / CHROME
+        </button>
+        <button id="tabBtnIOS" type="button" onclick="switchInstallTab('ios')" class="flex-1 py-2 text-center font-arcade text-[10px] font-bold bg-[#fffdf1] transition cursor-pointer">
+          🍎 IPHONE / SAFARI
+        </button>
+      </div>
+
+      <!-- Tab 1: Android / Chrome / Chromium -->
+      <div id="installTabAndroid" class="space-y-3 bg-[#fffdf1] border-2 border-[#17120f] p-3 shadow-[2px_2px_0_#17120f]">
+        <div class="text-[11px] font-mono leading-relaxed space-y-2">
+          <div class="flex items-start gap-2">
+            <span class="font-arcade text-[10px] bg-[#17120f] text-[#fffdf1] px-1.5 py-0.5">STEP 1</span>
+            <span>Tap <strong>Trigger Install Prompt</strong> below.</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="font-arcade text-[10px] bg-[#17120f] text-[#fffdf1] px-1.5 py-0.5">STEP 2</span>
+            <span>If prompt does not fire automatically, tap Chrome menu <strong>(⋮)</strong> and select <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="font-arcade text-[10px] bg-[#17120f] text-[#fffdf1] px-1.5 py-0.5">STEP 3</span>
+            <span>Launch from your home screen. Enjoy zero browser bars, instant tel: dialing, and offline dossier caching.</span>
+          </div>
+        </div>
+
+        <button id="btnTriggerNativeInstall" type="button" onclick="triggerNativeInstallPrompt()" class="w-full py-2.5 px-3 bg-[#10b981] hover:bg-[#059669] text-white border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] font-arcade text-[11px] font-bold flex items-center justify-center gap-2 cursor-pointer transition active:translate-x-[1px] active:translate-y-[1px]">
+          <span>📲</span> <span>TRIGGER 1-TAP INSTALL PROMPT</span>
+        </button>
+      </div>
+
+      <!-- Tab 2: iPhone / Safari -->
+      <div id="installTabIOS" class="hidden space-y-3 bg-[#fffdf1] border-2 border-[#17120f] p-3 shadow-[2px_2px_0_#17120f]">
+        <div class="text-[11px] font-mono leading-relaxed space-y-2">
+          <div class="flex items-start gap-2">
+            <span class="font-arcade text-[10px] bg-[#17120f] text-[#fffdf1] px-1.5 py-0.5">STEP 1</span>
+            <span>In Safari, tap the <strong>Share button</strong> <span class="border border-[#17120f] px-1 py-0.5 bg-[#fce566] font-bold">⎋</span> on the bottom bar.</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="font-arcade text-[10px] bg-[#17120f] text-[#fffdf1] px-1.5 py-0.5">STEP 2</span>
+            <span>Scroll down the share sheet and tap <span class="border border-[#17120f] px-1 py-0.5 bg-[#fce566] font-bold">Add to Home Screen ⊕</span>.</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="font-arcade text-[10px] bg-[#17120f] text-[#fffdf1] px-1.5 py-0.5">STEP 3</span>
+            <span>Tap <strong>Add</strong> in the top-right corner. The Client Radar icon appears on your home screen with full-screen standalone execution!</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Footer -->
+      <div class="flex items-center justify-between gap-2 pt-2 border-t-2 border-[#17120f]">
+        <button type="button" onclick="copyWorkspaceUrl()" class="px-3 py-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-mono text-[11px] font-bold flex items-center gap-1.5 cursor-pointer transition active:translate-x-[1px] active:translate-y-[1px]">
+          <span>📋</span> <span id="copyUrlBtnText">Copy App URL</span>
+        </button>
+        <button type="button" onclick="closeInstallAppModal()" class="px-4 py-1.5 bg-[#f8d7da] hover:bg-[#f5c6cb] text-[#721c24] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-[10px] font-bold cursor-pointer transition active:translate-x-[1px] active:translate-y-[1px]">
+          Close Window
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- 6. OWNER ADMIN CONSOLE MODAL (5 Operational Tabs) -->
   <div id="adminModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-[1000]">
     <div class="studio-panel-elevated rounded-xl sm:rounded-2xl max-w-4xl w-full p-3 sm:p-5 lg:p-6 space-y-3 sm:space-y-4 border border-white/10 shadow-2xl flex flex-col max-h-[95vh] sm:max-h-[92vh] overflow-hidden">
@@ -1583,7 +2048,7 @@
       <div class="flex items-center justify-between border-b border-white/10 pb-2.5 sm:pb-3 gap-2">
         <div class="min-w-0 flex-1">
           <h2 class="text-xs sm:text-base font-bold text-white font-mono truncate">Owner Administration Console</h2>
-          <p class="text-[10px] sm:text-xs text-neutral-400 font-mono truncate">Studio Pipeline Analytics & Autonomous Controls</p>
+          <p class="text-[10px] sm:text-xs text-neutral-400 font-mono truncate">Pipeline Analytics &amp; Autonomous Controls</p>
         </div>
         <div class="flex items-center gap-1.5 shrink-0">
           <button onclick="runQuickPreset('kochi_clinics')" class="hidden sm:inline-block text-[10px] font-mono px-2 py-1 rounded bg-blue-950/50 text-blue-300 border border-blue-800/40 hover:bg-blue-900/60 transition">Quick Preset: Kochi Clinics</button>
@@ -1602,7 +2067,7 @@
           <div id="adminPipelineVal" class="text-sm sm:text-lg font-black text-emerald-400 font-mono mt-0.5">₹32,50,000</div>
         </div>
         <div class="bg-[#101114] border border-white/5 rounded-lg sm:rounded-xl p-2 sm:p-3">
-          <div class="text-[9px] sm:text-[10px] font-mono text-neutral-400 uppercase">Dials Today</div>
+          <div class="text-[9px] sm:text-[10px] font-mono text-neutral-400 uppercase">Outreach Today</div>
           <div id="adminDialsToday" class="text-sm sm:text-lg font-black text-blue-400 font-mono mt-0.5">0</div>
         </div>
         <div class="bg-[#101114] border border-white/5 rounded-lg sm:rounded-xl p-2 sm:p-3">
@@ -1621,7 +2086,7 @@
         <button id="btnAdminTabIngest" onclick="switchAdminTab('ingest')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Bulk Ingestion</button>
         <button id="btnAdminTabLogs" onclick="switchAdminTab('logs')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>📡</span><span>Leads & Logs</span></button>
         <button id="btnAdminTabSync" onclick="switchAdminTab('sync')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Cloud Sync</button>
-        <button id="btnAdminTabUsers" onclick="switchAdminTab('users')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Worker Logins</button>
+        <button id="btnAdminTabUsers" onclick="switchAdminTab('users')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>👥</span><span>Partners &amp; Invites</span></button>
         <button id="btnAdminTabBrain" onclick="switchAdminTab('brain')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>🧠</span><span>Brain Studio</span></button>
       </div>
 
@@ -1677,7 +2142,7 @@
             <input type="number" id="adminBatchCount" value="5" min="1" max="15" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white" />
           </div>
           <button id="btnRunBatchWorker" onclick="runBatchScoutFromAdmin()" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-mono text-xs font-bold shadow transition">
-            <span id="batchWorkerBtnText">Run Autonomous Worker Now</span>
+            <span id="batchWorkerBtnText">Run Autonomous Scout Agent</span>
           </button>
         </div>
 
@@ -1727,7 +2192,7 @@
                 <span class="px-1.5 py-0.2 bg-purple-950/60 rounded text-[9px]">5 Leads</span>
               </div>
               <div class="text-slate-400 text-[10px]">Source: <code class="text-amber-300">workspace/custom_prospects.js</code></div>
-              <div class="text-[9px] text-neutral-500">Background agent & worker customized dossiers</div>
+              <div class="text-[9px] text-neutral-500">Autonomous agent &amp; partner customized dossiers</div>
             </div>
             <div class="bg-[#15161B] border border-white/5 rounded-lg p-2.5 space-y-1">
               <div class="text-cyan-400 font-bold flex items-center justify-between">
@@ -1826,17 +2291,75 @@
         </div>
       </div>
 
-      <!-- Tab 5: Worker Accounts -->
+      <!-- Tab 5: Outreach Partner Accounts & Direct Invitations -->
       <div id="adminTabUsers" class="hidden flex-1 overflow-y-auto space-y-4 custom-scrollbar">
+        <!-- Direct Email Invitation System -->
+        <div class="bg-[#101114] border border-blue-900/40 rounded-xl p-4 space-y-3.5 shadow-lg">
+          <div class="flex flex-wrap items-center justify-between gap-1.5 border-b border-white/5 pb-2.5">
+            <div class="flex items-center gap-2">
+              <span class="text-sm">✉️</span>
+              <span class="text-xs font-mono text-white font-bold">Invite Sales Rep / Outreach Partner via Email</span>
+            </div>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950/60 text-blue-300 border border-blue-800/40">From: apoorvxs@gmail.com</span>
+          </div>
+
+          <p class="text-[11px] font-mono text-slate-400">
+            Dispatch an onboarding invitation directly to one or multiple recipients. Generates an encrypted 72-hour redemption link and pre-populates your email client ready to send.
+          </p>
+
+          <div class="space-y-2.5">
+            <div>
+              <label class="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1">Recipient Email(s)</label>
+              <input type="text" id="inviteSalesRepEmail" placeholder="partner@domain.com, colleague@firm.com (comma/space separated)" class="w-full bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs font-mono text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-500/50" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1">Territory / Sector Focus</label>
+                <input type="text" id="inviteSalesRepNotes" placeholder="e.g. Healthcare, Architecture, SaaS, Direct Closing" class="w-full bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs font-mono text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-500/50" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1">Role &amp; Commission Model</label>
+                <select id="inviteSalesRepRole" class="w-full bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-blue-500/50">
+                  <option value="sales_rep_15">Outreach Partner — 15% (₹7,500 Floor / Direct Closing)</option>
+                  <option value="sales_rep_10">Referral Affiliate — 10% (Handoff to Apoorv)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row flex-wrap items-center gap-2 pt-1">
+              <button type="button" onclick="handleSendSalesRepInvite('email')" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition flex items-center justify-center gap-1.5 shadow cursor-pointer">
+                <span>✉️</span><span>Send Invite via Email (Gmail / Mailto)</span>
+              </button>
+              <button type="button" onclick="handleSendSalesRepInvite('copy')" class="w-full sm:w-auto px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10 font-mono text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer">
+                <span>📋</span><span>Generate &amp; Copy Link Only</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Pending & Active Invitations Sub-Section -->
+          <div class="pt-3 border-t border-white/5 space-y-2">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-mono text-white font-bold">Active &amp; Pending Invitations:</span>
+                <span id="adminPendingInvitesBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950/60 text-blue-300 border border-blue-800/40">0 Active</span>
+              </div>
+            </div>
+            <div id="adminInvitationsList" class="space-y-2">
+              <div class="text-xs text-neutral-500 font-mono italic">No invitations generated yet.</div>
+            </div>
+          </div>
+        </div>
+
         <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
-          <div class="text-xs font-mono text-neutral-300 font-bold">Create Authorized Caller Account:</div>
+          <div class="text-xs font-mono text-neutral-300 font-bold">Create Authorized Outreach Partner Account:</div>
           <form onsubmit="handleCreateWorkerAccount(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <input type="text" id="newWorkerUsername" placeholder="username" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white" />
             <input type="text" id="newWorkerDisplayName" placeholder="Display Name" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white" />
             <input type="password" id="newWorkerPassword" placeholder="Password" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white" />
             <div class="sm:col-span-3">
               <button type="submit" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition">
-                Create Worker Account
+                Create Partner Account
               </button>
             </div>
           </form>
@@ -1846,11 +2369,11 @@
         <!-- Rep Applications Queue (Owner Review) -->
         <div class="bg-[#101114] border border-blue-900/30 rounded-xl p-4 space-y-3">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-mono text-white font-bold">📋 Sales Rep Applications Pending Clearance:</span>
+            <span class="text-xs font-mono text-white font-bold">📋 Outreach Partner Applications Pending Review:</span>
             <span id="adminPendingAppsBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950/60 text-blue-300 border border-blue-800/40">0 Pending</span>
           </div>
           <div id="adminApplicationsList" class="space-y-2">
-            <div class="text-xs text-neutral-500 font-mono italic">No pending sales applications.</div>
+            <div class="text-xs text-neutral-500 font-mono italic">No pending partner applications.</div>
           </div>
         </div>
       </div>
@@ -2051,6 +2574,162 @@
       <div class="flex justify-end gap-2">
         <button onclick="closeCsvImportModal()" class="px-3 py-1.5 rounded-lg bg-white/10 text-slate-300 font-mono text-xs hover:bg-white/20 transition cursor-pointer">Cancel</button>
         <button onclick="processCsvImportUI()" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition cursor-pointer">Ingest to Workspace</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIRST-TIME ONBOARDING & PAYMENT DISCLAIMER OVERLAY -->
+  <div id="onboardingDisclaimer" class="hidden fixed inset-0 z-[1050] bg-[#17120f]/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="max-w-[580px] w-full max-h-[90vh] overflow-y-auto bg-[#fff4c9] border-[3px] border-[#17120f] shadow-[8px_8px_0_#17120f] font-mono text-[#17120f] custom-scrollbar">
+      
+      <!-- Top Title Banner -->
+      <div style="background: #17120f !important; color: #fce566 !important;" class="p-4 text-center border-b-[3px] border-[#17120f]">
+        <div style="color: #fce566 !important; opacity: 0.75;" class="text-[9px] tracking-[3px] font-mono">CLIENT RADAR // OUTREACH PARTNER ONBOARDING</div>
+        <h2 style="color: #fce566 !important;" class="text-base font-bold mt-1 tracking-wide uppercase">🎯 Outreach Partner &amp; Referral Briefing</h2>
+        <div style="color: #fff4c9 !important; opacity: 0.9;" class="text-[10px] mt-1 font-mono">Compensation, Rules of Engagement & Payout Terms</div>
+      </div>
+
+      <div class="p-5 space-y-5 text-xs">
+        <!-- Section 1: Setter & Closer Partnership Structure (Closed Deals Only) -->
+        <div class="space-y-2">
+          <div class="text-[11px] font-bold tracking-wider uppercase border-b-2 border-[#17120f] pb-1 flex items-center justify-between">
+            <span>💰 Commission Policy (Closed Revenue Payouts)</span>
+            <span style="background: #17120f !important; color: #fce566 !important;" class="text-[9px] px-2 py-0.5 font-bold border border-[#17120f]">Closed Deals Only</span>
+          </div>
+
+          <div class="space-y-2.5">
+            <!-- Tier 1: 10% Standard Discovery Booking -->
+            <div class="bg-[#fffdf1] border-2 border-[#17120f] p-3">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <div class="font-bold text-[12px] text-neutral-900 flex items-center gap-1.5">
+                    <span>🗓️</span><span>Standard Discovery Booking (10% Cut)</span>
+                  </div>
+                  <div class="text-[11px] opacity-85 mt-1 leading-relaxed">
+                    You qualify client interest using our performance audit, verify the Decision Maker, and <strong>lock a 15-minute consultation on Apoorv's calendar</strong>. Apoorv demonstrates live WebGPU/60 FPS systems and closes the contract.
+                  </div>
+                </div>
+                <div class="text-right shrink-0">
+                  <span class="text-xs font-bold text-neutral-800 bg-[#fce566] border border-[#17120f] px-2 py-1 inline-block">10% Cut</span>
+                  <div class="text-[9px] font-bold text-neutral-700 mt-1">$500 / $5k deal</div>
+                </div>
+              </div>
+
+              <!-- Payout Examples Grid -->
+              <div class="border-t border-[#17120f]/20 mt-2.5 pt-2 grid grid-cols-2 gap-2 text-[10px]">
+                <div class="bg-[#fff4c9] p-2 border border-[#17120f]/30">
+                  <div class="text-neutral-600 uppercase text-[9px] font-bold">Standard Project ($5k Floor)</div>
+                  <div class="font-bold text-[12px] text-neutral-800 mt-0.5">$500 Payout</div>
+                </div>
+                <div class="bg-[#fff4c9] p-2 border border-[#17120f]/30">
+                  <div class="text-neutral-600 uppercase text-[9px] font-bold">Flagship System ($15k+)</div>
+                  <div class="font-bold text-[12px] text-neutral-800 mt-0.5">$1,500+ Payout</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tier 2: 15% Pre-Sold Prime Booking (High Quality Incentive) -->
+            <div class="bg-[#d4edda] border-2 border-[#155724] p-3 shadow-[2px_2px_0_#155724]">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <div class="font-bold text-[12px] text-[#155724] flex items-center gap-1.5">
+                    <span>👑</span><span>Pre-Sold Warm Booking (15% Prime Cut!)</span>
+                  </div>
+                  <div class="text-[11px] text-[#155724]/90 mt-1 leading-relaxed">
+                    You navigate client parameters, walk them through spatial/performance opportunities, and <strong>confirm their alignment with our $5,000 project floor</strong> before booking Apoorv. The client arrives primed for deployment!
+                  </div>
+                </div>
+                <div class="text-right shrink-0">
+                  <span class="text-xs font-bold text-white bg-[#155724] border border-[#155724] px-2 py-1 inline-block">15% Cut</span>
+                  <div class="text-[9px] font-bold text-[#155724] mt-1">$750 / $5k deal</div>
+                </div>
+              </div>
+
+              <!-- Payout Examples Grid -->
+              <div class="border-t border-[#155724]/20 mt-2.5 pt-2 grid grid-cols-2 gap-2 text-[10px]">
+                <div class="bg-white/85 p-2 border border-[#155724]/30">
+                  <div class="text-[#155724] uppercase text-[9px] font-bold">Standard Project ($5k Floor)</div>
+                  <div class="font-bold text-[12px] text-[#155724] mt-0.5">$750 Payout</div>
+                </div>
+                <div class="bg-white/85 p-2 border border-[#155724]/30">
+                  <div class="text-[#155724] uppercase text-[9px] font-bold">Enterprise Build ($30k)</div>
+                  <div class="font-bold text-[12px] text-[#155724] mt-0.5">$4,500 Payout</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: How It Works Flow -->
+        <div class="space-y-2">
+          <div class="text-[11px] font-bold tracking-wider uppercase border-b-2 border-[#17120f] pb-1">
+            🔄 The Referral &amp; Closing Model
+          </div>
+          <div class="grid grid-cols-3 gap-2 text-center text-[10px]">
+            <div class="bg-[#fffdf1] border-2 border-[#17120f] p-2 flex flex-col items-center">
+              <span class="text-base mb-1">⚡</span>
+              <span class="font-bold text-neutral-900">1. Identify & Engage</span>
+              <span class="text-[9px] opacity-80 mt-0.5 leading-snug">Introduce diagnostic audit & resolve technical questions</span>
+            </div>
+            <div class="bg-[#fffdf1] border-2 border-[#17120f] p-2 flex flex-col items-center">
+              <span class="text-base mb-1">🗓️</span>
+              <span class="font-bold text-neutral-900">2. Lock Apoorv's Meet</span>
+              <span class="text-[9px] opacity-80 mt-0.5 leading-snug">Click "Cal Meet" & book 15-min screen share slot</span>
+            </div>
+            <div class="bg-[#d4edda] border-2 border-[#155724] p-2 flex flex-col items-center">
+              <span class="text-base mb-1">👑</span>
+              <span class="font-bold text-[#155724]">3. Apoorv Closes</span>
+              <span class="text-[9px] text-[#155724]/90 mt-0.5 leading-snug">Apoorv runs live demo & you get 10%–15% commission (UPI / Bank Transfer)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Payout Details -->
+        <div class="space-y-2">
+          <div class="text-[11px] font-bold tracking-wider uppercase border-b-2 border-[#17120f] pb-1">
+            📅 Payout Schedule & Payment Rails
+          </div>
+          <ul class="space-y-1.5 text-[11px] pl-4 list-disc leading-relaxed">
+            <li><strong>Method:</strong> Direct <strong>UPI / Bank Transfer</strong> to your registered account details.</li>
+            <li><strong>Timing:</strong> Payout is triggered within <strong>24–48 hours</strong> of client invoice/deposit clearance.</li>
+            <li><strong>Lead Attribution:</strong> Every prospect engagement is permanently tagged with your Partner ID, ensuring 100% credit for closed contracts originating from your referral.</li>
+          </ul>
+        </div>
+
+        <!-- Section 4: Rules & Engagement -->
+        <div class="space-y-2">
+          <div class="text-[11px] font-bold tracking-wider uppercase border-b-2 border-[#17120f] pb-1">
+            📋 Rules of Engagement & Booking Standards
+          </div>
+          <ul class="space-y-1.5 text-[11px] pl-4 list-disc leading-relaxed">
+            <li>Introduce yourself as an <strong>Authorized Referral Partner representing Apoorv's Creative Engineering Practice</strong>.</li>
+            <li>Leverage the technical objection navigator and competitive speed data provided in the radar cockpit.</li>
+            <li><strong>Respect Regional Business Windows:</strong> Conduct outreach strictly during standard professional business hours (09:00 AM – 06:00 PM in the prospect's local timezone).</li>
+            <li><strong>Prompt Opt-Out Respect:</strong> If a contact requests no further outreach, immediately mark the status as 'Suppressed / Opt-Out' to permanently cease engagement.</li>
+            <li><strong>Budget Tier Alignment:</strong> Ensure prospective clients understand our bespoke creative engineering engagements start at a <strong>$5,000 project floor</strong> ($5k–$30k tier).</li>
+            <li><strong>Verified Stakeholder Gate:</strong> Focus introductions on primary technical and business decision makers (Founders, Managing Directors, Creative Directors, CTOs).</li>
+            <li>Accurately log prospect status and strategy notes in the console to maintain real-time pipeline telemetry.</li>
+          </ul>
+        </div>
+
+        <!-- Section 5: Legal & Confidentiality Disclaimer -->
+        <div class="bg-[#fffdf1] border-2 border-[#17120f] p-3 text-[10px] leading-relaxed text-[#17120f]/90 space-y-1">
+          <div class="font-bold uppercase tracking-wider text-[9px] text-[#92400e] flex items-center gap-1">
+            <span>⚖️</span><span>Independent Referral Agreement &amp; Rules</span>
+          </div>
+          <div>
+            This is an independent commercial referral agreement, not an offer of employment or agency partnership. Compensation is strictly performance commission (15% per closed engagement, $750 base on $5,000 floor) distributed upon receipt of cleared client funds, with zero employment relationship. All prospect dossiers and architectural teardowns are proprietary to Apoorv A S. Outreach partners must conduct all correspondence professionally and respect immediate opt-out requests.
+          </div>
+        </div>
+
+        <!-- Acknowledgment CTA -->
+        <div class="pt-2">
+          <button id="btnAcknowledgeOnboarding" onclick="acknowledgeOnboarding()"
+            class="w-full py-3 px-4 bg-[#17120f] text-[#fce566] hover:bg-[#fce566] hover:text-[#17120f] font-mono font-bold text-xs uppercase tracking-wider border-2 border-[#17120f] transition-all duration-150 shadow-[4px_4px_0_#17120f] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none cursor-pointer flex items-center justify-center gap-2">
+            <span>✅</span>
+            <span>I Understand & Agree — Enter Workspace</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>

@@ -1,8 +1,18 @@
-// SprintDial — System 1 Brain Studio Dynamic Knowledge Controller
+// Client Radar — System 1 Brain Studio Dynamic Knowledge Controller
 // Strictly On Apoorv's Behalf
 
 (function(root) {
   let brainTelemetryInterval = null;
+
+  function escapeHTML(str) {
+    return String(str || '').replace(/[&<>"']/g, m => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[m]));
+  }
 
   function handleBrainCategoryChange() {
     const cat = document.getElementById('trainCategory')?.value;
@@ -127,35 +137,42 @@
 
     listContainer.innerHTML = filtered.map(node => {
       const isCustom = node.source === 'trained';
+      const safeId = escapeHTML(node.id);
+      const safeName = escapeHTML(node.name || node.id);
+      const safeCat = escapeHTML(node.category);
+      const safeAction = escapeHTML(node.action || '');
+      const safeAudioCue = escapeHTML(node.audioCue || '');
+      const safeThought = escapeHTML(node.thought || 'Autonomous state trigger.');
+
       const sourceBadge = isCustom
         ? `<span class="text-[9px] font-mono px-2 py-0.5 rounded bg-purple-950/70 text-purple-300 border border-purple-700/50 font-bold uppercase tracking-wider">🟣 Custom Trained</span>`
         : `<span class="text-[9px] font-mono px-2 py-0.5 rounded bg-emerald-950/70 text-emerald-300 border border-emerald-800/50 font-bold uppercase tracking-wider">🟢 Factory Standard</span>`;
 
-      const catBadge = `<span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-neutral-300 border border-white/10 uppercase">${node.category}</span>`;
+      const catBadge = `<span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-neutral-300 border border-white/10 uppercase">${safeCat}</span>`;
       const actionBadge = node.action && node.action !== 'none'
-        ? `<span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-950/60 text-cyan-300 border border-cyan-800/40">Action: ${node.action}</span>`
+        ? `<span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-950/60 text-cyan-300 border border-cyan-800/40">Action: ${safeAction}</span>`
         : '';
       const audioBadge = node.audioCue && node.audioCue !== 'none'
-        ? `<span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-950/60 text-amber-300 border border-amber-800/40">Audio: ${node.audioCue}</span>`
+        ? `<span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-950/60 text-amber-300 border border-amber-800/40">Audio: ${safeAudioCue}</span>`
         : '';
 
       const keywordsList = Array.isArray(node.keywords) && node.keywords.length > 0
-        ? `<div class="text-[10px] font-mono text-neutral-400 mt-1"><span class="text-neutral-500">Keywords:</span> ${node.keywords.join(', ')}</div>`
+        ? `<div class="text-[10px] font-mono text-neutral-400 mt-1"><span class="text-neutral-500">Keywords:</span> ${node.keywords.map(k => escapeHTML(k)).join(', ')}</div>`
         : '';
 
       const spatialRange = node.match && (node.match.yMin != null || node.match.yMax != null)
-        ? `<div class="text-[10px] font-mono text-cyan-400 mt-1"><span class="text-neutral-500">Altitude Trigger:</span> Y: ${node.match.yMin ?? 0}px - ${node.match.yMax ?? '∞'}px</div>`
+        ? `<div class="text-[10px] font-mono text-cyan-400 mt-1"><span class="text-neutral-500">Altitude Trigger:</span> Y: ${Number(node.match.yMin) || 0}px - ${node.match.yMax != null ? Number(node.match.yMax) : '∞'}px</div>`
         : '';
 
       const deleteBtn = isCustom
-        ? `<button onclick="handleDeleteTrainedNode('${node.id}', '${node.category}')" class="text-[10px] font-mono px-2 py-1 rounded bg-red-950/40 text-red-300 border border-red-800/40 hover:bg-red-900/60 transition cursor-pointer">Delete</button>`
+        ? `<button data-node-id="${safeId}" data-node-cat="${safeCat}" class="btn-delete-node text-[10px] font-mono px-2 py-1 rounded bg-red-950/40 text-red-300 border border-red-800/40 hover:bg-red-900/60 transition cursor-pointer">Delete</button>`
         : '';
 
       return `
         <div class="bg-[#15161B] border border-white/5 hover:border-white/15 rounded-xl p-3 space-y-2 transition">
           <div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-xs font-mono font-bold text-white">${node.name || node.id}</span>
+              <span class="text-xs font-mono font-bold text-white">${safeName}</span>
               ${sourceBadge}
               ${catBadge}
               ${actionBadge}
@@ -166,11 +183,19 @@
           ${keywordsList}
           ${spatialRange}
           <div class="bg-[#101114] border border-white/5 rounded-lg p-2 text-xs font-mono text-amber-300/90 italic">
-            "${node.thought || 'Autonomous state trigger.'}"
+            "${safeThought}"
           </div>
         </div>
       `;
     }).join('');
+
+    listContainer.querySelectorAll('.btn-delete-node').forEach(btn => {
+      btn.onclick = () => {
+        const id = btn.getAttribute('data-node-id');
+        const cat = btn.getAttribute('data-node-cat');
+        handleDeleteTrainedNode(id, cat);
+      };
+    });
   }
 
   function handleTrainBrainSubmit(event) {

@@ -1,7 +1,7 @@
 {
   "name": "level-devil-portfolio",
   "version": "1.0.0",
-  "description": "Interactive Portfolio Game",
+  "description": "Level Devil 2.5D Spatial Portfolio Engine & WebGPU Systems",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,8 +14,14 @@
     "test:unit:watch": "vitest",
     "test:e2e:ui": "playwright test --ui"
   },
-  "keywords": [],
-  "author": "Apoorv",
+  "keywords": [
+    "creative-technologist",
+    "webgpu",
+    "threejs",
+    "spatial-ui",
+    "level-devil"
+  ],
+  "author": "Apoorv A S (@apoorv_xs)",
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.61.0",

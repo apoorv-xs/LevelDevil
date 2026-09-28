@@ -17,7 +17,48 @@
     <meta name="twitter:title" content="Apoorv A S | Creative Technologist & 3D WebUI Architect">
     <meta name="twitter:description" content="2.5D Spatial Portfolio Engine featuring cel-shaded BB-8 astromech companion, WebGPU compute, procedural GLSL shaders, and 60 FPS delivery.">
     <meta name="twitter:image" content="https://apoorv.qzz.io/thumbnail.png">
-    <title>Apoorv A S | Portfolio</title>
+    <title>Apoorv A S | Creative Technologist & 3D WebUI Architect</title>
+    
+    <!-- Schema.org Structured Data (2026 AI Knowledge Graph & Entity Search) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Person",
+          "@id": "https://apoorv.qzz.io/#person",
+          "name": "Apoorv A S",
+          "jobTitle": "Creative Technologist & 3D WebUI Architect",
+          "url": "https://apoorv.qzz.io/",
+          "image": "https://apoorv.qzz.io/thumbnail.png",
+          "description": "Specializing in 2.5D spatial web engines, WebGPU compute, custom GLSL shaders, and locked 60 FPS interactive systems.",
+          "sameAs": [
+            "https://github.com/apoorv-xs",
+            "https://x.com/apoorv_xs",
+            "https://www.linkedin.com/in/apoorv-a-s"
+          ],
+          "knowsAbout": [
+            "WebGL",
+            "WebGPU",
+            "Three.js",
+            "GLSL Shaders",
+            "Creative Technology",
+            "Spatial Computing",
+            "Core Web Vitals Optimization"
+          ],
+          "email": "apoorvxs@gmail.com"
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://apoorv.qzz.io/#website",
+          "url": "https://apoorv.qzz.io/",
+          "name": "Apoorv A S — Spatial Portfolio Engine",
+          "publisher": { "@id": "https://apoorv.qzz.io/#person" },
+          "inLanguage": "en"
+        }
+      ]
+    }
+    </script>
     
     <link rel="icon" type="image/png" href="favicon.png">
     
@@ -370,7 +411,17 @@
 
         /* --- RETRO BRUTALIST ALTIMETER HUD --- */
         .altimeter-pill {
-            display: none !important;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            background: var(--shell-accent, #fce566);
+            color: var(--shell-ink, #17120f);
+            border: 2px solid var(--shell-line, #17120f);
+            box-shadow: 2px 2px 0 var(--shell-line, #17120f);
+            padding: 6px 10px;
+            display: inline-flex;
+            align-items: center;
+            line-height: 1;
+            white-space: nowrap;
         }
 
         @media (max-width: 600px) {
@@ -495,9 +546,12 @@
 </head>
 
 <body>
+    <!-- WCAG 2.1 AA Accessible Skip-to-Content Link -->
+    <a href="#main-content" class="skip-link font-arcade">SKIP TO CONTENT [TAB]</a>
+
     <!-- Global Universal 54px Topbar Navigation -->
     <header class="topbar">
-        <!-- Left: Studio Brand -->
+        <!-- Left: Brand Identity -->
         <a href="/" class="topbar-brand" aria-label="Apoorv">
             <span class="topbar-brand-name">APOORV</span>
         </a>
@@ -520,11 +574,68 @@
             </div>
             <button id="bb8-guide-btn" class="topbar-btn guide-btn" onclick="window.System1Brain?.showGuidanceHUD?.()" aria-label="Summon BB-8 Guide" title="Summon BB-8 Guide">[ 🤖<span class="guide-label"> GUIDE</span> ]</button>
             <button id="sfx-toggle-btn" class="topbar-btn sfx-btn" aria-label="Toggle Sound Effects" title="Toggle Sound Effects">[ 🔊<span class="sfx-label"> SFX</span> ]</button>
-            <a href="/sales" class="topbar-btn topbar-btn-primary hide-mobile" title="Inquire for Contracts">
+            <a href="/sales" id="topbar-inquire-btn" class="topbar-btn topbar-btn-primary hide-mobile" title="Inquire for Contracts">
                 <span>INQUIRE</span>
                 <span>↗</span>
             </a>
-            <button id="mobile-menu-btn" class="topbar-btn mobile-menu-btn" aria-label="Open Navigation Menu" title="Open Navigation Menu" onclick="window.toggleMobileMenu?.()">[ ☰<span class="menu-label"> MENU</span> ]</button>
+
+            <!-- Auth State (Universal across routes) -->
+            <div id="topbar-auth-state" class="topbar-auth-state">
+                <button id="topbar-sign-in" type="button" class="topbar-btn" title="Sign in with Google" onclick="window.APP_SHELL?.openAuth?.()" style="display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
+                    <svg width="13" height="13" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+                    <span class="sign-in-text font-arcade text-[10px]">SIGN IN</span>
+                </button>
+                <button id="adminBtnHeader" onclick="window.APP_SHELL?.openAdmin?.()" class="topbar-admin-btn hidden" title="Open Admin Console">
+                    <span class="topbar-dot" style="background:#10b981;"></span>
+                    <span class="admin-label-full">Admin Console</span><span class="admin-label-short">Admin</span>
+                </button>
+                <div id="topbar-user" class="topbar-user-container hidden">
+                    <button id="userProfileTrigger" type="button" onclick="window.APP_SHELL?.toggleProfileDropdown?.()" aria-haspopup="true" aria-expanded="false" class="topbar-user-chip" title="Account Menu">
+                        <div class="topbar-user-avatar-wrap">
+                            <img id="topbar-user-img" width="24" height="24" src="https://ui-avatars.com/api/?name=User&background=fff1bd&color=17120f" class="topbar-avatar" alt="User" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=User&background=fff1bd&color=17120f';">
+                            <span class="topbar-user-status-dot" title="Online"></span>
+                        </div>
+                        <span id="topbar-user-name" class="topbar-user-name"></span>
+                        <span id="topbar-user-email" class="hidden"></span>
+                        <svg id="profileDropdownCaret" class="topbar-user-caret" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <!-- Universal Profile Dropdown -->
+                    <div id="userProfileDropdown" class="topbar-profile-dropdown hidden" role="menu" aria-label="User Profile & Account">
+                        <div class="profile-dropdown-user-header">
+                            <img id="dropdownUserImg" width="40" height="40" src="https://ui-avatars.com/api/?name=User&background=fff1bd&color=17120f" class="dropdown-avatar" alt="User" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=User&background=fff1bd&color=17120f';">
+                            <div class="dropdown-user-info">
+                                <div class="dropdown-user-row">
+                                    <span id="dropdownUserName" class="dropdown-user-name">Apoorv</span>
+                                    <span id="dropdownRolePill" class="dropdown-role-pill">OWNER</span>
+                                </div>
+                                <p id="dropdownUserEmail" class="dropdown-user-email">apoorvxs@gmail.com</p>
+                            </div>
+                        </div>
+                        <div class="dropdown-quick-links">
+                            <a href="/workspace/" class="dropdown-action-btn" title="Open Client Workspace Cockpit">
+                                <span>💼</span> <span>CLIENT WORKSPACE</span> <span>↗</span>
+                            </a>
+                            <a href="/sales" class="dropdown-action-btn" title="Open Project Brief & Inquiries">
+                                <span>📝</span> <span>PROJECT INQUIRIES</span> <span>↗</span>
+                            </a>
+                            <button id="dropdownAdminBtn" type="button" onclick="window.APP_SHELL?.openAdmin?.()" class="dropdown-action-btn hidden" title="Open Admin Console">
+                                <span class="topbar-dot" style="background:#10b981;"></span> <span>OPEN ADMIN CONSOLE</span>
+                            </button>
+                        </div>
+                        <button id="topbar-sign-out" type="button" onclick="window.APP_SHELL?.signOut?.()" class="dropdown-signout-btn" title="Sign Out">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            <span>SIGN OUT</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <button id="mobile-menu-btn" class="topbar-btn mobile-menu-btn" aria-label="Open Navigation Menu" title="Open Navigation Menu" aria-expanded="false" aria-controls="mobile-menu-drawer" onclick="window.toggleMobileMenu?.()">[ ☰<span class="menu-label"> MENU</span> ]</button>
         </div>
     </header>
 
@@ -541,11 +652,11 @@
         <div id="flight-tape-progress" class="flight-tape-progress"></div>
     </div>
 
-    <main class="portfolio-shell">
+    <main class="portfolio-shell" id="main-content" tabindex="-1">
         <!-- HERO SECTION (ASYMMETRICAL & LEFT-ALIGNED) -->
         <section class="hero-section">
             <div class="hero-main">
-                <div class="role-badge" data-kaboom-body="true" data-trap="false">CREATIVE TECHNOLOGIST &amp; 3D ARCHITECT</div>
+                <div class="role-badge" data-kaboom-body="true" data-trap="false">CREATIVE TECHNOLOGIST &amp; 3D WEBUI ARCHITECT</div>
                 <h1 data-kaboom-body="true" data-trap="false">APOORV</h1>
                 <p class="hero-hook" data-kaboom-body="true" data-trap="false">
                     Treating the browser as a spatial canvas. Building GPU-accelerated, locked 60 FPS interfaces that perform and feel like nothing else.
@@ -572,7 +683,7 @@
                     <span class="status-dot"></span>AVAILABILITY
                 </div>
                 <p data-kaboom-body="true" data-trap="false" style="margin: 0; line-height: 1.5; font-size: 0.85rem; color: var(--ink);">
-                    Open for select high-end 3D Web, WebGPU &amp; creative engineering contracts.
+                    Open for select high-margin ($5k–$30k tier) 3D Web, WebGPU &amp; spatial engineering contracts.
                 </p>
                 <div style="border-top: 2px dashed var(--ink); padding-top: 12px; margin-top: 14px;">
                     <div style="font-family: 'Press Start 2P', monospace; font-size: 0.62rem; color: var(--purple-dark); margin-bottom: 8px;">
@@ -779,8 +890,8 @@
 
         <section class="contact-card" data-kaboom-body="true" data-trap="false">
             <div class="contact-copy">
-                <h2 data-kaboom-body="true" data-trap="false">LET'S WORK TOGETHER</h2>
-                <p data-kaboom-body="true" data-trap="false">Have a project that needs to stand out? Let's build something fast, tactile, and unforgettable.</p>
+                <h2 data-kaboom-body="true" data-trap="false">COMMISSION ARCHITECTURE</h2>
+                <p data-kaboom-body="true" data-trap="false">Bespoke 60 FPS spatial systems, custom WebGPU/GLSL pipelines, and tactile 3D WebUI ($5k–$30k tier). Built from first principles without agency bloat.</p>
             </div>
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 <a href="/sales" class="cta-btn-primary" data-kaboom-body="true" data-trap="cta">
@@ -802,31 +913,43 @@
             <div class="runway-markings">||||||||||||||||||||||||||||||||</div>
             <div class="touchdown-stamp">[ MISSION COMPLETE // TERRA FIRMA ]</div>
         </div>
+
+        <!-- SECTION 7: STATUTORY & LEGAL COMPLIANCE FOOTER -->
+        <footer class="site-legal-footer" data-kaboom-body="true" data-trap="false">
+            <div class="legal-footer-inner">
+                <div class="legal-footer-brand">
+                    <span class="legal-tag font-arcade">APOORV A S // CREATIVE TECHNOLOGIST &amp; 3D WEBUI ARCHITECT</span>
+                    <p class="legal-copy">
+                        Spatial WebUI &amp; WebGPU Engineering. Locked 60 FPS interactive systems deployed worldwide.
+                    </p>
+                    <div class="legal-compliance-badges">
+                        <span class="legal-badge">DPDP ACT 2023 COMPLIANT</span>
+                        <span class="legal-badge">GDPR &amp; PECR ALIGNED</span>
+                        <span class="legal-badge">WCAG 2.1 AA ACCESSIBILITY</span>
+                        <span class="legal-badge">IT ACT 2000 &amp; 2021 RULES</span>
+                    </div>
+                </div>
+                <div class="legal-footer-links">
+                    <div class="legal-col">
+                        <span class="legal-col-header font-arcade">STATUTORY POLICIES</span>
+                        <button type="button" class="legal-link-btn" onclick="window.APP_SHELL?.openLegalModal?.('privacy')">Privacy Policy (DPDP)</button>
+                        <button type="button" class="legal-link-btn" onclick="window.APP_SHELL?.openLegalModal?.('terms')">Terms of Engagement</button>
+                        <button type="button" class="legal-link-btn" onclick="window.APP_SHELL?.openLegalModal?.('refunds')">Refunds &amp; Milestones</button>
+                    </div>
+                    <div class="legal-col">
+                        <span class="legal-col-header font-arcade">COMPLIANCE &amp; ACCESS</span>
+                        <button type="button" class="legal-link-btn" onclick="window.APP_SHELL?.openLegalModal?.('accessibility')">Accessibility Statement</button>
+                        <button type="button" class="legal-link-btn" onclick="window.APP_SHELL?.openLegalModal?.('cookies')">Cookie &amp; Storage Preferences</button>
+                    </div>
+                </div>
+            </div>
+            <div class="legal-footer-bottom">
+                <span>© 2026 APOORV A S. ALL RIGHTS RESERVED. DIRECT INQUIRIES: APOORVXS@GMAIL.COM</span>
+                <span>ZERO TRACKER COOKIES • 100% LOCAL-FIRST TELEMETRY</span>
+            </div>
+        </footer>
     </main>
 
-    <!-- LIVE TELEMETRY SCRIPT -->
-    <script>
-        (function() {
-            let lastTime = performance.now();
-            let frames = 0;
-            const fpsEl = document.getElementById('live-fps');
-            const capEl = document.getElementById('capability-fps');
-            function updateFPS() {
-                frames++;
-                const now = performance.now();
-                if (now >= lastTime + 1000) {
-                    const currentFPS = (frames * 1000) / (now - lastTime);
-                    const fpsStr = currentFPS.toFixed(1);
-                    if (fpsEl) fpsEl.textContent = fpsStr;
-                    if (capEl) capEl.textContent = fpsStr;
-                    frames = 0;
-                    lastTime = now;
-                }
-                requestAnimationFrame(updateFPS);
-            }
-            requestAnimationFrame(updateFPS);
-        })();
-    </script>
 
     <!-- 5-STRATA ATMOSPHERIC SKY CANVAS -->
     <canvas id="sky-canvas" aria-hidden="true"></canvas>

@@ -6,6 +6,7 @@ const workspaceRole = document.getElementById("workspace-role");
 const authPlaceholder = document.getElementById("auth-placeholder");
 const topbarSignIn = document.getElementById("topbar-sign-in");
 const topbarUser = document.getElementById("topbar-user");
+const topbarUserImg = document.getElementById("topbar-user-img");
 const topbarUserEmail = document.getElementById("topbar-user-email");
 const topbarSignOut = document.getElementById("topbar-sign-out");
 const formSignIn = document.getElementById("sign-in");
@@ -42,7 +43,7 @@ async function dispatchWebhook(values) {
     let body;
     if (webhookUrl.includes("discord.com/api/webhooks")) {
       body = JSON.stringify({
-        username: "Apoorv Studio Radar",
+        username: "Apoorv Client Radar",
         avatar_url: "https://apoorv.qzz.io/favicon.ico",
         embeds: [{
           title: "🚀 New Project Inquiry Received!",
@@ -54,7 +55,7 @@ async function dispatchWebhook(values) {
             { name: "💰 Budget Tier", value: values.budget || "N/A", inline: true },
             { name: "📝 Message", value: values.message || "No message provided" }
           ],
-          footer: { text: "Apoorv Studio Sales Platform • apoorv.qzz.io" },
+          footer: { text: "Apoorv Client Radar • apoorv.qzz.io" },
           timestamp: new Date().toISOString()
         }]
       });
@@ -77,6 +78,12 @@ async function dispatchWebhook(values) {
 async function submitPublicForm(event, path, successMessage) {
   event.preventDefault();
   const form = event.currentTarget;
+  const consentCheckbox = form.querySelector('input[name="consent"]');
+  if (consentCheckbox && !consentCheckbox.checked) {
+    setStatus("Please accept the Terms of Engagement & DPDP Act consent before submitting.", true);
+    consentCheckbox.focus();
+    return;
+  }
   const values = Object.fromEntries(new FormData(form));
   const submit = form.querySelector('button[type="submit"]');
   setStatus("Dispatching inquiry...");
@@ -184,20 +191,15 @@ async function syncAuthState() {
   const sessionUser = shell?.session?.user || null;
   const email = identity.email || sessionUser?.email || "";
   const name = identity.displayName || sessionUser?.displayName || "";
+  const photo = identity.photoURL || sessionUser?.photoURL || "";
 
   if (email || name) {
-    // Topbar UI update
-    if (topbarSignIn) topbarSignIn.style.display = "none";
-    if (topbarUser) {
-      topbarUser.style.display = "inline-flex";
-      if (topbarUserEmail) topbarUserEmail.textContent = email || name;
-    }
     // Form UI update
     if (formSignIn) formSignIn.style.display = "none";
     if (formAuthStatus) {
       formAuthStatus.textContent = "";
       const verifiedSpan = document.createElement("span");
-      verifiedSpan.style.cssText = "color: #10b981; font-weight: bold;";
+      verifiedSpan.style.cssText = "color: #047857; font-weight: bold;";
       verifiedSpan.textContent = "✓ Verified with Google: ";
       const emailSpan = document.createElement("span");
       emailSpan.textContent = email;
@@ -218,14 +220,15 @@ async function syncAuthState() {
       }
     }
   } else {
-    // Reset to logged out
-    if (topbarSignIn) topbarSignIn.style.display = "inline-flex";
-    if (topbarUser) topbarUser.style.display = "none";
+    // Reset to logged out form state
     if (formSignIn) formSignIn.style.display = "inline-flex";
     if (formAuthStatus) {
       formAuthStatus.textContent = "Sign in with Google to auto-fill verified contact details.";
     }
   }
+
+  // Universal topbar synchronization across routes
+  window.APP_SHELL?.initUniversalTopbar?.();
 }
 
 async function handleGoogleSignIn() {
@@ -274,6 +277,9 @@ async function loadWorkspace() {
 inquiryForm?.addEventListener("invalid", (event) => {
   const target = event.target;
   const fieldName = target.getAttribute("name") || "contact";
+  if (fieldName === "consent") {
+    setStatus("Please accept the Terms of Engagement & DPDP Act consent before submitting.", true);
+  }
   window.System1Brain?.onValidationFail?.(fieldName.charAt(0).toUpperCase() + fieldName.slice(1));
 }, true);
 
@@ -302,11 +308,41 @@ document.getElementById("application-form")?.addEventListener("submit", (event) 
 topbarSignIn?.addEventListener("click", handleGoogleSignIn);
 formSignIn?.addEventListener("click", handleGoogleSignIn);
 
-topbarSignOut?.addEventListener("click", () => {
+topbarSignOut?.addEventListener("click", async () => {
   shell?.session?.clear?.();
-  syncAuthState();
+  if (window.SALES_PLATFORM_AUTH?.getAuth) {
+    try {
+      const auth = await window.SALES_PLATFORM_AUTH.getAuth();
+      await auth.signOut?.();
+    } catch (e) {}
+  }
+  await syncAuthState();
   if (workspace) workspace.hidden = true;
   setStatus("Signed out.");
+});
+
+// Real-time synchronization with Firebase Auth and cross-route localStorage
+if (window.SALES_PLATFORM_AUTH?.getAuth) {
+  window.SALES_PLATFORM_AUTH.getAuth().then((auth) => {
+    auth.onAuthStateChanged(async (firebaseUser) => {
+      if (firebaseUser) {
+        await shell?.session?.setSession?.(firebaseUser);
+        await syncAuthState();
+      } else {
+        const saved = localStorage.getItem("sprintdial_user") || localStorage.getItem("sprintdial_google_user");
+        if (!saved) {
+          shell?.session?.clear?.();
+          await syncAuthState();
+        }
+      }
+    });
+  }).catch(() => {});
+}
+
+window.addEventListener("storage", (e) => {
+  if (e.key === "sprintdial_user" || e.key === "sprintdial_google_user") {
+    syncAuthState();
+  }
 });
 
 document.getElementById("refresh-workspace")?.addEventListener("click", loadWorkspace);
@@ -328,10 +364,10 @@ function updateDeliverablesChecklist(scope = "Performance Sprint", budget = "$5k
   const turnaround = document.getElementById("deliverables-turnaround-badge");
   if (!container) return;
 
-  const isSprint = scope === "Performance Sprint" || budget === "Under $1k";
-  const isFeature = scope === "3D Web Feature" || budget === "$1k - $5k";
+  const isSprint = scope === "Performance Sprint";
+  const isFeature = scope === "3D Web Feature" || budget === "$5k - $15k";
   const isConfigurator = scope === "Product Configurator";
-  const isEnterprise = scope === "Full Interactive Site" || budget === "$15k+";
+  const isEnterprise = scope === "Full Interactive Site" || budget === "$15k+" || budget === "$15k - $30k" || budget === "$30k+";
 
   let badgeText = "FLAGSHIP 3D BUILD";
   let turnaroundText = "2–3 Weeks Turnaround";
@@ -376,7 +412,7 @@ function updateDeliverablesChecklist(scope = "Performance Sprint", budget = "$5k
       { title: "⚡ Ground-Up WebGPU Pipeline", desc: "Next-generation compute shaders and high-density particle systems." },
       { title: "🎯 Bespoke Spatial Experience", desc: "Multi-scene architectural narrative with sound design integration." },
       { title: "📦 Sub-5MB Enterprise Payload", desc: "Maximum compression and streaming asset chunking." },
-      { title: "🛡 Dedicated Senior Engineering", desc: "Direct weekly architecture reviews and guaranteed SLA." }
+      { title: "🛡 Sovereign Engineering Allocation", desc: "Direct 1-on-1 architecture sprints with guaranteed 16.6ms SLA." }
     ];
   }
 
@@ -405,8 +441,12 @@ function initChipGroups() {
   scopeChips.forEach((chip) => {
     chip.addEventListener("click", () => {
       const val = chip.dataset.val;
-      scopeChips.forEach((c) => c.classList.remove("active"));
+      scopeChips.forEach((c) => {
+        c.classList.remove("active");
+        c.setAttribute("aria-checked", "false");
+      });
       chip.classList.add("active");
+      chip.setAttribute("aria-checked", "true");
       if (scopeSelect) {
         scopeSelect.value = val;
         scopeSelect.dispatchEvent(new Event("change"));
@@ -417,7 +457,9 @@ function initChipGroups() {
   if (scopeSelect) {
     scopeSelect.addEventListener("change", () => {
       scopeChips.forEach((c) => {
-        c.classList.toggle("active", c.dataset.val === scopeSelect.value);
+        const isActive = c.dataset.val === scopeSelect.value;
+        c.classList.toggle("active", isActive);
+        c.setAttribute("aria-checked", isActive ? "true" : "false");
       });
       syncDeliverables();
     });
@@ -427,8 +469,12 @@ function initChipGroups() {
   budgetChips.forEach((chip) => {
     chip.addEventListener("click", () => {
       const val = chip.dataset.val;
-      budgetChips.forEach((c) => c.classList.remove("active"));
+      budgetChips.forEach((c) => {
+        c.classList.remove("active");
+        c.setAttribute("aria-checked", "false");
+      });
       chip.classList.add("active");
+      chip.setAttribute("aria-checked", "true");
       if (budgetSelect) {
         budgetSelect.value = val;
         budgetSelect.dispatchEvent(new Event("change"));
@@ -439,7 +485,9 @@ function initChipGroups() {
   if (budgetSelect) {
     budgetSelect.addEventListener("change", () => {
       budgetChips.forEach((c) => {
-        c.classList.toggle("active", c.dataset.val === budgetSelect.value);
+        const isActive = c.dataset.val === budgetSelect.value;
+        c.classList.toggle("active", isActive);
+        c.setAttribute("aria-checked", isActive ? "true" : "false");
       });
       syncDeliverables();
     });
@@ -514,7 +562,7 @@ function initLiveValidation() {
 // ============================================================================
 // DIRECT 15-MINUTE STRATEGY CONSULTATION CONTROLLER (GOOGLE MEET / CALENDAR)
 // ============================================================================
-function openConsultationModal() {
+function openConsultationModal(prefill = null) {
   const modal = document.getElementById("consultationModal");
   if (!modal) return;
   modal.classList.remove("hidden");
@@ -532,6 +580,31 @@ function openConsultationModal() {
   if (user) {
     if (nameInp && !nameInp.value) nameInp.value = user.displayName || user.name || "";
     if (emailInp && !emailInp.value) emailInp.value = user.email || "";
+  }
+
+  // Pre-fill from active Trojan / Teardown or explicit prefill argument
+  const activePrefill = prefill || window._activeTrojanData;
+  if (activePrefill) {
+    if (nameInp && (!nameInp.value || prefill)) {
+      nameInp.value = activePrefill.dm || activePrefill.prospect || activePrefill.name || nameInp.value;
+    }
+    if (emailInp && activePrefill.email) emailInp.value = activePrefill.email;
+    const urlInp = document.getElementById("consult-url");
+    if (urlInp && activePrefill.site) urlInp.value = activePrefill.site;
+    const notesInp = document.getElementById("consult-notes");
+    if (notesInp && (!notesInp.value || prefill)) {
+      notesInp.value = activePrefill.notes || `Executive 60 FPS Architectural Walkthrough for ${activePrefill.prospect || activePrefill.name} (Current LCP: ${activePrefill.lcp || 'slow on 4G'}).`;
+    }
+    // Set focus chip to "60 FPS Performance Audit"
+    const focusVal = activePrefill.focus || "60 FPS Performance Audit";
+    const chips = document.querySelectorAll("#consult-focus-chips .tier-chip");
+    chips.forEach(c => {
+      const match = c.dataset.val === focusVal;
+      c.classList.toggle("active", match);
+      c.setAttribute("aria-checked", match ? "true" : "false");
+    });
+    const hiddenFocus = document.getElementById("consult-focus");
+    if (hiddenFocus) hiddenFocus.value = focusVal;
   }
 
   // Detect and display user timezone
@@ -554,14 +627,44 @@ function openConsultationModal() {
     dtInp.min = new Date().toISOString().slice(0, 16);
   }
 
+  window._consultReturnFocus = document.activeElement;
+
+  if (!modal._hasTrapListener) {
+    modal._hasTrapListener = true;
+    modal.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeConsultationModal();
+        return;
+      }
+      if (e.key === "Tab") {
+        const focusable = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    });
+  }
+
   if (nameInp) nameInp.focus();
 }
 
 function closeConsultationModal() {
   const modal = document.getElementById("consultationModal");
   if (modal) modal.classList.add("hidden");
-  const triggerBtn = document.getElementById("btn-open-consultation");
-  if (triggerBtn) triggerBtn.focus();
+  if (window._consultReturnFocus && typeof window._consultReturnFocus.focus === "function") {
+    window._consultReturnFocus.focus();
+    window._consultReturnFocus = null;
+  } else {
+    const triggerBtn = document.getElementById("btn-open-consultation");
+    if (triggerBtn) triggerBtn.focus();
+  }
 }
 
 function initConsultationChips() {
@@ -569,8 +672,12 @@ function initConsultationChips() {
   const hiddenInp = document.getElementById("consult-focus");
   chips.forEach(chip => {
     chip.addEventListener("click", () => {
-      chips.forEach(c => c.classList.remove("active"));
+      chips.forEach(c => {
+        c.classList.remove("active");
+        c.setAttribute("aria-checked", "false");
+      });
       chip.classList.add("active");
+      chip.setAttribute("aria-checked", "true");
       const val = chip.getAttribute("data-val");
       if (hiddenInp && val) hiddenInp.value = val;
     });
@@ -624,6 +731,13 @@ async function handleConsultationSubmit(event) {
     return;
   }
 
+  const consentBox = document.getElementById("consult-consent");
+  if (consentBox && !consentBox.checked) {
+    alert("Please accept the Terms & DPDP Act consent before confirming your consultation.");
+    consentBox.focus();
+    return;
+  }
+
   const consultData = { name, email, focus, url, datetime, timezone, notes, timestamp: new Date().toISOString() };
 
   // Save locally
@@ -640,7 +754,7 @@ async function handleConsultationSubmit(event) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        username: "Apoorv Strategy Radar",
+        username: "Apoorv Client Radar",
         avatar_url: "https://apoorv.qzz.io/favicon.ico",
         embeds: [{
           title: "📅 15-Minute Strategy Walkthrough Requested!",
@@ -667,7 +781,12 @@ async function handleConsultationSubmit(event) {
 
   const confirmText = document.getElementById("consult-confirm-text");
   if (confirmText) {
-    confirmText.innerHTML = `Your walkthrough for <strong>${name}</strong> regarding <strong>${focus}</strong> on <strong>${datetime.replace('T', ' ')}</strong> (${timezone}) is ready. Click below to add it to Google Calendar with pre-configured Google Meet coordinates.`;
+    const escapeHtml = (str) => String(str || "").replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    const safeName = escapeHtml(name);
+    const safeFocus = escapeHtml(focus);
+    const safeDt = escapeHtml((datetime || "").replace('T', ' '));
+    const safeTz = escapeHtml(timezone);
+    confirmText.innerHTML = `Your walkthrough for <strong>${safeName}</strong> regarding <strong>${safeFocus}</strong> on <strong>${safeDt}</strong> (${safeTz}) is ready. Click below to add it to Google Calendar with pre-configured Google Meet coordinates.`;
   }
 
   // Switch to confirmation view
@@ -697,11 +816,121 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
+// ==========================================================================
+// TROJAN 3D PERFORMANCE TEARDOWN (INTERACTIVE URL AUDIT)
+// ==========================================================================
+function initTrojanPitchFromUrl() {
+  if (typeof window === "undefined" || !window.location) return;
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const prospect = params.get("prospect") || params.get("client") || params.get("target");
+    if (!prospect) return;
+
+    const dm = params.get("dm") || "";
+    const lcp = params.get("lcp") || "4.4s";
+    const speed = params.get("speed") || "35";
+    const leak = params.get("leak") || "₹1,80,000/mo";
+    const bleed = params.get("bleed") || "₹42,000/yr";
+    const site = params.get("site") || "";
+    const fee = params.get("fee") || "₹50,000";
+
+    mountTrojanTeardown({ prospect, dm, lcp, speed, leak, bleed, site, fee });
+  } catch (err) {
+    console.warn("[Trojan] URL parameter parsing failed:", err);
+  }
+}
+
+function mountTrojanTeardown(data) {
+  const section = document.getElementById("trojan-teardown-section");
+  if (!section) return;
+
+  const clientNameEl = document.getElementById("trojan-client-name");
+  const entityNameEl = document.getElementById("trojan-entity-name");
+  const lcpEl = document.getElementById("trojan-val-lcp");
+  const speedEl = document.getElementById("trojan-val-speed");
+  const leakEl = document.getElementById("trojan-val-leak");
+  const bleedEl = document.getElementById("trojan-val-bleed");
+
+  if (clientNameEl) clientNameEl.textContent = data.prospect;
+  if (entityNameEl) entityNameEl.textContent = data.prospect;
+  if (lcpEl) lcpEl.textContent = `${data.lcp} (Failing INP)`;
+  if (speedEl) speedEl.textContent = `${data.speed} / 100`;
+  if (leakEl) leakEl.textContent = data.leak;
+  if (bleedEl) bleedEl.textContent = data.bleed;
+
+  section.classList.remove("hidden");
+  window._activeTrojanData = data;
+
+  // Let BB-8 celebrate and emit diagnostic thought
+  if (window.System1Brain?.emitThought) {
+    window.System1Brain.emitThought(`⚡ Diagnostic ready for ${data.prospect}!`);
+  }
+  if (window.Player3D && typeof window.Player3D.celebrateVictory === "function") {
+    setTimeout(() => {
+      window.Player3D.celebrateVictory();
+    }, 400);
+  }
+}
+
+function toggleTrojanFps(targetFps) {
+  const btnUnopt = document.getElementById("btn-fps-unopt");
+  const btnOpt = document.getElementById("btn-fps-opt");
+  const feedback = document.getElementById("trojan-fps-feedback");
+  const liveFps = document.getElementById("live-fps");
+
+  if (targetFps === 24) {
+    if (btnUnopt) {
+      btnUnopt.classList.add("active");
+      btnUnopt.setAttribute("aria-checked", "true");
+    }
+    if (btnOpt) {
+      btnOpt.classList.remove("active");
+      btnOpt.setAttribute("aria-checked", "false");
+    }
+    if (feedback) {
+      feedback.textContent = "⚠️ 24 FPS Throttle: Sluggish touch drag, dropped frames on 4G, and high visitor drop-off.";
+      feedback.style.color = "#dc2626";
+    }
+    if (liveFps) liveFps.textContent = "22.4";
+    if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
+      window.triggerHaptic([60, 40, 60]);
+    }
+  } else {
+    if (btnOpt) {
+      btnOpt.classList.add("active");
+      btnOpt.setAttribute("aria-checked", "true");
+    }
+    if (btnUnopt) {
+      btnUnopt.classList.remove("active");
+      btnUnopt.setAttribute("aria-checked", "false");
+    }
+    if (feedback) {
+      feedback.textContent = "⚡ 60 FPS Locked: Silky smooth response, zero frame drops, 0.8s instant mobile paint.";
+      feedback.style.color = "var(--purple-dark)";
+    }
+    if (liveFps) liveFps.textContent = "60.0";
+    if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
+      window.triggerHaptic(30);
+    }
+    if (window.Player3D && typeof window.Player3D.celebrateVictory === "function") {
+      window.Player3D.celebrateVictory();
+    }
+  }
+}
+
+function claimTrojanConsultation() {
+  if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
+    window.triggerHaptic([40, 30, 40]);
+  }
+  openConsultationModal(window._activeTrojanData);
+}
+
 // Initial initialization
 initChipGroups();
 initLiveValidation();
 initConsultationChips();
 syncAuthState();
+initTrojanPitchFromUrl();
 
 // Export controllers for global / inline access
 if (typeof window !== "undefined") {
@@ -709,6 +938,10 @@ if (typeof window !== "undefined") {
   window.closeConsultationModal = closeConsultationModal;
   window.handleConsultationSubmit = handleConsultationSubmit;
   window.generateGoogleCalendarUrl = generateGoogleCalendarUrl;
+  window.initTrojanPitchFromUrl = initTrojanPitchFromUrl;
+  window.mountTrojanTeardown = mountTrojanTeardown;
+  window.toggleTrojanFps = toggleTrojanFps;
+  window.claimTrojanConsultation = claimTrojanConsultation;
 }
 
 

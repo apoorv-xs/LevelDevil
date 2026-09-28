@@ -4,6 +4,7 @@ export default defineConfig({
   testDir: "./tests/e2e",
   timeout: 30000,
   retries: 1,           // Level Devil philosophy: retry once before failing
+  workers: process.env.CI ? 1 : 2,
   reporter: [
     ["list"],
     ["html", { outputFolder: "tests/results/e2e-report", open: "never" }]

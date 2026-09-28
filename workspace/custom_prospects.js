@@ -1,9 +1,10 @@
-// SprintDial — Ingested Prospects from Gemini Autonomous Scout
+// Client Radar — Ingested Prospects from Gemini Autonomous Scout
 // Updated at: 2026-09-14T01:45:03.472Z
 (function(root) {
   const dataset = [
   {
     "id": "gemini-scout-1789254909472-2",
+    "rating": 4.8,
     "city": "Bangalore",
     "name": "Studio Verve Living & Spatial Design, Lavelle Road",
     "dm": "Pooja Hegde (Creative Director)",
@@ -48,6 +49,7 @@
   },
   {
     "id": "gemini-scout-1789254909471-1",
+    "rating": 4.9,
     "city": "Bangalore",
     "name": "Atelier Form Interior Architecture, Indiranagar",
     "dm": "Ar. Vikramaditya Rao (Principal Architect)",
@@ -92,6 +94,7 @@
   },
   {
     "id": "gemini-scout-1789254898528-3",
+    "rating": 4.7,
     "city": "Kochi",
     "name": "Regal Dental Speciality Clinic, Edappally",
     "dm": "Dr. Faisal Rahman (Cosmetic Dental Surgeon)",
@@ -136,6 +139,7 @@
   },
   {
     "id": "gemini-scout-1789254898528-2",
+    "rating": 4.8,
     "city": "Kochi",
     "name": "Cochin Aesthetic Dental & Maxillofacial, Marine Drive",
     "dm": "Dr. Susan Varghese (Managing Director)",
@@ -180,6 +184,7 @@
   },
   {
     "id": "gemini-scout-1789254898528-1",
+    "rating": 4.9,
     "city": "Kochi",
     "name": "Lakeshore Smiles & Implantology, Panampilly Nagar",
     "dm": "Dr. Abraham Koshy (Chief Implantologist)",

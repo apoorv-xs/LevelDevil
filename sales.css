@@ -460,4 +460,222 @@ pre {
   to { opacity: 1; transform: scale(1); }
 }
 
+/* ==========================================================================
+   TROJAN 3D PERFORMANCE TEARDOWN (INTERACTIVE URL AUDIT)
+   ========================================================================== */
+.trojan-teardown-section {
+  margin: 24px 0 32px;
+  padding: 24px;
+  background: var(--white);
+  border: 3px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+.trojan-teardown-section.hidden {
+  display: none !important;
+}
+
+.trojan-badge-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px dashed var(--ink);
+}
+
+.trojan-badge-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  background: var(--purple);
+  color: var(--white);
+  font: 10px/1.2 "Press Start 2P", monospace;
+  letter-spacing: 0.05em;
+}
+
+.trojan-target-badge {
+  font: 12px/1.4 "Courier Prime", monospace;
+  color: var(--ink);
+}
+
+.trojan-hero-content {
+  margin-bottom: 20px;
+}
+
+.trojan-title {
+  margin: 0 0 8px;
+  font: 18px/1.3 "Press Start 2P", monospace;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+
+.trojan-subtitle {
+  margin: 0;
+  font: 14px/1.5 "Courier Prime", monospace;
+  color: #333;
+}
+
+.trojan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.trojan-col {
+  padding: 16px;
+  border: 2px solid var(--ink);
+  background: var(--cream);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.trojan-col-bad {
+  background: #fff0f0;
+}
+
+.trojan-col-good {
+  background: #f0fdf4;
+}
+
+.trojan-col-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--ink);
+}
+
+.trojan-col-header h3 {
+  margin: 0;
+  font: 11px/1.2 "Press Start 2P", monospace;
+  color: var(--ink);
+}
+
+.trojan-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-bad {
+  background: #dc2626;
+  box-shadow: 0 0 6px rgba(220, 38, 38, 0.6);
+}
+
+.dot-good {
+  background: #16a34a;
+  box-shadow: 0 0 6px rgba(22, 163, 74, 0.6);
+}
+
+.trojan-metric-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.trojan-metric-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font: 13px "Courier Prime", monospace;
+}
+
+.metric-label {
+  color: #4b5563;
+}
+
+.metric-val {
+  font-weight: 700;
+}
+
+.val-bad {
+  color: #dc2626;
+}
+
+.val-good {
+  color: #16a34a;
+}
+
+.trojan-interactive-bar {
+  padding: 14px 18px;
+  background: #f8fafc;
+  border: 2px solid var(--ink);
+  margin-bottom: 20px;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.trojan-fps-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.toggle-label {
+  font: 10px "Press Start 2P", monospace;
+  color: var(--ink);
+}
+
+.toggle-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.fps-toggle-btn {
+  padding: 6px 14px;
+  border: 2px solid var(--ink);
+  background: var(--white);
+  color: var(--ink);
+  font: 11px "Courier Prime", monospace;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: all 0.15s ease;
+}
+
+.fps-toggle-btn.active {
+  background: var(--ink);
+  color: var(--white);
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.trojan-fps-feedback {
+  font: 12px "Courier Prime", monospace;
+  color: var(--purple-dark);
+}
+
+.trojan-cta-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.trojan-claim-btn {
+  padding: 14px 22px;
+  background: var(--purple);
+  color: var(--white);
+  border: 2px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  font: 11px/1.4 "Press Start 2P", monospace;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.trojan-claim-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 var(--ink);
+  background: var(--purple-dark);
+}
+
+.trojan-guarantee {
+  color: #4b5563;
+}
+
 

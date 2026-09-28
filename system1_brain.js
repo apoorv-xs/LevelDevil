@@ -105,14 +105,14 @@
 
     const TIER_KNOWLEDGE = {
         "Flexible": { thought: "Flexible parameters: Scoping tailored deliverables." },
-        "Under $1k": { thought: "Micro-Sprint (<$1k): Laser-focused 48h site-speed patch." },
-        "$1k - $5k": { thought: "Mid-Sprint ($1k–$5k): Targeted 3D feature or shader rig." },
         "$5k - $15k": { thought: "Flagship Build ($5k–$15k): Complete interactive 3D hero with 60 FPS floor." },
-        "$15k+": { thought: "Enterprise Tier ($15k+): Tier-0 proprietary graphics architecture reserved." }
+        "$15k - $30k": { thought: "Spatial Architecture ($15k–$30k): Multi-scene WebGPU spatial build." },
+        "$30k+": { thought: "Bespoke Ecosystem ($30k+): Ground-up WebGPU pipeline & shader systems." },
+        "$15k+": { thought: "Enterprise Tier ($15k+): Custom WebGPU shaders & dedicated 60 FPS spatial pipeline." }
     };
 
     const DEFECT_KNOWLEDGE = {
-        lcp: "LCP bottleneck (>3.5s). Front door jammed shut for mobile patients.",
+        lcp: "LCP bottleneck (>3.5s). Front door sluggish for mobile visitors.",
         dom: "WordPress DOM clutter (3,000+ nodes). Overheating mobile devices.",
         dpdp: "DPDP 2023 compliance risk. Mandatory data consent armor required.",
         tls: "Missing modern TLS encryption. Google Chrome flagging site warnings.",
@@ -268,6 +268,9 @@
                 }
                 if (!record.yRange && (node.yRange || (node.yMin !== undefined && node.yMax !== undefined))) {
                     record.yRange = Array.isArray(node.yRange) ? node.yRange : [Number(node.yMin) || 0, Number(node.yMax) || 4000];
+                }
+                if (node.xRange || (node.xMin !== undefined && node.xMax !== undefined)) {
+                    record.xRange = Array.isArray(node.xRange) ? node.xRange : [Number(node.xMin) || 0, Number(node.xMax) || 9999];
                 }
                 const idx = this.trainedKnowledge.customRules.findIndex(r => r.id === id);
                 if (idx >= 0) this.trainedKnowledge.customRules[idx] = record;
@@ -577,11 +580,17 @@
             this.currentThought = text;
             if (typeof document === "undefined") return;
             if (!this.bubbleElement) this.setupBubble();
-            if (!this.bubbleElement) return;
-            if (this.bubbleElement && this.bubbleElement.classList.contains("hud-active")) return;
-
             const now = (typeof performance !== "undefined") ? performance.now() : Date.now();
             const isPriority = text.includes("dispatched") || text.includes("TOUCHDOWN") || text.includes("Terra Firma") || text.includes("HARD-LIGHT") || text.includes("⚡") || text.includes("Missing") || text.includes("Scope:") || text.includes("Tier unlocked");
+
+            if (this.bubbleElement && this.bubbleElement.classList.contains("hud-active")) {
+                if (isPriority) {
+                    this.closeHUD();
+                } else {
+                    return;
+                }
+            }
+
             if (!isPriority && (now - this.lastThoughtTime < 4500)) {
                 return;
             }
@@ -636,7 +645,7 @@
                     <div class="bb8-hud-buttons">
                         <button onclick="window.System1Brain.startMission('deals')" class="bb8-hud-btn">🎯 Hunt $15k+ Deals</button>
                         <button onclick="window.System1Brain.startMission('flaws')" class="bb8-hud-btn">⚡ Inspect Latency Flaws</button>
-                        <button onclick="window.System1Brain.startMission('call')" class="bb8-hud-btn">📞 Test Call Battle</button>
+                        <button onclick="window.System1Brain.startMission('call')" class="bb8-hud-btn">🎯 Discovery Briefing</button>
                         <button onclick="window.Player3D?.celebrateVictory?.(); window.System1Brain.closeHUD();" class="bb8-hud-btn">🤖 Droid 360° Spin</button>
                     </div>
                 `;
@@ -645,7 +654,7 @@
                 buttonsHtml = `
                     <div class="bb8-hud-buttons">
                         <button onclick="window.System1Brain.startMission('fill')" class="bb8-hud-btn">📝 Focus Brief</button>
-                        <button onclick="window.System1Brain.startMission('scope')" class="bb8-hud-btn">💰 View Retainers</button>
+                        <button onclick="window.System1Brain.startMission('scope')" class="bb8-hud-btn">💰 View Pricing Tiers</button>
                         <button onclick="window.Player3D?.celebrateVictory?.(); window.System1Brain.closeHUD();" class="bb8-hud-btn">🤖 Droid 360° Spin</button>
                     </div>
                 `;
@@ -775,7 +784,7 @@
                             const lr = lcpBox.getBoundingClientRect();
                             window.Player3D.holographicSpotlight(Math.round(lr.left + lr.width/2), Math.round(lr.top + scrollY), 3000);
                         }
-                        this.emitThought("LCP Latency Bottleneck: Front door jammed shut (>4s). Patients walk next door!", 3800);
+                        this.emitThought("LCP Latency Bottleneck: Front door sluggish (>4s). High-intent visitors bounce!", 3800);
                     });
                 }
             } else if (missionId === "call") {
@@ -787,7 +796,7 @@
                         if (window.Player3D?.holographicSpotlight) {
                             window.Player3D.holographicSpotlight(Math.round(r.left + r.width/2), Math.round(r.top + scrollY), 3000);
                         }
-                        this.emitThought("Tactical Co-Pilot Standby: Rebuttal weapons armed and ready!", 3500);
+                        this.emitThought("Tactical Co-Pilot Standby: Value defense and strategic briefing ready!", 3500);
                         if (objRack && window.Player3D?.holographicSpotlight) {
                             setTimeout(() => {
                                 const or = objRack.getBoundingClientRect();
@@ -896,7 +905,7 @@
             // If clipped by topbar header (54px + buffer), flip bubble cleanly below BB-8
             const minTopClearance = (typeof window !== "undefined" && window.innerWidth <= 768) ? 88 : 68;
             if (top < minTopClearance) {
-                top = screenY + 24;
+                top = Math.max(minTopClearance, screenY + 24);
                 isFlipped = true;
             }
 
@@ -1086,7 +1095,7 @@
             }
             if (el.classList?.contains("obj-btn") || el.classList?.contains("objection-btn")) {
                 const title = el.textContent?.trim() || "Rebuttal";
-                this.emitThought(`Deploying tactical rebuttal: "${title.slice(0, 30)}..."`, 2600);
+                this.emitThought(`Deploying value defense: "${title.slice(0, 30)}..."`, 2600);
                 if (typeof window !== "undefined" && window.Player3D?.holographicSpotlight) {
                     const scrollY = window.scrollY || window.pageYOffset || 0;
                     const r = el.getBoundingClientRect();
@@ -1121,11 +1130,19 @@
                 this.hasCelebratedTouchdown = false;
             }
 
-            // Active user scroll navigation takes precedence over stationary showcase
-            if (viewportFocusY < playerPos.y - 180 || userScrollSpeed < -6) {
+            // Active user scroll navigation with directional hysteresis (prevents micro-stutter)
+            const isCurrentlyAscending = this.currentIntent === INTENTS.LEAD_ASCENT;
+            const isCurrentlyDescending = this.currentIntent === INTENTS.LEAD_DESCENT;
+
+            const ascentScrollThreshold = isCurrentlyDescending ? -12 : -6;
+            const descentScrollThreshold = isCurrentlyAscending ? 12 : 6;
+            const ascentPosThreshold = isCurrentlyDescending ? (playerPos.y - 240) : (playerPos.y - 180);
+            const descentPosThreshold = isCurrentlyAscending ? (playerPos.y + 180) : (playerPos.y + 120);
+
+            if (viewportFocusY < ascentPosThreshold || userScrollSpeed < ascentScrollThreshold) {
                 return INTENTS.LEAD_ASCENT;
             }
-            if (viewportFocusY > playerPos.y + 120 || userScrollSpeed > 6) {
+            if (viewportFocusY > descentPosThreshold || userScrollSpeed > descentScrollThreshold) {
                 return INTENTS.LEAD_DESCENT;
             }
 

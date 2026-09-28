@@ -1,13 +1,28 @@
-// SprintDial Service Worker for Web App (PWA) Offline & Fast-Launch
-const CACHE_NAME = "sprintdial-cache-v3";
+// Client Radar Service Worker for Web App (PWA) Offline & Fast-Launch
+const CACHE_NAME = "client-radar-cache-v2";
 const ASSETS_TO_CACHE = [
-  "/",
-  "/index.html",
-  "/app.js",
-  "/manifest.json"
+  "/workspace/",
+  "/workspace/index.html",
+  "/workspace/app.js",
+  "/workspace/prospects_data.js",
+  "/workspace/custom_prospects.js",
+  "/workspace/objections.js",
+  "/workspace/brain_studio.js",
+  "/workspace/manifest.json",
+  "/shell.css",
+  "/fonts.css",
+  "/sfx_synth.js",
+  "/favicon.png"
 ];
 
 self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS_TO_CACHE).catch((err) => {
+        console.warn("[SW] Cache addAll warning:", err);
+      });
+    })
+  );
   self.skipWaiting();
 });
 
@@ -15,7 +30,11 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
-        keys.map((key) => caches.delete(key))
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
       );
     })
   );
@@ -24,8 +43,15 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
-  
-  // Network first for HTML and JS scripts so updates load instantly
+
+  const url = new URL(event.request.url);
+
+  // Skip caching for analytics, Firebase backend real-time endpoints, or chrome-extension URLs
+  if (url.origin !== self.location.origin || url.pathname.startsWith("/api/") || url.hostname.includes("firebase")) {
+    return;
+  }
+
+  // Network-first with cache fallback strategy for fresh data + instant offline resiliency
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
@@ -37,8 +63,13 @@ self.addEventListener("fetch", (event) => {
         }
         return networkResponse;
       })
-      .catch(() => {
-        return caches.match(event.request);
+      .catch(async () => {
+        const cachedResponse = await caches.match(event.request);
+        if (cachedResponse) return cachedResponse;
+        if (event.request.mode === "navigate") {
+          return caches.match("/workspace/index.html");
+        }
+        return new Response("Offline", { status: 503, statusText: "Offline" });
       })
   );
 });

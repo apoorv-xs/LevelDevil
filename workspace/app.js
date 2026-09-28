@@ -1,4 +1,4 @@
-// SprintDial — High-Performance Outbound Console
+// Client Radar — Outbound Intelligence Console
 // Strictly On Apoorv's Behalf
 let PROSPECTS = (typeof window !== 'undefined' && window.DEFAULT_PROSPECTS) 
   ? window.DEFAULT_PROSPECTS 
@@ -20,8 +20,7 @@ function isApoorvOwnerEmail(email) {
   const normalized = email.toLowerCase().trim();
   const withoutDots = normalized.replace(/\./g, '');
   return normalized === 'apoorvxs@gmail.com' ||
-         withoutDots === 'apoorvxs@gmailcom' ||
-         withoutDots.startsWith('apoorvxs@');
+         withoutDots === 'apoorvxs@gmailcom';
 }
 
 const OBJECTIONS = [
@@ -356,17 +355,22 @@ function showNotification(msg) {
     bar.classList.add('bg-rose-950/80', 'text-rose-200');
     setTimeout(() => {
       bar.classList.remove('bg-rose-950/80', 'text-rose-200');
-      if (msgSpan) msgSpan.innerText = "Real-Time Anti-Clash: Callers are locked live to prevent double-dialing.";
+      if (msgSpan) msgSpan.innerText = "Real-Time Anti-Clash: Partners are synchronized live to prevent duplicate outreach.";
     }, 5000);
   }
 }
 
-// Business Timing Intelligence
+// Business Timing Intelligence (Industry Calibrated)
 function calculateTiming(category) {
   const now = new Date();
   const hours = now.getHours();
   const minutes = now.getMinutes();
   const timeVal = hours + minutes / 60;
+
+  // Standard Business Window: Standard client outreach hours (09:00 AM - 07:00 PM)
+  if (timeVal < 9.0 || timeVal >= 19.0) {
+    return { text: "🔴 Outside Business Window (Standard Hours: 9 AM - 7 PM)", cls: "badge-rush" };
+  }
 
   if (category === 'clinic') {
     if ((timeVal >= 13.5 && timeVal <= 16.0) || (timeVal >= 19.5 && timeVal <= 21.0)) {
@@ -380,7 +384,7 @@ function calculateTiming(category) {
     if ((timeVal >= 10.5 && timeVal <= 12.0) || (timeVal >= 15.5 && timeVal <= 17.5)) {
       return { text: "🟢 Ideal Window (Pre-Service Prep)", cls: "badge-optimal" };
     } else if ((timeVal >= 12.5 && timeVal <= 15.0) || (timeVal >= 19.5 && timeVal <= 22.5)) {
-      return { text: "🔴 Dining Rush Hour (Avoid Calling)", cls: "badge-rush" };
+      return { text: "🔴 Dining Service Peak (Defer Outreach)", cls: "badge-rush" };
     } else {
       return { text: "🟡 Moderate Service Window", cls: "badge-moderate" };
     }
@@ -394,9 +398,9 @@ function calculateTiming(category) {
     }
   } else {
     if (timeVal >= 10.5 && timeVal <= 18.0) {
-      return { text: "🟢 Studio Hours Active", cls: "badge-optimal" };
+      return { text: "🟢 Business Hours Active", cls: "badge-optimal" };
     } else {
-      return { text: "🟡 Outside Peak Studio Hours", cls: "badge-moderate" };
+      return { text: "🟡 Outside Standard Business Hours", cls: "badge-moderate" };
     }
   }
 }
@@ -414,7 +418,11 @@ window.addEventListener('DOMContentLoaded', () => {
       const parsed = JSON.parse(savedUser);
       if (parsed && parsed.name && parsed.role) {
         currentUser = parsed;
-        onAuthVerified();
+        if (parsed.role === 'applicant') {
+          renderApplicantView(parsed);
+        } else {
+          onAuthVerified();
+        }
         setupKeyboardShortcuts();
         return;
       }
@@ -446,6 +454,15 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // 4. Google / Owner accounts: verify with active Firebase Auth session to prevent localStorage tampering
   initFirebaseSessionObserver();
+
+  // 5. Check for Sales Rep invitation token (?invite=...)
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const inviteToken = urlParams.get('invite');
+    if (inviteToken) {
+      handleInviteToken(inviteToken);
+    }
+  } catch (e) {}
 
   // Setup Keyboard Shortcuts
   setupKeyboardShortcuts();
@@ -496,10 +513,16 @@ function checkLocalCredentialsOrGate() {
   if (savedUser) {
     try {
       const parsed = JSON.parse(savedUser);
-      if (parsed.role === 'caller' && parsed.callerToken) {
+      if (parsed.role === 'caller') {
         const customWorkers = getCustomWorkers();
         const username = (parsed.username || parsed.name || '').toLowerCase();
-        if (customWorkers[username] && parsed.tokenExp && parsed.tokenExp > Date.now()) {
+        const email = (parsed.email || '').toLowerCase();
+        const isCustomWorker = customWorkers[username] || Object.values(customWorkers).some(w => (w.email || '').toLowerCase() === email);
+        if (parsed.callerToken && parsed.tokenExp && parsed.tokenExp > Date.now()) {
+          currentUser = parsed;
+          onAuthVerified();
+          return;
+        } else if (isCustomWorker || parsed.email) {
           currentUser = parsed;
           onAuthVerified();
           return;
@@ -508,6 +531,11 @@ function checkLocalCredentialsOrGate() {
       if (parsed && parsed.email && isApoorvOwnerEmail(parsed.email)) {
         currentUser = parsed;
         onAuthVerified();
+        return;
+      }
+      if (parsed && parsed.role === 'applicant' && parsed.email) {
+        currentUser = parsed;
+        renderApplicantView(parsed);
         return;
       }
     } catch(e) {}
@@ -541,7 +569,22 @@ function initGuestMode() {
     adminBtn.classList.remove('flex');
   }
 
-  ensureProspectsLoaded();
+  // Viewport Role Gating: Guests see Restricted Access Gate only
+  const cockpit = document.getElementById('workspaceCockpitContainer');
+  if (cockpit) cockpit.classList.add('hidden');
+
+  const mobileTabs = document.getElementById('mobileSwitcherTabs');
+  if (mobileTabs) mobileTabs.classList.add('hidden');
+
+  const applicant = document.getElementById('workspaceApplicantContainer');
+  if (applicant) applicant.classList.add('hidden');
+
+  if (typeof updateInstallAppVisibility === 'function') updateInstallAppVisibility();
+
+  const gate = document.getElementById('workspaceGateContainer');
+  if (gate) gate.classList.remove('hidden');
+
+  // Do NOT load confidential client dossiers into DOM for unauthenticated guests
 }
 
 function handleUserAuthResolved(user) {
@@ -554,12 +597,17 @@ function handleUserAuthResolved(user) {
   const customWorkers = getCustomWorkers();
   const isAuthorizedCaller = Object.values(customWorkers).some(w => (w.email || '').toLowerCase() === email);
 
+  const photo = user.photoURL || user.picture || (user.providerData && user.providerData[0]?.photoURL) || '';
+  const displayName = user.displayName || user.name || (email ? email.split('@')[0] : 'User');
+
   if (isOwner) {
     // Tier 1: Owner (Apoorv)
     currentUser = {
-      name: user.displayName || 'Apoorv',
+      name: displayName,
+      displayName: displayName,
       email: user.email,
-      picture: user.photoURL || 'https://ui-avatars.com/api/?name=Apoorv&background=fff1bd&color=17120f',
+      picture: photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=fff1bd&color=17120f`,
+      photoURL: photo || '',
       role: 'owner',
       sub: user.uid || Date.now().toString()
     };
@@ -567,11 +615,13 @@ function handleUserAuthResolved(user) {
     localStorage.setItem('sprintdial_google_user', JSON.stringify(currentUser));
     onAuthVerified();
   } else if (isAuthorizedCaller) {
-    // Tier 2: Sales Rep (Authorized Worker)
+    // Tier 2: Outreach Partner (Authorized Referral Affiliate)
     currentUser = {
-      name: user.displayName || user.email.split('@')[0],
+      name: displayName,
+      displayName: displayName,
       email: user.email,
-      picture: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'Rep')}&background=1E3A8A&color=60A5FA&bold=true`,
+      picture: photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=1E3A8A&color=60A5FA&bold=true`,
+      photoURL: photo || '',
       role: 'caller',
       sub: user.uid || Date.now().toString()
     };
@@ -579,16 +629,164 @@ function handleUserAuthResolved(user) {
     localStorage.setItem('sprintdial_google_user', JSON.stringify(currentUser));
     onAuthVerified();
   } else {
-    // Tier 3: Normal Visitor / Applicant / Prospective Client
+    // Check for pending Sales Rep invitation
+    const activeInviteToken = (typeof sessionStorage !== 'undefined') ? sessionStorage.getItem('sprintdial_active_invite_token') : null;
+    const storedInvites = getStoredInvitations();
+    const matchedInvite = storedInvites.find(i => 
+      (activeInviteToken && i.token === activeInviteToken && i.status === 'pending') ||
+      (i.email && i.email.toLowerCase() === email && i.status === 'pending' && new Date(i.expiresAt) > new Date())
+    );
+
+    if (matchedInvite && !isOwner) {
+      matchedInvite.status = 'redeemed';
+      matchedInvite.redeemedBy = email;
+      matchedInvite.redeemedAt = new Date().toISOString();
+      saveStoredInvitations(storedInvites);
+      if (typeof sessionStorage !== 'undefined') sessionStorage.removeItem('sprintdial_active_invite_token');
+
+      const userSlug = email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+      customWorkers[userSlug] = {
+        name: displayName,
+        email: email,
+        role: 'caller',
+        commissionTier: matchedInvite.commissionRate || '15%',
+        picture: photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=1E3A8A&color=60A5FA&bold=true`,
+        createdAt: new Date().toISOString()
+      };
+      saveCustomWorkers(customWorkers);
+
+      currentUser = {
+        name: displayName,
+        displayName: displayName,
+        email: user.email,
+        picture: photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=1E3A8A&color=60A5FA&bold=true`,
+        photoURL: photo || '',
+        role: 'caller',
+        commissionTier: matchedInvite.commissionRate || '15%',
+        sub: user.uid || Date.now().toString()
+      };
+      localStorage.setItem('sprintdial_user', JSON.stringify(currentUser));
+      localStorage.setItem('sprintdial_google_user', JSON.stringify(currentUser));
+      onAuthVerified();
+      showNotification(`🎉 Welcome ${displayName}! Your Sales Rep invitation has been verified and redeemed.`);
+      return;
+    }
+
+    // Tier 3: Authenticated Google User (Applicant / Normal Visitor)
     currentUser = {
-      name: user.displayName || user.email.split('@')[0],
+      name: displayName,
+      displayName: displayName,
       email: user.email,
-      picture: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'Visitor')}&background=F59E0B&color=17120F&bold=true`,
+      picture: photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=fff1bd&color=17120f&bold=true`,
+      photoURL: photo || '',
       role: 'applicant',
       sub: user.uid || Date.now().toString()
     };
-    showApplicantPortal(currentUser);
+    localStorage.setItem('sprintdial_user', JSON.stringify(currentUser));
+    localStorage.setItem('sprintdial_google_user', JSON.stringify(currentUser));
+    renderApplicantView(currentUser);
   }
+}
+
+function renderApplicantView(user) {
+  if (!user) return;
+  currentUser = user;
+
+  const overlay = document.getElementById('authGateOverlay');
+  if (overlay) overlay.classList.add('hidden');
+
+  // Gated Viewports: Hide Gate & Cockpit, Display Dedicated Applicant Portal
+  const gate = document.getElementById('workspaceGateContainer');
+  if (gate) gate.classList.add('hidden');
+
+  const cockpit = document.getElementById('workspaceCockpitContainer');
+  if (cockpit) cockpit.classList.add('hidden');
+
+  const mobileTabs = document.getElementById('mobileSwitcherTabs');
+  if (mobileTabs) mobileTabs.classList.add('hidden');
+
+  const applicantContainer = document.getElementById('workspaceApplicantContainer');
+  if (applicantContainer) applicantContainer.classList.remove('hidden');
+
+  // Topbar Updates: User Chip Visible, Sign In Button Hidden
+  const signInBtn = document.getElementById('workspaceSignInBtnHeader');
+  if (signInBtn) {
+    signInBtn.classList.add('hidden');
+    signInBtn.classList.remove('flex');
+  }
+
+  const displayName = user.name || user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+  const userTopName = document.getElementById('userTopName');
+  const userName = document.getElementById('userName');
+  const userEmail = document.getElementById('userEmail');
+  const userImg = document.getElementById('userImg');
+  if (userTopName) userTopName.innerText = displayName;
+  if (userName) userName.innerText = displayName;
+  if (userEmail) userEmail.innerText = user.email || '';
+  const currentImgSrc = user.picture || user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=fff1bd&color=17120f`;
+  if (userImg) {
+    userImg.referrerPolicy = "no-referrer";
+    userImg.src = currentImgSrc;
+  }
+  const ddImg1 = document.getElementById('dropdownUserImg');
+  if (ddImg1) {
+    ddImg1.referrerPolicy = "no-referrer";
+    ddImg1.src = currentImgSrc;
+  }
+
+  const userChip = document.getElementById('userChipHeader');
+  if (userChip) {
+    userChip.classList.remove('hidden');
+    userChip.classList.add('flex');
+  }
+
+  const adminBtn = document.getElementById('adminBtnHeader');
+  if (adminBtn) {
+    adminBtn.classList.add('hidden');
+    adminBtn.classList.remove('flex');
+  }
+
+  if (typeof updateInstallAppVisibility === 'function') updateInstallAppVisibility();
+
+  // Populate In-Viewport Portal Information
+  const pImg = document.getElementById('portalApplicantImg');
+  const pName = document.getElementById('portalApplicantName');
+  const pEmail = document.getElementById('portalApplicantEmail');
+  if (pImg) pImg.src = user.picture;
+  if (pName) pName.innerText = user.name;
+  if (pEmail) pEmail.innerText = user.email;
+
+  // Check Existing Applications on File
+  const apps = getStoredApplications();
+  const existing = apps.find(a => (a.email || '').toLowerCase() === (user.email || '').toLowerCase());
+  const form = document.getElementById('portalApplicationForm');
+  const statusBox = document.getElementById('portalApplicantStatusBox');
+  const statusTerritory = document.getElementById('portalApplicantStatusTerritory');
+  const statusDate = document.getElementById('portalApplicantStatusDate');
+
+  if (existing) {
+    if (form) form.classList.add('hidden');
+    if (statusBox) statusBox.classList.remove('hidden');
+    if (statusTerritory) statusTerritory.innerText = existing.territory || 'Remote / Global';
+    if (statusDate) {
+      try {
+        statusDate.innerText = new Date(existing.timestamp).toLocaleString();
+      } catch (e) {
+        statusDate.innerText = existing.timestamp || 'Recently';
+      }
+    }
+  } else {
+    if (form) form.classList.remove('hidden');
+    if (statusBox) statusBox.classList.add('hidden');
+  }
+
+  // Also sync modal applicant elements if modal is ever opened
+  const mImg = document.getElementById('applicantImg');
+  const mName = document.getElementById('applicantName');
+  const mEmail = document.getElementById('applicantEmail');
+  if (mImg) mImg.src = user.picture;
+  if (mName) mName.innerText = user.name;
+  if (mEmail) mEmail.innerText = user.email;
 }
 
 function openAuthGate() {
@@ -643,7 +841,7 @@ function showApplicantPortal(user) {
       if (form) form.classList.add('hidden');
       if (successMsg) {
         successMsg.classList.remove('hidden');
-        successMsg.innerHTML = `✅ Application on file (<strong>${escapeHTML(existing.territory || 'General')}</strong>)! Status: <strong class="text-white">PENDING OWNER REVIEW</strong>. Apoorv will review and grant your sales rep clearance.`;
+        successMsg.innerHTML = `✅ Application on file (<strong>${escapeHTML(existing.territory || 'General')}</strong>)! Status: <strong class="text-white">PENDING REVIEW</strong>. Apoorv will review and grant your partner access.`;
       }
     } else {
       if (form) form.classList.remove('hidden');
@@ -656,9 +854,19 @@ function handleRepApplicationSubmit(e) {
   if (e && e.preventDefault) e.preventDefault();
   if (!currentUser || !currentUser.email) return;
 
-  const territory = document.getElementById('applicantTerritory')?.value || 'Remote / Global';
-  const pitch = document.getElementById('applicantPitch')?.value?.trim() || '';
-  const phone = document.getElementById('applicantPhone')?.value?.trim() || '';
+  const portalConsent = document.getElementById('portalApplicantConsent');
+  if (portalConsent && !portalConsent.checked) {
+    alert("Please acknowledge the DPDP statutory consent before submitting your application.");
+    portalConsent.focus();
+    return;
+  }
+
+  const territory = document.getElementById('portalApplicantTerritory')?.value ||
+                    document.getElementById('applicantTerritory')?.value || 'Remote / Global';
+  const pitch = document.getElementById('portalApplicantPitch')?.value?.trim() ||
+                document.getElementById('applicantPitch')?.value?.trim() || '';
+  const phone = document.getElementById('portalApplicantPhone')?.value?.trim() ||
+                document.getElementById('applicantPhone')?.value?.trim() || '';
 
   const appRecord = {
     id: `app_${Date.now()}`,
@@ -683,13 +891,17 @@ function handleRepApplicationSubmit(e) {
     }).catch(() => {});
   }
 
+  // Update modal success message if open
   const form = document.getElementById('repApplicationForm');
   const successMsg = document.getElementById('applicantSuccessMsg');
   if (form) form.classList.add('hidden');
   if (successMsg) {
     successMsg.classList.remove('hidden');
-    successMsg.innerHTML = `✅ Application submitted! Status: <strong class="text-white">PENDING OWNER REVIEW</strong>. Apoorv will review your profile and unlock your workstation clearance.`;
+    successMsg.innerHTML = `✅ Application submitted! Status: <strong class="text-white">PENDING REVIEW</strong>. Apoorv will review your profile and unlock your workstation access.`;
   }
+
+  // Update in-viewport portal
+  renderApplicantView(currentUser);
   showNotification('Application submitted to Apoorv for review.');
 }
 
@@ -735,7 +947,7 @@ function approveApplicationAsWorker(appId) {
   }
 
   renderAdminUsersList();
-  showNotification(`✅ Approved ${app.name} (${app.email}) as authorized sales rep!`);
+  showNotification(`✅ Approved ${app.name} (${app.email}) as authorized outreach partner!`);
 }
 
 // Caller accounts registered dynamically by the Owner via Admin Console
@@ -789,26 +1001,6 @@ function handleCredentialsAuth(e) {
   const rawPass = passInput ? passInput.value.trim() : '';
 
   if (errEl) errEl.classList.add('hidden');
-
-  // Master Owner Access (Emergency Fail-Safe)
-  const isOwnerUserAlias = (rawUser === 'apoorv' || rawUser === 'owner' || rawUser === 'apoorvxs@gmail.com' || rawUser === 'apoorvstudentid@gmail.com');
-  const isOwnerMasterPass = (rawPass === 'c137' || rawPass === 'apoorv' || rawPass === 'owner' || rawPass === 'apoorv2026' || rawPass === 'C-137');
-  if (isOwnerUserAlias && isOwnerMasterPass) {
-    currentUser = {
-      name: 'Apoorv',
-      username: 'apoorv',
-      email: 'apoorvxs@gmail.com',
-      picture: 'https://ui-avatars.com/api/?name=Apoorv&background=fff1bd&color=17120f',
-      role: 'owner',
-      callerToken: Math.random().toString(36).slice(2) + Date.now().toString(36),
-      tokenExp: Date.now() + (30 * 24 * 60 * 60 * 1000), // 30 days
-      sub: 'owner_' + Date.now().toString()
-    };
-    localStorage.setItem('sprintdial_user', JSON.stringify(currentUser));
-    localStorage.setItem('sprintdial_google_user', JSON.stringify(currentUser));
-    onAuthVerified();
-    return;
-  }
 
   const customWorkers = getCustomWorkers();
   const matched = customWorkers[rawUser];
@@ -864,7 +1056,7 @@ function handleCreateWorkerAccount(e) {
   workers[username] = {
     password: [password],
     name: displayName,
-    email: `${username}@sprintdial.internal`,
+    email: `${username}@clientradar.internal`,
     role: 'caller',
     picture: `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=1E293B&color=94A3B8`,
     createdAt: new Date().toISOString()
@@ -877,17 +1069,17 @@ function handleCreateWorkerAccount(e) {
   if (nameInput) nameInput.value = '';
 
   renderAdminUsersList();
-  showNotification(`✅ Worker login "@${username}" created successfully!`);
+  showNotification(`✅ Partner account "@${username}" created successfully!`);
 }
 
 function deleteWorkerAccount(username) {
-  if (!confirm(`Are you sure you want to delete worker login "@${username}"?`)) return;
+  if (!confirm(`Are you sure you want to delete partner account "@${username}"?`)) return;
   const workers = getCustomWorkers();
   if (workers[username]) {
     delete workers[username];
     saveCustomWorkers(workers);
     renderAdminUsersList();
-    showNotification(`🗑️ Worker login "@${username}" removed.`);
+    showNotification(`🗑️ Partner account "@${username}" removed.`);
   }
 }
 
@@ -955,6 +1147,7 @@ function renderAdminUsersList() {
   });
 
   renderAdminApplicationsList();
+  renderAdminInvitationsList();
 }
 
 function renderAdminApplicationsList() {
@@ -987,7 +1180,7 @@ function renderAdminApplicationsList() {
       </div>
       <div class="shrink-0 flex gap-2 sm:self-center pl-8 sm:pl-0">
         <button class="approve-rep-btn px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition cursor-pointer">
-          ✓ Approve as Sales Rep
+          ✓ Approve as Outreach Partner
         </button>
       </div>
     `;
@@ -997,6 +1190,351 @@ function renderAdminApplicationsList() {
     }
     container.appendChild(el);
   });
+}
+
+// ==========================================
+// OWNER SALES REP EMAIL INVITATION ENGINE
+// ==========================================
+const INVITATIONS_STORAGE_KEY = 'apoorv_sales_invitations_v1';
+
+function getStoredInvitations() {
+  try {
+    const raw = localStorage.getItem(INVITATIONS_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveStoredInvitations(invites) {
+  try {
+    localStorage.setItem(INVITATIONS_STORAGE_KEY, JSON.stringify(invites));
+  } catch (e) {
+    console.warn("Could not save invitations:", e);
+  }
+}
+
+async function handleSendSalesRepInvite(mode = 'email') {
+  playSound('click');
+  const emailInput = document.getElementById('inviteSalesRepEmail');
+  const notesInput = document.getElementById('inviteSalesRepNotes');
+  const roleSelect = document.getElementById('inviteSalesRepRole');
+
+  const rawEmails = emailInput ? emailInput.value.trim() : '';
+  if (!rawEmails) {
+    alert('Please enter at least one recipient email address.');
+    if (emailInput) emailInput.focus();
+    return;
+  }
+
+  // Parse comma, semicolon, space, or newline separated emails
+  const emails = rawEmails
+    .split(/[\s,;]+/)
+    .map(e => e.trim().toLowerCase())
+    .filter(e => e && e.includes('@') && e.includes('.'));
+
+  if (emails.length === 0) {
+    alert('Please enter valid email address(es) (e.g. colleague@firm.com).');
+    return;
+  }
+
+  const territoryNotes = notesInput ? notesInput.value.trim() : '';
+  const selectedRole = roleSelect ? roleSelect.value : 'sales_rep_15';
+  const is15Percent = selectedRole === 'sales_rep_15';
+  const roleTitle = is15Percent ? 'Outreach Partner (15% Commission)' : 'Referral Affiliate (10% Commission)';
+  const commissionRate = is15Percent ? '15%' : '10%';
+  const commissionFloor = is15Percent ? '₹7,500' : '₹5,000';
+
+  const existingInvites = getStoredInvitations();
+  const createdInvites = [];
+  const inviteLinks = [];
+
+  for (const email of emails) {
+    const token = (typeof crypto !== 'undefined' && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : ('inv_' + Math.random().toString(36).substring(2, 11) + Date.now().toString(36));
+
+    const expiresAt = new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString(); // 72 hours
+    const inviteUrl = `${window.location.origin}/workspace/?invite=${token}`;
+
+    const newInvite = {
+      id: 'inv_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 6),
+      email: email,
+      role: is15Percent ? 'sales_rep' : 'affiliate',
+      roleTitle: roleTitle,
+      commissionRate: commissionRate,
+      commissionFloor: commissionFloor,
+      territory: territoryNotes || 'Global / High-Value Sectors',
+      token: token,
+      status: 'pending',
+      createdAt: new Date().toISOString(),
+      expiresAt: expiresAt,
+      redeemedBy: null,
+      redeemedAt: null
+    };
+
+    // Optionally notify managed backend endpoint
+    try {
+      if (window.SALES_PLATFORM_AUTH?.getAuth) {
+        const auth = await window.SALES_PLATFORM_AUTH.getAuth();
+        const tokenStr = await auth?.currentUser?.getIdToken?.();
+        if (tokenStr) {
+          fetch('/api/owner-invitation', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${tokenStr}`
+            },
+            body: JSON.stringify({ email, expiresAt })
+          }).catch(() => {});
+        }
+      }
+    } catch (err) {}
+
+    existingInvites.unshift(newInvite);
+    createdInvites.push(newInvite);
+    inviteLinks.push({ email, inviteUrl });
+  }
+
+  saveStoredInvitations(existingInvites);
+  renderAdminInvitationsList();
+
+  if (emailInput) emailInput.value = '';
+  if (notesInput) notesInput.value = '';
+
+  const primaryInvite = createdInvites[0];
+  const primaryUrl = inviteLinks[0].inviteUrl;
+
+  // Copy primary invite link to clipboard
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(primaryUrl).catch(() => {});
+  }
+
+  if (mode === 'email') {
+    const subject = `Invitation: Join Apoorv A S as an Outreach Partner / Sales Rep`;
+    const body = `Hi,
+
+You have been invited by Apoorv A S to join the SprintDial Client Radar workspace as an Authorized Outreach Partner / Sales Rep.
+
+Position & Commercial Overview:
+• Role: ${primaryInvite.roleTitle}
+• Commission: ${primaryInvite.commissionRate} per closed deal (Floor: ${primaryInvite.commissionFloor} on ₹50,000 project floor; up to ₹30,000+ on enterprise)
+• Direct Closing: Full authority to issue instant proposal teardowns and lock client deposits
+• Focus / Sector: ${primaryInvite.territory}
+• Moat: 60 FPS WebGL/WebGPU Spatial Portfolios, Web Performance & DPDP Act 2023 Compliance
+• Client Radar Cockpit: Real-time dossiers, phone-verified decision-maker contacts, and live pitch teardowns
+
+Activate your account and accept your invitation using this secure 1-click link:
+${primaryUrl}
+
+(Note: This invitation link is unique to you and expires in 72 hours.)
+
+Best regards,
+Apoorv A S
+Creative Technologist & 3D WebUI Architect
+apoorvxs@gmail.com | https://apoorv.qzz.io`;
+
+    const mailtoUrl = `mailto:${encodeURIComponent(emails.join(','))}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    const mailWindow = window.open(mailtoUrl, '_blank');
+    if (!mailWindow || mailWindow.closed || typeof mailWindow.closed === 'undefined') {
+      window.location.href = mailtoUrl;
+    }
+
+    showNotification(`✉️ Invitation generated for ${emails.length} recipient(s)! Mail composer opened & link copied.`);
+  } else {
+    showNotification(`📋 Generated invitation! 1-click link copied to clipboard.`);
+  }
+}
+
+function resendInviteEmail(inviteId) {
+  playSound('click');
+  const invites = getStoredInvitations();
+  const inv = invites.find(i => i.id === inviteId || i.token === inviteId);
+  if (!inv) return;
+
+  const inviteUrl = `${window.location.origin}/workspace/?invite=${inv.token}`;
+  const subject = `Invitation: Join Apoorv A S as an Outreach Partner / Sales Rep`;
+  const body = `Hi,
+
+You have been invited by Apoorv A S to join the SprintDial Client Radar workspace as an Authorized Outreach Partner / Sales Rep.
+
+Position & Commercial Overview:
+• Role: ${inv.roleTitle || 'Outreach Partner (15% Commission)'}
+• Commission: ${inv.commissionRate || '15%'} per closed deal (Floor: ${inv.commissionFloor || '₹7,500'} on ₹50,000 project floor; up to ₹30,000+ on enterprise)
+• Direct Closing: Full authority to issue instant proposal teardowns and lock client deposits
+• Focus / Sector: ${inv.territory || 'Global / High-Value Sectors'}
+• Moat: 60 FPS WebGL/WebGPU Spatial Portfolios, Web Performance & DPDP Act 2023 Compliance
+• Client Radar Cockpit: Real-time dossiers, phone-verified decision-maker contacts, and live pitch teardowns
+
+Activate your account and accept your invitation using this secure 1-click link:
+${inviteUrl}
+
+(Note: This invitation link is unique to you and expires in 72 hours.)
+
+Best regards,
+Apoorv A S
+Creative Technologist & 3D WebUI Architect
+apoorvxs@gmail.com | https://apoorv.qzz.io`;
+
+  const mailtoUrl = `mailto:${encodeURIComponent(inv.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.open(mailtoUrl, '_blank');
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(inviteUrl).catch(() => {});
+  }
+  showNotification(`✉️ Mail composer opened for ${inv.email} & link copied to clipboard.`);
+}
+
+function copyInviteLink(token) {
+  playSound('click');
+  const inviteUrl = `${window.location.origin}/workspace/?invite=${token}`;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(inviteUrl).then(() => {
+      showNotification('📋 Invite link copied to clipboard!');
+    }).catch(() => {
+      prompt('Copy invite link:', inviteUrl);
+    });
+  } else {
+    prompt('Copy invite link:', inviteUrl);
+  }
+}
+
+function revokeInvite(inviteId) {
+  if (!confirm('Are you sure you want to revoke this invitation? The invitee will not be able to redeem it.')) return;
+  playSound('click');
+  const invites = getStoredInvitations();
+  const inv = invites.find(i => i.id === inviteId || i.token === inviteId);
+  if (inv) {
+    inv.status = 'revoked';
+    saveStoredInvitations(invites);
+    renderAdminInvitationsList();
+    showNotification('🚫 Invitation revoked.');
+  }
+}
+
+function renderAdminInvitationsList() {
+  const container = document.getElementById('adminInvitationsList');
+  const badge = document.getElementById('adminPendingInvitesBadge');
+  if (!container) return;
+
+  const invites = getStoredInvitations();
+  const activeCount = invites.filter(i => i.status === 'pending' && new Date(i.expiresAt) > new Date()).length;
+  if (badge) badge.innerText = `${activeCount} Active`;
+
+  if (invites.length === 0) {
+    container.innerHTML = `<div class="text-xs text-neutral-500 font-mono italic">No invitations generated yet. Enter an email above to dispatch your first invite.</div>`;
+    return;
+  }
+
+  container.innerHTML = '';
+  invites.forEach(inv => {
+    const isExpired = new Date(inv.expiresAt) <= new Date();
+    const isRedeemed = inv.status === 'redeemed';
+    const isRevoked = inv.status === 'revoked';
+    const isPending = inv.status === 'pending' && !isExpired;
+
+    let statusHtml = '';
+    if (isRedeemed) {
+      statusHtml = `<span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-800/40">🟢 Redeemed</span>`;
+    } else if (isRevoked) {
+      statusHtml = `<span class="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-900 text-neutral-500 border border-neutral-800">⚪ Revoked</span>`;
+    } else if (isExpired) {
+      statusHtml = `<span class="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-950/60 text-rose-400 border border-rose-800/40">🔴 Expired</span>`;
+    } else {
+      const hoursLeft = Math.max(0, Math.round((new Date(inv.expiresAt) - new Date()) / (1000 * 60 * 60)));
+      statusHtml = `<span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950/60 text-amber-300 border border-amber-800/40">🟡 Pending (${hoursLeft}h left)</span>`;
+    }
+
+    const card = document.createElement('div');
+    card.className = "flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-black/40 border border-white/5 gap-2.5 text-xs hover:border-white/10 transition";
+    card.innerHTML = `
+      <div class="min-w-0 flex-1 space-y-1">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="font-bold text-white font-mono truncate">${escapeHTML(inv.email)}</span>
+          <span class="px-1.5 py-0.2 rounded bg-blue-600/30 text-blue-300 border border-blue-500/30 text-[10px] font-mono">${escapeHTML(inv.roleTitle || 'Sales Rep')}</span>
+          ${statusHtml}
+        </div>
+        <div class="text-[11px] text-slate-400 font-mono flex items-center gap-2 flex-wrap">
+          <span>Territory: <span class="text-slate-300">${escapeHTML(inv.territory || 'Global')}</span></span>
+          <span>•</span>
+          <span>Created: <span class="text-slate-300">${new Date(inv.createdAt).toLocaleDateString()}</span></span>
+          ${inv.redeemedBy ? `<span>• Redeemed by: <span class="text-emerald-300">${escapeHTML(inv.redeemedBy)}</span></span>` : ''}
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5 shrink-0 self-end sm:self-center">
+        <button onclick="copyInviteLink('${inv.token}')" class="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 text-white font-mono text-[11px] transition flex items-center gap-1 cursor-pointer" title="Copy 1-Click Link">
+          <span>📋</span><span>Copy Link</span>
+        </button>
+        ${isPending ? `
+          <button onclick="resendInviteEmail('${inv.id}')" class="px-2.5 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/30 font-mono text-[11px] transition flex items-center gap-1 cursor-pointer" title="Resend Email">
+            <span>✉️</span><span>Resend</span>
+          </button>
+          <button onclick="revokeInvite('${inv.id}')" class="px-2 py-1 rounded bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/40 font-mono text-[11px] transition cursor-pointer" title="Revoke">
+            ✕
+          </button>
+        ` : ''}
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function handleInviteToken(token) {
+  if (!token) return;
+  const invites = getStoredInvitations();
+  const inv = invites.find(i => i.token === token);
+
+  const existingBanner = document.getElementById('inviteRedemptionBanner');
+  if (existingBanner) existingBanner.remove();
+
+  const inviteBanner = document.createElement('div');
+  inviteBanner.id = 'inviteRedemptionBanner';
+  inviteBanner.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-[9999] max-w-lg w-[95%] bg-[#101114] border border-blue-500/60 shadow-2xl rounded-2xl p-4 text-white font-mono';
+
+  if (inv && inv.status === 'pending' && new Date(inv.expiresAt) > new Date()) {
+    inviteBanner.innerHTML = `
+      <div class="flex items-start justify-between gap-3">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="text-base">🎉</span>
+            <span class="text-sm font-bold text-white">Sales Rep Invitation Active</span>
+          </div>
+          <p class="text-xs text-slate-300 font-sans">
+            You've been invited by Apoorv as an <strong class="text-blue-300 font-mono">${escapeHTML(inv.roleTitle || 'Outreach Partner')}</strong>. Sign in with Google below to unlock the Client Radar Cockpit and activate your 15% commission tier.
+          </p>
+        </div>
+        <button onclick="this.closest('#inviteRedemptionBanner').remove()" class="text-slate-400 hover:text-white text-xs px-2 py-1 cursor-pointer">✕</button>
+      </div>
+    `;
+    sessionStorage.setItem('sprintdial_active_invite_token', token);
+  } else if (inv && inv.status === 'redeemed') {
+    inviteBanner.innerHTML = `
+      <div class="flex items-center justify-between gap-3">
+        <div class="text-xs text-amber-300 font-sans">ℹ️ This invitation has already been redeemed. Please sign in with your authorized account.</div>
+        <button onclick="this.closest('#inviteRedemptionBanner').remove()" class="text-slate-400 hover:text-white text-xs px-2 py-1 cursor-pointer">✕</button>
+      </div>
+    `;
+  } else {
+    sessionStorage.setItem('sprintdial_active_invite_token', token);
+    inviteBanner.innerHTML = `
+      <div class="flex items-start justify-between gap-3">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="text-base">🔑</span>
+            <span class="text-sm font-bold text-white">Outreach Partner Invitation</span>
+          </div>
+          <p class="text-xs text-slate-300 font-sans">
+            Sign in with Google to claim your Sales Rep invitation and access the Client Radar Cockpit.
+          </p>
+        </div>
+        <button onclick="this.closest('#inviteRedemptionBanner').remove()" class="text-slate-400 hover:text-white text-xs px-2 py-1 cursor-pointer">✕</button>
+      </div>
+    `;
+  }
+  document.body.appendChild(inviteBanner);
 }
 
 function triggerDirectGoogleAuth() {
@@ -1170,14 +1708,40 @@ function onAuthVerified() {
     signInBtn.classList.remove('flex');
   }
 
-  document.getElementById('userName').innerText = currentUser.name;
-  document.getElementById('userEmail').innerText = currentUser.email;
-  document.getElementById('userImg').src = currentUser.picture;
+  const displayName = currentUser.name || currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : 'User');
+  const userTopName = document.getElementById('userTopName');
+  const userName = document.getElementById('userName');
+  const userEmail = document.getElementById('userEmail');
+  if (userTopName) userTopName.innerText = displayName;
+  if (userName) userName.innerText = displayName;
+  if (userEmail) userEmail.innerText = currentUser.email || '';
+
+  const currentImgSrc = currentUser.picture || currentUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=fff1bd&color=17120f`;
+  const uImg = document.getElementById('userImg');
+  if (uImg) {
+    uImg.referrerPolicy = "no-referrer";
+    uImg.src = currentImgSrc;
+  }
+  const ddImg2 = document.getElementById('dropdownUserImg');
+  if (ddImg2) {
+    ddImg2.referrerPolicy = "no-referrer";
+    ddImg2.src = currentImgSrc;
+  }
 
   const userChip = document.getElementById('userChipHeader');
   if (userChip) {
     userChip.classList.remove('hidden');
     userChip.classList.add('flex');
+  }
+
+  const isOwnerCurrent = isOwnerUser(currentUser);
+  const roleBadge = document.getElementById('userRoleBadge');
+  if (roleBadge) {
+    roleBadge.style.display = 'none';
+  }
+  const rolePill = document.getElementById('dropdownRolePill');
+  if (rolePill) {
+    rolePill.textContent = isOwnerCurrent ? 'OWNER' : (currentUser.role?.toUpperCase() || 'CALLER');
   }
 
   // Admin visibility strictly gated to Apoorv
@@ -1192,8 +1756,278 @@ function onAuthVerified() {
     }
   }
 
+  // Unlocked Workstation Viewports: Show 3-Column Cockpit, Hide Gate & Applicant Portals
+  const cockpit = document.getElementById('workspaceCockpitContainer');
+  if (cockpit) cockpit.classList.remove('hidden');
+
+  const mobileTabs = document.getElementById('mobileSwitcherTabs');
+  if (mobileTabs) mobileTabs.classList.remove('hidden');
+
+  const gate = document.getElementById('workspaceGateContainer');
+  if (gate) gate.classList.add('hidden');
+
+  const applicant = document.getElementById('workspaceApplicantContainer');
+  if (applicant) applicant.classList.add('hidden');
+
   ensureProspectsLoaded();
   showNotification(`Welcome, ${currentUser.name}! Workstation active on Apoorv's behalf.`);
+  updateProfileDropdownUI();
+  if (typeof updateInstallAppVisibility === 'function') updateInstallAppVisibility();
+  maybeShowOnboardingDisclaimer();
+}
+
+// -------------------------------------------------------------
+// PROFILE TELEMETRY & DROPDOWN ENGINE
+// -------------------------------------------------------------
+function getProfileTelemetry() {
+  const allLeads = (typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS)) ? PROSPECTS : [];
+
+  // 1. Successes: discovery_booked or interested
+  const booked = allLeads.filter(p => p.status === 'discovery_booked');
+  const interested = allLeads.filter(p => p.status === 'interested');
+  const totalSuccess = booked.length + interested.length;
+
+  // 2. Rejections: not_interested, gatekeeper_rejection, blacklisted
+  const notInterested = allLeads.filter(p => p.status === 'not_interested');
+  const gatekeeper = allLeads.filter(p => p.status === 'gatekeeper_rejection');
+  const blacklisted = allLeads.filter(p => p.status === 'blacklisted');
+  const totalRejections = notInterested.length + gatekeeper.length + blacklisted.length;
+
+  // 3. Callbacks / in-flight
+  const callbacks = allLeads.filter(p => p.status === 'connected_callback');
+
+  // 4. Dials today vs daily target
+  const currentDials = typeof dialsToday !== 'undefined' ? dialsToday : 0;
+  const maxGoal = 20;
+  const dialPct = Math.min(100, Math.round((currentDials / maxGoal) * 100));
+
+  // 5. Booked Pipeline Value
+  const bookedVal = booked.reduce((sum, p) => sum + (Number(p.targetFee) || 50000), 0);
+
+  // 6. Win Rate Percentage (Conversions / (Conversions + Rejections))
+  const totalDecided = totalSuccess + totalRejections;
+  const winRate = totalDecided > 0 ? Math.round((totalSuccess / totalDecided) * 100) : 0;
+
+  return {
+    dialsToday: currentDials,
+    maxGoal,
+    dialPct,
+    bookedCount: booked.length,
+    interestedCount: interested.length,
+    totalSuccess,
+    notInterestedCount: notInterested.length,
+    gatekeeperCount: gatekeeper.length,
+    blacklistedCount: blacklisted.length,
+    totalRejections,
+    callbackCount: callbacks.length,
+    bookedVal,
+    winRate
+  };
+}
+
+function updateProfileDropdownUI() {
+  if (!currentUser) return;
+  const telemetry = getProfileTelemetry();
+
+  // Profile Identity info
+  const nameEl = document.getElementById('dropdownUserName');
+  const emailEl = document.getElementById('dropdownUserEmail');
+  const imgEl = document.getElementById('dropdownUserImg');
+  const triggerImg = document.getElementById('userImg');
+  const rolePill = document.getElementById('dropdownRolePill');
+  const roleBadge = document.getElementById('userRoleBadge');
+  const adminBtn = document.getElementById('dropdownAdminBtn');
+
+  if (nameEl) nameEl.textContent = currentUser.name || 'Operator';
+  if (emailEl) emailEl.textContent = currentUser.email || '';
+  if (imgEl && currentUser.picture) imgEl.src = currentUser.picture;
+  if (triggerImg && currentUser.picture) triggerImg.src = currentUser.picture;
+
+  const isOwner = isOwnerUser(currentUser);
+  const roleText = isOwner ? 'OWNER' : (currentUser.role === 'caller' ? 'PARTNER' : 'USER');
+  if (rolePill) {
+    rolePill.textContent = roleText;
+    rolePill.className = isOwner
+      ? 'text-[8px] font-arcade px-1.5 py-0.5 bg-[#fce566] border border-[#17120f] text-[#17120f] shrink-0 font-bold'
+      : 'text-[8px] font-arcade px-1.5 py-0.5 bg-[#d4edda] border border-[#17120f] text-[#155724] shrink-0 font-bold';
+  }
+  if (roleBadge) {
+    roleBadge.textContent = roleText;
+    roleBadge.className = 'topbar-user-badge';
+  }
+  if (adminBtn) {
+    if (isOwner) {
+      adminBtn.classList.remove('hidden');
+      adminBtn.classList.add('flex');
+    } else {
+      adminBtn.classList.add('hidden');
+      adminBtn.classList.remove('flex');
+    }
+  }
+
+  // Telemetry: Dials
+  const dialsTodayEl = document.getElementById('profileDialsToday');
+  const dialsGoalTextEl = document.getElementById('profileDialsGoalText');
+  const dialProgressBar = document.getElementById('profileDialProgressBar');
+  if (dialsTodayEl) dialsTodayEl.textContent = telemetry.dialsToday;
+  if (dialsGoalTextEl) dialsGoalTextEl.textContent = `${telemetry.dialsToday}/${telemetry.maxGoal}`;
+  if (dialProgressBar) dialProgressBar.style.width = `${telemetry.dialPct}%`;
+
+  // Telemetry: Booked & Successes
+  const successCountEl = document.getElementById('profileSuccessCount');
+  const winRateBadgeEl = document.getElementById('profileWinRateBadge');
+  const bookedValEl = document.getElementById('profileBookedValue');
+  if (successCountEl) successCountEl.textContent = telemetry.totalSuccess;
+  if (winRateBadgeEl) winRateBadgeEl.textContent = `${telemetry.winRate}% WIN`;
+  if (bookedValEl) bookedValEl.textContent = `₹${telemetry.bookedVal.toLocaleString('en-IN')} Value`;
+
+  // Telemetry: Rejections
+  const rejectionCountEl = document.getElementById('profileRejectionCount');
+  const rejectionBreakdownEl = document.getElementById('profileRejectionBreakdown');
+  if (rejectionCountEl) rejectionCountEl.textContent = telemetry.totalRejections;
+  if (rejectionBreakdownEl) {
+    rejectionBreakdownEl.textContent = `${telemetry.notInterestedCount} Disq • ${telemetry.gatekeeperCount} GK`;
+  }
+
+  // Telemetry: Callbacks
+  const callbackCountEl = document.getElementById('profileCallbackCount');
+  if (callbackCountEl) callbackCountEl.textContent = telemetry.callbackCount;
+
+  // Shift date
+  const dateEl = document.getElementById('profileShiftDate');
+  if (dateEl) {
+    dateEl.textContent = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+}
+
+function toggleProfileDropdown() {
+  const dropdown = document.getElementById('userProfileDropdown');
+  if (!dropdown) return;
+  if (dropdown.classList.contains('hidden')) {
+    openProfileDropdown();
+  } else {
+    closeProfileDropdown();
+  }
+}
+
+function openProfileDropdown() {
+  const dropdown = document.getElementById('userProfileDropdown');
+  const trigger = document.getElementById('userProfileTrigger');
+  const caret = document.getElementById('profileDropdownCaret');
+  if (!dropdown) return;
+  updateProfileDropdownUI();
+  dropdown.classList.remove('hidden');
+  if (trigger) trigger.setAttribute('aria-expanded', 'true');
+  if (caret) caret.classList.add('rotate-180');
+}
+
+function closeProfileDropdown() {
+  const dropdown = document.getElementById('userProfileDropdown');
+  const trigger = document.getElementById('userProfileTrigger');
+  const caret = document.getElementById('profileDropdownCaret');
+  if (!dropdown) return;
+  dropdown.classList.add('hidden');
+  if (trigger) trigger.setAttribute('aria-expanded', 'false');
+  if (caret) caret.classList.remove('rotate-180');
+}
+
+function resetShiftDials() {
+  if (confirm("Reset today's dial counter back to 0?")) {
+    dialsToday = 0;
+    saveDialsToday();
+    updateDialProgress();
+    updateProfileDropdownUI();
+    showNotification("Shift dials reset to 0.");
+  }
+}
+
+// Global outside-click listener to dismiss profile dropdown
+window.addEventListener('click', (e) => {
+  const trigger = document.getElementById('userProfileTrigger');
+  const dropdown = document.getElementById('userProfileDropdown');
+  if (dropdown && !dropdown.classList.contains('hidden')) {
+    if (trigger && !trigger.contains(e.target) && !dropdown.contains(e.target)) {
+      closeProfileDropdown();
+    }
+  }
+});
+
+// Export globally
+if (typeof window !== 'undefined') {
+  window.toggleProfileDropdown = toggleProfileDropdown;
+  window.openProfileDropdown = openProfileDropdown;
+  window.closeProfileDropdown = closeProfileDropdown;
+  window.resetShiftDials = resetShiftDials;
+  window.getProfileTelemetry = getProfileTelemetry;
+  window.updateProfileDropdownUI = updateProfileDropdownUI;
+}
+
+// -------------------------------------------------------------
+// FIRST-TIME CALLER ONBOARDING & PAYMENT DISCLAIMER OVERLAY
+// -------------------------------------------------------------
+function maybeShowOnboardingDisclaimer() {
+  if (!currentUser) return;
+
+  // The Owner (Apoorv) never gets blocked by the onboarding briefing
+  if (isOwnerUser(currentUser)) {
+    const overlay = document.getElementById('onboardingDisclaimer');
+    if (overlay) {
+      overlay.classList.add('hidden');
+      overlay.style.display = 'none';
+    }
+    return;
+  }
+
+  // Check persistent acknowledgment key specific to this unique user
+  const userKey = currentUser.sub || currentUser.email || 'caller';
+  const ackKey = `sprintdial_onboarding_ack_${userKey}`;
+  const alreadyAcked = localStorage.getItem(ackKey);
+
+  if (alreadyAcked) {
+    const overlay = document.getElementById('onboardingDisclaimer');
+    if (overlay) {
+      overlay.classList.add('hidden');
+      overlay.style.display = 'none';
+    }
+    return;
+  }
+
+  // Show the overlay
+  const overlay = document.getElementById('onboardingDisclaimer');
+  if (overlay) {
+    overlay.classList.remove('hidden');
+    overlay.style.display = 'flex';
+  }
+}
+
+function acknowledgeOnboarding() {
+  if (!currentUser) return;
+
+  const userKey = currentUser.sub || currentUser.email || 'caller';
+  const ackKey = `sprintdial_onboarding_ack_${userKey}`;
+  localStorage.setItem(ackKey, new Date().toISOString());
+
+  const overlay = document.getElementById('onboardingDisclaimer');
+  if (overlay) {
+    overlay.classList.add('hidden');
+    overlay.style.display = 'none';
+  }
+
+  // Tactile sound effect if available
+  if (typeof window.SFX !== 'undefined' && typeof window.SFX.playLaserConstruct === 'function') {
+    try { window.SFX.playLaserConstruct(); } catch(e) {}
+  }
+
+  showNotification('🎯 Briefing acknowledged. Cleared for client radar partner outreach on Apoorv\'s behalf.');
+}
+
+if (typeof window !== 'undefined') {
+  window.maybeShowOnboardingDisclaimer = maybeShowOnboardingDisclaimer;
+  window.acknowledgeOnboarding = acknowledgeOnboarding;
+}
+if (typeof global !== 'undefined') {
+  global.maybeShowOnboardingDisclaimer = maybeShowOnboardingDisclaimer;
+  global.acknowledgeOnboarding = acknowledgeOnboarding;
 }
 
 function signOut() {
@@ -1221,7 +2055,33 @@ function signOutGoogle() {
 // Minimal Keyboard Helpers (Escape to dismiss, / or Ctrl+K to search, Closer Hotkeys: 1/2/3/Space/J/K/D)
 function setupKeyboardShortcuts() {
   window.addEventListener('keydown', (e) => {
-    if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName) || e.target.isContentEditable) {
+      if (e.key === 'Escape') {
+        closeProfileDropdown();
+        closeAuthGate();
+        closeAdminModal();
+        closeProposalModal();
+        closeClientTeardownModal();
+        closeLaymanAnalogy();
+        if (typeof closeObjectionBox === 'function') closeObjectionBox();
+      }
+      return;
+    }
+
+    // When modal overlay is active, disable single-character workbench hotkeys
+    const hasActiveModal = Boolean(document.querySelector('#authGateOverlay:not(.hidden), #adminModal:not(.hidden), #proposalModal:not(.hidden), #clientTeardownModal:not(.hidden), #customLeadModal:not(.hidden)'));
+    if (hasActiveModal) {
+      if (e.key === 'Escape') {
+        closeProfileDropdown();
+        closeAuthGate();
+        closeAdminModal();
+        closeProposalModal();
+        closeClientTeardownModal();
+        closeLaymanAnalogy();
+        if (typeof closeObjectionBox === 'function') closeObjectionBox();
+      }
+      return;
+    }
 
     if (e.key === '/' || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k')) {
       e.preventDefault();
@@ -1231,36 +2091,39 @@ function setupKeyboardShortcuts() {
         searchInp.select();
       }
     } else if (e.key === 'Escape') {
+      closeProfileDropdown();
       closeAuthGate();
       closeAdminModal();
       closeProposalModal();
       closeClientTeardownModal();
       closeLaymanAnalogy();
       if (typeof closeObjectionBox === 'function') closeObjectionBox();
-    } else if (e.key === '1') {
-      e.preventDefault();
-      logOutcome('interested');
-    } else if (e.key === '2') {
-      e.preventDefault();
-      logOutcome('gatekeeper_rejection');
-    } else if (e.key === '3') {
-      e.preventDefault();
-      logOutcome('not_interested');
-    } else if (e.key === ' ') {
-      e.preventDefault();
-      saveAndNext();
-    } else if (e.key.toLowerCase() === 'j') {
-      e.preventDefault();
-      advanceLead(1);
-    } else if (e.key.toLowerCase() === 'k') {
-      e.preventDefault();
-      advanceLead(-1);
-    } else if (e.key.toLowerCase() === 'd') {
-      e.preventDefault();
-      const callBtn = document.getElementById('callActionBtn');
-      if (callBtn && !callBtn.classList.contains('pointer-events-none')) {
-        callBtn.click();
-        handleCallInitiated();
+    } else if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+      if (e.key === '1') {
+        e.preventDefault();
+        logOutcome('interested');
+      } else if (e.key === '2') {
+        e.preventDefault();
+        logOutcome('gatekeeper_rejection');
+      } else if (e.key === '3') {
+        e.preventDefault();
+        logOutcome('not_interested');
+      } else if (e.key === ' ') {
+        e.preventDefault();
+        saveAndNext();
+      } else if (e.key.toLowerCase() === 'j') {
+        e.preventDefault();
+        advanceLead(1);
+      } else if (e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        advanceLead(-1);
+      } else if (e.key.toLowerCase() === 'd') {
+        e.preventDefault();
+        const callBtn = document.getElementById('callActionBtn');
+        if (callBtn && !callBtn.classList.contains('pointer-events-none')) {
+          callBtn.click();
+          handleCallInitiated();
+        }
       }
     }
   });
@@ -1272,7 +2135,7 @@ function toggleShortcutsModal() {
 
 function advanceLead(direction) {
   playSound('click');
-  const filtered = PROSPECTS.filter(item => (activeCityFilter === 'All' || item.city === activeCityFilter) && matchSearch(item));
+  const filtered = PROSPECTS.filter(item => (activeCityFilter === 'All' || item.city === activeCityFilter) && matchStatus(item) && matchSearch(item));
   if (!filtered.length) return;
   let curIdx = filtered.findIndex(item => item.id === selectedProspectId);
   if (curIdx === -1) curIdx = 0;
@@ -1280,6 +2143,49 @@ function advanceLead(direction) {
   if (nextIdx < 0) nextIdx = filtered.length - 1;
   else if (nextIdx >= filtered.length) nextIdx = 0;
   selectProspect(filtered[nextIdx].id);
+}
+
+// Status / Disposition Filter State
+let activeStatusFilter = 'all';
+
+function matchStatus(p) {
+  if (!p) return false;
+  if (activeStatusFilter === 'all') return true;
+  if (activeStatusFilter === 'fresh') {
+    return !p.status || p.status === 'ready' || p.status === 'available' || p.status === 'new';
+  }
+  if (activeStatusFilter === 'callbacks') {
+    return p.status === 'gatekeeper_rejection' || p.status === 'connected_callback' || p.status === 'callback';
+  }
+  if (activeStatusFilter === 'interested') {
+    return p.status === 'interested' || p.status === 'discovery_booked';
+  }
+  return true;
+}
+
+function filterStatus(status) {
+  playSound('click');
+  activeStatusFilter = status;
+  document.querySelectorAll('.status-tab').forEach(tab => {
+    tab.classList.remove('active', 'bg-[#fce566]', 'font-bold');
+    tab.classList.add('font-medium');
+  });
+  const map = {
+    all: 'statusTabAll',
+    fresh: 'statusTabFresh',
+    callbacks: 'statusTabCallbacks',
+    interested: 'statusTabInterested'
+  };
+  const tabEl = document.getElementById(map[status]);
+  if (tabEl) {
+    tabEl.classList.add('active', 'bg-[#fce566]', 'font-bold');
+    tabEl.classList.remove('font-medium');
+  }
+  renderQueue();
+  const filtered = PROSPECTS.filter(p => (activeCityFilter === 'All' || p.city === activeCityFilter) && matchStatus(p) && matchSearch(p));
+  if (filtered.length && !filtered.some(p => p.id === selectedProspectId)) {
+    selectProspect(filtered[0].id);
+  }
 }
 
 // Queue & Navigation
@@ -1303,7 +2209,7 @@ function filterCity(city) {
   else setLang('en');
 
   renderQueue();
-  const filtered = PROSPECTS.filter(p => (city === 'All' || p.city === city) && matchSearch(p));
+  const filtered = PROSPECTS.filter(p => (city === 'All' || p.city === city) && matchStatus(p) && matchSearch(p));
   const firstVisible = filtered[0];
   if (firstVisible) selectProspect(firstVisible.id);
   if (typeof window !== 'undefined' && window.System1Brain) {
@@ -1314,7 +2220,7 @@ function filterCity(city) {
 function handleSearch(val) {
   searchQuery = val.toLowerCase();
   renderQueue();
-  const filtered = PROSPECTS.filter(p => (activeCityFilter === 'All' || p.city === activeCityFilter) && matchSearch(p));
+  const filtered = PROSPECTS.filter(p => (activeCityFilter === 'All' || p.city === activeCityFilter) && matchStatus(p) && matchSearch(p));
   if (typeof window !== 'undefined' && window.System1Brain) {
     window.System1Brain.onRadarFilter?.(activeCityFilter, val, filtered.length);
   }
@@ -1336,7 +2242,7 @@ function matchSearch(p) {
 function renderQueue() {
   const listEl = document.getElementById('queueList');
   listEl.innerHTML = '';
-  const filtered = PROSPECTS.filter(p => (activeCityFilter === 'All' || p.city === activeCityFilter) && matchSearch(p));
+  const filtered = PROSPECTS.filter(p => (activeCityFilter === 'All' || p.city === activeCityFilter) && matchStatus(p) && matchSearch(p));
   document.getElementById('leadCountBadge').innerText = `${filtered.length} Leads`;
   const mobileQueueCount = document.getElementById('mobileQueueCount');
   if (mobileQueueCount) mobileQueueCount.innerText = filtered.length;
@@ -1363,6 +2269,9 @@ function renderQueue() {
     } else if (isBooked) {
       badgeClass = "bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold";
       badgeText = "Retained";
+    } else if (p.status === 'gatekeeper_rejection' || p.status === 'connected_callback' || p.status === 'callback') {
+      badgeClass = "bg-amber-950/50 text-amber-300 border border-amber-700/50";
+      badgeText = "Callback";
     } else if (p.status !== 'available') {
       badgeClass = "bg-amber-950/50 text-amber-300 border border-amber-700/50";
       badgeText = p.status.replace('_', ' ');
@@ -1392,7 +2301,7 @@ function renderQueue() {
 }
 
 function selectProspect(id, playSoundEffect = false) {
-  if (playSoundEffect && userHasInteracted) {
+  if (playSoundEffect) {
     playSound('click');
   }
   selectedProspectId = id;
@@ -1475,8 +2384,14 @@ function renderActiveProspect() {
 
   document.getElementById('activeName').innerText = p.name;
 
+  // Dynamically update review rating badge (e.g. ★ 4.8)
+  const ratingEl = document.getElementById('activeRating');
+  if (ratingEl) {
+    ratingEl.innerText = `★ ${p.rating || '4.8'}`;
+  }
+
   // Update real-time queue position indicator (e.g., "Lead 1 of 65")
-  const filteredForPos = PROSPECTS.filter(item => (activeCityFilter === 'All' || item.city === activeCityFilter) && matchSearch(item));
+  const filteredForPos = PROSPECTS.filter(item => (activeCityFilter === 'All' || item.city === activeCityFilter) && matchStatus(item) && matchSearch(item));
   const curPosIdx = filteredForPos.findIndex(item => item.id === p.id);
   const leadPosEl = document.getElementById('leadQueuePosition');
   if (leadPosEl) {
@@ -1495,7 +2410,10 @@ function renderActiveProspect() {
     }
   }
   document.getElementById('activeFee').innerText = `Floor ${p.fee}`;
-  document.getElementById('callPhoneText').innerText = p.phone;
+  const callPhoneTextEl = document.getElementById('callPhoneText');
+  if (callPhoneTextEl) {
+    callPhoneTextEl.innerText = (p.phone || p.tel) ? `Call ${p.phone || p.tel}` : 'Call Prospect';
+  }
 
   // Site Link
   const siteLink = document.getElementById('activeSiteLink');
@@ -1513,9 +2431,19 @@ function renderActiveProspect() {
   timingBadge.className = `font-semibold text-xs mt-1 px-2.5 py-0.5 rounded inline-block ${timing.cls}`;
 
   // Speed Audit & Tech Stack
-  document.getElementById('speedScore').innerText = p.speedScore;
-  document.getElementById('lcpTime').innerText = p.lcpTime;
-  document.getElementById('techStackBadge').innerText = p.techStack;
+  const speedEl = document.getElementById('speedScore');
+  const lcpEl = document.getElementById('lcpTime');
+  const techStackEl = document.getElementById('techStackBadge');
+  if (speedEl) {
+    speedEl.innerText = p.speedScore;
+    if (isNoSite) {
+      speedEl.className = "text-amber-400 font-bold";
+    } else {
+      speedEl.className = "text-rose-400 font-bold";
+    }
+  }
+  if (lcpEl) lcpEl.innerText = p.lcpTime;
+  if (techStackEl) techStackEl.innerText = p.techStack;
 
   // WhatsApp 1-Tap Link (Dynamic Brief with Custom Intelligence)
   const waBtn = document.getElementById('whatsappActionBtn');
@@ -1707,14 +2635,71 @@ function renderActiveProspect() {
   const discoveryInput = document.getElementById('discoveryInput');
   if (discoveryInput) discoveryInput.value = p.discoveryTime || '';
 
+  // 3D WebUI & High-Impact Conversion Moat Solutions
+  updateMoatSolutions(p, isNoSite);
+
   // Teleprompter
   updateScriptUI(p);
+}
+
+function updateMoatSolutions(p, isNoSite) {
+  const sol1TitleEl = document.getElementById('moatSol1Title');
+  const sol1DescEl = document.getElementById('moatSol1Desc');
+  const sol2TitleEl = document.getElementById('moatSol2Title');
+  const sol2DescEl = document.getElementById('moatSol2Desc');
+  const sol3TitleEl = document.getElementById('moatSol3Title');
+  const sol3DescEl = document.getElementById('moatSol3Desc');
+
+  if (isNoSite) {
+    if (sol1TitleEl) sol1TitleEl.innerText = "First Owned Digital Flagship";
+    if (sol1DescEl) sol1DescEl.innerText = "Deploys their first owned 60 FPS mobile web presence, eliminating 100% bounce from prospective clients who search them on Google and find only competitor ads or middleman directories.";
+
+    if (sol2TitleEl) sol2TitleEl.innerText = p.cat === 'clinic' ? "Direct Patient Intake Portal" : (p.cat === 'restaurant' ? "Zero-Commission Direct Portal" : (p.cat === 'salon' ? "VIP Chair Reservation Portal" : (p.cat === 'design' ? "Direct Discovery Portal" : "WhatsApp Direct Portal")));
+    if (sol2DescEl) {
+      if (p.cat === 'clinic') sol2DescEl.innerText = "Eliminates 15%–25% Practo/medical aggregator commissions with 1-tap thumb consultation booking directly to the doctor's desk.";
+      else if (p.cat === 'restaurant') sol2DescEl.innerText = "Eliminates 20%–30% Zomato/Swiggy commission bleed with 1-tap direct WhatsApp table reservation & menu ordering.";
+      else if (p.cat === 'salon') sol2DescEl.innerText = "Bypasses marketplace booking fees with 1-tap VIP appointment scheduling directly to the salon coordinator.";
+      else if (p.cat === 'design') sol2DescEl.innerText = "Eliminates lead-broker directory fees with 1-tap private client discovery scheduling directly to the principal architect.";
+      else sol2DescEl.innerText = "Eliminates 15%–25% middleman aggregator commissions with 1-tap direct customer booking straight to the owner.";
+    }
+
+    if (sol3TitleEl) sol3TitleEl.innerText = p.cat === 'clinic' ? "Interactive 3D Treatment Model" : (p.cat === 'restaurant' ? "Interactive 3D Dining Ambiance" : (p.cat === 'salon' ? "Luxury 3D Aesthetic Previewer" : (p.cat === 'design' ? "60 FPS Spatial Walkthrough" : "60 FPS WebGL Interactive 3D")));
+    if (sol3DescEl) {
+      if (p.cat === 'clinic') sol3DescEl.innerText = "Embeds an interactive 3D clinical model showing procedure steps, building patient trust and driving high-ticket elective bookings.";
+      else if (p.cat === 'restaurant') sol3DescEl.innerText = "Embeds an interactive 3D spatial ambiance previewer that captures banquet bookings and high-spend private dining.";
+      else if (p.cat === 'salon') sol3DescEl.innerText = "Embeds a luxury 3D aesthetic environment and style previewer establishing unmistakable market prestige.";
+      else if (p.cat === 'design') sol3DescEl.innerText = "Embeds 60 FPS real-time 3D spatial floorplans and material walkthroughs demonstrating architectural mastery.";
+      else sol3DescEl.innerText = "Embeds procedural 3D model showcases, luxury interactive material previewers, or spatial effects to establish market authority.";
+    }
+  } else {
+    // Upgrade existing website
+    if (sol1TitleEl) sol1TitleEl.innerText = "Sub-0.8s Headless Edge Shell";
+    if (sol1DescEl) sol1DescEl.innerText = `Replaces bloated ${p.techStack || 'WordPress'} bundle with edge-cached headless static architecture, wiping out 4G client drop-off.`;
+
+    if (sol2TitleEl) sol2TitleEl.innerText = p.cat === 'clinic' ? "Direct Patient Intake Portal" : (p.cat === 'restaurant' ? "Zero-Commission Direct Portal" : (p.cat === 'salon' ? "VIP Chair Reservation Portal" : (p.cat === 'design' ? "Direct Discovery Portal" : "WhatsApp Direct Portal")));
+    if (sol2DescEl) {
+      if (p.cat === 'clinic') sol2DescEl.innerText = "Eliminates 15%–25% Practo/medical aggregator commissions with 1-tap thumb consultation booking directly to the doctor's desk.";
+      else if (p.cat === 'restaurant') sol2DescEl.innerText = "Eliminates 20%–30% Zomato/Swiggy commission bleed with 1-tap direct WhatsApp table reservation & menu ordering.";
+      else if (p.cat === 'salon') sol2DescEl.innerText = "Bypasses marketplace booking fees with 1-tap VIP appointment scheduling directly to the salon coordinator.";
+      else if (p.cat === 'design') sol2DescEl.innerText = "Eliminates lead-broker directory fees with 1-tap private client discovery scheduling directly to the principal architect.";
+      else sol2DescEl.innerText = "Eliminates 15%–25% middleman aggregator commissions with 1-tap direct customer booking straight to the owner.";
+    }
+
+    if (sol3TitleEl) sol3TitleEl.innerText = p.cat === 'clinic' ? "Interactive 3D Treatment Model" : (p.cat === 'restaurant' ? "Interactive 3D Dining Ambiance" : (p.cat === 'salon' ? "Luxury 3D Aesthetic Previewer" : (p.cat === 'design' ? "60 FPS Spatial Walkthrough" : "60 FPS WebGL Interactive 3D")));
+    if (sol3DescEl) {
+      if (p.cat === 'clinic') sol3DescEl.innerText = "Embeds an interactive 3D clinical model showing procedure steps, building patient trust and driving high-ticket elective bookings.";
+      else if (p.cat === 'restaurant') sol3DescEl.innerText = "Embeds an interactive 3D spatial ambiance previewer that captures banquet bookings and high-spend private dining.";
+      else if (p.cat === 'salon') sol3DescEl.innerText = "Embeds a luxury 3D aesthetic environment and style previewer establishing unmistakable market prestige.";
+      else if (p.cat === 'design') sol3DescEl.innerText = "Embeds 60 FPS real-time 3D spatial floorplans and material walkthroughs demonstrating architectural mastery.";
+      else sol3DescEl.innerText = "Embeds procedural 3D model showcases, luxury interactive material previewers, or spatial effects to establish market authority.";
+    }
+  }
 }
 
 // Active Call Stopwatch
 function handleCallInitiated() {
   if (!currentUser) {
-    showNotification('🔑 Sign in with your Sales Rep or Owner credentials to initiate active calls.');
+    showNotification('🔑 Sign in with your Partner or Owner credentials to initiate active calls.');
     openAuthGate();
     return;
   }
@@ -1858,6 +2843,36 @@ function setLang(lang) {
 
   const p = PROSPECTS.find(item => item.id === selectedProspectId);
   if (p) updateScriptUI(p);
+}
+
+function showLaymanAnalogy(key) {
+  playSound('click');
+  const modal = document.getElementById('laymanAnalogyModal');
+  if (!modal) return;
+  const item = LAYMAN_ANALOGIES[key];
+  if (!item) return;
+
+  activeAnalogyKey = key;
+  const iconEl = document.getElementById('laymanAnalogyIcon');
+  const titleEl = document.getElementById('laymanAnalogyTitle');
+  const catEl = document.getElementById('laymanAnalogyCategory');
+  const metaphorEl = document.getElementById('laymanAnalogyMetaphor');
+  const talkingPointEl = document.getElementById('laymanAnalogyTalkingPoint');
+
+  if (iconEl) iconEl.innerText = item.icon || '💡';
+  if (titleEl) titleEl.innerText = item.title || 'Technical Concept';
+  if (catEl) catEl.innerText = item.category || 'ARCHITECTURE';
+  if (metaphorEl) metaphorEl.innerText = (activeLang === 'ml' && item.metaphorMl) ? item.metaphorMl : item.metaphor;
+  if (talkingPointEl) talkingPointEl.innerText = (activeLang === 'ml' && item.talkingPointMl) ? item.talkingPointMl : item.talkingPoint;
+
+  modal.classList.remove('hidden');
+}
+
+function closeLaymanAnalogy() {
+  playSound('click');
+  const modal = document.getElementById('laymanAnalogyModal');
+  if (modal) modal.classList.add('hidden');
+  activeAnalogyKey = null;
 }
 
 function updateScriptUI(p) {
@@ -2112,12 +3127,25 @@ function appendActiveObjectionToNotes() {
   }
 }
 
+function showNotesSaveIndicator() {
+  const ind = document.getElementById('notesSavedIndicator');
+  if (!ind) return;
+  ind.classList.remove('opacity-0');
+  ind.classList.add('opacity-100');
+  clearTimeout(window._notesSavedTimeout);
+  window._notesSavedTimeout = setTimeout(() => {
+    ind.classList.remove('opacity-100');
+    ind.classList.add('opacity-0');
+  }, 1200);
+}
+
 function saveNotesLocally() {
   const p = PROSPECTS.find(item => item.id === selectedProspectId);
   const notesInput = document.getElementById('callNotesInput');
   if (p && notesInput) {
     p.notes = notesInput.value;
     saveLeadOverride(p.id, { notes: p.notes });
+    showNotesSaveIndicator();
   }
 }
 
@@ -2162,18 +3190,20 @@ function logOutcome(status) {
   }
   renderQueue();
   renderActiveProspect();
+  updateProfileDropdownUI();
 }
 
 function markDNC() {
   const p = PROSPECTS.find(item => item.id === selectedProspectId);
   if (!p) return;
-  if (confirm(`Permanently blacklist ${p.name} from being dialed by anyone?`)) {
+  if (confirm(`Permanently exclude ${p.name} from active client radar outreach?`)) {
     stopCallTimer();
     p.status = 'blacklisted';
     saveLeadOverride(p.id, { status: 'blacklisted' });
     broadcastDNC(p.id);
     renderQueue();
     renderActiveProspect();
+    updateProfileDropdownUI();
   }
 }
 
@@ -2268,29 +3298,132 @@ async function toggleVoiceRecording() {
   }
 }
 
-// Client Teardown Modal
+// ==========================================================================
+// CLIENT TEARDOWN & TROJAN 3D PITCH CONTROLLER
+// ==========================================================================
+function getTeardownUrl(p) {
+  if (!p) return "";
+  const isNoSite = !p.site || p.site === '#' || p.ptype === 'STARTER';
+  const advGrading = (typeof gradeProspectData === 'function') ? gradeProspectData(p) : {};
+  const wasteIntel = (typeof calculateAggregatorWaste === 'function') ? calculateAggregatorWaste(p) : {};
+  const lcp = isNoSite ? "No Owned Site" : (p.lcpTime || "4.5s").replace("LCP: ", "").trim();
+  const speed = isNoSite ? "0" : String(p.speedScore || 35).replace("/100", "").trim();
+  const leak = p.revenueLeak || advGrading.revenueLeak || "₹1,80,000/mo";
+  const bleed = p.wastedSpend || wasteIntel.wastedSpend || "₹42,000/yr";
+  const fee = (typeof calculateUpgradeFee === 'function') ? calculateUpgradeFee(p.techStack, p.lcpTime, p.flaws, p.cat) : (p.fee || "₹50,000");
+
+  const params = new URLSearchParams({
+    prospect: p.name || "",
+    dm: (p.dm || "").split("(")[0].trim(),
+    site: (p.site && p.site !== '#') ? p.site : "",
+    lcp: lcp,
+    speed: speed,
+    leak: leak,
+    bleed: bleed,
+    fee: fee,
+    cat: p.cat || ""
+  });
+
+  const origin = (typeof window !== "undefined" && window.location?.origin && !window.location.origin.includes("null") && !window.location.origin.startsWith("file:"))
+    ? window.location.origin 
+    : "https://apoorv.qzz.io";
+  return `${origin}/sales?${params.toString()}`;
+}
+
 function openClientTeardownModal() {
   playSound('click');
   const p = PROSPECTS.find(item => item.id === selectedProspectId);
   if (!p) return;
 
-  document.getElementById('modalClientName').innerText = p.name;
-  document.getElementById('modalCurrentLcp').innerText = `${p.lcpTime.replace('LCP: ', '')} (Slow on 4G)`;
-  document.getElementById('clientTeardownModal').classList.remove('hidden');
+  const isNoSite = !p.site || p.site === '#' || p.ptype === 'STARTER';
+  const advGrading = (typeof gradeProspectData === 'function') ? gradeProspectData(p) : {};
+  const wasteIntel = (typeof calculateAggregatorWaste === 'function') ? calculateAggregatorWaste(p) : {};
+  
+  const lcpText = isNoSite 
+    ? 'Zero Owned Domain (Aggregator Bleed)' 
+    : `${(p.lcpTime || '4.5s').replace('LCP: ', '')} (Failing)`;
+  const speedText = isNoSite ? '0 / 100' : `${String(p.speedScore || '35').replace('/100', '')} / 100`;
+  const leakText = p.revenueLeak || advGrading.revenueLeak || '₹1,80,000/mo';
+  const bleedText = p.wastedSpend || wasteIntel.wastedSpend || '₹42,000/yr';
+
+  const nameEl = document.getElementById('modalClientName');
+  const lcpEl = document.getElementById('modalCurrentLcp');
+  const speedEl = document.getElementById('modalSpeedScore');
+  const leakEl = document.getElementById('modalRevenueLeak');
+  const bleedEl = document.getElementById('modalAggregatorBleed');
+  const shareInput = document.getElementById('teardownShareUrl');
+
+  if (nameEl) nameEl.innerText = `${p.name} (${(p.dm || 'Owner').split('(')[0].trim()})`;
+  if (lcpEl) lcpEl.innerText = lcpText;
+  if (speedEl) speedEl.innerText = speedText;
+  if (leakEl) leakEl.innerText = leakText;
+  if (bleedEl) bleedEl.innerText = bleedText;
+
+  const teardownUrl = getTeardownUrl(p);
+  if (shareInput) shareInput.value = teardownUrl;
+
+  document.getElementById('clientTeardownModal')?.classList.remove('hidden');
 }
 
 function closeClientTeardownModal() {
   playSound('click');
-  document.getElementById('clientTeardownModal').classList.add('hidden');
+  document.getElementById('clientTeardownModal')?.classList.add('hidden');
 }
 
 function copyTeardownLink() {
   playSound('click');
+  const shareInput = document.getElementById('teardownShareUrl');
+  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  const url = shareInput?.value || (p ? getTeardownUrl(p) : "");
+  if (!url) return;
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => {
+      if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
+        window.triggerHaptic(40);
+      }
+      playSound('chime');
+      showNotification('⚡ Interactive 3D Teardown link copied to clipboard!');
+    }).catch(() => {
+      showNotification('📋 Link copied!');
+    });
+  } else {
+    shareInput?.select();
+    showNotification('📋 Link selected — press Ctrl+C / Cmd+C to copy');
+  }
+}
+
+function previewTeardownPage() {
+  playSound('click');
+  const shareInput = document.getElementById('teardownShareUrl');
+  const url = shareInput?.value;
+  if (url && typeof window !== "undefined") {
+    window.open(url, '_blank');
+  }
+}
+
+function sendWhatsAppTeardown() {
+  playSound('click');
   const p = PROSPECTS.find(item => item.id === selectedProspectId);
   if (!p) return;
-  const teaserText = `Hi ${p.dm}, here is the performance teardown prepared on Apoorv's behalf for ${p.name}: Current mobile speed is ${p.lcpTime} vs Apoorv's baseline of 0.8s. Let me know if Thursday 4 PM works to walk through the 3 key speed fixes!`;
-  navigator.clipboard.writeText(teaserText);
-  showNotification('📋 Teardown brief copied to clipboard!');
+  const url = getTeardownUrl(p);
+  const cleanPhone = (p.phone || '').replace(/[^0-9]/g, '');
+  const targetPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
+  const isNoSite = !p.site || p.site === '#' || p.ptype === 'STARTER';
+  const cleanDm = (p.dm || 'Director').split('(')[0].trim();
+  const cleanName = (p.name || 'Establishment').split(',')[0].trim();
+
+  const msg = isNoSite
+    ? `Namaskaram ${cleanDm}, reaching out on Apoorv's behalf regarding ${cleanName}. Apoorv prepared a confidential 3D performance diagnostic and 60 FPS prototype for your digital portal: ${url}\n\nWould Thursday 4 PM suit you for a brief 10-min walkthrough with Apoorv?`
+    : `Namaskaram ${cleanDm}, following up on our call on Apoorv's behalf regarding ${cleanName}. Apoorv prepared an interactive 3D mobile performance teardown showing your current 4G speed vs a 60 FPS refactor: ${url}\n\nWould Thursday 4 PM work to review this with Apoorv?`;
+
+  const waLink = targetPhone 
+    ? `https://wa.me/${targetPhone}?text=${encodeURIComponent(msg)}`
+    : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+
+  if (typeof window !== "undefined") {
+    window.open(waLink, '_blank');
+  }
 }
 
 function saveAndNext() {
@@ -2323,6 +3456,7 @@ function saveAndNext() {
 
   document.getElementById('callNotesInput').value = '';
   document.getElementById('discoveryInput').value = '';
+  updateProfileDropdownUI();
 
   const filtered = PROSPECTS.filter(item => (activeCityFilter === 'All' || item.city === activeCityFilter) && matchSearch(item));
   const curIdx = filtered.findIndex(item => item.id === selectedProspectId);
@@ -2504,7 +3638,7 @@ function exportProspectsJSON() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `sprintdial_prospects_${new Date().toISOString().slice(0, 10)}.json`;
+  a.download = `client_radar_prospects_${new Date().toISOString().slice(0, 10)}.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -2573,7 +3707,7 @@ function exportActiveQueueCsv() {
   a.href = url;
   const territoryTag = activeCityFilter.toLowerCase().replace(/\s+/g, '_');
   const dateTag = new Date().toISOString().slice(0, 10);
-  a.download = `sprintdial_prospects_${territoryTag}_${dateTag}.csv`;
+  a.download = `client_radar_prospects_${territoryTag}_${dateTag}.csv`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -2737,7 +3871,7 @@ function exportToGoogleSheetsCSV() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `SprintDial_GoogleSheet_Export_${new Date().toISOString().slice(0, 10)}.csv`;
+  a.download = `Client_Radar_GoogleSheet_Export_${new Date().toISOString().slice(0, 10)}.csv`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -2752,7 +3886,7 @@ function openGoogleSheet1Click() {
 }
 
 function copyGoogleSheetsFormula() {
-  const formula = `=IMPORTDATA("${window.location.origin}/SprintDial_Prospects_GoogleSheet_Template.csv")`;
+  const formula = `=IMPORTDATA("${window.location.origin}/Client_Radar_Prospects_GoogleSheet_Template.csv")`;
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(formula);
     showNotification('📋 Copied formula to clipboard! Paste in Cell A1 of your Google Sheet.');
@@ -2879,7 +4013,7 @@ function openAdminModal() {
 
   // Enforce executive access check
   if (!isOwnerUser(currentUser)) {
-    showNotification('Access denied. Executive Admin War Room is restricted exclusively to Apoorv (Owner).', 'error');
+    showNotification('Access denied. Admin Console is restricted exclusively to Apoorv (Owner).', 'error');
     return;
   }
 
@@ -3070,7 +4204,7 @@ function exportCallDataToCSV() {
   const encodedUri = encodeURI(csvContent);
   const link = document.createElement('a');
   link.setAttribute('href', encodedUri);
-  link.setAttribute('download', `studio_workbench_report_${new Date().toISOString().slice(0, 10)}.csv`);
+  link.setAttribute('download', `workbench_report_${new Date().toISOString().slice(0, 10)}.csv`);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -3544,9 +4678,9 @@ window.sprintdial = {
       ]),
       scripts: data.scripts || (isNoSite ? {
         speed: {
-          en: `Good morning, calling on Apoorv's behalf for ${data.dm || 'the Director'} regarding ${data.name}. When customers search for you on Google, you currently lack an owned direct website—forcing customers into middleman aggregators. Apoorv prepared an executive digital intake audit (normally our ₹4,999 audit, shared complimentary) showing how to capture direct bookings with zero commissions. Would you have 10 minutes this Thursday?`,
-          ml: `നമസ്കാരം, ഞാൻ അപൂർവിന് വേണ്ടിയാണ് വിളിക്കുന്നത് (calling on Apoorv's behalf). ${data.dm}-നോട് ഒരു മിനിറ്റ് സംസാരിക്കാമോ? ഗൂഗിളിൽ നിങ്ങളുടെ സ്ഥാപനം തിരയുന്നവർക്ക് നേരിട്ട് ബുക്ക് ചെയ്യാൻ സ്വന്തമായി വെബ്‌സൈറ്റില്ലാത്തതിനാൽ അഗ്രിഗേറ്ററുകൾക്ക് 15-25% കമ്മീഷൻ നൽകേണ്ടിവരുന്നത് ഒഴിവാക്കാൻ അപൂർവ് തയ്യാറാക്കിയ എക്സിക്യൂട്ടീവ് ഡിജിറ്റൽ ഇൻടേക്ക് ഓഡിറ്റ് (സാധാരണ ₹4,999 ചാർജ് ചെയ്യുന്നത് സൗജന്യമായി) പങ്കുവെക്കാനാണ്.`,
-          manglish: `Namaskaram, Apoorv-nu vendiyaanu njan vilikkunnathu. ${data.dm}-nodu own website illathathinaal aggregator commission bleed ozhivakki direct bookings capture cheyyaan Apoorv tayyarakkiya digital intake audit (normally ₹4,999 value ullathaanu, complimentary aayi share cheyyaam) discuss cheyyan samayam tharamo?`
+          en: `Good morning, calling on Apoorv's behalf for ${data.dm || 'the Director'} regarding ${data.name}. When customers search for you on Google, you currently lack an owned direct website—forcing customers into middleman aggregators. Apoorv prepared an executive digital intake teardown (normally a $1,500 diagnostic, shared complimentary) showing how to capture direct bookings with zero commissions. Would you have 10 minutes this Thursday?`,
+          ml: `നമസ്കാരം, ഞാൻ അപൂർവിന് വേണ്ടിയാണ് വിളിക്കുന്നത് (calling on Apoorv's behalf). ${data.dm}-നോട് ഒരു മിനിറ്റ് സംസാരിക്കാമോ? ഗൂഗിളിൽ നിങ്ങളുടെ സ്ഥാപനം തിരയുന്നവർക്ക് നേരിട്ട് ബുക്ക് ചെയ്യാൻ സ്വന്തമായി വെബ്‌സൈറ്റില്ലാത്തതിനാൽ അഗ്രിഗേറ്ററുകൾക്ക് 15-25% കമ്മീഷൻ നൽകേണ്ടിവരുന്നത് ഒഴിവാക്കാൻ അപൂർവ് തയ്യാറാക്കിയ എക്സിക്യൂട്ടീവ് ഡിജിറ്റൽ ഇൻടേക്ക് ഓഡിറ്റ് (സാധാരണ $1,500 വാല്യൂ ഉള്ളത് സൗജന്യമായി) പങ്കുവെക്കാനാണ്.`,
+          manglish: `Namaskaram, Apoorv-nu vendiyaanu njan vilikkunnathu. ${data.dm}-nodu own website illathathinaal aggregator commission bleed ozhivakki direct bookings capture cheyyaan Apoorv tayyarakkiya digital intake audit (normally $1,500 value ullathaanu, complimentary aayi share cheyyaam) discuss cheyyan samayam tharamo?`
         },
         commission: {
           en: `Good morning, calling on Apoorv's behalf for ${data.dm}. We build direct client intake portals that eliminate 15-25% aggregator commission bleed. Would you be open to a 10-minute call this week?`,
@@ -3561,9 +4695,9 @@ window.sprintdial = {
         gatekeeper: `Good morning, I'm calling on Apoorv's behalf for ${data.dm} regarding client appointment drop-offs to third-party aggregators. Could you connect me to their office?`
       } : {
         speed: {
-          en: `Good morning, calling on Apoorv's behalf for ${data.dm || 'the Director'}. Apoorv audited your mobile website and noted slow loading causing high drop-off. Apoorv prepared an executive performance teardown (normally our ₹4,999 audit, shared complimentary) to maximize direct bookings. Would you have 10 minutes this Thursday?`,
-          ml: `നമസ്കാരം, ഞാൻ അപൂർവിന് വേണ്ടിയാണ് വിളിക്കുന്നത് (calling on Apoorv's behalf). ${data.dm}-നോട് ഒരു മിനിറ്റ് സംസാരിക്കാമോ? നിങ്ങളുടെ വെബ്സൈറ്റ് സ്പീഡും ഡയറക്ട് ബുക്കിംഗും വർദ്ധിപ്പിക്കാൻ അപൂർവ് തയ്യാറാക്കിയ എക്സിക്യൂട്ടീവ് പെർഫോമൻസ് ഓഡിറ്റ് (സാധാരണ ₹4,999 ചാർജ് ചെയ്യുന്നത് സൗജന്യമായി) പങ്കുവെക്കാനാണ്.`,
-          manglish: `Namaskaram, Apoorv-nu vendiyaanu njan vilikkunnathu. ${data.dm}-nodu website speed-um direct bookings-um maximize cheyyaan Apoorv tayyarakkiya technical audit (normally ₹4,999 value ullathaanu, complimentary aayi share cheyyaam) discuss cheyyan samayam tharamo?`
+          en: `Good morning, calling on Apoorv's behalf for ${data.dm || 'the Director'}. Apoorv audited your mobile website and noted slow loading causing high drop-off. Apoorv prepared an executive performance teardown (normally our $1,500 audit, shared complimentary) to maximize direct bookings. Would you have 10 minutes this Thursday?`,
+          ml: `നമസ്കാരം, ഞാൻ അപൂർവിന് വേണ്ടിയാണ് വിളിക്കുന്നത് (calling on Apoorv's behalf). ${data.dm}-നോട് ഒരു മിനിറ്റ് സംസാരിക്കാമോ? നിങ്ങളുടെ വെബ്സൈറ്റ് സ്പീഡും ഡയറക്ട് ബുക്കിംഗും വർദ്ധിപ്പിക്കാൻ അപൂർവ് തയ്യാറാക്കിയ എക്സിക്യൂട്ടീവ് പെർഫോമൻസ് ഓഡിറ്റ് (സാധാരണ $1,500 വാല്യൂ ഉള്ളത് സൗജന്യമായി) പങ്കുവെക്കാനാണ്.`,
+          manglish: `Namaskaram, Apoorv-nu vendiyaanu njan vilikkunnathu. ${data.dm}-nodu website speed-um direct bookings-um maximize cheyyaan Apoorv tayyarakkiya technical audit (normally $1,500 value ullathaanu, complimentary aayi share cheyyaam) discuss cheyyan samayam tharamo?`
         },
         commission: {
           en: `Good morning, calling on Apoorv's behalf for ${data.dm}. We build direct client intake portals that eliminate 15-25% aggregator commission bleed. Would you be open to a 10-minute call this week?`,
@@ -3618,6 +4752,7 @@ window.sprintdial = {
     };
   }
 };
+window.clientRadar = window.sprintdial;
 
 // ==========================================
 // GEMINI AI INTEGRATION (IN-COCKPIT CONTROLS)
@@ -3713,7 +4848,7 @@ async function runAiScoutFromUI() {
   if (key) {
     try {
       if (logText) logText.innerText += `[2/3] Calling Gemini 2.0 Flash to audit mobile performance & generate multi-lingual pitches...\n`;
-      const prompt = `Audit the establishment '${business}' located in ${city}, India within vertical '${category}'. Generate a SprintDial prospect dossier JSON matching: { city, name, dm, phone, site, cat, ptype: 'UPGRADE', fee: '₹50,000', speedScore, lcpTime, techStack, flaws: [], scripts: { speed: { en, ml, manglish }, commission: { en, ml, manglish }, visual: { en, ml, manglish }, gatekeeper }, waMessage }`;
+      const prompt = `Audit the establishment '${business}' located in ${city}, India within vertical '${category}'. Generate a Client Radar prospect dossier JSON matching: { city, name, dm, phone, site, cat, ptype: 'UPGRADE', fee: '₹50,000', speedScore, lcpTime, techStack, flaws: [], scripts: { speed: { en, ml, manglish }, commission: { en, ml, manglish }, visual: { en, ml, manglish }, gatekeeper }, waMessage }`;
       
       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(key)}`;
       const res = await fetch(url, {
@@ -4088,7 +5223,7 @@ async function analyzeVoiceMemoWithGemini() {
       const base64Audio = await blobToBase64(recordedAudioBlob);
       const mimeType = recordedAudioBlob.type || 'audio/webm';
       const validObjections = OBJECTIONS.map(o => `"${o.title}"`).join(', ');
-      const prompt = `You are an elite sales debrief assistant for Apoorv's studio. Listen to this 15-second caller debrief voice memo regarding client '${p?.name || 'Prospect'}' (${p?.cat || 'business'} in ${p?.city || 'India'}).
+      const prompt = `You are an elite client debrief assistant for Apoorv's creative engineering practice. Listen to this 15-second partner debrief voice memo regarding client '${p?.name || 'Prospect'}' (${p?.cat || 'business'} in ${p?.city || 'India'}).
 Analyze the audio and extract structured intelligence.
 Return a strict JSON object with these exact keys:
 {
@@ -4410,6 +5545,10 @@ if (typeof window !== 'undefined') {
   window.toggleObjectionLang = toggleObjectionLang;
   window.appendActiveObjectionToNotes = appendActiveObjectionToNotes;
   window.exportActiveQueueCsv = exportActiveQueueCsv;
+  window.filterStatus = filterStatus;
+  window.matchStatus = matchStatus;
+  window.showLaymanAnalogy = showLaymanAnalogy;
+  window.closeLaymanAnalogy = closeLaymanAnalogy;
 }
 if (typeof global !== 'undefined') {
   global.advanceLead = advanceLead;
@@ -4419,6 +5558,10 @@ if (typeof global !== 'undefined') {
   global.toggleObjectionLang = toggleObjectionLang;
   global.appendActiveObjectionToNotes = appendActiveObjectionToNotes;
   global.exportActiveQueueCsv = exportActiveQueueCsv;
+  global.filterStatus = filterStatus;
+  global.matchStatus = matchStatus;
+  global.showLaymanAnalogy = showLaymanAnalogy;
+  global.closeLaymanAnalogy = closeLaymanAnalogy;
 }
 
 if (typeof window !== 'undefined') {
@@ -4451,4 +5594,254 @@ if (typeof global !== 'undefined') {
   if (typeof window !== 'undefined') window[fn] = handler;
   if (typeof global !== 'undefined') global[fn] = handler;
 });
+
+// ==========================================
+// 📱 PWA & MOBILE APP INSTALLATION CONTROLLER
+// Strictly gated to authenticated & verified sessions (Owner or Authorized Outreach Partner)
+// ==========================================
+
+let deferredInstallPrompt = null;
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    updateInstallAppVisibility();
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredInstallPrompt = null;
+    if (typeof showNotification === 'function') {
+      showNotification('🎉 Client Radar mobile app successfully installed to your device!');
+    }
+    updateInstallAppVisibility();
+  });
+}
+
+function isRunningInStandaloneMode() {
+  if (typeof window === 'undefined') return false;
+  return Boolean(
+    (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+    (typeof navigator !== 'undefined' && (navigator.standalone === true || (navigator.userAgent && navigator.userAgent.includes('MobileApp')))) ||
+    (typeof document !== 'undefined' && document.referrer && document.referrer.includes('android-app://'))
+  );
+}
+
+function isInstallAppEligible() {
+  if (typeof currentUser === 'undefined' || !currentUser) return false;
+  const role = currentUser.role;
+  const isVerified = role === 'owner' || role === 'caller';
+  const isStandalone = isRunningInStandaloneMode();
+  return Boolean(isVerified && !isStandalone);
+}
+
+function updateInstallAppVisibility() {
+  if (typeof document === 'undefined') return;
+  const eligible = isInstallAppEligible();
+
+  const btnIds = [
+    'workspaceInstallAppBtn',
+    'dropdownInstallAppBtn',
+    'profileInstallAppBtn',
+    'drawer-install-btn'
+  ];
+
+  btnIds.forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (eligible) {
+      el.classList.remove('hidden');
+      if (el.tagName === 'BUTTON' && !el.classList.contains('dropdown-action-btn') && !el.classList.contains('mobile-drawer-btn')) {
+        el.style.display = 'inline-flex';
+      } else {
+        el.style.display = '';
+      }
+    } else {
+      el.classList.add('hidden');
+      el.style.display = 'none';
+    }
+  });
+
+  const nativePromptBtn = document.getElementById('btnTriggerNativeInstall');
+  if (nativePromptBtn) {
+    if (deferredInstallPrompt) {
+      nativePromptBtn.innerHTML = '<span>📲</span> <span>TRIGGER 1-TAP INSTALL PROMPT</span>';
+      nativePromptBtn.classList.remove('opacity-75');
+    } else {
+      nativePromptBtn.innerHTML = '<span>💡</span> <span>ADD TO HOME SCREEN VIA BROWSER MENU</span>';
+      nativePromptBtn.classList.add('opacity-75');
+    }
+  }
+}
+
+function openInstallAppModal() {
+  if (!isInstallAppEligible()) {
+    if (typeof showNotification === 'function') {
+      showNotification('🔒 Sign in and verify your partner credentials to install the mobile app.');
+    }
+    if (typeof openAuthGate === 'function') openAuthGate();
+    return;
+  }
+  const modal = document.getElementById('installAppModal');
+  if (modal) modal.classList.remove('hidden');
+
+  // Auto-switch to iOS tab on Apple devices
+  const isIOS = typeof navigator !== 'undefined' && /iphone|ipad|ipod/i.test(navigator.userAgent);
+  switchInstallTab(isIOS ? 'ios' : 'android');
+}
+
+function closeInstallAppModal() {
+  const modal = document.getElementById('installAppModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function switchInstallTab(tab) {
+  const tabAndroid = document.getElementById('installTabAndroid');
+  const tabIOS = document.getElementById('installTabIOS');
+  const btnAndroid = document.getElementById('tabBtnAndroid');
+  const btnIOS = document.getElementById('tabBtnIOS');
+
+  if (tab === 'ios') {
+    if (tabAndroid) tabAndroid.classList.add('hidden');
+    if (tabIOS) tabIOS.classList.remove('hidden');
+    if (btnIOS) {
+      btnIOS.style.background = '#fce566';
+      btnIOS.style.color = '#17120f';
+    }
+    if (btnAndroid) {
+      btnAndroid.style.background = '#fffdf1';
+      btnAndroid.style.color = '#17120f';
+    }
+  } else {
+    if (tabIOS) tabIOS.classList.add('hidden');
+    if (tabAndroid) tabAndroid.classList.remove('hidden');
+    if (btnAndroid) {
+      btnAndroid.style.background = '#fce566';
+      btnAndroid.style.color = '#17120f';
+    }
+    if (btnIOS) {
+      btnIOS.style.background = '#fffdf1';
+      btnIOS.style.color = '#17120f';
+    }
+  }
+}
+
+async function triggerNativeInstallPrompt() {
+  if (deferredInstallPrompt) {
+    try {
+      deferredInstallPrompt.prompt();
+      const choice = await deferredInstallPrompt.userChoice;
+      if (choice && choice.outcome === 'accepted') {
+        if (typeof showNotification === 'function') {
+          showNotification('🎉 Installing Client Radar to home screen...');
+        }
+        deferredInstallPrompt = null;
+        closeInstallAppModal();
+        updateInstallAppVisibility();
+      }
+    } catch (e) {
+      console.warn('[PWA] Prompt trigger note:', e);
+    }
+  } else {
+    if (typeof showNotification === 'function') {
+      showNotification('💡 Tap Chrome menu (⋮) -> "Install app" or "Add to Home screen"');
+    }
+  }
+}
+
+function copyWorkspaceUrl() {
+  const url = (typeof window !== 'undefined') ? (window.location.origin + '/workspace/') : 'https://apoorv.qzz.io/workspace/';
+  if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => {
+      const btnText = document.getElementById('copyUrlBtnText');
+      if (btnText) {
+        const orig = btnText.innerText;
+        btnText.innerText = 'Copied to Clipboard!';
+        setTimeout(() => { btnText.innerText = orig; }, 2500);
+      }
+      if (typeof showNotification === 'function') {
+        showNotification('📋 Workspace URL copied. Paste into Chrome or Safari to install!');
+      }
+    }).catch(() => {});
+  }
+}
+
+async function handleInstallAppClick() {
+  if (!isInstallAppEligible()) {
+    if (typeof showNotification === 'function') {
+      showNotification('🔒 Sign in and verify your partner credentials to install the mobile app.');
+    }
+    if (typeof openAuthGate === 'function') openAuthGate();
+    return;
+  }
+
+  if (isRunningInStandaloneMode()) {
+    if (typeof showNotification === 'function') {
+      showNotification('📱 Client Radar is already running in standalone app mode.');
+    }
+    return;
+  }
+
+  if (deferredInstallPrompt) {
+    try {
+      deferredInstallPrompt.prompt();
+      const choice = await deferredInstallPrompt.userChoice;
+      if (choice && choice.outcome === 'accepted') {
+        if (typeof showNotification === 'function') {
+          showNotification('🎉 Installing Client Radar to your device...');
+        }
+        deferredInstallPrompt = null;
+        updateInstallAppVisibility();
+        return;
+      }
+    } catch (err) {
+      console.warn('[PWA] Direct prompt trigger error:', err);
+    }
+  }
+
+  openInstallAppModal();
+}
+
+// Global scope bindings
+if (typeof window !== 'undefined') {
+  window.isInstallAppEligible = isInstallAppEligible;
+  window.updateInstallAppVisibility = updateInstallAppVisibility;
+  window.handleInstallAppClick = handleInstallAppClick;
+  window.openInstallAppModal = openInstallAppModal;
+  window.closeInstallAppModal = closeInstallAppModal;
+  window.switchInstallTab = switchInstallTab;
+  window.triggerNativeInstallPrompt = triggerNativeInstallPrompt;
+  window.copyWorkspaceUrl = copyWorkspaceUrl;
+  window.getTeardownUrl = getTeardownUrl;
+  window.openClientTeardownModal = openClientTeardownModal;
+  window.closeClientTeardownModal = closeClientTeardownModal;
+  window.copyTeardownLink = copyTeardownLink;
+  window.previewTeardownPage = previewTeardownPage;
+  window.sendWhatsAppTeardown = sendWhatsAppTeardown;
+}
+if (typeof global !== 'undefined') {
+  global.isInstallAppEligible = isInstallAppEligible;
+  global.updateInstallAppVisibility = updateInstallAppVisibility;
+  global.handleInstallAppClick = handleInstallAppClick;
+  global.openInstallAppModal = openInstallAppModal;
+  global.closeInstallAppModal = closeInstallAppModal;
+  global.switchInstallTab = switchInstallTab;
+  global.triggerNativeInstallPrompt = triggerNativeInstallPrompt;
+  global.copyWorkspaceUrl = copyWorkspaceUrl;
+  global.getTeardownUrl = getTeardownUrl;
+  global.openClientTeardownModal = openClientTeardownModal;
+  global.closeClientTeardownModal = closeClientTeardownModal;
+  global.copyTeardownLink = copyTeardownLink;
+  global.previewTeardownPage = previewTeardownPage;
+  global.sendWhatsAppTeardown = sendWhatsAppTeardown;
+}
+
+// Initial visibility check on load
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateInstallAppVisibility);
+  } else {
+    updateInstallAppVisibility();
+  }
+}
 

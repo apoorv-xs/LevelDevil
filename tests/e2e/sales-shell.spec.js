@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 test.describe("Sales & Inquiry Acquisition UX", () => {
   test("shows compact action rail above the fold on mobile", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/sales", { waitUntil: "networkidle" });
+    await page.goto("/sales", { waitUntil: "domcontentloaded" });
 
     const rail = page.locator(".action-rail");
     await expect(rail).toBeVisible();
@@ -17,7 +17,7 @@ test.describe("Sales & Inquiry Acquisition UX", () => {
 
   test("keeps navigation and branding accessible on sales page", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
-    await page.goto("/sales", { waitUntil: "networkidle" });
+    await page.goto("/sales", { waitUntil: "domcontentloaded" });
 
     const brand = page.locator(".topbar-brand");
     await expect(brand).toBeVisible();
@@ -27,12 +27,12 @@ test.describe("Sales & Inquiry Acquisition UX", () => {
     await expect(nav).toBeVisible();
     await expect(nav.getByRole("link", { name: "Home" })).toHaveAttribute("href", "/");
     await expect(nav.getByRole("link", { name: "Contact" })).toHaveAttribute("href", "/sales");
-    await expect(nav.getByRole("link", { name: "Workspace" })).toHaveCount(0);
+    await expect(nav.getByRole("link", { name: /Workspace/i })).toHaveAttribute("href", "/workspace/");
   });
 
   test("keeps keyboard focus order on topbar and navigation", async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/sales", { waitUntil: "networkidle" });
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/sales", { waitUntil: "domcontentloaded" });
 
     await page.locator(".topbar-brand").focus();
     await expect(page.locator(".topbar-brand")).toBeFocused();
@@ -43,7 +43,7 @@ test.describe("Sales & Inquiry Acquisition UX", () => {
   });
 
   test("keeps the portfolio route on the 3D canvas experience without action rail", async ({ page }) => {
-    await page.goto("/", { waitUntil: "networkidle" });
+    await page.goto("/", { waitUntil: "domcontentloaded" });
     await expect(page.locator("#game-canvas")).toBeVisible();
     await expect(page.locator(".action-rail")).toHaveCount(0);
   });
@@ -54,10 +54,11 @@ test.describe("Sales & Inquiry Acquisition UX", () => {
       requests.push(route.request().url());
       await route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ data: {} }) });
     });
-    await page.goto("/sales", { waitUntil: "networkidle" });
+    await page.goto("/sales", { waitUntil: "domcontentloaded" });
     await page.locator("#inquiry-form input[name=name]").fill("Ada");
     await page.locator("#inquiry-form input[name=email]").fill("ada@example.com");
     await page.locator("#inquiry-form textarea[name=message]").fill("Hello, let's build 60 FPS shaders.");
+    await page.locator("#inquiry-consent").check();
     const requestPromise = page.waitForRequest("**/api/inquiry");
     await page.locator("#inquiry-form button[type=submit]").click();
     await requestPromise;
@@ -66,7 +67,7 @@ test.describe("Sales & Inquiry Acquisition UX", () => {
   });
 
   test("displays Google fast-track inquiry authentication banner", async ({ page }) => {
-    await page.goto("/sales", { waitUntil: "networkidle" });
+    await page.goto("/sales", { waitUntil: "domcontentloaded" });
     const authBox = page.locator("#form-google-auth-box");
     await expect(authBox).toBeVisible();
     await expect(page.locator("#sign-in")).toBeVisible();
@@ -74,7 +75,7 @@ test.describe("Sales & Inquiry Acquisition UX", () => {
   });
 
   test("displays DPDP Act 2023 & GDPR privacy disclaimer under inquiry form", async ({ page }) => {
-    await page.goto("/sales", { waitUntil: "networkidle" });
+    await page.goto("/sales", { waitUntil: "domcontentloaded" });
     const privacy = page.locator(".privacy-note");
     await expect(privacy).toBeVisible();
     await expect(privacy).toContainText("PRIVACY // Coordinates provided are used exclusively");

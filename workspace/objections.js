@@ -1,4 +1,4 @@
-// SprintDial — Objection Handling & Layman Metaphor Engine
+// Client Radar — Objection Handling & Layman Metaphor Engine
 // Strictly On Apoorv's Behalf
 
 (function(root) {

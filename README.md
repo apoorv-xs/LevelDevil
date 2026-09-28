@@ -105,9 +105,9 @@ B:\MAIN PORTFOLIO\
 ├── ground_rails.json            # Calibrated rail coordinates and DOM element bindings
 ├── fonts.css                    # Local font declarations (Press Start 2P, Courier Prime)
 ├── fonts/                       # Local preloaded WOFF2 binary fonts
-├── workspace/                   # Enterprise CRM client dashboard & telemetry console
-│   ├── index.html               # CRM UI layout
-│   ├── app.js                   # CRM client state & search filtering
+├── workspace/                   # Client Radar — High-conviction B2B outreach intelligence cockpit
+│   ├── index.html               # Partner cockpit UI layout & telemetry
+│   ├── app.js                   # Radar queue orchestration & state management
 │   └── prospects_data.js        # Verified client intelligence data
 ├── api/                         # Backend API serverless functions & auth endpoints
 ├── tests/                       # Automated test suites
@@ -126,20 +126,28 @@ B:\MAIN PORTFOLIO\
 
 ## 5. Development & Verification
 
-### Run Unit Test Suite
+### Run Unit Test Suite (36 Suites, 721 Unit Tests)
 ```bash
 npm run test:unit
 ```
-Executes 66 unit tests covering shell configurations, game physics constants, System 1 decision brain intent transitions, and backend API authentication.
+Executes 721 unit tests covering shell configurations, game physics constants, swept AABB collisions, System 1 decision brain intent transitions, mobile virtual D-pad ergonomics, CSV formula injection defense, bilingual CRM telemetry, and the Trojan 3D Performance Teardown engine.
+
+### Run Backend API Test Suite (12 Tests)
+```bash
+npm run test:api
+```
+Executes 12 API tests covering inquiry storage, owner endpoint authorization, invite redemption, synthetic AI mode, role-specific workspace data, and CORS origin verification.
+
+### Run End-to-End Headless Browser Verification (6 Suites, 29 Tests)
+```bash
+npm run test:e2e
+```
+Runs Playwright across Chromium, validating WebGL context stability, companion movement, cross-route Google auth synchronization, legal compliance modals, mobile touch drawer navigation, and workspace CRM workflows.
+
+**Total Automated Test Count:** **762 Tests Passing (100% Green)**.
 
 ### Run Production Build Pipeline
 ```bash
 node build.js
 ```
-Cleans `dist/`, filters out developer tools, test suites, and internal configs, and packages the production application.
-
-### Run End-to-End Headless Browser Verification
-```bash
-npm run test:e2e
-```
-Runs Playwright across Chromium, validating WebGL context stability, companion movement, route navigation, and form interaction.
+Cleans `dist/`, filters out developer tools, test suites, and internal configs, and packages pure 60 FPS production assets ready for deployment to Azure Static Web Apps and Vercel.

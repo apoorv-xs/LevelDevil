@@ -129,7 +129,11 @@
                     });
                 }
             },
+            exists() {
+                return !this._destroyed;
+            },
             destroy() {
+                this._destroyed = true;
                 this._events = {};
                 this._updateHooks = [];
             }
@@ -251,6 +255,7 @@
 
     // Main animation loop
     let loopStarted = false;
+    let _loopRafId = null;
     function startLoop() {
         if (loopStarted) return;
         loopStarted = true;
@@ -268,9 +273,19 @@
             }
 
             pressedKeys.clear();
-            requestAnimationFrame(tick);
+            _loopRafId = requestAnimationFrame(tick);
         }
-        requestAnimationFrame(tick);
+        _loopRafId = requestAnimationFrame(tick);
+    }
+
+    function stopLoop() {
+        if (_loopRafId) {
+            cancelAnimationFrame(_loopRafId);
+            _loopRafId = null;
+        }
+        loopStarted = false;
+        updateCallbacks.length = 0;
+        entities.length = 0;
     }
 
     // Kaboom Entrypoint
@@ -302,7 +317,8 @@
             camPos,
             tween,
             easings,
-            destroy
+            destroy,
+            stopLoop
         };
 
         if (options.global !== false) {
@@ -338,5 +354,6 @@
     global.tween = tween;
     global.easings = easings;
     global.destroy = destroy;
+    global.stopLoop = stopLoop;
 
 })(typeof window !== "undefined" ? window : (typeof global !== "undefined" ? global : this));
