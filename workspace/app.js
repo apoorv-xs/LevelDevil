@@ -1877,6 +1877,24 @@ function recordPartnerActivity(actionType, prospectId, details = {}) {
         riskBadge = '📅 DISCOVERY SET';
         description = `${callerName} booked discovery invite for ${prospectName}`;
         break;
+      case 'CONTACT_UNMASKED':
+        isRisk = false;
+        riskLabel = 'PHONE REVEALED';
+        riskBadge = '👁️ PHONE REVEAL';
+        description = `${callerName} unmasked direct phone for ${prospectName}${details.remaining !== undefined ? ' (' + details.remaining + ' left)' : ''}`;
+        break;
+      case 'UNMASK_VELOCITY_EXCEEDED':
+        isRisk = true;
+        riskLabel = 'VELOCITY BREACH';
+        riskBadge = '🚨 RATE LIMIT';
+        description = `${callerName} exceeded hourly unmask velocity (${details.velocityCount || '10'}/${details.limit || '10'})`;
+        break;
+      case 'CLIPBOARD_TAINT_EXPORT':
+        isRisk = !isOwner;
+        riskLabel = isRisk ? 'SUSPECT PITCH COPY' : 'PITCH COPIED';
+        riskBadge = '📋 COPIED PITCH';
+        description = `${callerName} copied ${details.contentType || 'dossier brief'} with steganographic fingerprint`;
+        break;
       default:
         description = `${callerName} performed ${actionType} on ${prospectName}`;
     }
@@ -2893,9 +2911,38 @@ function renderActiveProspect() {
     }
   }
   document.getElementById('activeFee').innerText = `Floor ${p.fee}`;
+
+  const isUnmasked = (typeof isProspectPhoneUnmasked === 'function') ? isProspectPhoneUnmasked(p.id) : true;
+  const rawPhone = p.phone || p.tel || '';
+  const maskedPhone = (typeof maskPhoneNumber === 'function') ? maskPhoneNumber(rawPhone) : rawPhone;
+  const displayPhone = isUnmasked ? (rawPhone || '--') : maskedPhone;
+
+  const activePhoneDisplay = document.getElementById('activePhoneDisplay');
+  const btnToggleUnmaskPhone = document.getElementById('btnToggleUnmaskPhone');
+  if (activePhoneDisplay) {
+    activePhoneDisplay.innerText = displayPhone;
+  }
+  if (btnToggleUnmaskPhone) {
+    const user = (typeof currentUser !== 'undefined' && currentUser)
+      ? currentUser
+      : ((typeof window !== 'undefined' && window.currentUser)
+        ? window.currentUser
+        : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+    const isOwner = typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(user?.email);
+    if (isOwner || isUnmasked) {
+      btnToggleUnmaskPhone.classList.add('hidden');
+    } else {
+      btnToggleUnmaskPhone.classList.remove('hidden');
+    }
+  }
+
   const callPhoneTextEl = document.getElementById('callPhoneText');
   if (callPhoneTextEl) {
-    callPhoneTextEl.innerText = (p.phone || p.tel) ? `Call ${p.phone || p.tel}` : 'Call Prospect';
+    if (isUnmasked) {
+      callPhoneTextEl.innerText = rawPhone ? `Call ${rawPhone}` : 'Call Prospect';
+    } else {
+      callPhoneTextEl.innerText = `👁️ Reveal & Call (${maskedPhone})`;
+    }
   }
 
   // Site Link
@@ -2932,8 +2979,32 @@ function renderActiveProspect() {
   const waBtn = document.getElementById('whatsappActionBtn');
   const mobileWaBtn = document.getElementById('mobileWaBtn');
   const waUrl = generateWhatsAppBrief(p);
-  if (waBtn) waBtn.href = waUrl;
-  if (mobileWaBtn) mobileWaBtn.href = waUrl;
+  if (waBtn) {
+    if (isUnmasked) {
+      waBtn.href = waUrl;
+      waBtn.onclick = () => {
+        if (typeof recordPartnerActivity === 'function') {
+          recordPartnerActivity('TEARDOWN_PITCH', p.id, { client: p.name, mode: 'whatsapp_brief' });
+        }
+      };
+    } else {
+      waBtn.href = "#";
+      waBtn.onclick = handleWhatsAppAction;
+    }
+  }
+  if (mobileWaBtn) {
+    if (isUnmasked) {
+      mobileWaBtn.href = waUrl;
+      mobileWaBtn.onclick = () => {
+        if (typeof recordPartnerActivity === 'function') {
+          recordPartnerActivity('TEARDOWN_PITCH', p.id, { client: p.name, mode: 'whatsapp_brief' });
+        }
+      };
+    } else {
+      mobileWaBtn.href = "#";
+      mobileWaBtn.onclick = handleWhatsAppAction;
+    }
+  }
 
   // Lock Status
   const isLockedByOther = p.status === 'locked' && p.lockedEmail !== currentUser?.email;
@@ -2978,11 +3049,25 @@ function renderActiveProspect() {
       lockStatusSpan.innerText = "Audit Ready";
     }
     if (callBtn) {
-      callBtn.href = `tel:${p.tel}`;
+      if (isUnmasked) {
+        callBtn.href = `tel:${p.tel}`;
+        callBtn.onclick = handleCallInitiated;
+        callBtn.title = `Call ${rawPhone} [Hotkey: D]`;
+      } else {
+        callBtn.href = "#";
+        callBtn.onclick = handleCallAction;
+        callBtn.title = "Click to Unmask Contact & Call";
+      }
       callBtn.classList.remove('opacity-40', 'opacity-30', 'pointer-events-none');
     }
     if (mobileCallBtn) {
-      mobileCallBtn.href = `tel:${p.tel}`;
+      if (isUnmasked) {
+        mobileCallBtn.href = `tel:${p.tel}`;
+        mobileCallBtn.onclick = handleCallInitiated;
+      } else {
+        mobileCallBtn.href = "#";
+        mobileCallBtn.onclick = handleCallAction;
+      }
       mobileCallBtn.classList.remove('opacity-40', 'opacity-30', 'pointer-events-none');
     }
   }
@@ -3188,6 +3273,12 @@ function handleCallInitiated() {
   }
   const p = PROSPECTS.find(item => item.id === selectedProspectId);
   if (!p) return;
+
+  if (typeof isProspectPhoneUnmasked === 'function' && !isProspectPhoneUnmasked(p.id)) {
+    const unmasked = unmaskProspectPhone(p.id);
+    if (!unmasked) return;
+  }
+
   p.status = 'locked';
   p.lockedBy = currentUser.name;
   p.lockedEmail = currentUser.email;
@@ -3878,8 +3969,12 @@ function copyTeardownLink() {
     recordPartnerActivity('TEARDOWN_PITCH', selectedProspectId, { client: p?.name, mode: 'clipboard_copy', url });
   }
 
+  const payload = (typeof taintAttributedText === 'function')
+    ? taintAttributedText(url, 'teardown_pitch_link')
+    : url;
+
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(url).then(() => {
+    navigator.clipboard.writeText(payload).then(() => {
       if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
         window.triggerHaptic(40);
       }
@@ -5951,7 +6046,12 @@ function closeProposalModal() {
 function copyProposalText() {
   playSound('click');
   if (currentGeneratedProposal) {
-    navigator.clipboard.writeText(currentGeneratedProposal);
+    const payload = (typeof taintAttributedText === 'function')
+      ? taintAttributedText(currentGeneratedProposal, 'executive_proposal')
+      : currentGeneratedProposal;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(payload);
+    }
     showNotification('📋 Executive Proposal Markdown copied to clipboard!');
   }
 }
@@ -5960,7 +6060,10 @@ function downloadProposalMarkdown() {
   playSound('click');
   const p = PROSPECTS.find(item => item.id === selectedProspectId);
   const filename = `${(p ? p.name : 'Proposal').replace(/[^a-zA-Z0-9]/g, '_')}_Apoorv_Walkthrough.md`;
-  const blob = new Blob([currentGeneratedProposal], { type: 'text/markdown' });
+  const payload = (typeof taintAttributedText === 'function')
+    ? taintAttributedText(currentGeneratedProposal, 'executive_proposal')
+    : currentGeneratedProposal;
+  const blob = new Blob([payload], { type: 'text/markdown' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -6372,26 +6475,338 @@ if (typeof global !== 'undefined') {
 }
 
 /* ==========================================================================
-   FORENSIC SESSION WATERMARK GENERATOR
-   Renders subtle diagonal attribution across confidential dossiers
+   SOVEREIGN ANTI-THEFT MOAT & CONTACT MASKING RELAY
+   Role-based phone masking, hourly velocity limit, and steganography
    ========================================================================== */
-function initForensicWatermark() {
-  if (typeof document === 'undefined') return;
-  const dossier = document.getElementById('dossierPane');
-  if (!dossier) return;
+const sessionUnmaskedProspects = new Set();
+const UNMASK_LIMIT_PER_HOUR = 10;
 
-  let canvas = dossier.querySelector('canvas.forensic-watermark-overlay');
-  if (!canvas) {
-    canvas = document.createElement('canvas');
-    canvas.className = 'forensic-watermark-overlay';
-    canvas.setAttribute('aria-hidden', 'true');
-    dossier.appendChild(canvas);
+function maskPhoneNumber(phone) {
+  if (!phone || typeof phone !== 'string') return '--';
+  const clean = phone.trim();
+  if (clean.length <= 5) return '•••••';
+  const prefix = clean.slice(0, clean.length - 5);
+  return `${prefix}•••••`;
+}
+
+function isProspectPhoneUnmasked(prospectId) {
+  const user = (typeof currentUser !== 'undefined' && currentUser)
+    ? currentUser
+    : ((typeof window !== 'undefined' && window.currentUser)
+      ? window.currentUser
+      : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+  const email = user?.email || '';
+  if (typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(email)) {
+    return true;
+  }
+  return sessionUnmaskedProspects.has(prospectId);
+}
+
+function checkUnmaskVelocity() {
+  const user = (typeof currentUser !== 'undefined' && currentUser)
+    ? currentUser
+    : ((typeof window !== 'undefined' && window.currentUser)
+      ? window.currentUser
+      : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+  const email = user?.email || 'guest';
+  if (typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(email)) {
+    return { allowed: true, count: 0, limit: UNMASK_LIMIT_PER_HOUR };
   }
 
-  function renderWatermark() {
-    if (!canvas || !dossier) return;
-    const w = dossier.scrollWidth || dossier.offsetWidth || 380;
-    const h = dossier.scrollHeight || dossier.offsetHeight || 1200;
+  const key = `sprintdial_unmask_velocity_${email.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+  let history = [];
+  try {
+    if (typeof localStorage !== 'undefined') {
+      history = JSON.parse(localStorage.getItem(key) || '[]');
+    }
+  } catch (e) {
+    history = [];
+  }
+
+  const now = Date.now();
+  const oneHourAgo = now - (60 * 60 * 1000);
+  history = history.filter(ts => ts > oneHourAgo);
+
+  if (history.length >= UNMASK_LIMIT_PER_HOUR) {
+    return { allowed: false, count: history.length, limit: UNMASK_LIMIT_PER_HOUR };
+  }
+  return { allowed: true, count: history.length, limit: UNMASK_LIMIT_PER_HOUR };
+}
+
+function recordUnmaskVelocity(prospectId) {
+  const user = (typeof currentUser !== 'undefined' && currentUser)
+    ? currentUser
+    : ((typeof window !== 'undefined' && window.currentUser)
+      ? window.currentUser
+      : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+  const email = user?.email || 'guest';
+  const key = `sprintdial_unmask_velocity_${email.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+  let history = [];
+  try {
+    if (typeof localStorage !== 'undefined') {
+      history = JSON.parse(localStorage.getItem(key) || '[]');
+    }
+  } catch (e) {
+    history = [];
+  }
+  const now = Date.now();
+  const oneHourAgo = now - (60 * 60 * 1000);
+  history = history.filter(ts => ts > oneHourAgo);
+  history.push(now);
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(key, JSON.stringify(history));
+    }
+  } catch (e) {}
+}
+
+function unmaskProspectPhone(prospectId) {
+  if (!prospectId && typeof selectedProspectId !== 'undefined') {
+    prospectId = selectedProspectId;
+  }
+  if (!prospectId) return false;
+
+  const prospectsList = (typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS) && PROSPECTS.length > 0)
+    ? PROSPECTS
+    : ((typeof global !== 'undefined' && Array.isArray(global.PROSPECTS) && global.PROSPECTS.length > 0)
+      ? global.PROSPECTS
+      : ((typeof window !== 'undefined' && Array.isArray(window.PROSPECTS)) ? window.PROSPECTS : []));
+  const p = prospectsList.find(item => item.id === prospectId);
+  if (!p) return false;
+
+  const user = (typeof currentUser !== 'undefined' && currentUser)
+    ? currentUser
+    : ((typeof window !== 'undefined' && window.currentUser)
+      ? window.currentUser
+      : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+  const email = user?.email || '';
+  const isOwner = typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(email);
+
+  if (isOwner || sessionUnmaskedProspects.has(prospectId)) {
+    sessionUnmaskedProspects.add(prospectId);
+    if (typeof renderActiveProspect === 'function') renderActiveProspect();
+    return true;
+  }
+
+  const check = checkUnmaskVelocity();
+  if (!check.allowed) {
+    if (typeof showNotification === 'function') {
+      showNotification(`⚠️ Unmask rate limit reached (${check.count}/${check.limit} per hr). Contact Apoorv for bulk clearance.`);
+    }
+    if (typeof recordPartnerActivity === 'function') {
+      recordPartnerActivity('UNMASK_VELOCITY_EXCEEDED', prospectId, {
+        prospectName: p.name,
+        velocityCount: check.count,
+        limit: check.limit
+      });
+    }
+    return false;
+  }
+
+  recordUnmaskVelocity(prospectId);
+  sessionUnmaskedProspects.add(prospectId);
+
+  const remaining = check.limit - (check.count + 1);
+  if (typeof recordPartnerActivity === 'function') {
+    recordPartnerActivity('CONTACT_UNMASKED', prospectId, {
+      prospectName: p.name,
+      phone: p.phone || p.tel,
+      remaining
+    });
+  }
+
+  if (typeof showNotification === 'function') {
+    showNotification(`👁️ Contact unmasked (${remaining} unmasks remaining this hour)`);
+  }
+  if (typeof renderActiveProspect === 'function') renderActiveProspect();
+  return true;
+}
+
+function toggleUnmaskActiveProspectPhone() {
+  if (typeof selectedProspectId !== 'undefined') {
+    unmaskProspectPhone(selectedProspectId);
+  }
+}
+
+function handleCallAction(event) {
+  if (event && event.preventDefault) event.preventDefault();
+  const prospectsList = (typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS)) ? PROSPECTS : [];
+  const p = prospectsList.find(item => item.id === selectedProspectId);
+  if (!p) return;
+  const unmasked = unmaskProspectPhone(p.id);
+  if (unmasked) {
+    handleCallInitiated();
+    if (p.tel && typeof window !== 'undefined') {
+      window.location.href = `tel:${p.tel}`;
+    }
+  }
+}
+
+function handleWhatsAppAction(event) {
+  if (event && event.preventDefault) event.preventDefault();
+  const prospectsList = (typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS)) ? PROSPECTS : [];
+  const p = prospectsList.find(item => item.id === selectedProspectId);
+  if (!p) return;
+  const unmasked = unmaskProspectPhone(p.id);
+  if (unmasked) {
+    if (typeof recordPartnerActivity === 'function') {
+      recordPartnerActivity('TEARDOWN_PITCH', p.id, { client: p.name, mode: 'whatsapp_brief' });
+    }
+    const waUrl = generateWhatsAppBrief(p);
+    if (typeof window !== 'undefined') {
+      window.open(waUrl, '_blank');
+    }
+  }
+}
+
+/* ==========================================================================
+   CRYPTOGRAPHIC & STEGANOGRAPHIC CLIPBOARD TAINTING
+   Zero-width unicode watermarking for leak forensics
+   ========================================================================== */
+const ZW_SPACE = '\u200B';        // binary 0
+const ZW_NON_JOINER = '\u200C';   // binary 1
+const ZW_JOINER = '\u200D';       // delimiter
+
+function encodeSteganographicTag(payload) {
+  if (!payload || typeof payload !== 'string') return '';
+  let binary = '';
+  for (let i = 0; i < payload.length; i++) {
+    binary += payload.charCodeAt(i).toString(2).padStart(8, '0');
+  }
+  let encoded = '';
+  for (let i = 0; i < binary.length; i++) {
+    encoded += (binary[i] === '1') ? ZW_NON_JOINER : ZW_SPACE;
+  }
+  return ZW_JOINER + encoded + ZW_JOINER;
+}
+
+function decodeSteganographicTag(text) {
+  if (!text || typeof text !== 'string') return null;
+  const start = text.indexOf(ZW_JOINER);
+  if (start === -1) return null;
+  const end = text.lastIndexOf(ZW_JOINER);
+  if (end <= start) return null;
+
+  const encoded = text.substring(start + 1, end);
+  let binary = '';
+  for (let i = 0; i < encoded.length; i++) {
+    const ch = encoded[i];
+    if (ch === ZW_NON_JOINER) binary += '1';
+    else if (ch === ZW_SPACE) binary += '0';
+  }
+  if (binary.length === 0 || binary.length % 8 !== 0) return null;
+
+  let decoded = '';
+  for (let i = 0; i < binary.length; i += 8) {
+    const byte = binary.substr(i, 8);
+    decoded += String.fromCharCode(parseInt(byte, 2));
+  }
+  return decoded;
+}
+
+function taintAttributedText(originalText, contentType = 'brief') {
+  if (!originalText || typeof originalText !== 'string') return originalText || '';
+  const user = (typeof currentUser !== 'undefined' && currentUser)
+    ? currentUser
+    : ((typeof window !== 'undefined' && window.currentUser)
+      ? window.currentUser
+      : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+  const email = user?.email || 'outreach-partner';
+  const isOwner = typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(email);
+  if (isOwner) return originalText;
+
+  const sessionId = (typeof window !== 'undefined' && window._shieldSessionId) ||
+    ((typeof window !== 'undefined') ? (window._shieldSessionId = Math.random().toString(36).substring(2, 8).toUpperCase()) : 'SEC99');
+  const timestamp = Date.now();
+  const tagPayload = `OP:${email}:${sessionId}:${timestamp}`;
+  const stegoTag = encodeSteganographicTag(tagPayload);
+
+  if (typeof recordPartnerActivity === 'function' && typeof selectedProspectId !== 'undefined') {
+    recordPartnerActivity('CLIPBOARD_TAINT_EXPORT', selectedProspectId, { contentType, sessionId });
+  }
+
+  const attributionFooter = `\n\n---\nVerified Client Brief • Authorized via Apoorv A S (apoorv.qzz.io) • Ref #${sessionId}`;
+  return originalText + stegoTag + attributionFooter;
+}
+
+// Global copy interception on confidential areas
+if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
+  document.addEventListener('copy', (e) => {
+    const user = (typeof currentUser !== 'undefined' && currentUser)
+      ? currentUser
+      : ((typeof window !== 'undefined' && window.currentUser)
+        ? window.currentUser
+        : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+    const email = user?.email || '';
+    if (typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(email)) {
+      return; // Never taint owner's manual copy
+    }
+
+    const selection = (typeof window !== 'undefined' && window.getSelection) ? window.getSelection() : null;
+    if (!selection || selection.rangeCount === 0) return;
+    const selectedText = selection.toString();
+    if (!selectedText || selectedText.trim().length < 10) return;
+
+    const anchorNode = selection.anchorNode;
+    const targetEl = (anchorNode && anchorNode.nodeType === 1) ? anchorNode : anchorNode?.parentElement;
+    if (!targetEl) return;
+
+    const isProtected = targetEl.closest && targetEl.closest('#dossierPane, #proposalModal, #clientTeardownModal, #callConsolePane, #objectionBox');
+    if (isProtected && e.clipboardData) {
+      e.preventDefault();
+      const tainted = taintAttributedText(selectedText, 'manual_selection_copy');
+      e.clipboardData.setData('text/plain', tainted);
+      if (typeof showNotification === 'function') {
+        showNotification('📋 Text copied with cryptographic attribution footer');
+      }
+    }
+  });
+}
+
+/* ==========================================================================
+   FORENSIC SESSION WATERMARK GENERATOR
+   Renders subtle diagonal attribution across confidential dossiers & modals
+   ========================================================================== */
+const FORENSIC_WATERMARK_TARGETS = [
+  'dossierPane',
+  'clientTeardownModalBox',
+  'proposalModalBox'
+];
+
+function initForensicWatermark() {
+  if (typeof document === 'undefined') return;
+
+  const user = (typeof currentUser !== 'undefined' && currentUser)
+    ? currentUser
+    : ((typeof window !== 'undefined' && window.currentUser)
+      ? window.currentUser
+      : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+  const email = user?.email ||
+    (typeof localStorage !== 'undefined' && JSON.parse(localStorage.getItem('sprintdial_user') || '{}').email) ||
+    'CONFIDENTIAL';
+  const isOwner = typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(email);
+
+  FORENSIC_WATERMARK_TARGETS.forEach(targetId => {
+    const container = document.getElementById(targetId);
+    if (!container) return;
+
+    let canvas = container.querySelector('canvas.forensic-watermark-overlay');
+    if (!canvas) {
+      canvas = document.createElement('canvas');
+      canvas.className = 'forensic-watermark-overlay';
+      canvas.setAttribute('aria-hidden', 'true');
+      container.appendChild(canvas);
+    }
+
+    if (isOwner) {
+      canvas.style.display = 'none';
+      return;
+    } else {
+      canvas.style.display = '';
+    }
+
+    const w = container.scrollWidth || container.offsetWidth || 380;
+    const h = container.scrollHeight || container.offsetHeight || 1200;
     if (canvas.width !== w || canvas.height !== h) {
       canvas.width = w;
       canvas.height = h;
@@ -6400,15 +6815,6 @@ function initForensicWatermark() {
     if (!ctx) return;
     ctx.clearRect(0, 0, w, h);
 
-    const email = (currentUser && currentUser.email) ||
-      (typeof localStorage !== 'undefined' && JSON.parse(localStorage.getItem('sprintdial_user') || '{}').email) ||
-      'CONFIDENTIAL';
-    if (typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(email)) {
-      if (canvas) canvas.style.display = 'none';
-      return;
-    } else {
-      if (canvas) canvas.style.display = '';
-    }
     const sessionId = (typeof window !== 'undefined' && window._shieldSessionId) ||
       (window._shieldSessionId = Math.random().toString(36).substring(2, 8).toUpperCase());
     const dateStr = new Date().toISOString().split('T')[0];
@@ -6432,38 +6838,49 @@ function initForensicWatermark() {
       }
     }
     ctx.restore();
-  }
+  });
 
-  renderWatermark();
-  if (typeof window !== 'undefined') {
-    if (window._watermarkResizeHandler) {
-      window.removeEventListener('resize', window._watermarkResizeHandler);
-    }
-    window._watermarkResizeHandler = () => {
-      requestAnimationFrame(renderWatermark);
-    };
-    window.addEventListener('resize', window._watermarkResizeHandler);
-  }
-
-  // Re-render when active prospect switches
-  if (typeof MutationObserver !== 'undefined' && typeof window !== 'undefined' && !window._watermarkObserver) {
-    window._watermarkObserver = new MutationObserver(() => {
-      renderWatermark();
+  if (typeof window !== 'undefined' && !window._watermarkResizeBound) {
+    window._watermarkResizeBound = true;
+    window.addEventListener('resize', () => {
+      requestAnimationFrame(() => initForensicWatermark());
     });
-    window._watermarkObserver.observe(dossier, { childList: true, subtree: false });
   }
 }
 
+// Global scope bindings for sovereign moat & watermarks
 if (typeof window !== 'undefined') {
   window.initForensicWatermark = initForensicWatermark;
+  window.maskPhoneNumber = maskPhoneNumber;
+  window.isProspectPhoneUnmasked = isProspectPhoneUnmasked;
+  window.checkUnmaskVelocity = checkUnmaskVelocity;
+  window.recordUnmaskVelocity = recordUnmaskVelocity;
+  window.unmaskProspectPhone = unmaskProspectPhone;
+  window.toggleUnmaskActiveProspectPhone = toggleUnmaskActiveProspectPhone;
+  window.handleCallAction = handleCallAction;
+  window.handleWhatsAppAction = handleWhatsAppAction;
+  window.encodeSteganographicTag = encodeSteganographicTag;
+  window.decodeSteganographicTag = decodeSteganographicTag;
+  window.taintAttributedText = taintAttributedText;
 }
 if (typeof global !== 'undefined') {
   global.initForensicWatermark = initForensicWatermark;
+  global.maskPhoneNumber = maskPhoneNumber;
+  global.isProspectPhoneUnmasked = isProspectPhoneUnmasked;
+  global.checkUnmaskVelocity = checkUnmaskVelocity;
+  global.recordUnmaskVelocity = recordUnmaskVelocity;
+  global.unmaskProspectPhone = unmaskProspectPhone;
+  global.toggleUnmaskActiveProspectPhone = toggleUnmaskActiveProspectPhone;
+  global.handleCallAction = handleCallAction;
+  global.handleWhatsAppAction = handleWhatsAppAction;
+  global.encodeSteganographicTag = encodeSteganographicTag;
+  global.decodeSteganographicTag = decodeSteganographicTag;
+  global.taintAttributedText = taintAttributedText;
 }
 
 // Initial visibility check on load
 if (typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
+  if (document.readyState === 'loading' && typeof document.addEventListener === 'function') {
     document.addEventListener('DOMContentLoaded', () => {
       updateInstallAppVisibility();
       initForensicWatermark();
