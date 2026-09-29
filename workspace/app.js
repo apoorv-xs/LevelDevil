@@ -2615,6 +2615,12 @@ function maybeShowOnboardingDisclaimer() {
       overlay.classList.add('hidden');
       overlay.style.display = 'none';
     }
+    const isTestMode = (typeof window !== 'undefined' && window.__TEST_MODE__) || localStorage.getItem('sprintdial_test_mode') === 'true';
+    if (!localStorage.getItem('sprintdial_tour_completed') && !isTestMode && !isOwnerUser(currentUser) && typeof setTimeout === 'function') {
+      setTimeout(() => {
+        openWorkspaceTour(0);
+      }, 500);
+    }
     return;
   }
 
@@ -2645,15 +2651,276 @@ function acknowledgeOnboarding() {
   }
 
   showNotification('🎯 Briefing acknowledged. Cleared for client radar partner outreach on Apoorv\'s behalf.');
+
+  // Automatically trigger workstation guided walkthrough if not completed yet
+  const isTestMode = (typeof window !== 'undefined' && window.__TEST_MODE__) || localStorage.getItem('sprintdial_test_mode') === 'true';
+  if (!localStorage.getItem('sprintdial_tour_completed') && !isTestMode && typeof setTimeout === 'function') {
+    setTimeout(() => {
+      openWorkspaceTour(0);
+    }, 350);
+  }
+}
+
+// -------------------------------------------------------------
+// SUBSYSTEM 21: INTERACTIVE WORKSTATION GUIDED WALKTHROUGH OVERLAY
+// -------------------------------------------------------------
+const WORKSPACE_TOUR_STEPS = [
+  {
+    step: 1,
+    total: 5,
+    badge: 'STEP 1 OF 5 // QUEUE',
+    title: '1. Territory Queue & Zombie Radar',
+    summary: 'The workstation prioritizes 65 curated enterprise prospects. Overdue and cold leads automatically float to the top so you never lose high-intent deals.',
+    visual: `┌── TERRITORY QUEUE ──────────────────────────────┐
+│ [ALL LEADS (65)]  [★ CALLBACKS (4)]  [WON (2)] │
+│ ─────────────────────────────────────────────── │
+│ 🚨 ZOMBIE (72h)  │ Dr. Thomas Varghese (Dental) │
+│ ⚠️ OVERDUE (36h) │ Malabar Heritage Grand Villa│
+│ ⏰ DUE TODAY     │ Kochi Spine & Ortho Centre  │
+│ 🟢 READY TO DIAL │ Paragon Luxury Grand Resort │
+└─────────────────────────────────────────────────┘`,
+    laptop: [
+      "• <strong>Left Column:</strong> Browse all 65 enterprise leads with active status filters.",
+      "• <strong>Filter by Callbacks:</strong> Instantly isolates scheduled callbacks, overdue touches, and zombie leads.",
+      "• <strong>Instant Search:</strong> Press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>/</kbd> or <kbd class='px-1 bg-[#17120f] text-[#fce566]'>Ctrl+K</kbd> to search by name, city, specialty, or phone.",
+      "• <strong>Rapid Navigation:</strong> Press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>J</kbd> (Next Lead) and <kbd class='px-1 bg-[#17120f] text-[#fce566]'>K</kbd> (Prev Lead)."
+    ],
+    mobile: [
+      "• <strong>Bottom Tab:</strong> Tap <span class='font-bold text-neutral-900'>[📋 QUEUE]</span> to browse leads on mobile.",
+      "• <strong>Urgency Sorting:</strong> Pulsating 🚨 ZOMBIE (>48h) and ⚠️ OVERDUE (24-48h) badges float to the top.",
+      "• <strong>Single Tap:</strong> Tap any prospect card to load their full dossier into active cockpit memory."
+    ],
+    proTip: "Always clear Zombie (>48h) and Overdue (24-48h) callbacks first at the start of your shift to rescue slipping revenue!"
+  },
+  {
+    step: 2,
+    total: 5,
+    badge: 'STEP 2 OF 5 // DOSSIER',
+    title: '2. Client Dossier & Revenue Leak Intel',
+    summary: 'Every prospect comes pre-audited with empirical mobile 4G latency, estimated revenue drop-off, third-party aggregator bleed, and DPDP Act legal compliance.',
+    visual: `┌── CLIENT AUDIT DOSSIER ─────────────────────────┐
+│ TARGET: Malabar Heritage Grand Villa (Wayanad)  │
+│ MOBILE LCP : 4.8s 🔴 [CRITICAL 4G SPEED DEFICIT]│
+│ AGGREGATOR : ₹48,000/yr BLEED (MakeMyTrip/OTA) │
+│ DPDP 2023  : ⚠️ NON-COMPLIANT (Statutory Penalty)│
+│ PROPOSAL   : ₹50,000 Turnkey WebGPU Spatial Core│
+└─────────────────────────────────────────────────┘`,
+    laptop: [
+      "• <strong>Center Dossier:</strong> Inspect empirical Lighthouse speed scores, tech stack, and decision maker names.",
+      "• <strong>Layman Analogies:</strong> Click <span class='font-bold text-neutral-900'>[💡 LAYMAN ANALOGIES]</span> for instant client-friendly metaphors that simplify WebGPU/60 FPS value.",
+      "• <strong>Revenue Leak Hook:</strong> Quote their exact monthly aggregator bleed to anchor our ₹50k–₹2L package."
+    ],
+    mobile: [
+      "• <strong>Bottom Tab:</strong> Tap <span class='font-bold text-neutral-900'>[📊 DOSSIER]</span> before dialing to review technical leaks.",
+      "• <strong>Quick Hook:</strong> Open with: <em>'Apoorv noted your mobile site takes 4.8s on 4G, causing significant drop-off...'</em>",
+      "• <strong>One-Thumb Reading:</strong> Dossier adapts with high-contrast text optimized for outdoor mobile calling."
+    ],
+    proTip: "Never pitch generic web dev. Pitch mathematically proven 60 FPS performance and recapturing ₹48k/yr in lost aggregator fees!"
+  },
+  {
+    step: 3,
+    total: 5,
+    badge: 'STEP 3 OF 5 // COCKPIT',
+    title: '3. In-Call Flight HUD & Mandatory Dispositions',
+    summary: 'Dialing starts an active stopwatch. To prevent lost data or skipping callbacks, active calls must be dispositioned through a guided 2-step gate.',
+    visual: `┌── IN-CALL FLIGHT HUD ───────────────────────────┐
+│ 🔴 LIVE DIAL [ ⏱️ 02:15 ]  [ ↩ CANCEL (MISCLICK) ]│
+│ STEP 1: [🟢 Spoke to DM] [🟡 Gatekeeper] [⚪ No Ans]│
+│ STEP 2: [🏆 BOOKED] [🔗 TEARDOWN] [📅 CALLBACK]  │
+│ TAGS  : [+ Asked WhatsApp] [+ In Consultations] │
+└─────────────────────────────────────────────────┘`,
+    laptop: [
+      "• <strong>Start Call:</strong> Click <span class='font-bold text-neutral-900'>[📞 CALL (TEL)]</span> or press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>D</kbd> to launch live flight HUD & stopwatch.",
+      "• <strong>Misclick Safe:</strong> Accidental click? Hit <span class='font-bold text-rose-700'>[ ↩ Cancel Dial ]</span> to reset immediately.",
+      "• <strong>Step 1 & Step 2 Gate:</strong> Pick Reach Status (DM / Gatekeeper / No Answer), then choose dynamic Outcome.",
+      "• <strong>1-Tap Tags:</strong> Click quick tags to append notes without typing. Press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>Space</kbd> to save & advance."
+    ],
+    mobile: [
+      "• <strong>Bottom Tab:</strong> Stay on <span class='font-bold text-neutral-900'>[🎯 COCKPIT]</span> during live calls.",
+      "• <strong>Touch-Safe Ergonomics:</strong> Large 44px buttons prevent misclicks while walking or holding a phone.",
+      "• <strong>1-Tap Nudge:</strong> If prospect asks for details, hit <span class='font-bold text-neutral-900'>[💬 1-TAP NUDGE]</span> to send the performance audit on WhatsApp!"
+    ],
+    proTip: "The cockpit locks lead navigation while a call is active so you never lose call notes or forget to schedule a callback."
+  },
+  {
+    step: 4,
+    total: 5,
+    badge: 'STEP 4 OF 5 // CLOSING',
+    title: '4. Two-Track Deal Closing & Sovereign Payment Terminal',
+    summary: 'Strike while the iron is hot. Close deals autonomously on the spot for a 15% commission, or escalate enterprise walkthroughs to Apoorv for a 10% safety net.',
+    visual: `┌── TWO-TRACK CLOSING TERMINAL ───────────────────┐
+│ TRACK 1: [ 💰 CLOSE (15% COMMISSION) ]           │
+│   → Live 50% UPI QR Code (apoorvxs@okaxis)       │
+│   → 1-Page Milestone SOW (50/25/25) & 60 FPS SLA │
+│ TRACK 2: [ 🤝 FORWARD (10% REFERRAL SAFETY NET) ]│
+│   → 15-Min Google Meet Slot on Apoorv's Calendar │
+└─────────────────────────────────────────────────┘`,
+    laptop: [
+      "• <strong>Track 1 (Direct Close — 15% Cut):</strong> When DM agrees, click <span class='font-bold text-neutral-900'>[ 💰 CLOSE (15%) ]</span>. Select Tier (₹50k/₹100k/₹200k), show live 50% UPI deposit QR, and click 'Mark 50% Deposit Received'.",
+      "• <strong>Track 2 (Founder Walkthrough — 10% Cut):</strong> For complex enterprise deals, click <span class='font-bold text-neutral-900'>[ 🤝 FORWARD (10%) ]</span> to book a 15-min Google Meet with Apoorv with zero context loss.",
+      "• <strong>Instant Commission:</strong> Track 1 pays ₹7,500 on ₹50k directly; Track 2 pays ₹5,000 on discovery handoff!"
+    ],
+    mobile: [
+      "• <strong>Mobile Optimized Modals:</strong> Both closing dialogs open seamlessly on mobile with zero horizontal clipping.",
+      "• <strong>1-Tap WhatsApp SOW:</strong> Dispatches pre-formatted milestone agreements directly to the client's WhatsApp.",
+      "• <strong>UPI Copy:</strong> 1-tap clipboard copying for UPI IDs to facilitate instant mobile app transfers."
+    ],
+    proTip: "Never leave a verbal agreement hanging. Always send the 50% advance UPI QR or lock Apoorv's calendar before hanging up!"
+  },
+  {
+    step: 5,
+    total: 5,
+    badge: 'STEP 5 OF 5 // WALLET',
+    title: '5. Sovereign Commission Wallet & Shift Momentum',
+    summary: 'Track every rupee earned in real-time. Request instant UPI settlements directly from the topbar, maintain dial streaks, and unlock dopamine milestones.',
+    visual: `┌── SOVEREIGN WALLET & TELEMETRY ─────────────────┐
+│ TOPBAR   : [ 💰 ₹7,500 EARNED ]                 │
+│ STREAK   : 🔥 3D STREAK (Consecutive Active Days)│
+│ MILESTONE: ⚡ 10 DIALS: FLOW STATE [CHIME SFX]   │
+│ SETTLE   : [ ⚡ REQUEST UPI SETTLEMENT ]         │
+└─────────────────────────────────────────────────┘`,
+    laptop: [
+      "• <strong>Live Wallet Pill:</strong> Click <span class='font-bold text-neutral-900'>[ 💰 ₹X EARNED ]</span> in topbar to inspect Cleared, Pending, and Settled balances.",
+      "• <strong>Instant UPI Payouts:</strong> Enter your UPI VPA and hit <span class='font-bold text-neutral-900'>[ ⚡ REQUEST UPI PAYOUT ]</span> to send automated WhatsApp settlement to Apoorv.",
+      "• <strong>Closer Hotkeys:</strong> <kbd class='px-1 bg-[#17120f] text-[#fce566]'>1</kbd> (Booked), <kbd class='px-1 bg-[#17120f] text-[#fce566]'>2</kbd> (Callback), <kbd class='px-1 bg-[#17120f] text-[#fce566]'>3</kbd> (Disqual), <kbd class='px-1 bg-[#17120f] text-[#fce566]'>Space</kbd> (Save/Next)."
+    ],
+    mobile: [
+      "• <strong>Pinned Header:</strong> Live wallet pill is always visible in the mobile header.",
+      "• <strong>Audio Chimes:</strong> Procedural droid synthesis chirps celebrate your 5, 10, 15, and 20 dial milestones.",
+      "• <strong>Re-open Anytime:</strong> Open the Profile Menu or tap <span class='font-bold text-neutral-900'>[ 💡 TOUR ]</span> anytime to review this flight manual!"
+    ],
+    proTip: "Hit 15 dials to enter 'POWER HOUR' and lock your daily shift streak. You are cleared for launch!"
+  }
+];
+
+let currentWorkspaceTourStep = 0;
+
+function openWorkspaceTour(stepIndex = 0) {
+  currentWorkspaceTourStep = Math.max(0, Math.min(stepIndex, WORKSPACE_TOUR_STEPS.length - 1));
+  const modal = document.getElementById('workspaceTourModal');
+  if (!modal) return;
+  modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+  renderWorkspaceTourStep(currentWorkspaceTourStep);
+
+  // Play subtle interface audio chime
+  if (typeof window.SFX !== 'undefined' && typeof window.SFX.playLaserConstruct === 'function') {
+    try { window.SFX.playLaserConstruct(); } catch(e) {}
+  }
+}
+
+function closeWorkspaceTour(markCompleted = true) {
+  const modal = document.getElementById('workspaceTourModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+  }
+  if (markCompleted) {
+    localStorage.setItem('sprintdial_tour_completed', 'true');
+  }
+  // Audio chime
+  if (typeof window.SFX !== 'undefined' && typeof window.SFX.playThought === 'function') {
+    try { window.SFX.playThought(); } catch(e) {}
+  }
+}
+
+function nextWorkspaceTourStep() {
+  if (currentWorkspaceTourStep < WORKSPACE_TOUR_STEPS.length - 1) {
+    currentWorkspaceTourStep++;
+    renderWorkspaceTourStep(currentWorkspaceTourStep);
+    if (typeof window.SFX !== 'undefined' && typeof window.SFX.playJump === 'function') {
+      try { window.SFX.playJump(); } catch(e) {}
+    }
+  } else {
+    // Finished tour!
+    closeWorkspaceTour(true);
+    showNotification('🚀 Workstation flight manual complete. Ready to dominate outreach!');
+    if (typeof window.SFX !== 'undefined' && typeof window.SFX.playCelebrate === 'function') {
+      try { window.SFX.playCelebrate(); } catch(e) {}
+    }
+  }
+}
+
+function prevWorkspaceTourStep() {
+  if (currentWorkspaceTourStep > 0) {
+    currentWorkspaceTourStep--;
+    renderWorkspaceTourStep(currentWorkspaceTourStep);
+    if (typeof window.SFX !== 'undefined' && typeof window.SFX.playJump === 'function') {
+      try { window.SFX.playJump(); } catch(e) {}
+    }
+  }
+}
+
+function renderWorkspaceTourStep(stepIndex) {
+  const step = WORKSPACE_TOUR_STEPS[stepIndex];
+  if (!step) return;
+
+  const badgeEl = document.getElementById('tourStepBadge');
+  if (badgeEl) badgeEl.textContent = step.badge;
+
+  const dotsContainer = document.getElementById('tourStepDots');
+  if (dotsContainer) {
+    dotsContainer.innerHTML = WORKSPACE_TOUR_STEPS.map((s, idx) => `
+      <button type="button" onclick="openWorkspaceTour(${idx})" class="w-2.5 h-2.5 rounded-full border border-[#17120f] transition-all cursor-pointer ${idx === stepIndex ? 'bg-[#fce566] scale-125 border-2 shadow-[1px_1px_0_#17120f]' : 'bg-[#fffdf1]/60 hover:bg-[#fffdf1]'}" title="Jump to Step ${idx + 1}" aria-label="Step ${idx + 1}"></button>
+    `).join('');
+  }
+
+  const visualBox = document.getElementById('tourVisualBox');
+  if (visualBox) visualBox.textContent = step.visual;
+
+  const titleEl = document.getElementById('tourStepTitle');
+  if (titleEl) titleEl.textContent = step.title;
+
+  const summaryEl = document.getElementById('tourStepSummary');
+  if (summaryEl) summaryEl.textContent = step.summary;
+
+  const laptopList = document.getElementById('tourLaptopInstructions');
+  if (laptopList) {
+    laptopList.innerHTML = step.laptop.map(item => `<div>${item}</div>`).join('');
+  }
+
+  const mobileList = document.getElementById('tourMobileInstructions');
+  if (mobileList) {
+    mobileList.innerHTML = step.mobile.map(item => `<div>${item}</div>`).join('');
+  }
+
+  const proTipText = document.getElementById('tourProTipText');
+  if (proTipText) proTipText.textContent = step.proTip;
+
+  const prevBtn = document.getElementById('tourBtnPrev');
+  if (prevBtn) {
+    if (stepIndex === 0) {
+      prevBtn.classList.add('opacity-40', 'pointer-events-none');
+    } else {
+      prevBtn.classList.remove('opacity-40', 'pointer-events-none');
+    }
+  }
+
+  const nextBtnText = document.getElementById('tourBtnNextText');
+  if (nextBtnText) {
+    nextBtnText.textContent = stepIndex === WORKSPACE_TOUR_STEPS.length - 1 ? '🚀 START DIALING' : 'NEXT STEP';
+  }
 }
 
 if (typeof window !== 'undefined') {
   window.maybeShowOnboardingDisclaimer = maybeShowOnboardingDisclaimer;
   window.acknowledgeOnboarding = acknowledgeOnboarding;
+  window.WORKSPACE_TOUR_STEPS = WORKSPACE_TOUR_STEPS;
+  window.openWorkspaceTour = openWorkspaceTour;
+  window.closeWorkspaceTour = closeWorkspaceTour;
+  window.nextWorkspaceTourStep = nextWorkspaceTourStep;
+  window.prevWorkspaceTourStep = prevWorkspaceTourStep;
+  window.renderWorkspaceTourStep = renderWorkspaceTourStep;
 }
 if (typeof global !== 'undefined') {
   global.maybeShowOnboardingDisclaimer = maybeShowOnboardingDisclaimer;
   global.acknowledgeOnboarding = acknowledgeOnboarding;
+  global.WORKSPACE_TOUR_STEPS = WORKSPACE_TOUR_STEPS;
+  global.openWorkspaceTour = openWorkspaceTour;
+  global.closeWorkspaceTour = closeWorkspaceTour;
+  global.nextWorkspaceTourStep = nextWorkspaceTourStep;
+  global.prevWorkspaceTourStep = prevWorkspaceTourStep;
+  global.renderWorkspaceTourStep = renderWorkspaceTourStep;
 }
 
 function signOut() {
@@ -2694,8 +2961,24 @@ function setupKeyboardShortcuts() {
       return;
     }
 
+    // If Workstation Tour is open, handle keyboard navigation
+    const tourModal = document.getElementById('workspaceTourModal');
+    if (tourModal && !tourModal.classList.contains('hidden') && tourModal.style.display !== 'none') {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeWorkspaceTour(true);
+      } else if (e.key === 'ArrowRight' || e.key === 'Enter') {
+        e.preventDefault();
+        nextWorkspaceTourStep();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevWorkspaceTourStep();
+      }
+      return;
+    }
+
     // When modal overlay is active, disable single-character workbench hotkeys
-    const hasActiveModal = Boolean(document.querySelector('#authGateOverlay:not(.hidden), #adminModal:not(.hidden), #proposalModal:not(.hidden), #dealCommitmentModal:not(.hidden), #executiveHandoffModal:not(.hidden), #partnerWalletModal:not(.hidden), #clientTeardownModal:not(.hidden), #customLeadModal:not(.hidden)'));
+    const hasActiveModal = Boolean(document.querySelector('#authGateOverlay:not(.hidden), #adminModal:not(.hidden), #proposalModal:not(.hidden), #dealCommitmentModal:not(.hidden), #executiveHandoffModal:not(.hidden), #partnerWalletModal:not(.hidden), #clientTeardownModal:not(.hidden), #customLeadModal:not(.hidden), #workspaceTourModal:not(.hidden)'));
     if (hasActiveModal) {
       if (e.key === 'Escape') {
         closeProfileDropdown();
@@ -2705,6 +2988,7 @@ function setupKeyboardShortcuts() {
         if (typeof closeDealCommitmentModal === 'function') closeDealCommitmentModal();
         if (typeof closeExecutiveHandoffModal === 'function') closeExecutiveHandoffModal();
         if (typeof closePartnerWalletModal === 'function') closePartnerWalletModal();
+        if (typeof closeWorkspaceTour === 'function') closeWorkspaceTour();
         closeClientTeardownModal();
         closeLaymanAnalogy();
         if (typeof closeObjectionBox === 'function') closeObjectionBox();

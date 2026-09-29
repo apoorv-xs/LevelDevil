@@ -694,8 +694,9 @@
     #laymanAnalogyModal,
     #csvImportModal,
     #installAppModal,
-    #onboardingDisclaimer {
-      z-index: 1050 !important;
+    #onboardingDisclaimer,
+    #workspaceTourModal {
+      z-index: 1060 !important;
     }
     #authGateOverlay.hidden,
     #adminModal.hidden,
@@ -708,7 +709,8 @@
     #laymanAnalogyModal.hidden,
     #csvImportModal.hidden,
     #installAppModal.hidden,
-    #onboardingDisclaimer.hidden {
+    #onboardingDisclaimer.hidden,
+    #workspaceTourModal.hidden {
       display: none !important;
     }
     #authGateSignInBox,
@@ -784,6 +786,9 @@
 
       <!-- Interactive BB-8 Co-Pilot Tour Trigger -->
       <button id="btnBB8Guide" class="topbar-btn guide-btn" onclick="window.System1Brain?.showGuidanceHUD?.()" aria-label="Summon BB-8 Guide" title="Summon BB-8 Guide">[ 🤖<span class="guide-label"> GUIDE</span> ]</button>
+
+      <!-- Workstation Guided Tour Trigger -->
+      <button id="btnWorkspaceTour" class="topbar-btn tour-btn hide-mobile" onclick="openWorkspaceTour(0)" aria-label="Workstation Guided Tour" title="Workstation Tour & Caller Flight Manual">[ 💡<span class="tour-label hide-mobile"> TOUR</span> ]</button>
 
       <!-- Audio SFX Toggle -->
       <button id="sfx-toggle-btn" class="topbar-btn sfx-btn" aria-label="Toggle Sound Effects" title="Toggle Sound Effects">[ 🔊<span class="sfx-label"> SFX</span> ]</button>
@@ -944,6 +949,11 @@
                 </button>
               </div>
             </div>
+
+            <!-- Workstation Guided Tour Launcher -->
+            <button id="btnDropdownTour" type="button" onclick="closeProfileDropdown(); openWorkspaceTour(0);" title="Re-launch interactive 5-step workstation tour" class="w-full px-2 py-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[10px] font-bold flex items-center justify-center gap-1.5 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
+              <span>💡</span> <span>WORKSTATION TOUR &amp; GUIDE</span>
+            </button>
 
             <!-- Install Mobile App in Dropdown (Visible when verified) -->
             <button id="dropdownInstallAppBtn" type="button" onclick="closeProfileDropdown(); handleInstallAppClick();" class="hidden w-full px-2 py-1.5 bg-[#fce566] hover:bg-[#ffe040] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[10px] items-center justify-center gap-2 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
@@ -3327,6 +3337,97 @@
           </button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- INTERACTIVE WORKSTATION GUIDED WALKTHROUGH OVERLAY (SUBSYSTEM 21) -->
+  <div id="workspaceTourModal" class="hidden fixed inset-0 z-[1060] bg-[#17120f]/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="tourStepTitle">
+    <div class="max-w-[640px] w-full max-h-[92vh] flex flex-col bg-[#fff4c9] border-[3px] border-[#17120f] shadow-[8px_8px_0_#17120f] font-mono text-[#17120f] overflow-hidden select-none">
+      
+      <!-- Top Title & Flight Manual Header -->
+      <div style="background: #17120f !important; color: #fce566 !important;" class="p-3 sm:p-4 border-b-[3px] border-[#17120f] flex items-center justify-between gap-2 shrink-0">
+        <div class="flex items-center gap-2">
+          <span id="tourStepBadge" class="px-2 py-0.5 font-arcade text-[9px] bg-[#fce566] text-[#17120f] font-bold border border-[#17120f]">STEP 1 OF 5</span>
+          <span class="text-[9px] tracking-wider uppercase opacity-80 hidden sm:inline font-mono">WORKSTATION FLIGHT MANUAL</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <!-- Step indicator dots -->
+          <div id="tourStepDots" class="flex items-center gap-1.5 mr-2">
+            <!-- 5 dots populated dynamically -->
+          </div>
+          <button type="button" onclick="closeWorkspaceTour(true)" class="px-2 py-1 bg-transparent hover:bg-white/20 text-[#fce566] text-[9px] font-arcade border border-[#fce566]/40 transition cursor-pointer" title="Exit Walkthrough">
+            ✕ SKIP
+          </button>
+        </div>
+      </div>
+
+      <!-- Scrollable Main Tour Content -->
+      <div class="p-4 sm:p-5 space-y-3.5 overflow-y-auto custom-scrollbar flex-1">
+        
+        <!-- Tactical Visual ASCII / Mini-HUD Preview Box -->
+        <div id="tourVisualBox" class="p-2.5 sm:p-3 bg-[#17120f] text-[#fce566] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] font-mono text-[10px] leading-tight overflow-x-auto whitespace-pre">
+          <!-- Dynamically populated with step visual UI diagram -->
+        </div>
+
+        <!-- Step Title & High-Signal Summary -->
+        <div class="space-y-1">
+          <h3 id="tourStepTitle" class="font-arcade text-xs sm:text-sm font-bold text-[#17120f] uppercase flex items-center gap-2">
+            <!-- Dynamically populated -->
+          </h3>
+          <p id="tourStepSummary" class="text-[11px] leading-relaxed text-[#17120f]/90">
+            <!-- Dynamically populated -->
+          </p>
+        </div>
+
+        <!-- Dual Guidance: Laptop vs Mobile Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+          <!-- Laptop Experience Card -->
+          <div class="p-2.5 bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1">
+            <div class="font-arcade text-[9px] font-bold text-[#17120f] flex items-center gap-1 border-b border-[#17120f]/20 pb-1">
+              <span>💻</span> <span>LAPTOP / DESKTOP VIEW</span>
+            </div>
+            <div id="tourLaptopInstructions" class="text-[10px] space-y-1 text-[#17120f]/90 leading-snug">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Mobile Experience Card -->
+          <div class="p-2.5 bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1">
+            <div class="font-arcade text-[9px] font-bold text-[#17120f] flex items-center gap-1 border-b border-[#17120f]/20 pb-1">
+              <span>📱</span> <span>MOBILE PHONE VIEW</span>
+            </div>
+            <div id="tourMobileInstructions" class="text-[10px] space-y-1 text-[#17120f]/90 leading-snug">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Sovereign Pro Tip / Commercial Edge -->
+        <div class="p-2 bg-[#fce566] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] flex items-start gap-2">
+          <span class="text-xs shrink-0">⚡</span>
+          <div class="text-[10px] leading-snug text-[#17120f]">
+            <strong class="font-arcade text-[9px] uppercase tracking-wider block">PRO-TIP FOR CALLERS:</strong>
+            <span id="tourProTipText"></span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Footer (Back / Next / Finish) -->
+      <div class="p-3 sm:p-4 bg-[#fffdf1] border-t-2 border-[#17120f] flex items-center justify-between gap-3 shrink-0">
+        <button id="tourBtnPrev" type="button" onclick="prevWorkspaceTourStep()" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#fffdf1] hover:bg-[#e2e3e5] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-[9px] font-bold transition flex items-center gap-1 cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
+          <span>←</span> <span>PREV</span>
+        </button>
+
+        <div class="text-[9px] font-mono text-[#17120f]/70 hidden sm:block">
+          Use <kbd class="px-1 bg-[#17120f] text-[#fce566] font-bold">←</kbd> <kbd class="px-1 bg-[#17120f] text-[#fce566] font-bold">→</kbd> or <kbd class="px-1 bg-[#17120f] text-[#fce566] font-bold">ESC</kbd>
+        </div>
+
+        <button id="tourBtnNext" type="button" onclick="nextWorkspaceTourStep()" class="px-4 py-1.5 sm:px-5 sm:py-2 bg-[#17120f] hover:bg-black text-[#fce566] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-[10px] font-bold transition flex items-center gap-1.5 cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
+          <span id="tourBtnNextText">NEXT STEP</span> <span>→</span>
+        </button>
+      </div>
+
     </div>
   </div>
 
