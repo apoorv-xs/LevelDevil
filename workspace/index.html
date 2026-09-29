@@ -754,6 +754,46 @@
     #workspaceTourModal.hidden {
       display: none !important;
     }
+
+    /* Subsystem 21: BB-8 Astromech Laser Tour Animations */
+    @keyframes bb8Float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-7px); }
+    }
+    @keyframes laserPulseGlow {
+      0%, 100% { stroke-opacity: 0.95; stroke-width: 3.5px; }
+      50% { stroke-opacity: 0.45; stroke-width: 2px; }
+    }
+    #tourLaserBeam {
+      animation: laserPulseGlow 1.8s ease-in-out infinite;
+    }
+    #tourTargetLaserBorder {
+      animation: dashMove 24s linear infinite;
+    }
+    @keyframes dashMove {
+      to { stroke-dashoffset: -1000; }
+    }
+    .retro-workspace #tourBtnNext,
+    .retro-workspace #tourBtnNextText,
+    .retro-workspace #tourBtnNext * {
+      background: #17120f !important;
+      color: #fce566 !important;
+    }
+    .retro-workspace #tourBtnNext:hover,
+    .retro-workspace #tourBtnNext:hover * {
+      background: #000000 !important;
+      color: #ffffff !important;
+    }
+    .retro-workspace #workspaceTourModal button[onclick*="closeWorkspaceTour"] {
+      color: #fce566 !important;
+    }
+    @media (max-width: 1023px) {
+      #tourCard {
+        max-height: 58vh !important;
+        margin-top: auto !important;
+        margin-bottom: 0.5rem !important;
+      }
+    }
     #authGateSignInBox,
     #authGateApplicantBox {
       max-width: 440px !important;
@@ -3559,15 +3599,97 @@
     </div>
   </div>
 
-  <!-- INTERACTIVE WORKSTATION GUIDED WALKTHROUGH OVERLAY (SUBSYSTEM 21) -->
-  <div id="workspaceTourModal" class="hidden fixed inset-0 z-[1060] bg-[#17120f]/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="tourStepTitle">
-    <div class="max-w-[640px] w-full max-h-[92vh] flex flex-col bg-[#fff4c9] border-[3px] border-[#17120f] shadow-[8px_8px_0_#17120f] font-mono text-[#17120f] overflow-hidden select-none">
+  <!-- INTERACTIVE WORKSTATION GUIDED WALKTHROUGH OVERLAY (SUBSYSTEM 21: BB-8 ASTROMECH LASER TOUR) -->
+  <div id="workspaceTourModal" class="hidden fixed inset-0 z-[1060] bg-[#17120f]/60 backdrop-blur-[2px] flex items-center justify-center p-3 sm:p-4 overflow-hidden select-none" role="dialog" aria-modal="true" aria-labelledby="tourStepTitle">
+    
+    <!-- 60 FPS SVG Motion Spotlight & Hard-Light Laser Canvas -->
+    <svg id="tourSpotlightSvg" class="absolute inset-0 w-full h-full pointer-events-none z-[1]" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <mask id="tourSpotlightMask">
+          <!-- Opaque dim base -->
+          <rect width="100%" height="100%" fill="white" />
+          <!-- Black cutout reveals the live highlighted UI element -->
+          <rect id="tourSpotlightCutout" x="0" y="0" width="0" height="0" rx="6" ry="6" fill="black" style="transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);" />
+        </mask>
+        <filter id="tourLaserGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+
+      <!-- Dimmed backdrop with radial mask cutout -->
+      <rect width="100%" height="100%" fill="#17120f" opacity="0.8" mask="url(#tourSpotlightMask)" />
+
+      <!-- Pulsing Cyan Laser Boundary around Highlighted Element -->
+      <rect id="tourTargetLaserBorder" x="0" y="0" width="0" height="0" rx="6" ry="6" fill="none" stroke="#4deeea" stroke-width="2.5" stroke-dasharray="8 4" filter="url(#tourLaserGlow)" style="transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);" />
+
+      <!-- Holographic Laser Beam from BB-8 to Target -->
+      <line id="tourLaserBeam" x1="0" y1="0" x2="0" y2="0" stroke="#4deeea" stroke-width="3" stroke-linecap="round" filter="url(#tourLaserGlow)" style="transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);" />
+
+      <!-- Target Contact Spark Indicator -->
+      <g id="tourLaserContactSpark" style="transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);"></g>
+    </svg>
+
+    <!-- Dynamic 2.5D BB-8 Astromech Droid Guide Entity -->
+    <div id="tourBB8Companion" class="absolute z-[25] pointer-events-none flex flex-col items-center gap-1 opacity-0 transition-opacity duration-300" style="transition: left 0.45s cubic-bezier(0.16, 1, 0.3, 1), top 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease; transform: translate(-50%, -50%);">
+      <!-- Droid Speech / Radar Status Chip -->
+      <div id="tourBB8StatusChip" class="px-2 py-0.5 bg-[#17120f] text-[#4deeea] border border-[#4deeea] shadow-[2px_2px_0_#000] font-arcade text-[8px] whitespace-nowrap tracking-wider flex items-center gap-1">
+        <span>⚡ BB-8</span> <span id="tourBB8SectorText">// TARGET LOCKED</span>
+      </div>
+
+      <!-- Detailed 2.5D BB-8 Vector Graphic with Laser Projector -->
+      <div class="relative w-16 h-20 select-none animate-[bb8Float_3s_ease-in-out_infinite]">
+        <svg viewBox="0 0 80 100" class="w-full h-full drop-shadow-[0_4px_14px_rgba(77,238,234,0.45)]">
+          <!-- Antennas -->
+          <line x1="40" y1="18" x2="40" y2="4" stroke="#8c8d8f" stroke-width="2" stroke-linecap="round" />
+          <line x1="46" y1="18" x2="46" y2="8" stroke="#8c8d8f" stroke-width="1.5" stroke-linecap="round" />
+          <circle cx="40" cy="3" r="1.5" fill="#4deeea" />
+
+          <!-- Dome Head -->
+          <path d="M22 32 A18 18 0 0 1 58 32 Z" fill="#fffdf1" stroke="#17120f" stroke-width="2" />
+          <!-- Head Orange Stripes -->
+          <path d="M25 28 A15 15 0 0 1 55 28" fill="none" stroke="#f97316" stroke-width="2.5" />
+          <rect x="23" y="30" width="34" height="2" fill="#9ca3af" />
+          
+          <!-- Eye Optical Photoreceptor Lens (Center Black with Cyan Pupil) -->
+          <circle cx="40" cy="24" r="5" fill="#17120f" stroke="#e5e7eb" stroke-width="1" />
+          <circle cx="40" cy="24" r="2.5" fill="#0284c7" />
+          <circle cx="39" cy="23" r="1" fill="#4deeea" />
+          
+          <!-- Secondary Optical Lens -->
+          <circle cx="49" cy="27" r="2" fill="#17120f" />
+          
+          <!-- Laser Projector Utility Arm Emitter (Right Side) -->
+          <rect x="56" y="27" width="5" height="4" rx="1" fill="#4b5563" stroke="#17120f" stroke-width="1" />
+          <circle id="tourBB8LaserEmitterPoint" cx="61" cy="29" r="2.5" fill="#4deeea" />
+          
+          <!-- Spherical Body -->
+          <circle cx="40" cy="58" r="24" fill="#fffdf1" stroke="#17120f" stroke-width="2.5" />
+          <!-- Body Orange Ring 1 (Center) -->
+          <circle cx="40" cy="58" r="15" fill="none" stroke="#f97316" stroke-width="3" />
+          <circle cx="40" cy="58" r="7" fill="#e5e7eb" stroke="#17120f" stroke-width="1.5" />
+          <rect x="37" y="55" width="6" height="6" fill="#9ca3af" />
+          <!-- Body Orange Ring 2 (Left edge) -->
+          <path d="M19 50 A24 24 0 0 0 20 68" fill="none" stroke="#f97316" stroke-width="3" />
+          <!-- Body Orange Ring 3 (Right edge) -->
+          <path d="M61 50 A24 24 0 0 1 60 68" fill="none" stroke="#f97316" stroke-width="3" />
+          <!-- Lower Shadow -->
+          <ellipse cx="40" cy="85" rx="18" ry="4" fill="#17120f" opacity="0.3" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Main Tactical Flight Manual Card -->
+    <div id="tourCard" class="relative z-[20] max-w-[620px] w-full max-h-[92vh] flex flex-col bg-[#fff4c9] border-[3px] border-[#17120f] shadow-[8px_8px_0_#17120f] font-mono text-[#17120f] overflow-hidden select-none" style="transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
       
       <!-- Top Title & Flight Manual Header -->
       <div style="background: #17120f !important; color: #fce566 !important;" class="p-3 sm:p-4 border-b-[3px] border-[#17120f] flex items-center justify-between gap-2 shrink-0">
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 flex-wrap">
           <span id="tourStepBadge" class="px-2 py-0.5 font-arcade text-[9px] bg-[#fce566] text-[#17120f] font-bold border border-[#17120f]">STEP 1 OF 5</span>
-          <span class="text-[9px] tracking-wider uppercase opacity-80 hidden sm:inline font-mono">WORKSTATION FLIGHT MANUAL</span>
+          <span id="tourTargetIndicator" class="px-2 py-0.5 font-arcade text-[9px] bg-[#4deeea]/20 text-[#4deeea] border border-[#4deeea] font-bold hidden sm:inline-block">🎯 TARGET: COLUMN 1 QUEUE</span>
         </div>
         <div class="flex items-center gap-2">
           <!-- Step indicator dots -->
@@ -3596,6 +3718,17 @@
           <p id="tourStepSummary" class="text-[11px] leading-relaxed text-[#17120f]/90">
             <!-- Dynamically populated -->
           </p>
+        </div>
+
+        <!-- Interactive Laser Focus Ping Bar -->
+        <div class="p-2 bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] flex items-center justify-between gap-2">
+          <div class="text-[10px] font-mono flex items-center gap-1.5 min-w-0">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+            <span id="tourTargetSubtext" class="truncate text-[#17120f]/80">BB-8 laser locked onto active workspace sector</span>
+          </div>
+          <button type="button" onclick="pingTourTarget()" class="px-2.5 py-1 bg-[#4deeea] hover:bg-[#38d4d0] text-[#17120f] border border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[9px] font-bold transition flex items-center gap-1 shrink-0 cursor-pointer active:translate-x-[1px] active:translate-y-[1px]" title="Re-pulse laser beam onto target element">
+            <span>⚡</span> <span>FOCUS</span>
+          </button>
         </div>
 
         <!-- Dual Guidance: Laptop vs Mobile Grid -->

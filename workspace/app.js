@@ -2745,6 +2745,10 @@ const WORKSPACE_TOUR_STEPS = [
     step: 1,
     total: 5,
     badge: 'STEP 1 OF 5 // QUEUE',
+    targetSelector: '#queuePane, #queueList, #queueListContainer',
+    targetLabel: 'COLUMN 1 // TERRITORY QUEUE & ZOMBIE RADAR',
+    targetSubtext: 'BB-8 aiming hard-light laser at active priority queue',
+    bb8Sector: '// QUEUE RADAR LOCKED',
     title: '1. Territory Queue & Zombie Radar',
     summary: 'The workstation prioritizes 65 curated enterprise prospects. Overdue and cold leads automatically float to the top so you never lose high-intent deals.',
     visual: `┌── TERRITORY QUEUE ──────────────────────────────┐
@@ -2772,6 +2776,10 @@ const WORKSPACE_TOUR_STEPS = [
     step: 2,
     total: 5,
     badge: 'STEP 2 OF 5 // DOSSIER',
+    targetSelector: '#prospectHero, #activeName, #dossierSection',
+    targetLabel: 'COLUMN 2 // CLIENT DOSSIER & REVENUE LEAKS',
+    targetSubtext: 'BB-8 scanning empirical 4G Lighthouse latency & OTA bleed',
+    bb8Sector: '// DOSSIER TELEMETRY SCAN',
     title: '2. Client Dossier & Revenue Leak Intel',
     summary: 'Every prospect comes pre-audited with empirical mobile 4G latency, estimated revenue drop-off, third-party aggregator bleed, and DPDP Act legal compliance.',
     visual: `┌── CLIENT AUDIT DOSSIER ─────────────────────────┐
@@ -2797,6 +2805,10 @@ const WORKSPACE_TOUR_STEPS = [
     step: 3,
     total: 5,
     badge: 'STEP 3 OF 5 // COCKPIT',
+    targetSelector: '#callWrapCard, #callActionBtn, #dialHandoffSection',
+    targetLabel: 'COCKPIT // IN-CALL FLIGHT HUD & TEL STOPWATCH',
+    targetSubtext: 'BB-8 monitoring live stopwatch & mandatory disposition gate',
+    bb8Sector: '// LIVE DIAL COCKPIT LOCKED',
     title: '3. In-Call Flight HUD & Mandatory Dispositions',
     summary: 'Dialing starts an active stopwatch. To prevent lost data or skipping callbacks, active calls must be dispositioned through a guided 2-step gate.',
     visual: `┌── IN-CALL FLIGHT HUD ───────────────────────────┐
@@ -2822,6 +2834,10 @@ const WORKSPACE_TOUR_STEPS = [
     step: 4,
     total: 5,
     badge: 'STEP 4 OF 5 // CLOSING',
+    targetSelector: '#outcomeOptionsContainer, #btnOutcomeBooked, #soundboardPanel',
+    targetLabel: 'CLOSING // TWO-TRACK TERMINAL (15% DIRECT & 10% HANDOFF)',
+    targetSubtext: 'BB-8 illuminating 15% direct close & 50% advance UPI deposit QR',
+    bb8Sector: '// CLOSING TERMINAL ENGAGED',
     title: '4. Two-Track Deal Closing & Sovereign Payment Terminal',
     summary: 'Strike while the iron is hot. Close deals autonomously on the spot for a 15% commission, or escalate enterprise walkthroughs to Apoorv for a 10% safety net.',
     visual: `┌── TWO-TRACK CLOSING TERMINAL ───────────────────┐
@@ -2847,6 +2863,10 @@ const WORKSPACE_TOUR_STEPS = [
     step: 5,
     total: 5,
     badge: 'STEP 5 OF 5 // WALLET',
+    targetSelector: '#topbarWalletPill, #btnNextLeadHandoff, header.topbar',
+    targetLabel: 'TOPBAR // SOVEREIGN COMMISSION WALLET & STREAKS',
+    targetSubtext: 'BB-8 targeting real-time rupee earnings & instant UPI settlement',
+    bb8Sector: '// WALLET SETTLEMENT ACTIVE',
     title: '5. Sovereign Commission Wallet & Shift Momentum',
     summary: 'Track every rupee earned in real-time. Request instant UPI settlements directly from the topbar, maintain dial streaks, and unlock dopamine milestones.',
     visual: `┌── SOVEREIGN WALLET & TELEMETRY ─────────────────┐
@@ -2870,6 +2890,218 @@ const WORKSPACE_TOUR_STEPS = [
 ];
 
 let currentWorkspaceTourStep = 0;
+let tourListenersAttached = false;
+
+function onTourWindowChange() {
+  if (currentWorkspaceTourStep >= 0 && currentWorkspaceTourStep < WORKSPACE_TOUR_STEPS.length) {
+    updateTourSpotlight(currentWorkspaceTourStep);
+  }
+}
+
+function updateTourSpotlight(stepIndex) {
+  const step = WORKSPACE_TOUR_STEPS[stepIndex];
+  if (!step) return;
+
+  const targetIndicator = document.getElementById('tourTargetIndicator');
+  if (targetIndicator && step.targetLabel) {
+    targetIndicator.textContent = `🎯 TARGET: ${step.targetLabel}`;
+  }
+
+  const targetSubtext = document.getElementById('tourTargetSubtext');
+  if (targetSubtext && step.targetSubtext) {
+    targetSubtext.textContent = step.targetSubtext;
+  }
+
+  const bb8SectorText = document.getElementById('tourBB8SectorText');
+  if (bb8SectorText && step.bb8Sector) {
+    bb8SectorText.textContent = step.bb8Sector;
+  }
+
+  // Find target element with fallback matching
+  let targetEl = null;
+  if (step.targetSelector && typeof document !== 'undefined' && typeof document.querySelector === 'function') {
+    const selectors = step.targetSelector.split(',').map(s => s.trim());
+    for (const sel of selectors) {
+      try {
+        const found = document.querySelector(sel);
+        if (found && found.offsetParent !== null) {
+          targetEl = found;
+          break;
+        }
+      } catch (e) {}
+    }
+  }
+
+  const cutout = document.getElementById('tourSpotlightCutout');
+  const border = document.getElementById('tourTargetLaserBorder');
+  const laser = document.getElementById('tourLaserBeam');
+  const bb8 = document.getElementById('tourBB8Companion');
+  const spark = document.getElementById('tourLaserContactSpark');
+  const tourCard = document.getElementById('tourCard');
+
+  if (!targetEl || typeof targetEl.getBoundingClientRect !== 'function') {
+    // Graceful fallback for mock unit tests or invisible targets
+    if (cutout && typeof cutout.setAttribute === 'function') {
+      cutout.setAttribute('x', '0');
+      cutout.setAttribute('y', '0');
+      cutout.setAttribute('width', '0');
+      cutout.setAttribute('height', '0');
+    }
+    if (border && typeof border.setAttribute === 'function') {
+      border.setAttribute('x', '0');
+      border.setAttribute('y', '0');
+      border.setAttribute('width', '0');
+      border.setAttribute('height', '0');
+    }
+    if (laser && typeof laser.setAttribute === 'function') {
+      laser.setAttribute('x1', '0');
+      laser.setAttribute('y1', '0');
+      laser.setAttribute('x2', '0');
+      laser.setAttribute('y2', '0');
+    }
+    if (bb8) bb8.style.opacity = '0';
+    return;
+  }
+
+  const rect = targetEl.getBoundingClientRect();
+  const pad = 10;
+  const winW = typeof window !== 'undefined' ? (window.innerWidth || 1440) : 1440;
+  const winH = typeof window !== 'undefined' ? (window.innerHeight || 900) : 900;
+  const isMobile = winW < 1024;
+
+  const x = Math.max(4, rect.left - pad);
+  const y = Math.max(4, rect.top - pad);
+  const w = Math.min(winW - x - 4, Math.max(20, rect.width + pad * 2));
+  const h = Math.min(winH - y - 4, Math.max(20, rect.height + pad * 2));
+
+  if (cutout && typeof cutout.setAttribute === 'function') {
+    cutout.setAttribute('x', String(x));
+    cutout.setAttribute('y', String(y));
+    cutout.setAttribute('width', String(w));
+    cutout.setAttribute('height', String(h));
+  }
+  if (border && typeof border.setAttribute === 'function') {
+    border.setAttribute('x', String(x));
+    border.setAttribute('y', String(y));
+    border.setAttribute('width', String(w));
+    border.setAttribute('height', String(h));
+  }
+
+  // Calculate BB-8 position and laser aim point
+  let bb8X = 0;
+  let bb8Y = 0;
+
+  if (isMobile) {
+    // Mobile layout: Card is docked at bottom, float BB-8 near top/target
+    bb8X = Math.min(winW - 55, Math.max(55, x + w * 0.5));
+    bb8Y = Math.max(55, Math.min(y + h * 0.5, winH * 0.32));
+  } else {
+    // Desktop layout: Deterministic step-specific choreography
+    if (stepIndex === 0) {
+      // Step 1: Column 1 Queue -> Card on right, BB-8 between queue and card
+      bb8X = x + w + 50;
+      bb8Y = Math.min(winH - 90, Math.max(80, y + 60));
+    } else if (stepIndex === 1) {
+      // Step 2: Center Dossier -> Card on right, BB-8 floats above left of dossier
+      bb8X = x + 40;
+      bb8Y = Math.max(65, y - 55);
+    } else if (stepIndex === 2) {
+      // Step 3: Cockpit Flight HUD -> Card on right, BB-8 floats above HUD
+      bb8X = x + 40;
+      bb8Y = Math.max(65, y - 55);
+    } else if (stepIndex === 3) {
+      // Step 4: Closing Terminal -> Card on left, BB-8 floats above/right of terminal
+      bb8X = Math.min(winW - 75, x + w + 45);
+      bb8Y = Math.min(winH - 90, Math.max(80, y + 50));
+    } else {
+      // Step 5: Topbar Wallet -> Card on left, BB-8 floats directly beneath wallet
+      bb8X = Math.min(winW - 75, Math.max(75, x + w * 0.5 - 20));
+      bb8Y = y + h + 65;
+    }
+  }
+
+  if (bb8) {
+    bb8.style.left = `${bb8X}px`;
+    bb8.style.top = `${bb8Y}px`;
+    bb8.style.opacity = '1';
+  }
+
+  const targetCenterX = x + w * 0.5;
+  const targetCenterY = y + h * 0.5;
+
+  if (laser && typeof laser.setAttribute === 'function') {
+    laser.setAttribute('x1', String(bb8X));
+    laser.setAttribute('y1', String(bb8Y));
+    laser.setAttribute('x2', String(targetCenterX));
+    laser.setAttribute('y2', String(targetCenterY));
+  }
+
+  if (spark) {
+    spark.innerHTML = `
+      <circle cx="${targetCenterX}" cy="${targetCenterY}" r="6" fill="#4deeea" opacity="0.8" />
+      <circle cx="${targetCenterX}" cy="${targetCenterY}" r="3" fill="#ffffff" />
+    `;
+  }
+
+  // Positioning of tourCard relative to target element
+  if (tourCard && !isMobile) {
+    if (stepIndex === 3 || stepIndex === 4) {
+      // Steps 4 & 5: Card on left
+      tourCard.style.marginLeft = '2rem';
+      tourCard.style.marginRight = 'auto';
+    } else {
+      // Steps 1, 2, 3: Card on right
+      tourCard.style.marginLeft = 'auto';
+      tourCard.style.marginRight = '2rem';
+    }
+  } else if (tourCard && isMobile) {
+    tourCard.style.marginLeft = 'auto';
+    tourCard.style.marginRight = 'auto';
+  }
+}
+
+function pingTourTarget() {
+  const step = WORKSPACE_TOUR_STEPS[currentWorkspaceTourStep];
+  if (!step) return;
+
+  if (typeof window.SFX !== 'undefined' && typeof window.SFX.playLaserConstruct === 'function') {
+    try { window.SFX.playLaserConstruct(); } catch(e) {}
+  }
+
+  let targetEl = null;
+  if (step.targetSelector && typeof document !== 'undefined' && typeof document.querySelector === 'function') {
+    const selectors = step.targetSelector.split(',').map(s => s.trim());
+    for (const sel of selectors) {
+      try {
+        const found = document.querySelector(sel);
+        if (found && found.offsetParent !== null) {
+          targetEl = found;
+          break;
+        }
+      } catch (e) {}
+    }
+  }
+
+  if (targetEl && typeof targetEl.scrollIntoView === 'function') {
+    targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  updateTourSpotlight(currentWorkspaceTourStep);
+
+  const border = document.getElementById('tourTargetLaserBorder');
+  if (border) {
+    border.style.stroke = '#ffffff';
+    border.style.strokeWidth = '4.5px';
+    if (typeof setTimeout === 'function') {
+      setTimeout(() => {
+        if (border) {
+          border.style.stroke = '#4deeea';
+          border.style.strokeWidth = '2.5px';
+        }
+      }, 400);
+    }
+  }
+}
 
 function openWorkspaceTour(stepIndex = 0) {
   currentWorkspaceTourStep = Math.max(0, Math.min(stepIndex, WORKSPACE_TOUR_STEPS.length - 1));
@@ -2878,6 +3110,14 @@ function openWorkspaceTour(stepIndex = 0) {
   modal.classList.remove('hidden');
   modal.style.display = 'flex';
   renderWorkspaceTourStep(currentWorkspaceTourStep);
+  updateTourSpotlight(currentWorkspaceTourStep);
+
+  // Attach dynamic repositioning listeners
+  if (!tourListenersAttached && typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+    window.addEventListener('resize', onTourWindowChange);
+    window.addEventListener('scroll', onTourWindowChange, true);
+    tourListenersAttached = true;
+  }
 
   // Play subtle interface audio chime
   if (typeof window.SFX !== 'undefined' && typeof window.SFX.playLaserConstruct === 'function') {
@@ -2894,6 +3134,17 @@ function closeWorkspaceTour(markCompleted = true) {
   if (markCompleted) {
     localStorage.setItem('sprintdial_tour_completed', 'true');
   }
+
+  // Detach listeners and reset spotlight
+  if (tourListenersAttached && typeof window !== 'undefined' && typeof window.removeEventListener === 'function') {
+    window.removeEventListener('resize', onTourWindowChange);
+    window.removeEventListener('scroll', onTourWindowChange, true);
+    tourListenersAttached = false;
+  }
+
+  const bb8 = document.getElementById('tourBB8Companion');
+  if (bb8) bb8.style.opacity = '0';
+
   // Audio chime
   if (typeof window.SFX !== 'undefined' && typeof window.SFX.playThought === 'function') {
     try { window.SFX.playThought(); } catch(e) {}
@@ -2904,6 +3155,7 @@ function nextWorkspaceTourStep() {
   if (currentWorkspaceTourStep < WORKSPACE_TOUR_STEPS.length - 1) {
     currentWorkspaceTourStep++;
     renderWorkspaceTourStep(currentWorkspaceTourStep);
+    updateTourSpotlight(currentWorkspaceTourStep);
     if (typeof window.SFX !== 'undefined' && typeof window.SFX.playJump === 'function') {
       try { window.SFX.playJump(); } catch(e) {}
     }
@@ -2933,6 +3185,7 @@ function prevWorkspaceTourStep() {
   if (currentWorkspaceTourStep > 0) {
     currentWorkspaceTourStep--;
     renderWorkspaceTourStep(currentWorkspaceTourStep);
+    updateTourSpotlight(currentWorkspaceTourStep);
     if (typeof window.SFX !== 'undefined' && typeof window.SFX.playJump === 'function') {
       try { window.SFX.playJump(); } catch(e) {}
     }
@@ -2999,6 +3252,8 @@ if (typeof window !== 'undefined') {
   window.nextWorkspaceTourStep = nextWorkspaceTourStep;
   window.prevWorkspaceTourStep = prevWorkspaceTourStep;
   window.renderWorkspaceTourStep = renderWorkspaceTourStep;
+  window.updateTourSpotlight = updateTourSpotlight;
+  window.pingTourTarget = pingTourTarget;
 }
 if (typeof global !== 'undefined') {
   global.maybeShowOnboardingDisclaimer = maybeShowOnboardingDisclaimer;
@@ -3009,6 +3264,8 @@ if (typeof global !== 'undefined') {
   global.nextWorkspaceTourStep = nextWorkspaceTourStep;
   global.prevWorkspaceTourStep = prevWorkspaceTourStep;
   global.renderWorkspaceTourStep = renderWorkspaceTourStep;
+  global.updateTourSpotlight = updateTourSpotlight;
+  global.pingTourTarget = pingTourTarget;
 }
 
 function signOut() {
