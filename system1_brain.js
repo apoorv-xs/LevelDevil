@@ -1047,12 +1047,8 @@
             this.emitThought(defectText, 3200);
 
             if (typeof window !== "undefined") {
-                const targetEl = document.querySelector("#activeName") || document.querySelector(".studio-panel");
-                if (targetEl && window.smoothGlideTo) {
-                    const scrollY = window.scrollY || window.pageYOffset || 0;
-                    const r = targetEl.getBoundingClientRect();
-                    window.smoothGlideTo(Math.round(r.left + 80), Math.round(r.top + scrollY), 650);
-                }
+                const statusEl = document.getElementById("astromechStatusText");
+                if (statusEl) statusEl.textContent = "RADAR";
                 if (window.Player3D && window.Player3D.curiousInspect) {
                     window.Player3D.curiousInspect();
                 }
@@ -1067,12 +1063,8 @@
             this.emitThought(`Radar: [${city || "All"}] ${countText}.`, 2500);
 
             if (typeof window !== "undefined") {
-                const activeTab = document.querySelector(".city-tab.active") || document.querySelector(".city-tab");
-                if (activeTab && window.smoothGlideTo) {
-                    const scrollY = window.scrollY || window.pageYOffset || 0;
-                    const r = activeTab.getBoundingClientRect();
-                    window.smoothGlideTo(Math.round(r.left + r.width / 2), Math.round(r.top + scrollY), 550);
-                }
+                const statusEl = document.getElementById("astromechStatusText");
+                if (statusEl) statusEl.textContent = "SWEEP";
                 if (window.Player3D && window.Player3D.nod) {
                     window.Player3D.nod();
                 }
@@ -1082,10 +1074,13 @@
         onCallStateChange(isCalling, duration = 0) {
             this.isCallActive = isCalling;
             this.callDuration = duration;
+            const statusEl = (typeof document !== "undefined") ? document.getElementById("astromechStatusText") : null;
             if (isCalling) {
+                if (statusEl) statusEl.textContent = "CALLING";
                 this.currentIntent = INTENTS.CALL_STANDBY;
                 this.emitThought("Live call in progress. Co-pilot standby active.", 2500);
             } else {
+                if (statusEl) statusEl.textContent = "STANDBY";
                 this.currentIntent = INTENTS.IDLE_PERCH;
             }
         },
@@ -1474,20 +1469,13 @@
                         const rail = allRails.find(r => r.domElement === this._cachedProspectDom || Math.abs(r.y - targetY) < 20);
                         result.targetRail = rail || currentRail;
                         result.targetX = targetX;
-                        if (Math.abs(playerPos.x - targetX) > 20) {
-                            result.moveX = Math.sign(targetX - playerPos.x);
-                        }
                     }
+                    result.moveX = 0;
                     break;
                 }
 
                 case INTENTS.RADAR_SWEEP: {
-                    if (currentRail) {
-                        const midX = currentRail.xLeft + currentRail.width / 2;
-                        if (Math.abs(playerPos.x - midX) > 15) {
-                            result.moveX = Math.sign(midX - playerPos.x) * 0.6;
-                        }
-                    }
+                    result.moveX = 0;
                     break;
                 }
 

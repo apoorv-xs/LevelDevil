@@ -90,7 +90,10 @@ function createPlayer(x, y) {
         const activeEl = document.activeElement;
         const isTyping = activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA" || activeEl.tagName === "SELECT" || activeEl.isContentEditable);
 
-        if (window.controlMode === 'manual' && !isTyping) {
+        const isWsRoute = (typeof window.getCurrentPage === "function" && window.getCurrentPage() === "workspace") ||
+            (typeof window !== "undefined" && window.location && window.location.pathname.includes("/workspace/"));
+
+        if (window.controlMode === 'manual' && !isTyping && !isWsRoute) {
             const hasLeft = (typeof isKeyDown === "function" && (isKeyDown("left") || isKeyDown("a"))) ||
                 (typeof window.isPhysicalKeyDown === "function" && (window.isPhysicalKeyDown("left") || window.isPhysicalKeyDown("a"))) ||
                 Boolean(window.mobileLeftDown);

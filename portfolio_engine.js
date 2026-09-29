@@ -416,60 +416,21 @@ onLoad(() => {
                 });
             });
         } else if (page === "workspace") {
-            const topbar = { el: document.querySelector('header.topbar'), mode: 'bottom', name: 'HEADER.topbar' };
-            const cityTabs = Array.from(document.querySelectorAll('.city-tab')).map((b, i) => ({ el: b, mode: 'bottom', name: `BUTTON.city-tab-${i+1}`, trap: 'cta' }));
-            const searchInput = { el: document.querySelector('#queueSearchInput'), mode: 'bottom', name: 'INPUT#queueSearchInput' };
-
-            const panels = Array.from(document.querySelectorAll('.studio-panel'));
-            const heroPanel = panels[0];
-            const flawsPanel = panels[1];
-            const notesPanel = panels[2];
-
-            const heroRoof = { el: heroPanel, mode: 'top', name: 'DIV.hero-panel::roof' };
-            const btnPrev = { el: document.querySelector('#btnPrevLeadHero'), mode: 'bottom', name: 'BUTTON#btnPrevLeadHero', trap: 'cta' };
-            const btnNext = { el: document.querySelector('#btnNextLeadHero'), mode: 'bottom', name: 'BUTTON#btnNextLeadHero', trap: 'cta' };
-            const activeName = { el: document.querySelector('#activeName'), mode: 'bottom', name: 'H1#activeName' };
-            const timingBadge = { el: document.querySelector('#timingBadge'), mode: 'bottom', name: 'SPAN#timingBadge' };
-            const currentLock = { el: document.querySelector('#currentLockStatus'), mode: 'bottom', name: 'SPAN#currentLockStatus' };
-            const activeFee = { el: document.querySelector('#activeFee'), mode: 'bottom', name: 'SPAN#activeFee', trap: 'cta' };
-            const activeRating = { el: document.querySelector('#activeRating'), mode: 'bottom', name: 'SPAN#activeRating' };
-            const leadQueuePos = { el: document.querySelector('#leadQueuePosition'), mode: 'bottom', name: 'SPAN#leadQueuePosition' };
-            const heroBase = { el: heroPanel, mode: 'bottom', name: 'DIV.hero-panel::base' };
-
-            const flawsRoof = { el: flawsPanel, mode: 'top', name: 'DIV.flaws-panel::roof' };
-            const btnTeardown = { el: document.querySelector('#btnTeardownModal'), mode: 'bottom', name: 'BUTTON#btnTeardownModal', trap: 'cta' };
-            const btnAnalogy = { el: document.querySelector('#btnAnalogyModal'), mode: 'bottom', name: 'BUTTON#btnAnalogyModal', trap: 'cta' };
-            const flawsBase = { el: flawsPanel, mode: 'bottom', name: 'DIV.flaws-panel::base' };
-
-            const notesRoof = { el: notesPanel, mode: 'top', name: 'DIV.notes-panel::roof' };
-            const callActionBtn = { el: document.querySelector('#callActionBtn'), mode: 'bottom', name: 'BUTTON#callActionBtn', trap: 'cta' };
-            const objBtns = Array.from(document.querySelectorAll('.obj-btn, .objection-btn')).map((btn, i) => ({ el: btn, mode: 'bottom', name: `BUTTON.obj-btn-${i+1}`, trap: 'cta' }));
-            const callNotes = { el: document.querySelector('#callNotesInput'), mode: 'bottom', name: 'TEXTAREA#callNotesInput' };
-            const saveBtn = { el: document.querySelector('#btnNextLeadHandoff'), mode: 'bottom', name: 'BUTTON#save-next', trap: 'cta' };
-            const notesBase = { el: notesPanel, mode: 'bottom', name: 'DIV.notes-panel::base' };
-
-            const wsDefinitions = [
-                ...cityTabs, searchInput,
-                heroRoof, btnPrev, btnNext, activeName, timingBadge, currentLock, activeFee, activeRating, leadQueuePos, heroBase,
-                flawsRoof, btnTeardown, btnAnalogy, flawsBase,
-                notesRoof, callActionBtn, ...objBtns, callNotes, saveBtn, notesBase
-            ].filter(d => d.el);
-
-            wsDefinitions.forEach(def => {
-                const r = def.el.getBoundingClientRect();
-                if (r.width < 10 || r.height < 4) return;
-                const y = def.mode === 'top' ? Math.round(r.top + scrollY) : Math.round(r.bottom + scrollY);
+            // Astromech Perch Socket Mode: Single dedicated landing rail anchored in the topbar
+            const socketEl = document.querySelector('#astromechSocket') || document.querySelector('header.topbar');
+            if (socketEl) {
+                const r = socketEl.getBoundingClientRect();
                 detected.push({
-                    xLeft: Math.round(r.left),
-                    xRight: Math.round(r.right),
-                    width: Math.round(r.width),
-                    y: y,
-                    domElement: def.el,
-                    trap: def.trap || 'normal',
-                    name: def.name,
-                    surface: def.mode
+                    xLeft: Math.round(r.left - 15),
+                    xRight: Math.round(r.right + 15),
+                    width: Math.round(r.width + 30),
+                    y: Math.round(r.bottom),
+                    domElement: socketEl,
+                    trap: 'normal',
+                    name: 'ASTROMECH_SOCKET_RAIL',
+                    surface: 'bottom'
                 });
-            });
+            }
         }
         const uniqueRails = [];
         for (const r of detected) {
@@ -540,10 +501,10 @@ onLoad(() => {
         requestAnimationFrame(stepGlide);
     };
 
-    // Click-to-Summon on Card Elements & Panels across every page
+    // Click-to-Summon on Card Elements & Panels across every page (disabled on workspace so BB-8 stays perched)
     function initClickToSummon() {
         document.addEventListener("click", (e) => {
-            if (isTypingInForm()) return;
+            if (isTypingInForm() || getCurrentPage() === "workspace") return;
             const target = e.target.closest(
                 ".featured-project-card, .standard-project-card, .capability-card, .note-card, .contact-card, .studio-panel, .prospect-row"
             );
@@ -687,7 +648,22 @@ onLoad(() => {
         } else if (page === "sales") {
             targetEl = document.querySelector('.hero h1') || document.querySelector('h1') || document.querySelector('#inquiry-card');
         } else if (page === "workspace") {
-            targetEl = document.querySelector('#leadCockpit') || document.querySelector('.city-tab') || document.querySelector('#queueSearchInput');
+            targetEl = document.querySelector('#astromechSocket') || document.querySelector('header.topbar');
+        }
+
+        if (page === "workspace" && targetEl && player) {
+            const r = targetEl.getBoundingClientRect();
+            player.pos.x = Math.round(r.left + r.width / 2);
+            player.pos.y = Math.round(r.bottom + 12);
+            player.vy = 0;
+            if (player.vel) {
+                player.vel.x = 0;
+                player.vel.y = 0;
+            }
+            player.grounded = true;
+            player.currentRail = landingRails[0] || null;
+            console.log("Placed BB-8 in Astromech Socket:", player.pos.x, player.pos.y);
+            return;
         }
 
         if (targetEl && player) {
@@ -776,7 +752,7 @@ onLoad(() => {
 
     // --- ASTROMECH ARCHITECT INTEGRATION (Hard-Light Laser Bridging & Construct Tool) ---
     function triggerConstructPlatform() {
-        if (!player) return;
+        if (!player || getCurrentPage() === "workspace") return;
         if (window.System1Brain && typeof window.System1Brain.closeHUD === "function") {
             window.System1Brain.closeHUD();
         }
@@ -792,7 +768,7 @@ onLoad(() => {
 
     // Autonomous Chasm Bridging: Deploy glowing laser bridge across ledge gaps
     function checkChasmBridging(p, rails) {
-        if (!p || !rails || rails.length === 0) return;
+        if (!p || !rails || rails.length === 0 || getCurrentPage() === "workspace") return;
         if (typeof document !== "undefined" && document.body?.classList?.contains("tour-active")) return;
         const arch = window.AstromechArchitect || (window.Player3D && window.Player3D.architect);
         if (!arch || typeof arch.deployLaserBridge !== "function") return;
@@ -927,8 +903,25 @@ onLoad(() => {
             }
         }
 
+        // Astromech Perch Socket: On Workspace, keep BB-8 anchored cleanly in the topbar bay
+        if (getCurrentPage() === "workspace" && player && !window.isAirborneGlide) {
+            const socketEl = document.querySelector('#astromechSocket') || document.querySelector('header.topbar');
+            if (socketEl) {
+                const r = socketEl.getBoundingClientRect();
+                player.pos.x = Math.round(r.left + r.width / 2);
+                player.pos.y = Math.round(r.bottom + 12);
+                player.vy = 0;
+                if (player.vel) {
+                    player.vel.x = 0;
+                    player.vel.y = 0;
+                }
+                player.grounded = true;
+                player.currentRail = landingRails[0] || null;
+            }
+        }
+
         // Pillar 1 & 2: 3-Sub-Step Vertical Integration with Swept Interval Collision
-        if (isPhysicsActive && !isRespawning && !window.isAirborneGlide && !isTourActive && dtTotal > 0) {
+        if (isPhysicsActive && !isRespawning && !window.isAirborneGlide && !isTourActive && dtTotal > 0 && getCurrentPage() !== "workspace") {
             const clampedDt = Math.min(dtTotal, 0.05);
             const SUB_STEPS = 3;
             const subDt = clampedDt / SUB_STEPS;
@@ -1168,12 +1161,12 @@ onLoad(() => {
                     player.pos.y += 3;
                     player.vy = 120;
                 }
-                if (cmd.moveX !== 0) {
+                if (cmd.moveX !== 0 && getCurrentPage() !== "workspace") {
                     player.move(cmd.moveX * SPEED * 0.75, 0);
                     player.facingLeft = cmd.moveX < 0;
                     player.isMovingThisFrame = true;
                 }
-                if (cmd.wantsJump && player.grounded) {
+                if (cmd.wantsJump && player.grounded && getCurrentPage() !== "workspace") {
                     player.jump(cmd.jumpForce || JUMP_FORCE);
                     if (window.SFX && window.SFX.playJump) window.SFX.playJump();
                 }
@@ -1236,7 +1229,7 @@ onLoad(() => {
         const isPastBedrockVoid = player.pos.y > pageMaxY;
         const isAboveCeiling = player.pos.y < -300;
 
-        if ((isFarBelowView || isPastBedrockVoid || isAboveCeiling) && !isRespawning && isPhysicsActive) {
+        if ((isFarBelowView || isPastBedrockVoid || isAboveCeiling) && !isRespawning && isPhysicsActive && getCurrentPage() !== "workspace") {
             respawnPlayer();
         }
 
@@ -1265,7 +1258,7 @@ onLoad(() => {
         if (arch && typeof arch.update === "function") {
             arch.update(dtTotal, player, landingRails);
         }
-        if (isPhysicsActive && !isRespawning && player) {
+        if (isPhysicsActive && !isRespawning && player && getCurrentPage() !== "workspace") {
             checkChasmBridging(player, landingRails);
 
             // Autonomous LiDaR Surface Welding: discover and lock unvisited DOM rails within sensor range

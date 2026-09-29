@@ -1906,6 +1906,103 @@ function onAuthVerified() {
   updateProfileDropdownUI();
   if (typeof updateInstallAppVisibility === 'function') updateInstallAppVisibility();
   maybeShowOnboardingDisclaimer();
+  initAstromechSentinel();
+}
+
+// -------------------------------------------------------------
+// ASTROMECH CO-PILOT SENTINEL & INTERACTION BUS
+// -------------------------------------------------------------
+let _astromechSentinelInitialized = false;
+
+function initAstromechSentinel() {
+  if (_astromechSentinelInitialized) return;
+  _astromechSentinelInitialized = true;
+
+  let lastActivityTime = Date.now();
+  let inactivityAlerted = false;
+
+  const resetActivity = () => {
+    lastActivityTime = Date.now();
+    inactivityAlerted = false;
+  };
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('mousemove', resetActivity, { passive: true });
+    window.addEventListener('keydown', resetActivity, { passive: true });
+    window.addEventListener('click', resetActivity, { passive: true });
+  }
+
+  // Inactivity Sentinel Check (Every 10s)
+  if (typeof setInterval === 'function') {
+    setInterval(() => {
+      if (typeof window === 'undefined' || typeof document === 'undefined') return;
+      if (inactivityAlerted || isCallActive || !selectedProspectId) return;
+
+      // Suppress if typing in notes or search
+      const activeEl = document.activeElement;
+      if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) return;
+
+      const idleSeconds = (Date.now() - lastActivityTime) / 1000;
+      if (idleSeconds >= 45) {
+        inactivityAlerted = true;
+        const statusEl = document.getElementById('astromechStatusText');
+        if (statusEl) statusEl.textContent = 'ASSIST';
+        if (window.Player3D && typeof window.Player3D.curiousInspect === 'function') {
+          window.Player3D.curiousInspect();
+        }
+        if (window.System1Brain && typeof window.System1Brain.emitThought === 'function') {
+          const p = Array.isArray(window.PROSPECTS) ? window.PROSPECTS.find(item => item.id === selectedProspectId) : null;
+          const flaw = (p && p.flaws && p.flaws[0]) ? p.flaws[0] : 'mobile latency';
+          window.System1Brain.emitThought(`⚡ Stalled lead? Pitch their ${flaw} or tap [CALL NOW]!`, 4200);
+        }
+      }
+    }, 10000);
+  }
+
+  // Form Focus Silence
+  if (typeof document !== 'undefined') {
+    document.addEventListener('focusin', (e) => {
+      if (e.target && (e.target.id === 'callNotesInput' || e.target.id === 'queueSearchInput')) {
+        const statusEl = document.getElementById('astromechStatusText');
+        if (statusEl) statusEl.textContent = 'LOGGING';
+        if (window.System1Brain && typeof window.System1Brain.closeHUD === 'function') {
+          window.System1Brain.closeHUD();
+        }
+      }
+    });
+
+    document.addEventListener('focusout', (e) => {
+      if (e.target && (e.target.id === 'callNotesInput' || e.target.id === 'queueSearchInput')) {
+        const statusEl = document.getElementById('astromechStatusText');
+        if (statusEl && statusEl.textContent === 'LOGGING') {
+          statusEl.textContent = 'STANDBY';
+        }
+      }
+    });
+  }
+
+  if (typeof window !== 'undefined') {
+    window.triggerAstromechInteract = function() {
+      if (typeof window.SFX !== 'undefined' && typeof window.SFX.playThought === 'function') {
+        try { window.SFX.playThought(); } catch(err) {}
+      }
+      if (window.Player3D && typeof window.Player3D.curiousInspect === 'function') {
+        window.Player3D.curiousInspect();
+      }
+      const statusEl = document.getElementById('astromechStatusText');
+      if (statusEl) statusEl.textContent = 'CO-PILOT';
+      if (window.System1Brain && typeof window.System1Brain.emitThought === 'function') {
+        const tips = [
+          "💡 Astromech tip: Lead with mobile LCP latency or aggregator bleed.",
+          "🎯 Need rebuttal? Tap any objection button below to reveal tactical counters.",
+          "⚡ High-speed caller: 15% commission credited directly on verified deposit.",
+          "🛡️ DPDP Act 2023: Remind clients of statutory customer data penalties."
+        ];
+        const tip = tips[Math.floor(Math.random() * tips.length)];
+        window.System1Brain.emitThought(tip, 3500);
+      }
+    };
+  }
 }
 
 // -------------------------------------------------------------
@@ -5293,6 +5390,14 @@ function toggleObjection(index) {
     if (activeBtn) {
       activeBtn.className = "objection-btn text-left text-[10px] px-2 py-1 rounded-none bg-[#fce566] text-[#17120f] border-2 border-[#17120f] font-bold font-mono shadow-[1px_1px_0_#17120f] transition truncate";
     }
+    const statusEl = document.getElementById('astromechStatusText');
+    if (statusEl) statusEl.textContent = 'REBUTTAL';
+    if (window.System1Brain && typeof window.System1Brain.emitThought === 'function' && obj) {
+      window.System1Brain.emitThought(`💡 Rebuttal: "${obj.title}"`, 3600);
+    }
+    if (window.Player3D && typeof window.Player3D.nod === 'function') {
+      window.Player3D.nod();
+    }
   }
 }
 
@@ -5300,6 +5405,8 @@ function closeObjectionBox() {
   const box = document.getElementById('objectionBox');
   if (box) box.classList.add('hidden');
   activeObjectionIndex = null;
+  const statusEl = document.getElementById('astromechStatusText');
+  if (statusEl) statusEl.textContent = 'STANDBY';
   const btnObjs = [
     document.getElementById('btnObj0'),
     document.getElementById('btnObj1'),
