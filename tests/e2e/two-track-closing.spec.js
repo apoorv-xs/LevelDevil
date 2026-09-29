@@ -41,10 +41,13 @@ test.describe("Two-Track Deal Closing Engine & Sovereign Payment Terminal E2E", 
       await page.waitForTimeout(300);
     }
 
+    // Wait for lazy-loaded prospects to populate queue
+    await page.locator("#queueList > div").first().waitFor({ timeout: 10000 });
+
     // Connect call and choose Spoke to DM
     const callBtn = page.locator("#callActionBtn");
     await callBtn.click();
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(300);
 
     const btnReachDM = page.locator("#btnReachDM");
     await btnReachDM.click();
@@ -99,10 +102,13 @@ test.describe("Two-Track Deal Closing Engine & Sovereign Payment Terminal E2E", 
       await page.waitForTimeout(300);
     }
 
+    // Wait for lazy-loaded prospects to populate queue
+    await page.locator("#queueList > div").first().waitFor({ timeout: 10000 });
+
     // Connect call and choose Spoke to DM
     const callBtn = page.locator("#callActionBtn");
     await callBtn.click();
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(300);
 
     const btnReachDM = page.locator("#btnReachDM");
     await btnReachDM.click();

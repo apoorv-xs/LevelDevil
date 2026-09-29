@@ -1044,7 +1044,11 @@
             } else if (parseFloat(lcp) > 3.0) {
                 defectText = this.getDefectKnowledge("lcp");
             }
-            this.emitThought(defectText, 3200);
+            const isWs = (typeof window !== "undefined" && typeof window.getCurrentPage === "function" && window.getCurrentPage() === "workspace") ||
+                (typeof window !== "undefined" && window.location && window.location.pathname.includes("/workspace/"));
+            if (!isWs) {
+                this.emitThought(defectText, 3200);
+            }
 
             if (typeof window !== "undefined") {
                 const statusEl = document.getElementById("astromechStatusText");
@@ -1060,7 +1064,11 @@
             this.lastRadarTime = (typeof performance !== "undefined") ? performance.now() : Date.now();
             this.currentIntent = INTENTS.RADAR_SWEEP;
             const countText = count !== undefined ? `${count} targets` : "Radar active";
-            this.emitThought(`Radar: [${city || "All"}] ${countText}.`, 2500);
+            const isWs = (typeof window !== "undefined" && typeof window.getCurrentPage === "function" && window.getCurrentPage() === "workspace") ||
+                (typeof window !== "undefined" && window.location && window.location.pathname.includes("/workspace/"));
+            if (!isWs) {
+                this.emitThought(`Radar: [${city || "All"}] ${countText}.`, 2500);
+            }
 
             if (typeof window !== "undefined") {
                 const statusEl = document.getElementById("astromechStatusText");
@@ -1668,7 +1676,8 @@
                     this.emitThought("Milestone security & staged preview environments.", 3000);
                 }
             } else if (page === "workspace") {
-                this.emitThought("Client intelligence & live telemetry radar active.", 3000);
+                // Silenced on workspace: Caller needs focused concentration without recurring thought popups
+                return;
             }
         }
     };

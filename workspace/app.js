@@ -502,9 +502,12 @@ function calculateTiming(category) {
 // Authentication & Cryptographic Session Observer
 window.addEventListener('DOMContentLoaded', () => {
   initVercelAndPwaSync();
+  initPersistence();
 
   // 1. Automated test session check (Playwright / Vitest test runners)
-  const isTestMode = (typeof window !== 'undefined' && (window.__TEST_MODE__ || sessionStorage.getItem('sprintdial_test_mode') === 'true'));
+  const isTestMode = (typeof window !== 'undefined' && window.__TEST_MODE__) ||
+    (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('sprintdial_test_mode') === 'true') ||
+    (typeof localStorage !== 'undefined' && localStorage.getItem('sprintdial_test_mode') === 'true');
   const savedUser = localStorage.getItem('sprintdial_user') || localStorage.getItem('sprintdial_google_user');
 
   if (isTestMode && savedUser) {
@@ -1754,15 +1757,25 @@ async function ensureProspectsLoaded() {
       renderQueue();
       const initialId = PROSPECTS.find(p => p.id === "p-1")?.id || PROSPECTS[0]?.id;
       if (initialId) selectProspect(initialId);
+      updateProfileDropdownUI();
       return PROSPECTS;
     }
 
     // 1. Try Cloud Firestore (Spark Plan Free Tier) with real-time sync (skipped in test/mock mode)
-    const isTestMode = (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('sprintdial_test_mode') === 'true') || currentUser?.sub?.startsWith('mock');
+    const isTestMode = (typeof window !== 'undefined' && window.__TEST_MODE__) ||
+      (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('sprintdial_test_mode') === 'true') ||
+      (typeof localStorage !== 'undefined' && localStorage.getItem('sprintdial_test_mode') === 'true') ||
+      currentUser?.sub?.startsWith('mock');
     if (!isTestMode && window.SALES_PLATFORM_AUTH?.getFirestore && currentUser) {
       try {
-        const db = await window.SALES_PLATFORM_AUTH.getFirestore();
-        const snapshot = await db.collection('prospects').get();
+        const db = await Promise.race([
+          window.SALES_PLATFORM_AUTH.getFirestore(),
+          new Promise((_, rej) => setTimeout(() => rej(new Error('Firestore init timeout')), 1000))
+        ]);
+        const snapshot = await Promise.race([
+          db.collection('prospects').get(),
+          new Promise((_, rej) => setTimeout(() => rej(new Error('Firestore query timeout')), 1200))
+        ]);
         if (!snapshot.empty) {
           const firestoreList = [];
           snapshot.forEach(doc => firestoreList.push(doc.data()));
@@ -1819,6 +1832,7 @@ async function ensureProspectsLoaded() {
       renderQueue();
       const initialId = PROSPECTS.find(p => p.id === "p-1")?.id || PROSPECTS[0]?.id;
       if (initialId) selectProspect(initialId);
+      updateProfileDropdownUI();
       if (!isTestMode && window.SALES_PLATFORM_AUTH?.getFirestore && currentUser && isOwnerUser(currentUser)) {
         autoBootstrapFirestore(PROSPECTS);
       }
@@ -1918,46 +1932,7 @@ function initAstromechSentinel() {
   if (_astromechSentinelInitialized) return;
   _astromechSentinelInitialized = true;
 
-  let lastActivityTime = Date.now();
-  let inactivityAlerted = false;
-
-  const resetActivity = () => {
-    lastActivityTime = Date.now();
-    inactivityAlerted = false;
-  };
-
-  if (typeof window !== 'undefined') {
-    window.addEventListener('mousemove', resetActivity, { passive: true });
-    window.addEventListener('keydown', resetActivity, { passive: true });
-    window.addEventListener('click', resetActivity, { passive: true });
-  }
-
-  // Inactivity Sentinel Check (Every 10s)
-  if (typeof setInterval === 'function') {
-    setInterval(() => {
-      if (typeof window === 'undefined' || typeof document === 'undefined') return;
-      if (inactivityAlerted || isCallActive || !selectedProspectId) return;
-
-      // Suppress if typing in notes or search
-      const activeEl = document.activeElement;
-      if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) return;
-
-      const idleSeconds = (Date.now() - lastActivityTime) / 1000;
-      if (idleSeconds >= 45) {
-        inactivityAlerted = true;
-        const statusEl = document.getElementById('astromechStatusText');
-        if (statusEl) statusEl.textContent = 'ASSIST';
-        if (window.Player3D && typeof window.Player3D.curiousInspect === 'function') {
-          window.Player3D.curiousInspect();
-        }
-        if (window.System1Brain && typeof window.System1Brain.emitThought === 'function') {
-          const p = Array.isArray(window.PROSPECTS) ? window.PROSPECTS.find(item => item.id === selectedProspectId) : null;
-          const flaw = (p && p.flaws && p.flaws[0]) ? p.flaws[0] : 'mobile latency';
-          window.System1Brain.emitThought(`⚡ Stalled lead? Pitch their ${flaw} or tap [CALL NOW]!`, 4200);
-        }
-      }
-    }, 10000);
-  }
+  // Co-Pilot operates in passive telemetry standby mode without unsolicited popups.
 
   // Form Focus Silence
   if (typeof document !== 'undefined') {

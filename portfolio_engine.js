@@ -417,15 +417,15 @@ onLoad(() => {
             });
         } else if (page === "workspace") {
             // Astromech Perch Socket Mode: Single dedicated landing rail anchored in the topbar
-            const socketEl = document.querySelector('#astromechSocket') || document.querySelector('header.topbar');
-            if (socketEl) {
-                const r = socketEl.getBoundingClientRect();
+            const bayEl = document.querySelector('#astromechBay') || document.querySelector('#astromechSocket') || document.querySelector('header.topbar');
+            if (bayEl) {
+                const r = bayEl.getBoundingClientRect();
                 detected.push({
-                    xLeft: Math.round(r.left - 15),
-                    xRight: Math.round(r.right + 15),
-                    width: Math.round(r.width + 30),
-                    y: Math.round(r.bottom),
-                    domElement: socketEl,
+                    xLeft: Math.round(r.left - 10),
+                    xRight: Math.round(r.right + 10),
+                    width: Math.round(r.width + 20),
+                    y: Math.round(r.bottom + 6),
+                    domElement: bayEl,
                     trap: 'normal',
                     name: 'ASTROMECH_SOCKET_RAIL',
                     surface: 'bottom'
@@ -652,9 +652,10 @@ onLoad(() => {
         }
 
         if (page === "workspace" && targetEl && player) {
-            const r = targetEl.getBoundingClientRect();
+            const bayEl = document.querySelector('#astromechBay') || targetEl;
+            const r = bayEl.getBoundingClientRect();
             player.pos.x = Math.round(r.left + r.width / 2);
-            player.pos.y = Math.round(r.bottom + 12);
+            player.pos.y = Math.round(r.bottom + 6);
             player.vy = 0;
             if (player.vel) {
                 player.vel.x = 0;
@@ -905,11 +906,11 @@ onLoad(() => {
 
         // Astromech Perch Socket: On Workspace, keep BB-8 anchored cleanly in the topbar bay
         if (getCurrentPage() === "workspace" && player && !window.isAirborneGlide) {
-            const socketEl = document.querySelector('#astromechSocket') || document.querySelector('header.topbar');
-            if (socketEl) {
-                const r = socketEl.getBoundingClientRect();
+            const bayEl = document.querySelector('#astromechBay') || document.querySelector('#astromechSocket') || document.querySelector('header.topbar');
+            if (bayEl) {
+                const r = bayEl.getBoundingClientRect();
                 player.pos.x = Math.round(r.left + r.width / 2);
-                player.pos.y = Math.round(r.bottom + 12);
+                player.pos.y = Math.round(r.bottom + 6);
                 player.vy = 0;
                 if (player.vel) {
                     player.vel.x = 0;

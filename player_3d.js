@@ -705,7 +705,11 @@
             const scaleY = (guy.scale && guy.scale.y) ? guy.scale.y : 1.0;
             const scaleX = (guy.scale && guy.scale.x) ? Math.abs(guy.scale.x) : 1.0;
 
-            this.root.scale.set(scaleX, scaleY, 1.0);
+            const isWs = (typeof window !== "undefined" && typeof window.getCurrentPage === "function" && window.getCurrentPage() === "workspace") ||
+                (typeof window !== "undefined" && window.location && window.location.pathname.includes("/workspace/"));
+            const droidScaleMultiplier = isWs ? 0.40 : 1.0;
+
+            this.root.scale.set(scaleX * droidScaleMultiplier, scaleY * droidScaleMultiplier, 1.0 * droidScaleMultiplier);
 
             // 3. Movement & Rolling Ball Physics
             const t = (typeof time === "function") ? time() : performance.now() * 0.001;

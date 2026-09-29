@@ -27,7 +27,8 @@ test.describe("Workspace Profile Dropdown & Real-Time Sales Telemetry", () => {
 
     // Reload workspace to verify authenticated state
     await page.goto("/workspace/", { waitUntil: "domcontentloaded" });
-    await page.waitForTimeout(1200);
+    await page.locator("#queueList > div").first().waitFor({ timeout: 10000 });
+    await page.waitForTimeout(500);
 
     // Assert profile trigger is visible
     const trigger = page.locator("#userProfileTrigger");
