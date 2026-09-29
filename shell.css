@@ -662,8 +662,7 @@ body.has-session .admin-label-short {
 }
 
 @media (max-width: 1280px) {
-  .topbar-badge,
-  .altimeter-pill {
+  .topbar-badge {
     display: none !important;
   }
   .nav-label-full {
@@ -675,6 +674,9 @@ body.has-session .admin-label-short {
 }
 
 @media (max-width: 1100px) {
+  .altimeter-pill {
+    display: none !important;
+  }
   .topbar {
     padding: 0 14px;
   }
