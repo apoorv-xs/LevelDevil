@@ -697,7 +697,10 @@ onLoad(() => {
             const screenW = (typeof window !== "undefined") ? (window.innerWidth || 1200) : 1200;
             const minX = 40;
             const maxX = Math.max(minX, screenW - 40);
-            const desiredX = Math.round(r.left + Math.min(120, r.width / 2));
+            let desiredX = Math.round(r.left + Math.min(120, r.width / 2));
+            if (page === "workspace" && screenW <= 768) {
+                desiredX = Math.round(screenW - 48);
+            }
             player.pos.x = Math.max(minX, Math.min(maxX, desiredX));
             player.pos.y = targetY;
             player.vy = 0;

@@ -1207,6 +1207,9 @@ body.has-session .admin-label-short {
   #mobile-controls {
     display: flex;
   }
+  body.retro-workspace #mobile-controls {
+    display: none !important;
+  }
   #collision-editor-toggle-btn {
     display: none !important;
   }

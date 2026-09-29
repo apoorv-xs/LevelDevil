@@ -1352,20 +1352,20 @@
             <div id="callWrapCard" class="border-2 border-[#17120f] bg-[#fffdf1] p-2.5 shadow-[2px_2px_0_#17120f] space-y-2 transition-all">
               
               <!-- Flight Status & Live Telemetry Banner -->
-              <div class="flex items-center justify-between border-b border-[#17120f]/20 pb-1.5">
-                <div class="flex items-center gap-2">
-                  <span id="callFlightBadge" class="px-2 py-0.5 font-arcade text-[9px] font-bold border border-[#17120f] bg-[#fff3cd] text-[#856404] shadow-[1px_1px_0_#17120f] flex items-center gap-1.5">
+              <div class="flex items-center justify-between border-b border-[#17120f]/20 pb-1.5 flex-wrap gap-1.5">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span id="callFlightBadge" class="px-2 py-0.5 font-arcade text-[9px] font-bold border border-[#17120f] bg-[#fff3cd] text-[#856404] shadow-[1px_1px_0_#17120f] flex items-center gap-1.5 whitespace-nowrap">
                     <span id="callFlightDot" class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>
                     <span id="callFlightStatusText">READY TO DIAL</span>
                   </span>
                   <!-- Active Stopwatch Display -->
-                  <div id="callTimerBox" class="hidden items-center gap-1.5 px-2 py-0.5 font-mono text-[9px] font-bold bg-[#17120f] text-[#fce566] border border-[#17120f] shadow-[1px_1px_0_#17120f]">
+                  <div id="callTimerBox" class="hidden items-center gap-1.5 px-2 py-0.5 font-mono text-[9px] font-bold bg-[#17120f] text-[#fce566] border border-[#17120f] shadow-[1px_1px_0_#17120f] whitespace-nowrap">
                     <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
                     <span id="callTimerDigits">00:00</span>
                   </div>
                 </div>
-                <button type="button" id="btnCancelDial" onclick="cancelActiveDial()" class="hidden px-2 py-0.5 text-[9px] font-mono font-bold text-rose-700 hover:text-white hover:bg-rose-700 border border-dashed border-rose-500 transition items-center gap-1">
-                  <span>↩</span> <span>Cancel Dial (Misclick)</span>
+                <button type="button" id="btnCancelDial" onclick="cancelActiveDial()" class="hidden px-2 py-0.5 text-[9px] font-mono font-bold text-rose-700 hover:text-white hover:bg-rose-700 border border-dashed border-rose-500 transition items-center gap-1 shrink-0" title="Cancel Dial (Misclick)">
+                  <span>↩</span> <span>Cancel Dial</span>
                 </button>
               </div>
 
@@ -1427,19 +1427,19 @@
                   <span class="text-[8px] font-mono text-[#17120f]/60">1-tap appends to notes</span>
                 </div>
                 <div class="flex flex-wrap gap-1">
-                  <button type="button" onclick="appendNoteTag('In Consultations')" class="px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
+                  <button type="button" onclick="appendNoteTag('In Consultations')" class="quick-tag-chip px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
                     + In Consultations
                   </button>
-                  <button type="button" onclick="appendNoteTag('Asked for WhatsApp')" class="px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
+                  <button type="button" onclick="appendNoteTag('Asked for WhatsApp')" class="quick-tag-chip px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
                     + Asked for WhatsApp
                   </button>
-                  <button type="button" onclick="appendNoteTag('Uses WordPress')" class="px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
+                  <button type="button" onclick="appendNoteTag('Uses WordPress')" class="quick-tag-chip px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
                     + Uses WordPress
                   </button>
-                  <button type="button" onclick="appendNoteTag('Decision Next Month')" class="px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
+                  <button type="button" onclick="appendNoteTag('Decision Next Month')" class="quick-tag-chip px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
                     + Decision Next Month
                   </button>
-                  <button type="button" onclick="appendNoteTag('Follow Up Tomorrow')" class="px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
+                  <button type="button" onclick="appendNoteTag('Follow Up Tomorrow')" class="quick-tag-chip px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
                     + Follow Up Tomorrow
                   </button>
                 </div>
