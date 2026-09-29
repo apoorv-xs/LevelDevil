@@ -1743,21 +1743,18 @@ function initFirestoreRealtimeListener(db) {
 }
 
 async function ensureProspectsLoaded() {
+  if (PROSPECTS && PROSPECTS.length > 0) return Promise.resolve(PROSPECTS);
   if (prospectsLoadPromise) return prospectsLoadPromise;
   prospectsLoadPromise = (async () => {
-    // 0. Synchronous dataset check (if loaded via static script tag)
+    // 0. Synchronous dataset check (if loaded via static script tag or already in window)
     if (typeof window !== 'undefined' && window.DEFAULT_PROSPECTS && window.DEFAULT_PROSPECTS.length) {
-      if (!PROSPECTS || !PROSPECTS.length) {
-        PROSPECTS = [...window.DEFAULT_PROSPECTS];
-      }
-    }
-
-    if (PROSPECTS && PROSPECTS.length) {
+      PROSPECTS = [...window.DEFAULT_PROSPECTS];
+      window.PROSPECTS = PROSPECTS;
       initPersistence();
       renderQueue();
       const initialId = PROSPECTS.find(p => p.id === "p-1")?.id || PROSPECTS[0]?.id;
       if (initialId) selectProspect(initialId);
-      return;
+      return PROSPECTS;
     }
 
     // 1. Try Cloud Firestore (Spark Plan Free Tier) with real-time sync (skipped in test/mock mode)
@@ -1771,6 +1768,7 @@ async function ensureProspectsLoaded() {
           snapshot.forEach(doc => firestoreList.push(doc.data()));
           if (firestoreList.length > 0) {
             PROSPECTS = firestoreList;
+            window.PROSPECTS = PROSPECTS;
             initPersistence();
             renderQueue();
             const initialId = PROSPECTS.find(p => p.id === "p-1")?.id || PROSPECTS[0]?.id;
@@ -1781,7 +1779,7 @@ async function ensureProspectsLoaded() {
               badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold";
               badge.innerText = `● Cloud Firestore Active (${PROSPECTS.length})`;
             }
-            return;
+            return PROSPECTS;
           }
         }
       } catch (fsErr) {
@@ -1789,50 +1787,21 @@ async function ensureProspectsLoaded() {
       }
     }
 
-    // 2. Try secure API fetch with authenticated bearer token / session
-    try {
-      const headers = { 'Content-Type': 'application/json' };
-      const token = currentUser?.callerToken || (currentUser?.role === 'owner' ? 'owner-session' : '');
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-
-      const res = await fetch('/api/workspace/prospects', { headers });
-      if (res.ok) {
-        const body = await res.json();
-        if (body?.data?.prospects && Array.isArray(body.data.prospects) && body.data.prospects.length > 0) {
-          PROSPECTS = body.data.prospects;
-          if (body?.data?.custom && Array.isArray(body.data.custom)) {
-            window.CUSTOM_PROSPECTS = body.data.custom;
-          }
-          initPersistence();
-          renderQueue();
-          const initialId = PROSPECTS.find(p => p.id === "p-1")?.id || PROSPECTS[0]?.id;
-          if (initialId) selectProspect(initialId);
-          // Autonomous Cloud Auto-Seed: If Firestore was empty and verified owner is logged in, seed silently!
-          if (!isTestMode && window.SALES_PLATFORM_AUTH?.getFirestore && currentUser && isOwnerUser(currentUser)) {
-            autoBootstrapFirestore(PROSPECTS);
-          }
-          return;
-        }
-      }
-    } catch (e) {
-      console.warn('API prospects fetch unavailable, trying local fallback:', e);
-    }
-
+    // 2. Local Script Fallback (Dynamic Lazy Load for Verified Users)
     const loadScript = (src) => new Promise((resolve, reject) => {
       const s = document.createElement('script');
       s.src = src;
-      s.onload = resolve;
-      s.onerror = reject;
+      s.onload = () => resolve();
+      s.onerror = (e) => reject(e);
       document.body.appendChild(s);
     });
 
-    if (typeof window !== 'undefined' && window.DEFAULT_PROSPECTS && window.DEFAULT_PROSPECTS.length) {
-      PROSPECTS = [...window.DEFAULT_PROSPECTS];
-    } else {
+    if (!PROSPECTS || !PROSPECTS.length) {
       try {
-        await loadScript('prospects_data.js').catch(() => loadScript('/workspace/prospects_data.js'));
+        await loadScript('/workspace/prospects_data.js').catch(() => loadScript('prospects_data.js'));
         if (typeof window !== 'undefined' && window.DEFAULT_PROSPECTS) {
           PROSPECTS = [...window.DEFAULT_PROSPECTS];
+          window.PROSPECTS = PROSPECTS;
         }
       } catch(err) {
         console.warn('Unable to load prospects dataset', err);
@@ -1841,17 +1810,21 @@ async function ensureProspectsLoaded() {
 
     if (!window.CUSTOM_PROSPECTS) {
       try {
-        await loadScript('custom_prospects.js').catch(() => loadScript('/workspace/custom_prospects.js'));
+        await loadScript('/workspace/custom_prospects.js').catch(() => loadScript('custom_prospects.js'));
       } catch(e) {}
     }
 
-    initPersistence();
-    renderQueue();
-    const initialId = PROSPECTS.find(p => p.id === "p-1")?.id || PROSPECTS[0]?.id;
-    if (initialId) selectProspect(initialId);
-    // Autonomous Cloud Auto-Seed: If Firestore was empty and verified owner is logged in, seed silently!
-    if (!isTestMode && window.SALES_PLATFORM_AUTH?.getFirestore && currentUser && isOwnerUser(currentUser)) {
-      autoBootstrapFirestore(PROSPECTS);
+    if (PROSPECTS && PROSPECTS.length) {
+      initPersistence();
+      renderQueue();
+      const initialId = PROSPECTS.find(p => p.id === "p-1")?.id || PROSPECTS[0]?.id;
+      if (initialId) selectProspect(initialId);
+      if (!isTestMode && window.SALES_PLATFORM_AUTH?.getFirestore && currentUser && isOwnerUser(currentUser)) {
+        autoBootstrapFirestore(PROSPECTS);
+      }
+      return PROSPECTS;
+    } else {
+      prospectsLoadPromise = null;
     }
   })();
   return prospectsLoadPromise;
@@ -3186,6 +3159,7 @@ function pingTourTarget() {
 
 function openWorkspaceTour(stepIndex = 0) {
   currentWorkspaceTourStep = Math.max(0, Math.min(stepIndex, WORKSPACE_TOUR_STEPS.length - 1));
+  currentTourDeviceTab = (typeof window !== 'undefined' && window.innerWidth < 1024) ? 'mob' : 'desk';
   const modal = document.getElementById('workspaceTourModal');
   if (!modal) return;
 
@@ -3342,9 +3316,13 @@ function updateTourInstructionsUI() {
   }
   if (laptopList) {
     laptopList.innerHTML = step.laptop.map(item => `<div>${item}</div>`).join('');
+    if (isDesk) laptopList.classList.remove('hidden');
+    else laptopList.classList.add('hidden');
   }
   if (mobileList) {
     mobileList.innerHTML = step.mobile.map(item => `<div>${item}</div>`).join('');
+    if (!isDesk) mobileList.classList.remove('hidden');
+    else mobileList.classList.add('hidden');
   }
 }
 
@@ -8806,6 +8784,7 @@ if (typeof window !== 'undefined') {
   window.copyTeardownLink = copyTeardownLink;
   window.previewTeardownPage = previewTeardownPage;
   window.sendWhatsAppTeardown = sendWhatsAppTeardown;
+  window.ensureProspectsLoaded = ensureProspectsLoaded;
 }
 if (typeof global !== 'undefined') {
   global.isInstallAppEligible = isInstallAppEligible;
@@ -8821,6 +8800,7 @@ if (typeof global !== 'undefined') {
   global.closeClientTeardownModal = closeClientTeardownModal;
   global.copyTeardownLink = copyTeardownLink;
   global.previewTeardownPage = previewTeardownPage;
+  global.ensureProspectsLoaded = ensureProspectsLoaded;
   global.sendWhatsAppTeardown = sendWhatsAppTeardown;
 }
 

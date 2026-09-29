@@ -134,8 +134,8 @@ test.describe("Subsystem 21: Workstation Guided Walkthrough Overlay E2E", () => 
     await expect(tourModal).toBeVisible();
     await expect(page.locator("#tourStepTitle")).toContainText("Territory Queue");
 
-    // Click Skip to close
-    const skipBtn = page.locator("#workspaceTourModal button", { hasText: "✕ SKIP" });
+    // Click Skip or Close to dismiss
+    const skipBtn = page.locator("#tourBtnSkip, #workspaceTourModal button:has-text('[X] CLOSE'), #workspaceTourModal button:has-text('SKIP')").first();
     await skipBtn.click();
     await expect(tourModal).toBeHidden();
   });

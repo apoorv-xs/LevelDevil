@@ -3751,7 +3751,7 @@
           <div id="tourStepDots" class="flex items-center gap-1 mr-1">
             <!-- 5 dots populated dynamically -->
           </div>
-          <button type="button" onclick="closeWorkspaceTour(true)" class="px-1.5 py-0.5 bg-transparent hover:bg-white/20 text-[#fce566] text-[8px] font-arcade border border-[#fce566]/40 transition cursor-pointer" title="Exit Walkthrough">
+          <button type="button" id="tourBtnSkip" onclick="closeWorkspaceTour(true)" class="px-1.5 py-0.5 bg-transparent hover:bg-white/20 text-[#fce566] text-[8px] font-arcade border border-[#fce566]/40 transition cursor-pointer" title="Exit Walkthrough">
             [X] CLOSE
           </button>
         </div>
@@ -3865,8 +3865,6 @@
 
   <script src="/sales-config.js"></script>
   <script src="/sales-auth.js"></script>
-  <script src="prospects_data.js"></script>
-  <script src="custom_prospects.js"></script>
   <script src="objections.js"></script>
   <script src="brain_studio.js"></script>
   <script src="app.js"></script>
