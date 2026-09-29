@@ -620,6 +620,38 @@
       color: #17120f !important;
     }
 
+    /* Owner Fleet Intelligence & Leak Radar Strip */
+    .retro-workspace #ownerFleetSummaryStrip {
+      background: #17120f !important;
+      color: #fffdf1 !important;
+      border: 2px solid #17120f !important;
+    }
+    .retro-workspace #ownerFleetSummaryStrip span {
+      color: #fce566 !important;
+    }
+    .retro-workspace #ownerFleetSummaryStrip #ownerActivePartnersCount {
+      color: #ffffff !important;
+    }
+    .retro-workspace #ownerLeakRadarBadge {
+      color: #86efac !important;
+      background: #022c22 !important;
+      border-color: #22c55e !important;
+    }
+
+    /* Owner Surveillance Audit Trail Badges */
+    .retro-workspace #ownerAuditTrailList .font-arcade {
+      color: #fce566 !important;
+      background: #17120f !important;
+    }
+    .retro-workspace #ownerAuditTrailList [style*="background: #17120f"],
+    .retro-workspace #ownerAuditTrailList [style*="background:#17120f"] {
+      color: #fce566 !important;
+    }
+    .retro-workspace #ownerAuditTrailList [style*="background: #721c24"],
+    .retro-workspace #ownerAuditTrailList [style*="background:#721c24"] {
+      color: #ffffff !important;
+    }
+
     /* Mobile Bars */
     .retro-workspace .md\:hidden.fixed.bottom-0 {
       background: var(--paper) !important;
@@ -1012,10 +1044,13 @@
             </div>
 
             <!-- Owner Fleet Intelligence & Leak Radar Summary Strip (Strictly for Owner) -->
-            <div id="ownerFleetSummaryStrip" class="hidden p-2 bg-[#17120f] text-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1">
-              <div class="flex items-center justify-between text-[9px] font-arcade">
-                <span class="text-[#fce566] flex items-center gap-1"><span>👥</span><span>ACTIVE PARTNERS:</span> <span id="ownerActivePartnersCount" class="font-mono font-bold text-white">0</span></span>
-                <span id="ownerLeakRadarBadge" class="px-1.5 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 font-mono text-[8px] font-bold">0 LEAK ALERTS</span>
+            <div id="ownerFleetSummaryStrip" class="hidden p-2.5 bg-[#17120f] text-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1" style="background: #17120f !important; color: #fffdf1 !important;">
+              <div class="flex items-center justify-between text-[10px] font-arcade">
+                <span class="flex items-center gap-1.5 font-bold" style="color: #fce566 !important;">
+                  <span>👥</span><span>ACTIVE PARTNERS:</span>
+                  <span id="ownerActivePartnersCount" class="font-mono font-bold px-1.5 py-0.5 rounded bg-white/20" style="color: #ffffff !important;">0</span>
+                </span>
+                <span id="ownerLeakRadarBadge" class="px-2 py-0.5 border font-mono text-[9px] font-bold" style="color: #86efac !important; background: #022c22 !important; border-color: #22c55e !important;">🟢 0 LEAK ALERTS</span>
               </div>
             </div>
 

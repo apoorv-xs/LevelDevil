@@ -1943,7 +1943,9 @@ const AUDIT_LOG_KEY = 'sprintdial_audit_log';
 function getAuditLogs() {
   try {
     const raw = localStorage.getItem(AUDIT_LOG_KEY);
-    return raw ? JSON.parse(raw) : [];
+    const parsed = raw ? JSON.parse(raw) : [];
+    // Strictly filter out owner account records from partner surveillance
+    return parsed.filter(l => !l.isOwner && !isApoorvOwnerEmail(l.callerEmail));
   } catch (e) {
     console.warn('[Surveillance] Failed to read audit logs:', e);
     return [];
@@ -1978,7 +1980,9 @@ function recordPartnerActivity(actionType, prospectId, details = {}) {
         : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
     const isOwner = isOwnerUser(user);
     const callerEmail = user?.email || 'guest-caller@internal';
-    const callerName = user?.name || user?.displayName || 'Partner Rep';
+    const callerName = user?.displayName || user?.name || (user?.email && !user.email.includes('internal')
+      ? user.email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+      : 'Partner Rep');
 
     const p = prospectId ? (typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS) ? PROSPECTS.find(item => item.id === prospectId) : null) : null;
     const prospectName = p?.name || details?.client || details?.prospectName || 'Workspace Queue';
@@ -2071,18 +2075,20 @@ function recordPartnerActivity(actionType, prospectId, details = {}) {
       details
     };
 
-    const logs = getAuditLogs();
-    logs.unshift(entry);
-    if (logs.length > 200) logs.length = 200;
-    saveAuditLogs(logs);
+    if (!isOwner) {
+      const logs = getAuditLogs();
+      logs.unshift(entry);
+      if (logs.length > 200) logs.length = 200;
+      saveAuditLogs(logs);
 
-    // Concurrency Broadcast across tabs
-    try {
-      if (typeof syncChannel !== 'undefined' && syncChannel && typeof syncChannel.postMessage === 'function') {
-        syncChannel.postMessage({ type: 'PARTNER_AUDIT_ACTIVITY', entry });
+      // Concurrency Broadcast across tabs
+      try {
+        if (typeof syncChannel !== 'undefined' && syncChannel && typeof syncChannel.postMessage === 'function') {
+          syncChannel.postMessage({ type: 'PARTNER_AUDIT_ACTIVITY', entry });
+        }
+      } catch (bcErr) {
+        console.warn('[Surveillance] Broadcast error:', bcErr);
       }
-    } catch (bcErr) {
-      console.warn('[Surveillance] Broadcast error:', bcErr);
     }
 
     // Backup to Cloud Firestore if active
@@ -2412,27 +2418,33 @@ function updateProfileDropdownUI() {
     const trailListEl = document.getElementById('ownerAuditTrailList');
     if (trailListEl) {
       trailListEl.innerHTML = '';
-      if (!logs || logs.length === 0) {
-        trailListEl.innerHTML = `<div class="p-1.5 bg-[#17120f]/5 border border-[#17120f]/10 text-neutral-500 text-[9px] italic">🟢 All clear. Real-time surveillance radar active — tracking partner lead recon & pitch activity.</div>`;
+      const partnerLogs = (logs || []).filter(l => !l.isOwner && !isApoorvOwnerEmail(l.callerEmail));
+      if (!partnerLogs || partnerLogs.length === 0) {
+        trailListEl.innerHTML = `<div class="p-2 bg-[#fffdf1] border border-[#17120f]/20 text-neutral-600 text-[10px] font-mono leading-relaxed" style="color: #17120f !important;"><span class="font-bold text-emerald-800">🟢 Live Radar Active:</span> No external partner activity logged yet. All actions from partners will appear here in real-time.</div>`;
       } else {
-        const recent = logs.slice(0, 5);
+        const recent = partnerLogs.slice(0, 5);
         recent.forEach(item => {
           const div = document.createElement('div');
           div.className = item.isRisk
-            ? 'p-1.5 bg-[#f8d7da] border border-[#721c24] text-[#721c24] space-y-0.5'
-            : 'p-1.5 bg-[#fffdf1] border border-[#17120f]/30 text-[#17120f] space-y-0.5';
+            ? 'p-2 bg-[#f8d7da] border-2 border-[#721c24] text-[#721c24] space-y-1 shadow-[1px_1px_0_#721c24]'
+            : 'p-2 bg-[#fffdf1] border-2 border-[#17120f]/30 text-[#17120f] space-y-1 shadow-[1px_1px_0_#17120f]';
 
           const timeAgo = formatTimeAgo(item.timestamp);
-          const callerDisplay = item.callerEmail || item.callerName || 'Partner';
+          // Prioritize human name over email
+          const callerDisplay = item.callerName && item.callerName !== 'Partner Rep' && item.callerName !== 'Caller'
+            ? item.callerName
+            : (item.callerEmail && !item.callerEmail.includes('internal')
+                ? item.callerEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+                : (item.callerName || 'Outreach Partner'));
 
           div.innerHTML = `
-            <div class="flex items-center justify-between text-[8px] font-bold">
-              <span class="truncate max-w-[170px]">${item.isRisk ? '🚨 ' : ''}${escapeHTML(callerDisplay)}</span>
-              <span class="font-mono text-neutral-500">${timeAgo}</span>
+            <div class="flex items-center justify-between text-[10px] font-bold">
+              <span class="truncate max-w-[170px]" style="color: #17120f !important;">${item.isRisk ? '🚨 ' : '👤 '}${escapeHTML(callerDisplay)}</span>
+              <span class="font-mono text-neutral-600 text-[9px]">${timeAgo}</span>
             </div>
-            <div class="flex items-center gap-1">
-              <span class="text-[7px] font-arcade px-1 py-0.2 ${item.isRisk ? 'bg-[#721c24] text-white' : 'bg-[#17120f] text-[#fce566]'}">${escapeHTML(item.riskBadge || item.actionType)}</span>
-              <span class="text-[9px] font-mono truncate font-semibold text-[#17120f]">${escapeHTML(item.prospectName || 'Queue')}</span>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span class="text-[8px] font-arcade px-1.5 py-0.5 border border-[#17120f] font-bold shrink-0" style="${item.isRisk ? 'background: #721c24 !important; color: #ffffff !important;' : 'background: #17120f !important; color: #fce566 !important;'}">${escapeHTML(item.riskBadge || item.actionType)}</span>
+              <span class="text-[11px] font-mono truncate font-semibold" style="color: #17120f !important;">${escapeHTML(item.prospectName || 'Queue')}</span>
             </div>
           `;
           trailListEl.appendChild(div);
