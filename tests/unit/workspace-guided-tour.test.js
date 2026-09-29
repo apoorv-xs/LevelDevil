@@ -28,8 +28,14 @@ describe("Subsystem 21: Interactive Workstation Guided Walkthrough Overlay (Mobi
       tourVisualBox: { textContent: "" },
       tourStepTitle: { textContent: "" },
       tourStepSummary: { textContent: "" },
-      tourLaptopInstructions: { innerHTML: "" },
-      tourMobileInstructions: { innerHTML: "" },
+      tourLaptopInstructions: {
+        innerHTML: "",
+        classList: { add: vi.fn(), remove: vi.fn(), contains: vi.fn() }
+      },
+      tourMobileInstructions: {
+        innerHTML: "",
+        classList: { add: vi.fn(), remove: vi.fn(), contains: vi.fn() }
+      },
       tourProTipText: { textContent: "" },
       tourBtnPrev: {
         classList: {

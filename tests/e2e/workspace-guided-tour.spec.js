@@ -37,11 +37,12 @@ test.describe("Subsystem 21: Workstation Guided Walkthrough Overlay E2E", () => 
       await page.waitForTimeout(300);
     }
 
-    // Topbar tour button should be visible
-    const tourBtn = page.locator("#btnWorkspaceTour");
-    await expect(tourBtn).toBeVisible();
+    // Open profile dropdown and launch tour
+    const profileTrigger = page.locator("#userProfileTrigger");
+    await profileTrigger.click();
 
-    // Click to open tour
+    const tourBtn = page.locator("#btnDropdownTour");
+    await expect(tourBtn).toBeVisible();
     await tourBtn.click();
 
     const tourModal = page.locator("#workspaceTourModal");

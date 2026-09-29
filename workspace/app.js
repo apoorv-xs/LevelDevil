@@ -3316,13 +3316,17 @@ function updateTourInstructionsUI() {
   }
   if (laptopList) {
     laptopList.innerHTML = step.laptop.map(item => `<div>${item}</div>`).join('');
-    if (isDesk) laptopList.classList.remove('hidden');
-    else laptopList.classList.add('hidden');
+    if (laptopList.classList) {
+      if (isDesk) laptopList.classList.remove('hidden');
+      else laptopList.classList.add('hidden');
+    }
   }
   if (mobileList) {
     mobileList.innerHTML = step.mobile.map(item => `<div>${item}</div>`).join('');
-    if (!isDesk) mobileList.classList.remove('hidden');
-    else mobileList.classList.add('hidden');
+    if (mobileList.classList) {
+      if (!isDesk) mobileList.classList.remove('hidden');
+      else mobileList.classList.add('hidden');
+    }
   }
 }
 

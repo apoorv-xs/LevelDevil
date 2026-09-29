@@ -972,12 +972,6 @@
         <span><span id="live-fps">60.0</span> FPS</span>
       </div>
 
-      <!-- Interactive BB-8 Co-Pilot Tour Trigger -->
-      <button id="btnBB8Guide" class="topbar-btn guide-btn" onclick="window.System1Brain?.showGuidanceHUD?.()" aria-label="Summon BB-8 Guide" title="Summon BB-8 Guide">[ ◈<span class="guide-label hidden xl:inline"> GUIDE</span> ]</button>
-
-      <!-- Workstation Guided Tour Trigger -->
-      <button id="btnWorkspaceTour" class="topbar-btn tour-btn hide-mobile" onclick="openWorkspaceTour(0)" aria-label="Workstation Guided Tour" title="Workstation Tour & Caller Flight Manual">[ ▷<span class="tour-label hidden lg:inline"> TOUR</span> ]</button>
-
       <!-- Audio SFX Toggle -->
       <button id="sfx-toggle-btn" class="topbar-btn sfx-btn" aria-label="Toggle Sound Effects" title="Toggle Sound Effects">[ AUDIO<span class="sfx-label hidden xl:inline"> // ON</span> ]</button>
 
@@ -1136,9 +1130,14 @@
               </div>
             </div>
 
-            <!-- Workstation Guided Tour Launcher -->
-            <button id="btnDropdownTour" type="button" onclick="closeProfileDropdown(); openWorkspaceTour(0);" title="Re-launch interactive 5-step workstation tour" class="w-full px-2 py-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[10px] font-bold flex items-center justify-center gap-1.5 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
-              <span>[DIR]</span> <span>WORKSTATION TOUR &amp; GUIDE</span>
+            <!-- Workstation Guided Tour Launcher (Consolidated into Profile) -->
+            <button id="btnDropdownTour" type="button" onclick="closeProfileDropdown(); openWorkspaceTour(0);" title="Re-launch interactive 5-step workstation tour" class="w-full px-2 py-1.5 bg-[#fce566] hover:bg-[#ffe040] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[10px] font-bold flex items-center justify-center gap-1.5 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
+              <span>[ ▷ ]</span> <span>WORKSTATION TOUR &amp; GUIDE</span>
+            </button>
+
+            <!-- Interactive BB-8 Co-Pilot Summon (Moved from topbar to profile) -->
+            <button id="btnBB8Guide" type="button" onclick="closeProfileDropdown(); window.System1Brain?.showGuidanceHUD?.();" title="Summon BB-8 Astromech Co-Pilot" class="w-full px-2 py-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[10px] font-bold flex items-center justify-center gap-1.5 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
+              <span>[ ◈ ]</span> <span>SUMMON BB-8 CO-PILOT</span>
             </button>
 
             <!-- Install Mobile App in Dropdown (Visible when verified) -->
