@@ -2845,7 +2845,7 @@ const WORKSPACE_TOUR_STEPS = [
       "• <strong>Rapid Navigation:</strong> Press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>J</kbd> (Next Lead) and <kbd class='px-1 bg-[#17120f] text-[#fce566]'>K</kbd> (Prev Lead)."
     ],
     mobile: [
-      "• <strong>Bottom Tab:</strong> Tap <span class='font-bold text-neutral-900'>[📋 QUEUE]</span> to browse leads on mobile.",
+      "• <strong>Bottom Tab:</strong> Tap <span class='font-bold text-neutral-900'>[QUEUE]</span> to browse leads on mobile.",
       "• <strong>Urgency Sorting:</strong> Pulsating [ZOMBIE >48H] (>48h) and [OVERDUE] (24-48h) badges float to the top.",
       "• <strong>Single Tap:</strong> Tap any prospect card to load their full dossier into active cockpit memory."
     ],
@@ -2863,18 +2863,18 @@ const WORKSPACE_TOUR_STEPS = [
     summary: 'Every prospect comes pre-audited with empirical mobile 4G latency, estimated revenue drop-off, third-party aggregator bleed, and DPDP Act legal compliance.',
     visual: `┌── CLIENT AUDIT DOSSIER ─────────────────────────┐
 │ TARGET: Malabar Heritage Grand Villa (Wayanad)  │
-│ MOBILE LCP : 4.8s 🔴 [CRITICAL 4G SPEED DEFICIT]│
+│ MOBILE LCP : 4.8s [CRITICAL 4G SPEED DEFICIT]   │
 │ AGGREGATOR : ₹48,000/yr BLEED (MakeMyTrip/OTA) │
-│ DPDP 2023  : ⚠️ NON-COMPLIANT (Statutory Penalty)│
+│ DPDP 2023  : [!] NON-COMPLIANT (Statutory Pen)  │
 │ PROPOSAL   : ₹50,000 Turnkey WebGPU Spatial Core│
 └─────────────────────────────────────────────────┘`,
     laptop: [
       "• <strong>Center Dossier:</strong> Inspect empirical Lighthouse speed scores, tech stack, and decision maker names.",
-      "• <strong>Layman Analogies:</strong> Click <span class='font-bold text-neutral-900'>[💡 LAYMAN ANALOGIES]</span> for instant client-friendly metaphors that simplify WebGPU/60 FPS value.",
+      "• <strong>Layman Analogies:</strong> Click <span class='font-bold text-neutral-900'>[INTEL] LAYMAN ANALOGIES</span> for instant client-friendly metaphors that simplify WebGPU/60 FPS value.",
       "• <strong>Revenue Leak Hook:</strong> Quote their exact monthly aggregator bleed to anchor our ₹50k–₹2L package."
     ],
     mobile: [
-      "• <strong>Bottom Tab:</strong> Tap <span class='font-bold text-neutral-900'>[📊 DOSSIER]</span> before dialing to review technical leaks.",
+      "• <strong>Bottom Tab:</strong> Tap <span class='font-bold text-neutral-900'>[DOSSIER]</span> before dialing to review technical leaks.",
       "• <strong>Quick Hook:</strong> Open with: <em>'Apoorv noted your mobile site takes 4.8s on 4G, causing significant drop-off...'</em>",
       "• <strong>One-Thumb Reading:</strong> Dossier adapts with high-contrast text optimized for outdoor mobile calling."
     ],
@@ -2891,21 +2891,21 @@ const WORKSPACE_TOUR_STEPS = [
     title: '3. In-Call Flight HUD & Mandatory Dispositions',
     summary: 'Dialing starts an active stopwatch. To prevent lost data or skipping callbacks, active calls must be dispositioned through a guided 2-step gate.',
     visual: `┌── IN-CALL FLIGHT HUD ───────────────────────────┐
-│ 🔴 LIVE DIAL [ ⏱️ 02:15 ]  [ ↩ CANCEL (MISCLICK) ]│
+│ [LIVE DIAL] [ 02:15 ]  [ ↩ CANCEL (MISCLICK) ]  │
 │ STEP 1: [● Spoke to DM] [▲ Gatekeeper] [⚪ No Ans]│
-│ STEP 2: [🏆 BOOKED] [🔗 TEARDOWN] [📅 CALLBACK]  │
+│ STEP 2: [WIN: BOOKED] [TEARDOWN] [CALLBACK]     │
 │ TAGS  : [+ Asked WhatsApp] [+ In Consultations] │
 └─────────────────────────────────────────────────┘`,
     laptop: [
-      "• <strong>Start Call:</strong> Click <span class='font-bold text-neutral-900'>[📞 CALL (TEL)]</span> or press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>D</kbd> to launch live flight HUD & stopwatch.",
+      "• <strong>Start Call:</strong> Click <span class='font-bold text-neutral-900'>[CALL (TEL)]</span> or press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>D</kbd> to launch live flight HUD & stopwatch.",
       "• <strong>Misclick Safe:</strong> Accidental click? Hit <span class='font-bold text-rose-700'>[ ↩ Cancel Dial ]</span> to reset immediately.",
       "• <strong>Step 1 & Step 2 Gate:</strong> Pick Reach Status (DM / Gatekeeper / No Answer), then choose dynamic Outcome.",
       "• <strong>1-Tap Tags:</strong> Click quick tags to append notes without typing. Press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>Space</kbd> to save & advance."
     ],
     mobile: [
-      "• <strong>Bottom Tab:</strong> Stay on <span class='font-bold text-neutral-900'>[🎯 COCKPIT]</span> during live calls.",
+      "• <strong>Bottom Tab:</strong> Stay on <span class='font-bold text-neutral-900'>[COCKPIT]</span> during live calls.",
       "• <strong>Touch-Safe Ergonomics:</strong> Large 44px buttons prevent misclicks while walking or holding a phone.",
-      "• <strong>1-Tap Nudge:</strong> If prospect asks for details, hit <span class='font-bold text-neutral-900'>[💬 1-TAP NUDGE]</span> to send the performance audit on WhatsApp!"
+      "• <strong>1-Tap Nudge:</strong> If prospect asks for details, hit <span class='font-bold text-neutral-900'>[NUDGE] 1-TAP WHATSAPP</span> to send the performance audit on WhatsApp!"
     ],
     proTip: "The cockpit locks lead navigation while a call is active so you never lose call notes or forget to schedule a callback."
   },
@@ -2920,15 +2920,15 @@ const WORKSPACE_TOUR_STEPS = [
     title: '4. Two-Track Deal Closing & Sovereign Payment Terminal',
     summary: 'Strike while the iron is hot. Close deals autonomously on the spot for a 15% commission, or escalate enterprise walkthroughs to Apoorv for a 10% safety net.',
     visual: `┌── TWO-TRACK CLOSING TERMINAL ───────────────────┐
-│ TRACK 1: [ 💰 CLOSE (15% COMMISSION) ]           │
+│ TRACK 1: [ ◈ CLOSE (15% COMMISSION) ]           │
 │   → Live 50% UPI QR Code (apoorvxs@okaxis)       │
 │   → 1-Page Milestone SOW (50/25/25) & 60 FPS SLA │
-│ TRACK 2: [ 🤝 FORWARD (10% REFERRAL SAFETY NET) ]│
+│ TRACK 2: [ ◈ FORWARD (10% REFERRAL SAFETY NET) ]│
 │   → 15-Min Google Meet Slot on Apoorv's Calendar │
 └─────────────────────────────────────────────────┘`,
     laptop: [
-      "• <strong>Track 1 (Direct Close — 15% Cut):</strong> When DM agrees, click <span class='font-bold text-neutral-900'>[ 💰 CLOSE (15%) ]</span>. Select Tier (₹50k/₹100k/₹200k), show live 50% UPI deposit QR, and click 'Mark 50% Deposit Received'.",
-      "• <strong>Track 2 (Founder Walkthrough — 10% Cut):</strong> For complex enterprise deals, click <span class='font-bold text-neutral-900'>[ 🤝 FORWARD (10%) ]</span> to book a 15-min Google Meet with Apoorv with zero context loss.",
+      "• <strong>Track 1 (Direct Close — 15% Cut):</strong> When DM agrees, click <span class='font-bold text-neutral-900'>[ ◈ CLOSE (15%) ]</span>. Select Tier (₹50k/₹100k/₹200k), show live 50% UPI deposit QR, and click 'Mark 50% Deposit Received'.",
+      "• <strong>Track 2 (Founder Walkthrough — 10% Cut):</strong> For complex enterprise deals, click <span class='font-bold text-neutral-900'>[ ◈ FORWARD (10%) ]</span> to book a 15-min Google Meet with Apoorv with zero context loss.",
       "• <strong>Instant Commission:</strong> Track 1 pays ₹7,500 on ₹50k directly; Track 2 pays ₹5,000 on discovery handoff!"
     ],
     mobile: [
@@ -2983,7 +2983,7 @@ function updateTourSpotlight(stepIndex) {
 
   const targetIndicator = document.getElementById('tourTargetIndicator');
   if (targetIndicator && step.targetLabel) {
-    targetIndicator.textContent = `🎯 TARGET: ${step.targetLabel}`;
+    targetIndicator.textContent = `[RADAR] TARGET: ${step.targetLabel}`;
   }
 
   const targetSubtext = document.getElementById('tourTargetSubtext');
@@ -3066,61 +3066,30 @@ function updateTourSpotlight(stepIndex) {
     border.setAttribute('height', String(h));
   }
 
-  // Calculate BB-8 position and laser aim point
-  let bb8X = 0;
-  let bb8Y = 0;
-
-  if (isMobile) {
-    // Mobile layout: Card is docked at bottom, float BB-8 near top/target
-    bb8X = Math.min(winW - 55, Math.max(55, x + w * 0.5));
-    bb8Y = Math.max(55, Math.min(y + h * 0.5, winH * 0.32));
-  } else {
-    // Desktop layout: Deterministic step-specific choreography
-    if (stepIndex === 0) {
-      // Step 1: Column 1 Queue -> Card on right, BB-8 between queue and card
-      bb8X = x + w + 50;
-      bb8Y = Math.min(winH - 90, Math.max(80, y + 60));
-    } else if (stepIndex === 1) {
-      // Step 2: Center Dossier -> Card on right, BB-8 floats above left of dossier
-      bb8X = x + 40;
-      bb8Y = Math.max(65, y - 55);
-    } else if (stepIndex === 2) {
-      // Step 3: Cockpit Flight HUD -> Card on right, BB-8 floats above HUD
-      bb8X = x + 40;
-      bb8Y = Math.max(65, y - 55);
-    } else if (stepIndex === 3) {
-      // Step 4: Closing Terminal -> Card on left, BB-8 floats above/right of terminal
-      bb8X = Math.min(winW - 75, x + w + 45);
-      bb8Y = Math.min(winH - 90, Math.max(80, y + 50));
-    } else {
-      // Step 5: Topbar Wallet -> Card on left, BB-8 floats directly beneath wallet
-      bb8X = Math.min(winW - 75, Math.max(75, x + w * 0.5 - 20));
-      bb8Y = y + h + 65;
-    }
+  // Guide the Authentic 3D BB-8 Droid to the Active Tour Target
+  if (typeof window !== 'undefined' && typeof window.smoothGlideTo === 'function') {
+    const isMobileView = winW < 1024;
+    const bb8TargetX = Math.round(isMobileView ? (x + w * 0.5) : (x + w + 45));
+    const bb8TargetY = Math.round(y + (window.scrollY || 0) + Math.min(80, h * 0.35));
+    try {
+      window.smoothGlideTo(bb8TargetX, bb8TargetY, 500, () => {
+        if (window.Player3D?.nod) window.Player3D.nod();
+        if (window.System1Brain?.emitThought) {
+          window.System1Brain.emitThought(step.bb8Sector || step.title, 4000);
+        }
+      });
+    } catch(e) {}
   }
 
-  if (bb8) {
-    bb8.style.left = `${bb8X}px`;
-    bb8.style.top = `${bb8Y}px`;
-    bb8.style.opacity = '1';
-  }
-
-  const targetCenterX = x + w * 0.5;
-  const targetCenterY = y + h * 0.5;
-
+  // Gracefully clear legacy SVG companion if still cached in DOM
+  if (bb8) bb8.style.display = 'none';
   if (laser && typeof laser.setAttribute === 'function') {
-    laser.setAttribute('x1', String(bb8X));
-    laser.setAttribute('y1', String(bb8Y));
-    laser.setAttribute('x2', String(targetCenterX));
-    laser.setAttribute('y2', String(targetCenterY));
+    laser.setAttribute('x1', '0');
+    laser.setAttribute('y1', '0');
+    laser.setAttribute('x2', '0');
+    laser.setAttribute('y2', '0');
   }
-
-  if (spark) {
-    spark.innerHTML = `
-      <circle cx="${targetCenterX}" cy="${targetCenterY}" r="6" fill="#4deeea" opacity="0.8" />
-      <circle cx="${targetCenterX}" cy="${targetCenterY}" r="3" fill="#ffffff" />
-    `;
-  }
+  if (spark) spark.innerHTML = '';
 
   // Positioning of tourCard relative to target element
   if (tourCard && !isMobile) {
@@ -3188,6 +3157,12 @@ function openWorkspaceTour(stepIndex = 0) {
   if (!modal) return;
   modal.classList.remove('hidden');
   modal.style.display = 'flex';
+  if (typeof document !== 'undefined' && document.body?.classList) {
+    document.body.classList.add('tour-active');
+  }
+  if (typeof window !== 'undefined' && window.AstromechArchitect && typeof window.AstromechArchitect.dispose === 'function') {
+    try { window.AstromechArchitect.dispose(); } catch(e) {}
+  }
   renderWorkspaceTourStep(currentWorkspaceTourStep);
   updateTourSpotlight(currentWorkspaceTourStep);
 
@@ -3210,6 +3185,9 @@ function closeWorkspaceTour(markCompleted = true) {
     modal.classList.add('hidden');
     modal.style.display = 'none';
   }
+  if (typeof document !== 'undefined' && document.body?.classList) {
+    document.body.classList.remove('tour-active');
+  }
   if (markCompleted) {
     localStorage.setItem('sprintdial_tour_completed', 'true');
   }
@@ -3219,6 +3197,14 @@ function closeWorkspaceTour(markCompleted = true) {
     window.removeEventListener('resize', onTourWindowChange);
     window.removeEventListener('scroll', onTourWindowChange, true);
     tourListenersAttached = false;
+  }
+
+  // Glide 3D BB-8 back to default idle perch
+  if (typeof window !== 'undefined' && typeof window.smoothGlideTo === 'function') {
+    try {
+      const defX = Math.round((window.innerWidth || 1440) * 0.35);
+      window.smoothGlideTo(defX, 120, 600);
+    } catch(e) {}
   }
 
   const bb8 = document.getElementById('tourBB8Companion');
@@ -3318,7 +3304,7 @@ function renderWorkspaceTourStep(stepIndex) {
 
   const nextBtnText = document.getElementById('tourBtnNextText');
   if (nextBtnText) {
-    nextBtnText.textContent = stepIndex === WORKSPACE_TOUR_STEPS.length - 1 ? '🚀 START DIALING' : 'NEXT STEP';
+    nextBtnText.textContent = stepIndex === WORKSPACE_TOUR_STEPS.length - 1 ? '[>] START DIALING' : 'NEXT STEP';
   }
 }
 

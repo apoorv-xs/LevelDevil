@@ -195,7 +195,7 @@ describe("Subsystem 21: Interactive Workstation Guided Walkthrough Overlay (Mobi
     // Advance to Step 5
     nextStep();
     expect(mockDom.tourStepTitle.textContent).toContain("Commission Wallet");
-    expect(mockDom.tourBtnNextText.textContent).toBe("🚀 START DIALING");
+    expect(mockDom.tourBtnNextText.textContent).toBe("[>] START DIALING");
 
     // Final Next click finishes and closes
     nextStep();

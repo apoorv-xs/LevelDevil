@@ -838,17 +838,12 @@
       display: none !important;
     }
 
-    /* Subsystem 21: BB-8 Astromech Laser Tour Animations */
-    @keyframes bb8Float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-7px); }
+    /* Subsystem 21: Real 3D BB-8 Foreground Elevation During Guided Tour */
+    body.tour-active #three-canvas {
+      z-index: 1065 !important;
     }
-    @keyframes laserPulseGlow {
-      0%, 100% { stroke-opacity: 0.95; stroke-width: 3.5px; }
-      50% { stroke-opacity: 0.45; stroke-width: 2px; }
-    }
-    #tourLaserBeam {
-      animation: laserPulseGlow 1.8s ease-in-out infinite;
+    body.tour-active .companion-bubble {
+      z-index: 1066 !important;
     }
     #tourTargetLaserBorder {
       animation: dashMove 24s linear infinite;
@@ -3709,64 +3704,9 @@
       <!-- Dimmed backdrop with radial mask cutout -->
       <rect width="100%" height="100%" fill="#17120f" opacity="0.8" mask="url(#tourSpotlightMask)" />
 
-      <!-- Pulsing Cyan Laser Boundary around Highlighted Element -->
+      <!-- Pulsing Cyan Boundary around Highlighted Element -->
       <rect id="tourTargetLaserBorder" x="0" y="0" width="0" height="0" rx="6" ry="6" fill="none" stroke="#4deeea" stroke-width="2.5" stroke-dasharray="8 4" filter="url(#tourLaserGlow)" style="transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);" />
-
-      <!-- Holographic Laser Beam from BB-8 to Target -->
-      <line id="tourLaserBeam" x1="0" y1="0" x2="0" y2="0" stroke="#4deeea" stroke-width="3" stroke-linecap="round" filter="url(#tourLaserGlow)" style="transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);" />
-
-      <!-- Target Contact Spark Indicator -->
-      <g id="tourLaserContactSpark" style="transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);"></g>
     </svg>
-
-    <!-- Dynamic 2.5D BB-8 Astromech Droid Guide Entity -->
-    <div id="tourBB8Companion" class="absolute z-[25] pointer-events-none flex flex-col items-center gap-1 opacity-0 transition-opacity duration-300" style="transition: left 0.45s cubic-bezier(0.16, 1, 0.3, 1), top 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease; transform: translate(-50%, -50%);">
-      <!-- Droid Speech / Radar Status Chip -->
-      <div id="tourBB8StatusChip" class="px-2 py-0.5 bg-[#17120f] text-[#4deeea] border border-[#4deeea] shadow-[2px_2px_0_#000] font-arcade text-[8px] whitespace-nowrap tracking-wider flex items-center gap-1">
-        <span>[SYS] BB-8</span> <span id="tourBB8SectorText">// TARGET LOCKED</span>
-      </div>
-
-      <!-- Detailed 2.5D BB-8 Vector Graphic with Laser Projector -->
-      <div class="relative w-16 h-20 select-none animate-[bb8Float_3s_ease-in-out_infinite]">
-        <svg viewBox="0 0 80 100" class="w-full h-full drop-shadow-[0_4px_14px_rgba(77,238,234,0.45)]">
-          <!-- Antennas -->
-          <line x1="40" y1="18" x2="40" y2="4" stroke="#8c8d8f" stroke-width="2" stroke-linecap="round" />
-          <line x1="46" y1="18" x2="46" y2="8" stroke="#8c8d8f" stroke-width="1.5" stroke-linecap="round" />
-          <circle cx="40" cy="3" r="1.5" fill="#4deeea" />
-
-          <!-- Dome Head -->
-          <path d="M22 32 A18 18 0 0 1 58 32 Z" fill="#fffdf1" stroke="#17120f" stroke-width="2" />
-          <!-- Head Orange Stripes -->
-          <path d="M25 28 A15 15 0 0 1 55 28" fill="none" stroke="#f97316" stroke-width="2.5" />
-          <rect x="23" y="30" width="34" height="2" fill="#9ca3af" />
-          
-          <!-- Eye Optical Photoreceptor Lens (Center Black with Cyan Pupil) -->
-          <circle cx="40" cy="24" r="5" fill="#17120f" stroke="#e5e7eb" stroke-width="1" />
-          <circle cx="40" cy="24" r="2.5" fill="#0284c7" />
-          <circle cx="39" cy="23" r="1" fill="#4deeea" />
-          
-          <!-- Secondary Optical Lens -->
-          <circle cx="49" cy="27" r="2" fill="#17120f" />
-          
-          <!-- Laser Projector Utility Arm Emitter (Right Side) -->
-          <rect x="56" y="27" width="5" height="4" rx="1" fill="#4b5563" stroke="#17120f" stroke-width="1" />
-          <circle id="tourBB8LaserEmitterPoint" cx="61" cy="29" r="2.5" fill="#4deeea" />
-          
-          <!-- Spherical Body -->
-          <circle cx="40" cy="58" r="24" fill="#fffdf1" stroke="#17120f" stroke-width="2.5" />
-          <!-- Body Orange Ring 1 (Center) -->
-          <circle cx="40" cy="58" r="15" fill="none" stroke="#f97316" stroke-width="3" />
-          <circle cx="40" cy="58" r="7" fill="#e5e7eb" stroke="#17120f" stroke-width="1.5" />
-          <rect x="37" y="55" width="6" height="6" fill="#9ca3af" />
-          <!-- Body Orange Ring 2 (Left edge) -->
-          <path d="M19 50 A24 24 0 0 0 20 68" fill="none" stroke="#f97316" stroke-width="3" />
-          <!-- Body Orange Ring 3 (Right edge) -->
-          <path d="M61 50 A24 24 0 0 1 60 68" fill="none" stroke="#f97316" stroke-width="3" />
-          <!-- Lower Shadow -->
-          <ellipse cx="40" cy="85" rx="18" ry="4" fill="#17120f" opacity="0.3" />
-        </svg>
-      </div>
-    </div>
 
     <!-- Main Tactical Flight Manual Card -->
     <div id="tourCard" class="relative z-[20] max-w-[620px] w-full max-h-[92vh] flex flex-col bg-[#fff4c9] border-[3px] border-[#17120f] shadow-[8px_8px_0_#17120f] font-mono text-[#17120f] overflow-hidden select-none" style="transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);">

@@ -793,6 +793,7 @@ onLoad(() => {
     // Autonomous Chasm Bridging: Deploy glowing laser bridge across ledge gaps
     function checkChasmBridging(p, rails) {
         if (!p || !rails || rails.length === 0) return;
+        if (typeof document !== "undefined" && document.body?.classList?.contains("tour-active")) return;
         const arch = window.AstromechArchitect || (window.Player3D && window.Player3D.architect);
         if (!arch || typeof arch.deployLaserBridge !== "function") return;
 
