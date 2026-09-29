@@ -646,7 +646,8 @@
   }
 }
 
-body.has-session .topbar-badge {
+body.has-session .topbar-badge,
+body.has-session .altimeter-pill {
   display: none !important;
 }
 
@@ -661,7 +662,8 @@ body.has-session .admin-label-short {
 }
 
 @media (max-width: 1280px) {
-  .topbar-badge {
+  .topbar-badge,
+  .altimeter-pill {
     display: none !important;
   }
   .nav-label-full {
@@ -669,6 +671,22 @@ body.has-session .admin-label-short {
   }
   .nav-label-short {
     display: inline !important;
+  }
+}
+
+@media (max-width: 1100px) {
+  .topbar {
+    padding: 0 14px;
+  }
+  .topbar-actions {
+    gap: 6px;
+  }
+  .site-nav a {
+    padding: 6px 9px;
+    font-size: 10px;
+  }
+  #topbar-inquire-btn {
+    display: none !important;
   }
 }
 

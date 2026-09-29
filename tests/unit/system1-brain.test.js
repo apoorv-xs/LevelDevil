@@ -756,9 +756,9 @@ describe("System 1 Decision Brain", () => {
       const workspaceHtml = fs.readFileSync(path.resolve(__dirname, "../../workspace/index.html"), "utf-8");
       const shellCss = fs.readFileSync(path.resolve(__dirname, "../../shell.css"), "utf-8");
 
-      expect(indexHtml).toContain('id="bb8-guide-btn"');
-      expect(salesHtml).toContain('id="bb8-guide-btn"');
-      // BB-8 guide button removed from workspace (BB-8 is exclusively Home & Sales)
+      expect(indexHtml).not.toContain('id="bb8-guide-btn"');
+      expect(salesHtml).not.toContain('id="bb8-guide-btn"');
+      expect(workspaceHtml).not.toContain('id="btnBB8Guide"');
 
       expect(indexHtml).toContain('id="btn-toggle-ctrls"');
       expect(salesHtml).toContain('id="btn-toggle-ctrls"');

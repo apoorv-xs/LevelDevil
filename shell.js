@@ -575,11 +575,6 @@ function initMobileDrawer() {
         <div class="mobile-drawer-footer">
           <div class="drawer-footer-title">// HARDWARE PROTOCOLS</div>
           <div class="drawer-footer-actions">
-            <button id="drawer-bb8-guide" class="mobile-drawer-btn" onclick="window.openDrawerGuide()">
-              <span class="drawer-btn-icon">🤖</span>
-              <span class="drawer-btn-label">BB-8 CO-PILOT HUD</span>
-              <span class="drawer-btn-status">READY</span>
-            </button>
             <button id="drawer-sfx-toggle" class="mobile-drawer-btn" onclick="window.toggleDrawerSFX()">
               <span id="drawer-sfx-icon" class="drawer-btn-icon">${window.SFX?.isMuted?.() ? '🔇' : '🔊'}</span>
               <span id="drawer-sfx-text" class="drawer-btn-label">${window.SFX?.isMuted?.() ? 'SOUND FX: MUTED' : 'SOUND FX: ACTIVE'}</span>
@@ -667,12 +662,6 @@ function initMobileDrawer() {
     }
   };
 
-  window.openDrawerGuide = () => {
-    window.closeMobileMenu();
-    setTimeout(() => {
-      window.System1Brain?.showGuidanceHUD?.();
-    }, 150);
-  };
 
   window.toggleDrawerSFX = () => {
     if (window.SFX?.toggle) {
