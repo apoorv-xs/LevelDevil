@@ -25,7 +25,7 @@ test.describe("Subsystem 21: Workstation Guided Walkthrough Overlay E2E", () => 
     }, mockCaller);
   });
 
-  test("1. Desktop: Opens Guided Tour from Topbar and navigates through all 5 steps", async ({ page }) => {
+  test("1. Desktop: Opens Guided Tour from Topbar and navigates through all 8 steps", async ({ page }) => {
     await page.goto("http://localhost:5173/workspace/");
     await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(400);
@@ -49,7 +49,7 @@ test.describe("Subsystem 21: Workstation Guided Walkthrough Overlay E2E", () => 
     await expect(tourModal).toBeVisible();
 
     // Step 1: Territory Queue
-    await expect(page.locator("#tourStepBadge")).toContainText("STEP 1 OF 5");
+    await expect(page.locator("#tourStepBadge")).toContainText("STEP 1 OF 8");
     await expect(page.locator("#tourStepTitle")).toContainText("Territory Queue");
     await expect(page.locator("#tourLaptopInstructions")).toContainText("Left Column");
     await expect(page.locator("#tourMobileInstructions")).toContainText("QUEUE");
@@ -57,23 +57,38 @@ test.describe("Subsystem 21: Workstation Guided Walkthrough Overlay E2E", () => 
     // Click Next -> Step 2: Client Dossier
     const nextBtn = page.locator("#tourBtnNext");
     await nextBtn.click();
-    await expect(page.locator("#tourStepBadge")).toContainText("STEP 2 OF 5");
+    await expect(page.locator("#tourStepBadge")).toContainText("STEP 2 OF 8");
     await expect(page.locator("#tourStepTitle")).toContainText("Client Dossier");
 
-    // Press ArrowRight keyboard shortcut -> Step 3: In-Call Cockpit
+    // Press ArrowRight keyboard shortcut -> Step 3: 10s Recon Hook
     await page.keyboard.press("ArrowRight");
-    await expect(page.locator("#tourStepBadge")).toContainText("STEP 3 OF 5");
+    await expect(page.locator("#tourStepBadge")).toContainText("STEP 3 OF 8");
+    await expect(page.locator("#tourStepTitle")).toContainText("10s Recon Hook");
+
+    // Press ArrowRight keyboard shortcut -> Step 4: Cheat Sheet
+    await page.keyboard.press("ArrowRight");
+    await expect(page.locator("#tourStepBadge")).toContainText("STEP 4 OF 8");
+    await expect(page.locator("#tourStepTitle")).toContainText("Cheat Sheet");
+
+    // Press ArrowRight keyboard shortcut -> Step 5: Jargon Decoder
+    await page.keyboard.press("ArrowRight");
+    await expect(page.locator("#tourStepBadge")).toContainText("STEP 5 OF 8");
+    await expect(page.locator("#tourStepTitle")).toContainText("Jargon Decoder");
+
+    // Press ArrowRight keyboard shortcut -> Step 6: Objection Defense
+    await page.keyboard.press("ArrowRight");
+    await expect(page.locator("#tourStepBadge")).toContainText("STEP 6 OF 8");
+    await expect(page.locator("#tourStepTitle")).toContainText("Objection Defense");
+
+    // Press ArrowRight keyboard shortcut -> Step 7: In-Call Flight HUD
+    await page.keyboard.press("ArrowRight");
+    await expect(page.locator("#tourStepBadge")).toContainText("STEP 7 OF 8");
     await expect(page.locator("#tourStepTitle")).toContainText("In-Call Flight HUD");
 
-    // Press ArrowRight keyboard shortcut -> Step 4: Two-Track Closing
+    // Press ArrowRight keyboard shortcut -> Step 8: Two-Track Closing & Wallet
     await page.keyboard.press("ArrowRight");
-    await expect(page.locator("#tourStepBadge")).toContainText("STEP 4 OF 5");
-    await expect(page.locator("#tourStepTitle")).toContainText("Two-Track Deal Closing");
-
-    // Press ArrowRight keyboard shortcut -> Step 5: Commission Wallet
-    await page.keyboard.press("ArrowRight");
-    await expect(page.locator("#tourStepBadge")).toContainText("STEP 5 OF 5");
-    await expect(page.locator("#tourStepTitle")).toContainText("Commission Wallet");
+    await expect(page.locator("#tourStepBadge")).toContainText("STEP 8 OF 8");
+    await expect(page.locator("#tourStepTitle")).toContainText("Two-Track Closing");
     await expect(page.locator("#tourBtnNextText")).toContainText("START DIALING");
 
     // Final click finishes the tour
@@ -141,7 +156,7 @@ test.describe("Subsystem 21: Workstation Guided Walkthrough Overlay E2E", () => 
     await expect(tourModal).toBeHidden();
   });
 
-  test("4. Completing Step 5 prompts the App Install modal for verified callers", async ({ page }) => {
+  test("4. Completing Step 8 prompts the App Install modal for verified callers", async ({ page }) => {
     await page.goto("http://localhost:5173/workspace/");
     await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(400);
@@ -152,16 +167,16 @@ test.describe("Subsystem 21: Workstation Guided Walkthrough Overlay E2E", () => 
       window.__TEST_MODE__ = false;
     });
 
-    // Open tour directly at Step 5
+    // Open tour directly at Step 8
     await page.evaluate(() => {
       if (typeof window.openWorkspaceTour === "function") {
-        window.openWorkspaceTour(4);
+        window.openWorkspaceTour(7);
       }
     });
 
     const tourModal = page.locator("#workspaceTourModal");
     await expect(tourModal).toBeVisible();
-    await expect(page.locator("#tourStepTitle")).toContainText("Commission Wallet");
+    await expect(page.locator("#tourStepTitle")).toContainText("Two-Track Closing");
     await expect(page.locator("#tourBtnNextText")).toContainText("START DIALING");
 
     // Click START DIALING

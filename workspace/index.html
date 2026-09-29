@@ -494,6 +494,26 @@
       color: var(--ink) !important;
     }
 
+    /* Jargon Decoder Quick Bar & Pills Retro Styling */
+    .retro-workspace #jargonDecoderQuickBar {
+      background: var(--cream) !important;
+      border: 2px solid var(--ink) !important;
+      box-shadow: 2px 2px 0 var(--ink) !important;
+      border-radius: 0 !important;
+    }
+    .retro-workspace #jargonDecoderQuickBar button {
+      background: var(--white) !important;
+      color: var(--ink) !important;
+      border: 1px solid var(--ink) !important;
+      box-shadow: 1px 1px 0 var(--ink) !important;
+      border-radius: 0 !important;
+      font-weight: 700 !important;
+    }
+    .retro-workspace #jargonDecoderQuickBar button:hover {
+      background: #fce566 !important;
+      color: #17120f !important;
+    }
+
     /* Modals & Overlays */
     .retro-workspace .backdrop-blur-sm,
     .retro-workspace .backdrop-blur-md {
@@ -861,13 +881,7 @@
       display: none !important;
     }
 
-    /* Subsystem 21: Real 3D BB-8 Foreground Elevation & Spotlight Clarity */
-    body.tour-active #three-canvas {
-      z-index: 1065 !important;
-    }
-    body.tour-active .companion-bubble {
-      z-index: 1066 !important;
-    }
+    /* Subsystem 21: Workstation Tour Spotlight Clarity */
     .tour-focus-target {
       position: relative !important;
       z-index: 1061 !important;
@@ -1371,7 +1385,7 @@
             onclick="exportActiveQueueCsv()" 
             title="Export current territory and filtered queue to CSV spreadsheet"
             class="py-1 px-2 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[9px] font-bold flex items-center justify-center gap-1 transition shrink-0 whitespace-nowrap">
-            <span>[CSV]</span> <span>CSV</span>
+            <span>[CSV]</span>
           </button>
         </div>
       </div>
@@ -1887,6 +1901,27 @@
                 </div>
               </div>
 
+              <!-- Jargon Decoder Quick Bar (Elevated Above the Fold) -->
+              <div id="jargonDecoderQuickBar" class="p-2 bg-[#15161B] border border-white/10 rounded-lg space-y-1.5 shadow-sm">
+                <div class="flex items-center justify-between text-[10px] font-arcade text-neutral-300 uppercase">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                    <span class="text-amber-300 font-bold">Jargon Decoder Pills:</span>
+                  </div>
+                  <span class="text-[8.5px] font-mono text-neutral-400">Click to decode into client metaphors</span>
+                </div>
+                <div class="flex flex-wrap gap-1">
+                  <button type="button" onclick="showLaymanAnalogy('lcp')" class="px-1.5 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/25 text-amber-200 border border-amber-500/30 text-[9px] font-mono font-semibold transition cursor-pointer hover:border-amber-400" title="Decode LCP Speed into 4G rusty latch analogy">[LCP] Speed</button>
+                  <button type="button" onclick="showLaymanAnalogy('dpdp')" class="px-1.5 py-0.5 rounded bg-emerald-500/10 hover:bg-emerald-500/25 text-emerald-200 border border-emerald-500/30 text-[9px] font-mono font-semibold transition cursor-pointer hover:border-emerald-400" title="Decode DPDP Act Compliance">[LAW] DPDP Law</button>
+                  <button type="button" onclick="showLaymanAnalogy('thumb')" class="px-1.5 py-0.5 rounded bg-cyan-500/10 hover:bg-cyan-500/25 text-cyan-200 border border-cyan-500/30 text-[9px] font-mono font-semibold transition cursor-pointer hover:border-cyan-400" title="Decode Thumb-Zone UI">[UI] Thumb-Zone</button>
+                  <button type="button" onclick="showLaymanAnalogy('aggregator')" class="px-1.5 py-0.5 rounded bg-rose-500/10 hover:bg-rose-500/25 text-rose-200 border border-rose-500/30 text-[9px] font-mono font-semibold transition cursor-pointer hover:border-rose-400" title="Decode Aggregator Commission Bleed">[AGG] Bleed</button>
+                  <button type="button" onclick="showLaymanAnalogy('dom')" class="px-1.5 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/25 text-amber-200 border border-amber-500/30 text-[9px] font-mono font-semibold transition cursor-pointer hover:border-amber-400" title="Decode WordPress DOM Bloat">[DOM] WP Bloat</button>
+                  <button type="button" onclick="showLaymanAnalogy('friction')" class="px-1.5 py-0.5 rounded bg-purple-500/10 hover:bg-purple-500/25 text-purple-200 border border-purple-500/30 text-[9px] font-mono font-semibold transition cursor-pointer hover:border-purple-400" title="Decode Mobile Intake Friction">[UX] Friction</button>
+                  <button type="button" onclick="showLaymanAnalogy('tls')" class="px-1.5 py-0.5 rounded bg-blue-500/10 hover:bg-blue-500/25 text-blue-200 border border-blue-500/30 text-[9px] font-mono font-semibold transition cursor-pointer hover:border-blue-400" title="Decode TLS/SSL Form Security">[SEC] TLS/SSL</button>
+                  <button type="button" onclick="showLaymanAnalogy('headless')" class="px-1.5 py-0.5 rounded bg-[#fce566]/10 hover:bg-[#fce566]/25 text-[#fce566] border border-[#fce566]/30 text-[9px] font-mono font-semibold transition cursor-pointer hover:border-[#fce566]" title="Decode 60 FPS WebGPU Headless Core">[SLA] 60 FPS</button>
+                </div>
+              </div>
+
               <!-- Card 01: Speed & Icebreaker -->
               <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1.5 hover:border-white/10 transition">
                 <div class="flex items-center justify-between text-[10px] font-mono text-neutral-300 font-semibold">
@@ -1957,24 +1992,6 @@
                 <p id="callerCompetitorEdge" class="text-xs text-neutral-200 leading-relaxed font-sans">
                   "Top clinics use zero-latency WhatsApp direct booking to capture consultations with zero commissions."
                 </p>
-              </div>
-            </div>
-
-            <!-- 5. ARCHITECTURAL DEEP DIVES / JARGON GLOSSARY PILLS -->
-            <div class="pt-1 border-t border-white/[0.06]">
-              <div class="flex items-center justify-between mb-1.5">
-                <span class="text-[10px] font-arcade text-neutral-300 uppercase">Jargon Decoder Pills:</span>
-                <span class="text-[9px] font-mono text-neutral-400">Click to decode</span>
-              </div>
-              <div class="flex flex-wrap gap-1">
-                <button type="button" onclick="showLaymanAnalogy('lcp')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">[LCP] Speed</button>
-                <button type="button" onclick="showLaymanAnalogy('dpdp')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">[LAW] DPDP Law</button>
-                <button type="button" onclick="showLaymanAnalogy('thumb')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">[UI] Thumb-Zone</button>
-                <button type="button" onclick="showLaymanAnalogy('aggregator')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">[AGG] Aggregator</button>
-                <button type="button" onclick="showLaymanAnalogy('dom')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">[DOM] WP Bloat</button>
-                <button type="button" onclick="showLaymanAnalogy('friction')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">[UX] Friction</button>
-                <button type="button" onclick="showLaymanAnalogy('tls')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">[SEC] TLS/SSL</button>
-                <button type="button" onclick="showLaymanAnalogy('headless')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">[SLA] 60 FPS Headless</button>
               </div>
             </div>
           </div>
@@ -3739,13 +3756,13 @@
       <!-- Top Title & Flight Manual Header -->
       <div style="background: #17120f !important; color: #fce566 !important;" class="p-2.5 sm:p-3 border-b-[3px] border-[#17120f] flex items-center justify-between gap-2 shrink-0">
         <div class="flex items-center gap-2 flex-wrap">
-          <span id="tourStepBadge" class="px-1.5 py-0.5 font-arcade text-[9px] bg-[#fce566] text-[#17120f] font-bold border border-[#17120f]">STEP 1 OF 5</span>
+          <span id="tourStepBadge" class="px-1.5 py-0.5 font-arcade text-[9px] bg-[#fce566] text-[#17120f] font-bold border border-[#17120f]">STEP 1 OF 8</span>
           <span id="tourTargetIndicator" class="px-1.5 py-0.5 font-arcade text-[8px] bg-[#4deeea]/20 text-[#4deeea] border border-[#4deeea] font-bold hidden sm:inline-block">[RADAR] TARGET</span>
         </div>
         <div class="flex items-center gap-1.5">
           <!-- Step indicator dots -->
           <div id="tourStepDots" class="flex items-center gap-1 mr-1">
-            <!-- 5 dots populated dynamically -->
+            <!-- 8 dots populated dynamically -->
           </div>
           <button type="button" id="tourBtnSkip" onclick="closeWorkspaceTour(true)" class="px-1.5 py-0.5 bg-transparent hover:bg-white/20 text-[#fce566] text-[8px] font-arcade border border-[#fce566]/40 transition cursor-pointer" title="Exit Walkthrough">
             [X] CLOSE

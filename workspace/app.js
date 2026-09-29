@@ -2808,17 +2808,19 @@ function acknowledgeOnboarding() {
 // -------------------------------------------------------------
 // SUBSYSTEM 21: INTERACTIVE WORKSTATION GUIDED WALKTHROUGH OVERLAY
 // -------------------------------------------------------------
+// SUBSYSTEM 21: INTERACTIVE WORKSTATION GUIDED WALKTHROUGH OVERLAY
+// -------------------------------------------------------------
 const WORKSPACE_TOUR_STEPS = [
   {
     step: 1,
-    total: 5,
-    badge: 'STEP 1 OF 5 // QUEUE',
+    total: 8,
+    badge: 'STEP 1 OF 8 // QUEUE',
     targetSelector: '#queuePane, #queueList, #queueListContainer',
     targetLabel: 'COLUMN 1 // TERRITORY QUEUE & ZOMBIE RADAR',
-    targetSubtext: 'BB-8 co-pilot synchronized with active priority queue',
-    bb8Sector: '// QUEUE RADAR LOCKED',
+    targetSubtext: 'Priority dispatch algorithm with automated callback sorting',
+    sectorBadge: '// QUEUE RADAR LOCKED',
     title: '1. Territory Queue & Zombie Radar',
-    summary: 'The workstation prioritizes 65 curated enterprise prospects. Overdue and cold leads automatically float to the top so you never lose high-intent deals.',
+    summary: 'The workstation prioritizes 65 curated enterprise prospects. Overdue callbacks and cold leads automatically float to the top so you never lose high-intent deals.',
     visual: `┌── TERRITORY QUEUE ──────────────────────────────┐
 │ [ALL (65)]  [CALLBACKS (4)]  [ZOMBIE] [OVERDUE] │
 │ ● READY TO DIAL     │ Paragon Luxury Grand Resort  │
@@ -2838,41 +2840,153 @@ const WORKSPACE_TOUR_STEPS = [
   },
   {
     step: 2,
-    total: 5,
-    badge: 'STEP 2 OF 5 // DOSSIER',
-    targetSelector: '#prospectHero, #activeName, #dossierSection',
-    targetLabel: 'COLUMN 2 // CLIENT DOSSIER & REVENUE LEAKS',
-    targetSubtext: 'BB-8 scanning empirical 4G Lighthouse latency & OTA bleed',
-    bb8Sector: '// DOSSIER TELEMETRY SCAN',
-    title: '2. Client Dossier & Revenue Leak Intel',
-    summary: 'Every prospect comes pre-audited with empirical mobile 4G latency, estimated revenue drop-off, third-party aggregator bleed, and DPDP Act legal compliance.',
-    visual: `┌── CLIENT AUDIT DOSSIER ─────────────────────────┐
-│ TARGET     : Malabar Heritage Grand Villa       │
-│ MOBILE LCP : 4.8s [CRITICAL 4G SPEED DEFICIT]   │
-│ AGGREGATOR : ₹48,000/yr BLEED (MakeMyTrip/OTA)  │
-│ PROPOSAL   : ₹50,000 Turnkey WebGPU Spatial Core│
+    total: 8,
+    badge: 'STEP 2 OF 8 // DOSSIER',
+    targetSelector: '#prospectHero, #activeName, #phoneContainer',
+    targetLabel: 'COLUMN 2 TOP // CLIENT DOSSIER & PHONE SHIELD',
+    targetSubtext: 'Target metadata, verified decision makers & anti-theft phone masking',
+    sectorBadge: '// DOSSIER IDENT LOCKED',
+    title: '2. Client Dossier & Sovereign Phone Shield',
+    summary: 'Every prospect profile contains verified company names, location, website status, decision maker names, and role-based masked contact numbers.',
+    visual: `┌── CLIENT IDENTITY & PHONE SHIELD ───────────────┐
+│ TARGET  : Malabar Heritage Grand Villa          │
+│ CONTACT : Dr. Manoj Varma • MOBILE LCP 4.8s     │
+│ BLEED   : ₹48,000/yr AGGREGATOR Commission Leak │
+│ PHONE   : +91 94470 •••••  [REVEAL PHONE]       │
 └─────────────────────────────────────────────────┘`,
     laptop: [
-      "• <strong>Center Dossier:</strong> Inspect empirical Lighthouse speed scores, tech stack, and decision maker names.",
+      "• <strong>Center Dossier:</strong> Inspect company name, geographic tier, verified DM contact, and website status.",
+      "• <strong>Phone Shield:</strong> Phone numbers start safely masked (`+91 94470 •••••`). Click <span class='font-bold text-neutral-900'>[Reveal]</span> to toggle digits under an hourly security velocity limit.",
       "• <strong>Layman Analogies:</strong> Click <span class='font-bold text-neutral-900'>[INTEL] LAYMAN ANALOGIES</span> for instant client-friendly metaphors that simplify WebGPU/60 FPS value.",
-      "• <strong>Revenue Leak Hook:</strong> Quote their exact monthly aggregator bleed to anchor our ₹50k–₹2L package."
+      "• <strong>Revenue Leak Hook:</strong> Quote their exact monthly aggregator bleed to anchor our ₹50k–₹2L package as self-funding."
     ],
     mobile: [
-      "• <strong>Bottom Tab:</strong> Tap <span class='font-bold text-neutral-900'>[DOSSIER]</span> before dialing to review technical leaks.",
-      "• <strong>Quick Hook:</strong> Open with: <em>'Apoorv noted your mobile site takes 4.8s on 4G, causing significant drop-off...'</em>",
-      "• <strong>One-Thumb Reading:</strong> Dossier adapts with high-contrast text optimized for outdoor mobile calling."
+      "• <strong>Bottom Tab:</strong> Tap <span class='font-bold text-neutral-900'>[DOSSIER]</span> before dialing to review technical leaks and 4G drop-off.",
+      "• <strong>Anti-Theft Protection:</strong> Steganographic watermarks protect lead data against unauthorized exports.",
+      "• <strong>1-Tap Toggle:</strong> Tap [Reveal] to unmask phone digits before placing your outbound dial."
     ],
-    proTip: "Never pitch generic web dev. Pitch mathematically proven 60 FPS performance and recapturing ₹48k/yr in lost aggregator fees!"
+    proTip: "Always confirm you are asking for the specific Decision Maker listed in the dossier to bypass gatekeepers on the first sentence!"
   },
   {
     step: 3,
-    total: 5,
-    badge: 'STEP 3 OF 5 // COCKPIT',
+    total: 8,
+    badge: 'STEP 3 OF 8 // RECON HOOK',
+    targetSelector: '#callWrapCard, #preCallHookText, #preCallBleedText',
+    targetLabel: 'COLUMN 2 MID // 10s RECON HOOK & BLEED INTEL',
+    targetSubtext: 'Empirical Lighthouse 4G speed deficit & aggregator commission leak',
+    sectorBadge: '// RECON TELEMETRY LOCKED',
+    title: '3. 10s Recon Hook & Revenue Bleed Telemetry',
+    summary: 'Never pitch generic web dev. Lead with empirical mobile 4G latency (LCP) and quantified monthly aggregator commission bleed (15-25% paid to OTAs/aggregators).',
+    visual: `┌── 10s RECON HOOK & BLEED TELEMETRY ─────────────┐
+│ 10s HOOK : "How many inquiries come direct vs   │
+│             paying 15-25% to aggregators?"      │
+│ BLEED    : ₹48,000/yr OTA Bleed • Mobile LCP 4.8s│
+└─────────────────────────────────────────────────┘`,
+    laptop: [
+      "• <strong>Pre-Call Hook:</strong> Read the curated 10-second opening hook aloud as soon as the prospect answers.",
+      "• <strong>Aggregator Bleed:</strong> Quote their exact monthly commission loss to anchor our ₹50k–₹2L package as a self-funding investment.",
+      "• <strong>Mobile LCP Deficit:</strong> Mention their 4G load time (e.g. 4.8s) causing 53%+ bounce rates on mobile."
+    ],
+    mobile: [
+      "• <strong>High-Contrast Bar:</strong> Prominently displays the opening hook right above the Call button.",
+      "• <strong>Zero Guesswork:</strong> Empirical figures give you immediate technical authority over competing commodity agencies.",
+      "• <strong>Quick Reference:</strong> Glancable while holding the phone to your ear."
+    ],
+    proTip: "Frame website speed as pure revenue: every 1-second delay past 2.5s on mobile cuts consultation conversion rates by 7%!"
+  },
+  {
+    step: 4,
+    total: 8,
+    badge: 'STEP 4 OF 8 // CHEAT SHEET',
+    targetSelector: '#dossierPane, #dossierTabContentTalk, #btnDossierLangEn',
+    targetLabel: 'COLUMN 3 TOP // CONVERSATIONAL CHEAT SHEET & AUDIO',
+    targetSubtext: '4 tactical talk tracks with English/Malayalam bilingual speech synthesis',
+    sectorBadge: '// CHEAT SHEET ENGAGED',
+    title: '4. Conversational Cheat Sheet & Bilingual Audio',
+    summary: 'Four proven conversational tracks (Speed, Cellular Dropoff, DPDP Privacy, 60 FPS Advantage) equipped with 1-click clipboard copy and local speech synthesis playback.',
+    visual: `┌── CONVERSATIONAL CHEAT SHEET ───────────────────┐
+│ [EN] [ML]           [NO TECH JARGON BADGE]      │
+│ 01 HEADLESS SPEED   │ [COPY] [PLAY] [?] DECODE   │
+│ 02 CELLULAR DROPOFF │ [COPY] [PLAY] [?] DECODE   │
+└─────────────────────────────────────────────────┘`,
+    laptop: [
+      "• <strong>Right Column:</strong> Four pre-scripted conversational cards calibrated for high-ticket closing.",
+      "• <strong>Bilingual Switcher:</strong> Toggle between English (<span class='font-bold text-neutral-900'>EN</span>) and Malayalam / Manglish (<span class='font-bold text-neutral-900'>ML</span>) in 1 tap.",
+      "• <strong>Audio Playback:</strong> Click <span class='font-bold text-neutral-900'>[PLAY]</span> to hear the pitch read with natural pronunciation before dialing.",
+      "• <strong>1-Tap Clipboard:</strong> Click <span class='font-bold text-neutral-900'>[COPY]</span> to copy individual talk tracks."
+    ],
+    mobile: [
+      "• <strong>Sub-Tab Switcher:</strong> On tablet/mobile, tap <span class='font-bold text-neutral-900'>[DOSSIER]</span> subtab to inspect talk tracks.",
+      "• <strong>Audio Training:</strong> Listen to Malayalam pitch tracks in headphones during downtime to perfect your pitch cadence.",
+      "• <strong>Direct Metaphors:</strong> Every track replaces dry technical jargon with vivid, relatable business analogies."
+    ],
+    proTip: "Switch to [ML] mode when calling local regional businesses; Malayalam conversational hooks build instant rapport and disarm gatekeepers!"
+  },
+  {
+    step: 5,
+    total: 8,
+    badge: 'STEP 5 OF 8 // JARGON DECODER',
+    targetSelector: '#jargonDecoderQuickBar, #dossierTabContentTalk',
+    targetLabel: 'COLUMN 3 QUICK BAR // JARGON DECODER & METAPHORS',
+    targetSubtext: 'Instant layman translation pills for complex technical concepts',
+    sectorBadge: '// JARGON DECODER ACTIVE',
+    title: '5. Jargon Decoder Pills & Layman Pitch Gym',
+    summary: 'Never intimidate clients with complex acronyms. Click any Jargon Decoder pill to instantly translate technical terms (LCP, DPDP, Thumb-Zone, WP Bloat, SSL/TLS, 60 FPS) into client-friendly analogies.',
+    visual: `┌── JARGON DECODER PILLS (ABOVE THE FOLD) ────────┐
+│ [LCP] Speed   [LAW] DPDP   [UI] Thumb-Zone     │
+│ [AGG] Bleed   [DOM] Bloat  [SLA] 60 FPS         │
+│ → Click to open Layman Analogy Audio Modal      │
+└─────────────────────────────────────────────────┘`,
+    laptop: [
+      "• <strong>Quick Bar:</strong> 8 color-coded pills positioned right below the Cheat Sheet header for instant access above the fold.",
+      "• <strong>Layman Analogies:</strong> Click any pill (e.g. <span class='font-bold text-neutral-900'>[LCP] Speed</span>) to open the interactive decoding modal.",
+      "• <strong>Voice Synthesis:</strong> Hear the simplified explanation read aloud in English or Malayalam.",
+      "• <strong>Append to Notes:</strong> 1-click button pastes the analogy directly into your active call notes."
+    ],
+    mobile: [
+      "• <strong>Thumb-Safe Pills:</strong> Elevated above the fold so you don't have to scroll past 4 long cards to decode a term.",
+      "• <strong>Pitch Gym:</strong> Practice client-friendly answers to tough technical questions during practice sessions.",
+      "• <strong>Zero Confusion:</strong> Never stumble when a client asks: <em>'What does DPDP Act have to do with my website?'</em>"
+    ],
+    proTip: "Use the rusty latch analogy for LCP: 'A 4.1s site is like a clinic door with a rusty latch — patients give up and walk to the clinic next door!'"
+  },
+  {
+    step: 6,
+    total: 8,
+    badge: 'STEP 6 OF 8 // REBUTTALS',
+    targetSelector: '#soundboardPanel, #objectionBox, #callNotesInput',
+    targetLabel: 'COLUMN 2 LOWER // OBJECTION DEFENSE & SMART NOTES',
+    targetSubtext: 'Tactical objection soundboard with 1-tap note logging',
+    sectorBadge: '// OBJECTION DEFENSE ARMED',
+    title: '6. Strategic Objection Defense & Smart Notes',
+    summary: 'When prospects push back ("Already have website", "Too expensive", "Using Instagram only", "Send WhatsApp"), tap the soundboard for bulletproof counter-rebuttals.',
+    visual: `┌── OBJECTION SOUNDBOARD & SMART NOTES ───────────┐
+│ [ALREADY HAVE SITE]  [TOO EXPENSIVE]  [INSTA]   │
+│ Rebuttal: "We don't replace it, we headless-it" │
+│ Quick Tags: [#Gatekeeper] [#Interested] [#Price]│
+└─────────────────────────────────────────────────┘`,
+    laptop: [
+      "• <strong>Soundboard Panel:</strong> Click any objection pill to open instant battle-tested rebuttals in English or Malayalam.",
+      "• <strong>Audio Soundboard:</strong> Play audio rebuttals to master the exact tone, pause, and phrasing.",
+      "• <strong>Append Rebuttal:</strong> Click <span class='font-bold text-neutral-900'>[+ Append to Notes]</span> to instantly log the objection.",
+      "• <strong>Quick Tags:</strong> 1-click pills below the notes box quickly tag the lead without manual typing."
+    ],
+    mobile: [
+      "• <strong>Compact Buttons:</strong> Soundboard buttons fit cleanly below the call console on mobile.",
+      "• <strong>Rapid Rebuttals:</strong> Glance down at the rebuttal text while talking to deliver confident, friction-free answers.",
+      "• <strong>Local Auto-Save:</strong> Call notes save locally to localStorage in real-time on every keystroke."
+    ],
+    proTip: "When a prospect says 'We already have a site', counter with: 'We don't rebuild your site; we install a high-speed booking engine that recaptures lost mobile revenue!'"
+  },
+  {
+    step: 7,
+    total: 8,
+    badge: 'STEP 7 OF 8 // FLIGHT HUD',
     targetSelector: '#callWrapCard, #callActionBtn, #dialHandoffSection',
     targetLabel: 'COCKPIT // IN-CALL FLIGHT HUD & TEL STOPWATCH',
-    targetSubtext: 'BB-8 monitoring live stopwatch & mandatory disposition gate',
-    bb8Sector: '// LIVE DIAL COCKPIT LOCKED',
-    title: '3. In-Call Flight HUD & Mandatory Dispositions',
+    targetSubtext: 'Live call timer, accidental misclick shield & 2-step disposition gate',
+    sectorBadge: '// LIVE DIAL COCKPIT LOCKED',
+    title: '7. In-Call Flight HUD & Mandatory Dispositions',
     summary: 'Dialing starts an active stopwatch. To prevent lost data or skipping callbacks, active calls must be dispositioned through a guided 2-step gate.',
     visual: `┌── IN-CALL FLIGHT HUD ───────────────────────────┐
 │ [LIVE DIAL] [ 02:15 ]     [ ↩ CANCEL DIAL ]     │
@@ -2880,7 +2994,7 @@ const WORKSPACE_TOUR_STEPS = [
 │ STEP 2: [WIN: BOOKED] [TEARDOWN] [CALLBACK]     │
 └─────────────────────────────────────────────────┘`,
     laptop: [
-      "• <strong>Start Call:</strong> Click <span class='font-bold text-neutral-900'>[CALL (TEL)]</span> or press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>D</kbd> to launch live flight HUD & stopwatch.",
+      "• <strong>Start Call:</strong> Click <span class='font-bold text-neutral-900'>[Call Prospect (D)]</span> or press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>D</kbd> to launch live flight HUD & stopwatch.",
       "• <strong>Misclick Safe:</strong> Accidental click? Hit <span class='font-bold text-rose-700'>[ ↩ Cancel Dial ]</span> to reset immediately.",
       "• <strong>Step 1 & Step 2 Gate:</strong> Pick Reach Status (DM / Gatekeeper / No Answer), then choose dynamic Outcome.",
       "• <strong>1-Tap Tags:</strong> Click quick tags to append notes without typing. Press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>Space</kbd> to save & advance."
@@ -2893,54 +3007,32 @@ const WORKSPACE_TOUR_STEPS = [
     proTip: "The cockpit locks lead navigation while a call is active so you never lose call notes or forget to schedule a callback."
   },
   {
-    step: 4,
-    total: 5,
-    badge: 'STEP 4 OF 5 // CLOSING',
-    targetSelector: '#outcomeOptionsContainer, #btnOutcomeBooked, #soundboardPanel',
-    targetLabel: 'CLOSING // TWO-TRACK TERMINAL (15% DIRECT & 10% HANDOFF)',
-    targetSubtext: 'BB-8 illuminating 15% direct close & 50% advance UPI deposit QR',
-    bb8Sector: '// CLOSING TERMINAL ENGAGED',
-    title: '4. Two-Track Deal Closing & Sovereign Payment Terminal',
-    summary: 'Strike while the iron is hot. Close deals autonomously on the spot for a 15% commission, or escalate enterprise walkthroughs to Apoorv for a 10% safety net.',
-    visual: `┌── TWO-TRACK CLOSING TERMINAL ───────────────────┐
-│ TRACK 1: [ CLOSE (15% COMMISSION) ]             │
-│   → Live 50% UPI QR Code (apoorvxs@okaxis)       │
-│ TRACK 2: [ FORWARD (10% REFERRAL SAFETY NET) ]  │
-│   → 15-Min Google Meet Slot on Apoorv's Calendar│
+    step: 8,
+    total: 8,
+    badge: 'STEP 8 OF 8 // CLOSING & WALLET',
+    targetSelector: '#outcomeOptionsContainer, #topbarWalletPill, header.topbar',
+    targetLabel: 'CLOSING // TWO-TRACK TERMINAL & COMMISSION WALLET',
+    targetSubtext: '15% direct close UPI terminal, 10% founder handoff & instant payout request',
+    sectorBadge: '// CLOSING TERMINAL ENGAGED',
+    title: '8. Two-Track Closing Terminal & Sovereign Wallet',
+    summary: 'Strike while the iron is hot. Close deals autonomously on the spot for a 15% commission, or escalate enterprise walkthroughs to Apoorv for a 10% safety net. Request instant UPI settlements directly from your topbar wallet.',
+    visual: `┌── TWO-TRACK CLOSING & SOVEREIGN WALLET ─────────┐
+│ TRACK 1: [ CLOSE (15% COMMISSION) ] → Live UPI  │
+│ TRACK 2: [ FORWARD (10% REFERRAL) ] → Meet Slot │
+│ TOPBAR : [ ₹7,500 EARNED ] [ REQUEST UPI PAYOUT]│
 └─────────────────────────────────────────────────┘`,
     laptop: [
       "• <strong>Track 1 (Direct Close — 15% Cut):</strong> When DM agrees, click <span class='font-bold text-neutral-900'>[ ◈ CLOSE (15%) ]</span>. Select Tier (₹50k/₹100k/₹200k), show live 50% UPI deposit QR, and click 'Mark 50% Deposit Received'.",
       "• <strong>Track 2 (Founder Walkthrough — 10% Cut):</strong> For complex enterprise deals, click <span class='font-bold text-neutral-900'>[ ◈ FORWARD (10%) ]</span> to book a 15-min Google Meet with Apoorv with zero context loss.",
-      "• <strong>Instant Commission:</strong> Track 1 pays ₹7,500 on ₹50k directly; Track 2 pays ₹5,000 on discovery handoff!"
-    ],
-    mobile: [
-      "• <strong>Mobile Optimized Modals:</strong> Both closing dialogs open seamlessly on mobile with zero horizontal clipping.",
-      "• <strong>1-Tap WhatsApp SOW:</strong> Dispatches pre-formatted milestone agreements directly to the client's WhatsApp.",
-      "• <strong>UPI Copy:</strong> 1-tap clipboard copying for UPI IDs to facilitate instant mobile app transfers."
-    ],
-    proTip: "Never leave a verbal agreement hanging. Always send the 50% advance UPI QR or lock Apoorv's calendar before hanging up!"
-  },
-  {
-    step: 5,
-    total: 5,
-    badge: 'STEP 5 OF 5 // WALLET',
-    targetSelector: '#topbarWalletPill, #btnNextLeadHandoff, header.topbar',
-    targetLabel: 'TOPBAR // SOVEREIGN COMMISSION WALLET & STREAKS',
-    targetSubtext: 'BB-8 targeting real-time rupee earnings & instant UPI settlement',
-    bb8Sector: '// WALLET SETTLEMENT ACTIVE',
-    title: '5. Sovereign Commission Wallet & Shift Momentum',
-    summary: 'Track every rupee earned in real-time. Request instant UPI settlements directly from the topbar, maintain dial streaks, and unlock dopamine milestones.',
-    visual: `┌── SOVEREIGN WALLET & TELEMETRY ─────────────────┐
-│ TOPBAR   : [ ₹7,500 EARNED ]                    │
-│ STREAK   : STREAK // 3D (Active Consecutive)   │
-│ SETTLE   : [ REQUEST UPI SETTLEMENT ]           │
-└─────────────────────────────────────────────────┘`,
-    laptop: [
+      "• <strong>Instant Commission:</strong> Track 1 pays ₹7,500 on ₹50k directly; Track 2 pays ₹5,000 on discovery handoff!",
       "• <strong>Live Wallet Pill:</strong> Click <span class='font-bold text-neutral-900'>[ ₹X EARNED ]</span> in topbar to inspect Cleared, Pending, and Settled balances.",
       "• <strong>Instant UPI Payouts:</strong> Enter your UPI VPA and hit <span class='font-bold text-neutral-900'>[ REQUEST UPI PAYOUT ]</span> to send automated WhatsApp settlement to Apoorv.",
       "• <strong>Closer Hotkeys:</strong> <kbd class='px-1 bg-[#17120f] text-[#fce566]'>1</kbd> (Booked), <kbd class='px-1 bg-[#17120f] text-[#fce566]'>2</kbd> (Callback), <kbd class='px-1 bg-[#17120f] text-[#fce566]'>3</kbd> (Disqual), <kbd class='px-1 bg-[#17120f] text-[#fce566]'>Space</kbd> (Save/Next)."
     ],
     mobile: [
+      "• <strong>Mobile Optimized Modals:</strong> Both closing dialogs open seamlessly on mobile with zero horizontal clipping.",
+      "• <strong>1-Tap WhatsApp SOW:</strong> Dispatches pre-formatted milestone agreements directly to the client's WhatsApp.",
+      "• <strong>UPI Copy:</strong> 1-tap clipboard copying for UPI IDs to facilitate instant mobile app transfers.",
       "• <strong>Pinned Header:</strong> Live wallet pill is always visible in the mobile header.",
       "• <strong>Audio Chimes:</strong> Procedural droid synthesis chirps celebrate your 5, 10, 15, and 20 dial milestones.",
       "• <strong>Re-open Anytime:</strong> Open the Profile Menu or tap <span class='font-bold text-neutral-900'>[ TOUR ]</span> anytime to review this flight manual!"
@@ -3060,18 +3152,17 @@ function updateTourSpotlight(stepIndex) {
   // Positioning of tourCard relative to target element: OPPOSITE-SIDE DOCKING RULE
   // Guarantees tourCard NEVER overlaps the active highlighted element
   if (tourCard && !isMobile) {
-    if (stepIndex === 0 || stepIndex === 1) {
-      // Step 1: Target is on Left (Queue: 0 - 320px) -> Card docks on Right (over Column 3: 1040 - 1440px)
-      // Step 2: Target is in Center (Dossier: 366 - 1010px) -> Card docks on Right (over Column 3: 1040 - 1440px)
+    if (stepIndex === 0 || stepIndex === 1 || stepIndex === 2 || stepIndex === 5 || stepIndex === 6) {
+      // Targets on Left or Center (Queue, Dossier Top, Recon Hook, Objection Defense, In-Call HUD)
+      // Docks on Right (over Column 3)
       tourCard.style.marginLeft = 'auto';
       tourCard.style.marginRight = '1rem';
       tourCard.style.width = '350px';
       tourCard.style.marginTop = 'auto';
       tourCard.style.marginBottom = 'auto';
     } else {
-      // Step 3 (Cockpit: Center-Bottom: 378 - 998px, y: 745) -> Card docks Top-Left in Column 1 (0 - 320px)
-      // Step 4 (Closing: Center/Right) -> Card docks Top-Left in Column 1 (0 - 320px)
-      // Step 5 (Wallet: Top-Right) -> Card docks Top-Left in Column 1 (0 - 320px)
+      // Targets in Column 3 or Topbar (Cheat Sheet, Jargon Decoder, Closing & Wallet)
+      // Docks on Left (over Column 1)
       tourCard.style.marginLeft = '0.5rem';
       tourCard.style.marginRight = 'auto';
       tourCard.style.width = '320px';
@@ -3084,49 +3175,6 @@ function updateTourSpotlight(stepIndex) {
     tourCard.style.width = '100%';
     tourCard.style.marginTop = 'auto';
     tourCard.style.marginBottom = '0.5rem';
-  }
-
-  // Guide the Authentic 3D BB-8 Droid to Perch on the Active Tour Target
-  if (typeof window !== 'undefined' && typeof window.smoothGlideTo === 'function') {
-    const isMobileView = winW < 1024;
-    let bb8TargetX = 0;
-    let bb8TargetY = 0;
-
-    if (isMobileView) {
-      bb8TargetX = Math.round(x + w * 0.5);
-      bb8TargetY = Math.max(60, Math.min(y - 20, winH * 0.3));
-    } else {
-      if (stepIndex === 0) {
-        // Step 1: Queue -> Perch on top-right of queue
-        bb8TargetX = Math.round(x + Math.min(270, w - 40));
-        bb8TargetY = Math.max(70, Math.round(y - 12));
-      } else if (stepIndex === 1) {
-        // Step 2: Dossier -> Perch on top-left of Dossier title
-        bb8TargetX = Math.round(x + 50);
-        bb8TargetY = Math.max(70, Math.round(y - 38));
-      } else if (stepIndex === 2) {
-        // Step 3: In-call Cockpit -> Perch right above the Cockpit bar
-        bb8TargetX = Math.round(x + 50);
-        bb8TargetY = Math.max(70, Math.round(y - 38));
-      } else if (stepIndex === 3) {
-        // Step 4: Closing -> Perch right above the closing actions
-        bb8TargetX = Math.round(x + Math.min(w * 0.5, 220));
-        bb8TargetY = Math.max(70, Math.round(y - 28));
-      } else {
-        // Step 5: Wallet -> Perch right beside the topbar wallet pill
-        bb8TargetX = Math.round(x - 45);
-        bb8TargetY = Math.round(y + 20);
-      }
-    }
-
-    try {
-      window.smoothGlideTo(bb8TargetX, bb8TargetY, 450, () => {
-        if (window.Player3D?.nod) window.Player3D.nod();
-        if (window.System1Brain?.emitThought) {
-          window.System1Brain.emitThought(step.bb8Sector || step.title, 4000);
-        }
-      });
-    } catch(e) {}
   }
 }
 
@@ -3234,17 +3282,6 @@ function closeWorkspaceTour(markCompleted = true) {
     window.removeEventListener('scroll', onTourWindowChange, true);
     tourListenersAttached = false;
   }
-
-  // Glide 3D BB-8 back to default idle perch
-  if (typeof window !== 'undefined' && typeof window.smoothGlideTo === 'function') {
-    try {
-      const defX = Math.round((window.innerWidth || 1440) * 0.35);
-      window.smoothGlideTo(defX, 120, 600);
-    } catch(e) {}
-  }
-
-  const bb8 = document.getElementById('tourBB8Companion');
-  if (bb8) bb8.style.opacity = '0';
 
   // Audio chime
   if (typeof window.SFX !== 'undefined' && typeof window.SFX.playThought === 'function') {
@@ -4253,9 +4290,10 @@ function renderActiveProspect() {
   }
   const preCallBleed = document.getElementById('preCallBleedText');
   if (preCallBleed) {
+    const cleanLcpTime = String(p.lcpTime || '4.1s').replace(/^LCP:\s*/i, '');
     preCallBleed.innerText = p.wastedSpend 
-      ? `${p.wastedSpend} on aggregators • Mobile LCP ${p.lcpTime || '4.1s'} cellular bounce risk.`
-      : `Mobile LCP ${p.lcpTime || '4.1s'} • High aggregator fee leak on mobile traffic.`;
+      ? `${p.wastedSpend} on aggregators • Mobile LCP ${cleanLcpTime} cellular bounce risk.`
+      : `Mobile LCP ${cleanLcpTime} • High aggregator fee leak on mobile traffic.`;
   }
 
   // 3D WebUI & High-Impact Conversion Moat Solutions
