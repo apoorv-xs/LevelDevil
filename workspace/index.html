@@ -465,6 +465,8 @@
     .retro-workspace #shortcutsModal .studio-panel-elevated,
     .retro-workspace #clientTeardownModal .studio-panel-elevated,
     .retro-workspace #proposalModal .studio-panel-elevated,
+    .retro-workspace #dealCommitmentModal .studio-panel-elevated,
+    .retro-workspace #executiveHandoffModal .studio-panel-elevated,
     .retro-workspace #laymanAnalogyModal .studio-panel-elevated,
     .retro-workspace #authGateOverlay .studio-panel-elevated {
       background: var(--white) !important;
@@ -475,6 +477,8 @@
     }
     .retro-workspace #adminModal button,
     .retro-workspace #proposalModal button,
+    .retro-workspace #dealCommitmentModal button,
+    .retro-workspace #executiveHandoffModal button,
     .retro-workspace #clientTeardownModal button,
     .retro-workspace #shortcutsModal button {
       border: 2px solid var(--ink) !important;
@@ -680,6 +684,8 @@
     #adminModal,
     #shortcutsModal,
     #proposalModal,
+    #dealCommitmentModal,
+    #executiveHandoffModal,
     #clientTeardownModal,
     #laymanAnalogyModal,
     #csvImportModal,
@@ -691,6 +697,8 @@
     #adminModal.hidden,
     #shortcutsModal.hidden,
     #proposalModal.hidden,
+    #dealCommitmentModal.hidden,
+    #executiveHandoffModal.hidden,
     #clientTeardownModal.hidden,
     #laymanAnalogyModal.hidden,
     #csvImportModal.hidden,
@@ -2093,6 +2101,245 @@
           Download .md
         </button>
         <button onclick="closeProposalModal()" class="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-mono text-xs transition">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. SOVEREIGN DEAL COMMITMENT & 50% ADVANCE TERMINAL (TRACK 1: 15% DIRECT CLOSE) -->
+  <div id="dealCommitmentModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-[1050]" role="dialog" aria-modal="true" aria-labelledby="dealModalTitle">
+    <div id="dealCommitmentModalBox" class="studio-panel-elevated bg-[#fffdf1] border-[3px] border-[#17120f] shadow-[8px_8px_0_#17120f] max-w-2xl w-full p-4 sm:p-6 space-y-4 flex flex-col max-h-[92vh] font-mono text-[#17120f] overflow-y-auto">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b-2 border-[#17120f] pb-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 text-[9px] font-arcade bg-[#d4edda] text-[#155724] border border-[#17120f] shadow-[1px_1px_0_#17120f]">💰 SOVEREIGN CLOSING TERMINAL</span>
+            <h3 id="dealModalTitle" class="font-arcade text-xs sm:text-sm font-bold text-[#17120f]">50% Advance Commitment &amp; SOW</h3>
+          </div>
+          <p class="text-[11px] font-mono text-[#17120f]/80 mt-1">
+            Target Client: <strong id="dealClientName" class="text-[#047857]">--</strong> • <span id="dealClientDm">Decision Maker</span>
+          </p>
+        </div>
+        <button onclick="closeDealCommitmentModal()" aria-label="Close Commitment Terminal" class="w-8 h-8 bg-[#fffdf1] hover:bg-[#fce566] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-sm font-bold flex items-center justify-center cursor-pointer transition active:translate-x-[1px] active:translate-y-[1px]">✕</button>
+      </div>
+
+      <!-- Scope Tier Selection Chips -->
+      <div class="space-y-1.5">
+        <label class="text-[10px] font-arcade uppercase text-[#17120f]/80 flex items-center justify-between">
+          <span>SELECT SCOPE &amp; INVESTMENT TIER:</span>
+          <span class="text-emerald-700 font-bold text-[9px]">● 15% DIRECT CLOSING CUT ACTIVE</span>
+        </label>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2" role="radiogroup" aria-label="Scope Tiers">
+          <button type="button" id="dealTier1" onclick="selectDealTier(1)" class="deal-tier-btn active p-2.5 bg-[#fce566] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] text-left transition" role="radio" aria-checked="true">
+            <div class="font-arcade text-[9px] font-bold text-[#17120f]">TIER 1: SPEED &amp; BOOKING</div>
+            <div class="text-sm font-bold mt-1 text-[#17120f]">₹50,000</div>
+            <div class="text-[10px] text-[#047857] font-semibold mt-0.5">50% Advance: ₹25,000</div>
+            <div class="text-[9px] text-[#17120f]/70 mt-1 font-mono">Your Commission: <strong>₹7,500</strong></div>
+          </button>
+          <button type="button" id="dealTier2" onclick="selectDealTier(2)" class="deal-tier-btn p-2.5 bg-[#fffdf1] hover:bg-[#fff4c9] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] text-left transition" role="radio" aria-checked="false">
+            <div class="font-arcade text-[9px] font-bold text-[#17120f]">TIER 2: 3D SPATIAL SHOWCASE</div>
+            <div class="text-sm font-bold mt-1 text-[#17120f]">₹1,00,000</div>
+            <div class="text-[10px] text-[#047857] font-semibold mt-0.5">50% Advance: ₹50,000</div>
+            <div class="text-[9px] text-[#17120f]/70 mt-1 font-mono">Your Commission: <strong>₹15,000</strong></div>
+          </button>
+          <button type="button" id="dealTier3" onclick="selectDealTier(3)" class="deal-tier-btn p-2.5 bg-[#fffdf1] hover:bg-[#fff4c9] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] text-left transition" role="radio" aria-checked="false">
+            <div class="font-arcade text-[9px] font-bold text-[#17120f]">TIER 3: WEBGPU CUSTOM ENGINE</div>
+            <div class="text-sm font-bold mt-1 text-[#17120f]">₹2,00,000</div>
+            <div class="text-[10px] text-[#047857] font-semibold mt-0.5">50% Advance: ₹1,00,000</div>
+            <div class="text-[9px] text-[#17120f]/70 mt-1 font-mono">Your Commission: <strong>₹30,000</strong></div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Payment Rail & Dynamic UPI QR Section -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-[#fff8db] border-2 border-[#17120f] shadow-[4px_4px_0_#17120f]">
+        <!-- Left: Live QR Code -->
+        <div class="flex flex-col items-center justify-center p-2 bg-white border border-[#17120f] text-center">
+          <p class="font-arcade text-[8px] font-bold text-[#17120f] mb-1.5">SCAN WITH ANY UPI APP</p>
+          <div class="relative w-36 h-36 bg-white border border-neutral-300 flex items-center justify-center p-1">
+            <img id="dealUpiQrImg" src="" alt="Dynamic 50% Advance UPI QR Code" class="w-full h-full object-contain">
+          </div>
+          <div class="text-[9px] font-mono text-[#17120f]/80 mt-1.5 flex items-center gap-1">
+            <span>UPI ID:</span>
+            <code id="dealUpiIdText" class="font-bold select-all">apoorvxs@okaxis</code>
+            <button type="button" onclick="copyUpiId()" class="text-xs hover:text-emerald-700" title="Copy UPI ID">📋</button>
+          </div>
+          <p class="text-[8px] text-neutral-500 font-mono mt-0.5">Google Pay • PhonePe • Paytm • BHIM • Cred</p>
+        </div>
+
+        <!-- Right: Breakdown & Deliverables Summary -->
+        <div class="space-y-2 flex flex-col justify-between text-xs font-mono">
+          <div>
+            <div class="flex justify-between border-b border-[#17120f]/20 pb-1">
+              <span class="text-neutral-600">Total Investment Floor:</span>
+              <strong id="dealSummaryTotal" class="font-bold text-[#17120f]">₹50,000</strong>
+            </div>
+            <div class="flex justify-between border-b border-[#17120f]/20 py-1 text-sm bg-emerald-50 px-1 -mx-1">
+              <span class="text-emerald-800 font-bold">50% Advance Due:</span>
+              <strong id="dealSummaryAdvance" class="font-bold text-emerald-700">₹25,000</strong>
+            </div>
+            <div class="flex justify-between py-1 text-[11px] text-[#047857]">
+              <span>Partner Closed Cut (15%):</span>
+              <strong id="dealSummaryCommission" class="font-bold">₹7,500</strong>
+            </div>
+          </div>
+
+          <!-- SOW Milestone Summary -->
+          <div class="p-2 bg-white/70 border border-[#17120f]/30 text-[10px] space-y-1">
+            <div class="font-bold text-[#17120f]">1-PAGE MILESTONE SOW &amp; GUARANTEE:</div>
+            <div>• <strong>50% Advance:</strong> Staging prototype live in 7 days</div>
+            <div>• <strong>25% Milestone:</strong> Revisions &amp; 60 FPS mobile audit</div>
+            <div>• <strong>25% Final Delivery:</strong> DNS launch &amp; code handover</div>
+            <div class="text-rose-700 font-semibold pt-0.5">• <strong>SLA Guarantee:</strong> 100% refund if &lt;60 FPS</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Shareable Proposal URL -->
+      <div class="space-y-1">
+        <label for="dealShareUrl" class="text-[10px] font-arcade uppercase text-[#17120f]/80 flex items-center justify-between">
+          <span>Client-Facing Proposal &amp; Pay Link</span>
+          <span class="text-emerald-700 text-[9px] font-bold">● Live URL Ready</span>
+        </label>
+        <div class="flex items-center gap-2">
+          <input 
+            type="text" 
+            id="dealShareUrl" 
+            readonly 
+            class="w-full px-3 py-1.5 bg-white border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] text-xs font-mono text-[#17120f] select-all focus:outline-none"
+            onclick="this.select()"
+          >
+          <button 
+            type="button"
+            onclick="copyDealProposalLink()" 
+            class="px-3 py-1.5 bg-[#fce566] hover:bg-[#ffe58f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-[10px] font-bold shrink-0 transition"
+          >
+            ⚡ Copy Link
+          </button>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t-2 border-[#17120f]">
+        <div class="flex flex-wrap items-center gap-2">
+          <button 
+            type="button"
+            onclick="sendWhatsAppDealCommitment()" 
+            class="px-3 py-2 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] font-arcade text-[9px] sm:text-[10px] font-bold flex items-center gap-1.5 transition active:translate-x-[1px] active:translate-y-[1px]"
+          >
+            <span>💬 Send WhatsApp SOW &amp; QR</span>
+          </button>
+          <button 
+            type="button"
+            onclick="confirmDealDepositReceived()" 
+            class="px-3 py-2 bg-[#fce566] hover:bg-[#ffd700] text-[#17120f] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] font-arcade text-[9px] sm:text-[10px] font-bold flex items-center gap-1.5 transition active:translate-x-[1px] active:translate-y-[1px]"
+          >
+            <span>💰 Mark 50% Deposit Received</span>
+          </button>
+        </div>
+        <button 
+          type="button"
+          onclick="closeDealCommitmentModal()" 
+          class="px-4 py-2 bg-[#fffdf1] hover:bg-neutral-200 border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-[10px] font-bold transition"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. EXECUTIVE HANDOFF TO APOORV MODAL (TRACK 2: 10% REFERRAL SAFETY NET) -->
+  <div id="executiveHandoffModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-[1050]" role="dialog" aria-modal="true" aria-labelledby="handoffModalTitle">
+    <div id="executiveHandoffModalBox" class="studio-panel-elevated bg-[#fffdf1] border-[3px] border-[#17120f] shadow-[8px_8px_0_#17120f] max-w-xl w-full p-4 sm:p-6 space-y-4 flex flex-col max-h-[92vh] font-mono text-[#17120f] overflow-y-auto">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b-2 border-[#17120f] pb-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 text-[9px] font-arcade bg-[#fff3cd] text-[#856404] border border-[#17120f] shadow-[1px_1px_0_#17120f]">🤝 PRINCIPAL ESCALATION</span>
+            <h3 id="handoffModalTitle" class="font-arcade text-xs sm:text-sm font-bold text-[#17120f]">Executive Handoff to Apoorv</h3>
+          </div>
+          <p class="text-[11px] font-mono text-[#17120f]/80 mt-1">
+            Prospect: <strong id="handoffClientName" class="text-blue-700">--</strong>
+          </p>
+        </div>
+        <button onclick="closeExecutiveHandoffModal()" aria-label="Close Handoff Window" class="w-8 h-8 bg-[#fffdf1] hover:bg-[#fce566] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-sm font-bold flex items-center justify-center cursor-pointer transition active:translate-x-[1px] active:translate-y-[1px]">✕</button>
+      </div>
+
+      <!-- Partner Safety Net Banner -->
+      <div class="p-3 bg-[#e8f4fd] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] space-y-1">
+        <div class="font-arcade text-[9px] font-bold text-blue-900 flex items-center gap-1.5">
+          <span>🛡️ 10% REFERRAL SAFETY NET ACTIVE</span>
+        </div>
+        <p class="text-[11px] text-blue-950 font-mono">
+          When Apoorv conducts the Google Meet walkthrough and closes this deal, you automatically earn <strong>10% Referral Commission</strong> (₹5,000 on ₹50k, ₹10,000 on ₹1L, ₹20,000+ on enterprise).
+        </p>
+      </div>
+
+      <!-- Meeting Time Picker -->
+      <div class="space-y-1">
+        <label for="handoffMeetingTime" class="text-[10px] font-arcade uppercase text-[#17120f]/80">
+          SELECT 15-MINUTE GOOGLE MEET TIME SLOT:
+        </label>
+        <input 
+          type="datetime-local" 
+          id="handoffMeetingTime" 
+          class="w-full px-3 py-2 bg-white border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] text-xs font-mono text-[#17120f] focus:outline-none focus:bg-[#fffdf1]"
+        >
+      </div>
+
+      <!-- Context & Questions Discussed -->
+      <div class="space-y-1">
+        <label for="handoffContextNotes" class="text-[10px] font-arcade uppercase text-[#17120f]/80">
+          KEY QUESTIONS / REQUIREMENTS DISCUSSED WITH DM:
+        </label>
+        <textarea 
+          id="handoffContextNotes" 
+          rows="3" 
+          class="w-full px-3 py-2 bg-white border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] text-xs font-mono text-[#17120f] focus:outline-none focus:bg-[#fffdf1]"
+          placeholder="E.g. Client wants direct WhatsApp booking integration; skeptical about 60 FPS mobile speed; wants Apoorv to showcase resort 3D room tour..."
+        ></textarea>
+      </div>
+
+      <!-- Generated Handoff Brief Preview -->
+      <div class="space-y-1">
+        <div class="flex items-center justify-between text-[10px] font-arcade uppercase text-[#17120f]/80">
+          <span>EXECUTIVE HANDOFF BRIEF (FOR APOORV):</span>
+          <button type="button" onclick="copyHandoffBriefText()" class="text-blue-700 font-bold hover:underline">📋 Copy Text</button>
+        </div>
+        <div id="handoffBriefPreview" class="p-2.5 bg-neutral-900 text-neutral-100 font-mono text-[10px] border border-[#17120f] whitespace-pre-wrap select-all max-h-32 overflow-y-auto"></div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t-2 border-[#17120f]">
+        <div class="flex flex-wrap items-center gap-2">
+          <button 
+            type="button"
+            onclick="generateApoorvMeetInvite()" 
+            class="px-3 py-2 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] font-arcade text-[9px] sm:text-[10px] font-bold flex items-center gap-1.5 transition active:translate-x-[1px] active:translate-y-[1px]"
+          >
+            <span>📅 Google Calendar &amp; Meet</span>
+          </button>
+          <button 
+            type="button"
+            onclick="sendHandoffBriefToApoorv()" 
+            class="px-3 py-2 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] font-arcade text-[9px] sm:text-[10px] font-bold flex items-center gap-1.5 transition active:translate-x-[1px] active:translate-y-[1px]"
+          >
+            <span>💬 Send to Apoorv (WA)</span>
+          </button>
+          <button 
+            type="button"
+            onclick="saveHandoffAndAdvance()" 
+            class="px-3 py-2 bg-[#fce566] hover:bg-[#ffd700] text-[#17120f] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] font-arcade text-[9px] sm:text-[10px] font-bold flex items-center gap-1.5 transition active:translate-x-[1px] active:translate-y-[1px]"
+          >
+            <span>🚀 Save &amp; Advance Lead</span>
+          </button>
+        </div>
+        <button 
+          type="button"
+          onclick="closeExecutiveHandoffModal()" 
+          class="px-4 py-2 bg-[#fffdf1] hover:bg-neutral-200 border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-[10px] font-bold transition"
+        >
           Close
         </button>
       </div>

@@ -678,4 +678,399 @@ pre {
   color: #4b5563;
 }
 
+/* ==========================================================================
+   VERIFIED ARCHITECTURAL CREDENTIALS BANNER
+   ========================================================================== */
+.trojan-credentials-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  background: #fbf8ef;
+  border: 2px solid var(--ink);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.trojan-dossier-meta {
+  color: var(--ink);
+  font-size: 11px;
+}
+
+/* ==========================================================================
+   REVENUE RECOVERY SIMULATOR
+   ========================================================================== */
+.trojan-simulator-card {
+  background: #fdfbf7;
+  border: 2px solid var(--ink);
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.simulator-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--ink);
+}
+
+.simulator-sliders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.slider-control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.slider-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.retro-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border: 2px solid var(--ink);
+  outline: none;
+  cursor: pointer;
+}
+
+.retro-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #fce566;
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.retro-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.simulator-results-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.sim-result-box {
+  padding: 12px;
+  border: 2px solid var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.sim-result-bad {
+  background: #fff5f5;
+}
+
+.sim-result-good {
+  background: #f0fdf4;
+}
+
+.sim-result-highlight {
+  background: #fffde7;
+}
+
+.sim-metric-lbl {
+  font-size: 10px;
+  font-weight: 700;
+  color: #4b5563;
+}
+
+.sim-metric-num {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.sim-metric-sub {
+  font-size: 10px;
+  color: #6b7280;
+}
+
+.text-bad {
+  color: #dc2626;
+}
+
+.text-good {
+  color: #047857;
+}
+
+.text-highlight {
+  color: #b45309;
+}
+
+/* ==========================================================================
+   DUAL-ACTION CONVERSION BAR
+   ========================================================================== */
+.trojan-dual-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+}
+
+.trojan-fasttrack-btn {
+  padding: 14px 22px;
+  background: #fce566;
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  font: 11px/1.4 "Press Start 2P", monospace;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.trojan-fasttrack-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 var(--ink);
+  background: #ffd700;
+}
+
+.trojan-fasttrack-btn:active,
+.trojan-claim-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+/* ==========================================================================
+   SOVEREIGN 1-PAGE MILESTONE SOW & DEPOSIT TERMINAL
+   ========================================================================== */
+.trojan-payment-view {
+  margin-top: 24px;
+  padding: 20px;
+  background: #fff8db;
+  border: 3px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+.trojan-payment-view.hidden {
+  display: none !important;
+}
+
+.trojan-payment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 16px;
+}
+
+.trojan-close-btn {
+  width: 32px;
+  height: 32px;
+  background: var(--white);
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease;
+}
+
+.trojan-close-btn:hover {
+  background: #fce566;
+}
+
+.trojan-payment-tiers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.public-tier-btn {
+  background: var(--white);
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  padding: 12px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.public-tier-btn:hover {
+  background: #fff4c9;
+}
+
+.public-tier-btn.active {
+  background: #fce566;
+  border-color: var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  outline: 2px solid var(--ink);
+}
+
+.tier-price {
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.tier-advance {
+  color: #047857;
+  font-weight: 700;
+}
+
+.tier-deliverable {
+  color: #4b5563;
+  margin-top: 2px;
+}
+
+.trojan-payment-body {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .trojan-payment-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+.trojan-qr-card {
+  background: var(--white);
+  border: 2px solid var(--ink);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.qr-container {
+  width: 170px;
+  height: 170px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.qr-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.upi-id-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f5f9;
+  padding: 4px 8px;
+  border: 1px solid #cbd5e1;
+}
+
+.copy-upi-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.trojan-sow-card {
+  background: var(--white);
+  border: 2px solid var(--ink);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.sow-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.advance-row {
+  background: #ecfdf5;
+  padding: 6px 8px;
+  margin: -2px -4px;
+  border: 1px solid #a7f3d0;
+}
+
+.sow-specs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #f8fafc;
+  padding: 10px;
+  border: 1px solid #e2e8f0;
+  line-height: 1.5;
+}
+
+.sla-badge {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 8px;
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.trojan-payment-actions {
+  margin-top: 4px;
+}
+
+.whatsapp-proof-btn {
+  display: block;
+  text-align: center;
+  padding: 12px 16px;
+  background: #10b981;
+  color: #ffffff;
+  text-decoration: none;
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.whatsapp-proof-btn:hover {
+  background: #059669;
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.whatsapp-proof-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+
 

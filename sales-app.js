@@ -823,7 +823,7 @@ function initTrojanPitchFromUrl() {
   if (typeof window === "undefined" || !window.location) return;
   try {
     const params = new URLSearchParams(window.location.search);
-    const prospect = params.get("prospect") || params.get("client") || params.get("target");
+    const prospect = params.get("prospect") || params.get("client") || params.get("target") || params.get("proposal");
     if (!prospect) return;
 
     const dm = params.get("dm") || "";
@@ -833,8 +833,16 @@ function initTrojanPitchFromUrl() {
     const bleed = params.get("bleed") || "₹42,000/yr";
     const site = params.get("site") || "";
     const fee = params.get("fee") || "₹50,000";
+    const partner = params.get("partner") || params.get("ref") || "";
+    const isProposalFastTrack = Boolean(params.get("proposal"));
 
-    mountTrojanTeardown({ prospect, dm, lcp, speed, leak, bleed, site, fee });
+    if (partner) {
+      try {
+        localStorage.setItem("apoorv_partner_id", partner);
+      } catch (e) {}
+    }
+
+    mountTrojanTeardown({ prospect, dm, lcp, speed, leak, bleed, site, fee, partner, isProposalFastTrack });
   } catch (err) {
     console.warn("[Trojan] URL parameter parsing failed:", err);
   }
@@ -850,6 +858,8 @@ function mountTrojanTeardown(data) {
   const speedEl = document.getElementById("trojan-val-speed");
   const leakEl = document.getElementById("trojan-val-leak");
   const bleedEl = document.getElementById("trojan-val-bleed");
+  const dossierIdEl = document.getElementById("trojan-dossier-id");
+  const partnerIdEl = document.getElementById("trojan-partner-id");
 
   if (clientNameEl) clientNameEl.textContent = data.prospect;
   if (entityNameEl) entityNameEl.textContent = data.prospect;
@@ -858,8 +868,39 @@ function mountTrojanTeardown(data) {
   if (leakEl) leakEl.textContent = data.leak;
   if (bleedEl) bleedEl.textContent = data.bleed;
 
+  const cleanProspectCode = (data.prospect || "CLIENT").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12);
+  if (dossierIdEl) dossierIdEl.textContent = `RADAR-${cleanProspectCode || "STUDIO"}`;
+  
+  const savedPartner = (() => {
+    try { return localStorage.getItem("apoorv_partner_id"); } catch (e) { return ""; }
+  })();
+  const activePartner = data.partner || savedPartner || "CORE-STUDIO";
+  if (partnerIdEl) partnerIdEl.textContent = activePartner;
+
   section.classList.remove("hidden");
-  window._activeTrojanData = data;
+  window._activeTrojanData = { ...data, partner: activePartner };
+
+  // Parse fee and select matching deal tier
+  let initialTier = 1;
+  const rawFeeNum = Number(String(data.fee || "").replace(/[^0-9]/g, ""));
+  if (rawFeeNum >= 180000) {
+    initialTier = 3;
+  } else if (rawFeeNum >= 90000) {
+    initialTier = 2;
+  }
+  selectPublicDealTier(initialTier);
+
+  // Initialize Revenue Recovery Simulator
+  calculateRevenueRecovery();
+
+  // If directly opened as a proposal link (?proposal=...), auto-expand payment terminal
+  if (data.isProposalFastTrack) {
+    toggleTrojanPaymentView(true);
+    setTimeout(() => {
+      const paymentEl = document.getElementById("trojan-payment-view");
+      if (paymentEl) paymentEl.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 300);
+  }
 
   // Let BB-8 celebrate and emit diagnostic thought
   if (window.System1Brain?.emitThought) {
@@ -869,6 +910,142 @@ function mountTrojanTeardown(data) {
     setTimeout(() => {
       window.Player3D.celebrateVictory();
     }, 400);
+  }
+}
+
+function calculateRevenueRecovery() {
+  const visitorsInp = document.getElementById("sim-visitors");
+  const aovInp = document.getElementById("sim-aov");
+  const visitorsVal = document.getElementById("sim-visitors-val");
+  const aovVal = document.getElementById("sim-aov-val");
+  const bleedVal = document.getElementById("sim-bleed-val");
+  const recoveredVal = document.getElementById("sim-recovered-val");
+  const paybackVal = document.getElementById("sim-payback-val");
+
+  const visitors = Number(visitorsInp ? visitorsInp.value : 3000) || 3000;
+  const aov = Number(aovInp ? aovInp.value : 2500) || 2500;
+
+  if (visitorsVal) visitorsVal.textContent = `${visitors.toLocaleString('en-IN')} / mo`;
+  if (aovVal) aovVal.textContent = `₹${aov.toLocaleString('en-IN')}`;
+
+  // Conservative 5% conversion model on inbound footfall
+  const monthlyOrders = visitors * 0.05;
+  const grossMonthly = monthlyOrders * aov;
+  // 20% aggregator take-rate / commission bleed
+  const monthlyBleed = Math.round(grossMonthly * 0.20);
+  const monthlyRecovered = monthlyBleed;
+
+  const currentTierFee = window._activePublicTierFee || 50000;
+  const dailySavings = monthlyBleed / 30;
+  const paybackDays = dailySavings > 0 ? Math.max(1, Math.round((currentTierFee / dailySavings) * 10) / 10) : 10;
+
+  if (bleedVal) bleedVal.textContent = `₹${monthlyBleed.toLocaleString('en-IN')} / mo`;
+  if (recoveredVal) recoveredVal.textContent = `₹${monthlyRecovered.toLocaleString('en-IN')} / mo`;
+  if (paybackVal) paybackVal.textContent = `${paybackDays} Days`;
+}
+
+function toggleTrojanPaymentView(forceState) {
+  const paymentView = document.getElementById("trojan-payment-view");
+  if (!paymentView) return;
+
+  const isCurrentlyHidden = paymentView.classList.contains("hidden");
+  const shouldOpen = typeof forceState === "boolean" ? forceState : isCurrentlyHidden;
+
+  if (shouldOpen) {
+    paymentView.classList.remove("hidden");
+    if (typeof window.triggerHaptic === "function") window.triggerHaptic(25);
+  } else {
+    paymentView.classList.add("hidden");
+  }
+}
+
+const PUBLIC_DEAL_TIERS = {
+  1: {
+    name: "Tier 1: Speed & Booking",
+    total: 50000,
+    advance: 25000,
+    totalStr: "₹50,000",
+    advStr: "₹25,000",
+    tag: "Sub-0.8s LCP • 100% Direct Booking Engine"
+  },
+  2: {
+    name: "Tier 2: 3D Spatial Showcase",
+    total: 100000,
+    advance: 50000,
+    totalStr: "₹1,00,000",
+    advStr: "₹50,000",
+    tag: "Interactive Three.js Experience • Cel-shaded FX"
+  },
+  3: {
+    name: "Tier 3: WebGPU Custom Engine",
+    total: 200000,
+    advance: 100000,
+    totalStr: "₹2,00,000",
+    advStr: "₹1,00,000",
+    tag: "Proprietary WebGPU/GLSL Spatial Engine"
+  }
+};
+
+function selectPublicDealTier(tierNum) {
+  const tierConfig = PUBLIC_DEAL_TIERS[tierNum] || PUBLIC_DEAL_TIERS[1];
+  window._activePublicTierNum = tierNum;
+  window._activePublicTierFee = tierConfig.total;
+
+  [1, 2, 3].forEach(num => {
+    const btn = document.getElementById(`publicTier${num}`);
+    if (btn) {
+      const isActive = num === tierNum;
+      btn.classList.toggle("active", isActive);
+      btn.setAttribute("aria-checked", isActive ? "true" : "false");
+    }
+  });
+
+  const totalEl = document.getElementById("publicSummaryTotal");
+  const advanceEl = document.getElementById("publicSummaryAdvance");
+  if (totalEl) totalEl.textContent = tierConfig.totalStr;
+  if (advanceEl) advanceEl.textContent = tierConfig.advStr;
+
+  const prospectName = window._activeTrojanData?.prospect || "Valued Client";
+  const partnerId = window._activeTrojanData?.partner || "CORE-STUDIO";
+
+  // Dynamic UPI Intent URL
+  const note = `50% Advance - ${prospectName} (${tierConfig.name})`;
+  const upiUrl = `upi://pay?pa=apoorvxs@okaxis&pn=Apoorv%20A%20S&am=${tierConfig.advance}&cu=INR&tn=${encodeURIComponent(note)}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiUrl)}`;
+
+  const qrImg = document.getElementById("publicUpiQrImg");
+  if (qrImg) qrImg.src = qrUrl;
+
+  // WhatsApp Proof / Confirmation Link
+  const whatsAppBtn = document.getElementById("btnPublicWhatsAppProof");
+  if (whatsAppBtn) {
+    const message = 
+      `🚀 50% ADVANCE DEPOSIT CONFIRMATION\n` +
+      `Client: ${prospectName}\n` +
+      `Tier: ${tierConfig.name}\n` +
+      `Total Scope: ${tierConfig.totalStr}\n` +
+      `50% Advance Locked: ${tierConfig.advStr}\n` +
+      `Attributed Partner: ${partnerId}\n` +
+      `UPI Reference / Screenshot: [Attached Below]\n` +
+      `SLA Guarantee: 100% Refund if < 60 FPS on Mobile.`;
+    whatsAppBtn.href = `https://wa.me/919495462450?text=${encodeURIComponent(message)}`;
+  }
+
+  // Recalculate payback in simulator
+  calculateRevenueRecovery();
+}
+
+function copyPublicUpiId() {
+  const upiId = "apoorvxs@okaxis";
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(upiId).then(() => {
+      if (typeof window.triggerHaptic === "function") window.triggerHaptic([30, 20, 30]);
+      alert("✅ UPI ID 'apoorvxs@okaxis' copied to clipboard!");
+    }).catch(() => {
+      prompt("Copy UPI ID:", upiId);
+    });
+  } else {
+    prompt("Copy UPI ID:", upiId);
   }
 }
 
@@ -942,6 +1119,11 @@ if (typeof window !== "undefined") {
   window.mountTrojanTeardown = mountTrojanTeardown;
   window.toggleTrojanFps = toggleTrojanFps;
   window.claimTrojanConsultation = claimTrojanConsultation;
+  window.calculateRevenueRecovery = calculateRevenueRecovery;
+  window.toggleTrojanPaymentView = toggleTrojanPaymentView;
+  window.selectPublicDealTier = selectPublicDealTier;
+  window.copyPublicUpiId = copyPublicUpiId;
 }
+
 
 

@@ -2581,13 +2581,15 @@ function setupKeyboardShortcuts() {
     }
 
     // When modal overlay is active, disable single-character workbench hotkeys
-    const hasActiveModal = Boolean(document.querySelector('#authGateOverlay:not(.hidden), #adminModal:not(.hidden), #proposalModal:not(.hidden), #clientTeardownModal:not(.hidden), #customLeadModal:not(.hidden)'));
+    const hasActiveModal = Boolean(document.querySelector('#authGateOverlay:not(.hidden), #adminModal:not(.hidden), #proposalModal:not(.hidden), #dealCommitmentModal:not(.hidden), #executiveHandoffModal:not(.hidden), #clientTeardownModal:not(.hidden), #customLeadModal:not(.hidden)'));
     if (hasActiveModal) {
       if (e.key === 'Escape') {
         closeProfileDropdown();
         closeAuthGate();
         closeAdminModal();
         closeProposalModal();
+        if (typeof closeDealCommitmentModal === 'function') closeDealCommitmentModal();
+        if (typeof closeExecutiveHandoffModal === 'function') closeExecutiveHandoffModal();
         closeClientTeardownModal();
         closeLaymanAnalogy();
         if (typeof closeObjectionBox === 'function') closeObjectionBox();
@@ -2607,6 +2609,8 @@ function setupKeyboardShortcuts() {
       closeAuthGate();
       closeAdminModal();
       closeProposalModal();
+      if (typeof closeDealCommitmentModal === 'function') closeDealCommitmentModal();
+      if (typeof closeExecutiveHandoffModal === 'function') closeExecutiveHandoffModal();
       closeClientTeardownModal();
       closeLaymanAnalogy();
       if (typeof closeObjectionBox === 'function') closeObjectionBox();
@@ -2632,7 +2636,7 @@ function setupKeyboardShortcuts() {
           if (secondBtn) {
             secondBtn.click();
           } else {
-            setCallOutcome('connected_callback');
+            setCallOutcome('closed_won');
           }
         } else {
           logOutcome('gatekeeper_rejection');
@@ -2645,10 +2649,22 @@ function setupKeyboardShortcuts() {
           if (thirdBtn) {
             thirdBtn.click();
           } else {
-            setCallOutcome('not_interested');
+            setCallOutcome('teardown_sent');
           }
         } else {
           logOutcome('not_interested');
+        }
+      } else if (e.key === '4') {
+        e.preventDefault();
+        if (callPendingDisposition) {
+          const fourthBtn = document.querySelector('#outcomeOptionsContainer .outcome-btn:nth-child(4)');
+          if (fourthBtn) fourthBtn.click();
+        }
+      } else if (e.key === '5') {
+        e.preventDefault();
+        if (callPendingDisposition) {
+          const fifthBtn = document.querySelector('#outcomeOptionsContainer .outcome-btn:nth-child(5)');
+          if (fifthBtn) fifthBtn.click();
         }
       } else if (e.key === ' ') {
         e.preventDefault();
@@ -2701,7 +2717,7 @@ function matchStatus(p) {
     return p.status === 'gatekeeper_rejection' || p.status === 'connected_callback' || p.status === 'callback';
   }
   if (activeStatusFilter === 'interested') {
-    return p.status === 'interested' || p.status === 'discovery_booked';
+    return p.status === 'interested' || p.status === 'discovery_booked' || p.status === 'closed_won';
   }
   return true;
 }
@@ -2794,6 +2810,7 @@ function renderQueue() {
     const isSelected = p.id === selectedProspectId;
     const isLocked = p.status === 'locked';
     const isBooked = p.status === 'discovery_booked';
+    const isClosedWon = p.status === 'closed_won';
     const isDNC = p.status === 'blacklisted';
 
     const item = document.createElement('div');
@@ -2806,6 +2823,9 @@ function renderQueue() {
     if (isDNC) {
       badgeClass = "bg-rose-950/40 text-rose-400 border border-rose-800 font-bold";
       badgeText = "Excluded";
+    } else if (isClosedWon) {
+      badgeClass = "bg-[#fce566] text-[#17120f] border border-[#17120f] font-bold font-arcade";
+      badgeText = "💰 WON";
     } else if (isLocked) {
       badgeClass = "bg-rose-950/60 text-rose-300 border border-rose-700 font-bold animate-pulse";
       badgeText = "In Review";
@@ -3441,10 +3461,15 @@ function setCallOutcome(outcomeType) {
   playSound('click');
 
   if (outcomeType === 'discovery_booked') {
-    const discInput = document.getElementById('discoveryInput');
-    if (discInput) {
-      discInput.focus();
-      showNotification('🎉 Set discovery meeting time and tap Complete & Next!');
+    if (typeof openExecutiveHandoffModal === 'function') {
+      openExecutiveHandoffModal(selectedProspectId);
+    } else {
+      const discInput = document.getElementById('discoveryInput');
+      if (discInput) discInput.focus();
+    }
+  } else if (outcomeType === 'closed_won' || outcomeType === 'deal_closed_direct') {
+    if (typeof openDealCommitmentModal === 'function') {
+      openDealCommitmentModal(selectedProspectId);
     }
   } else if (outcomeType === 'teardown_sent') {
     const p = PROSPECTS.find(item => item.id === selectedProspectId);
@@ -3638,17 +3663,20 @@ function updateOutcomeOptionsUI() {
   if (currentCallReach === 'dm_connected') {
     if (title) title.innerText = "DECISION MAKER OUTCOME";
     container.innerHTML = `
-      <button type="button" data-outcome="discovery_booked" onclick="setCallOutcome('discovery_booked')" class="outcome-btn px-1.5 py-1 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Discovery Booked [Hotkey: 1]">
-        <span>🏆</span> <span>[1] BOOKED</span>
+      <button type="button" data-outcome="discovery_booked" onclick="setCallOutcome('discovery_booked')" class="outcome-btn px-1 py-1 bg-[#fff3cd] hover:bg-[#ffeeba] text-[#856404] border border-[#17120f] font-arcade text-[7.5px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Forward to Apoorv (10% Referral Cut) [Hotkey: 1]">
+        <span>🤝</span> <span>[1] FORWARD (10%)</span>
       </button>
-      <button type="button" data-outcome="teardown_sent" onclick="setCallOutcome('teardown_sent')" class="outcome-btn px-1.5 py-1 bg-[#cce5ff] hover:bg-[#b8daff] text-[#004085] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Sent 3D Teardown">
-        <span>🔗</span> <span>TEARDOWN</span>
+      <button type="button" data-outcome="closed_won" onclick="setCallOutcome('closed_won')" class="outcome-btn px-1 py-1 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border border-[#17120f] font-arcade text-[7.5px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Close Deal on Call (15% Direct Cut) [Hotkey: 2]">
+        <span>💰</span> <span>[2] CLOSE (15%)</span>
       </button>
-      <button type="button" data-outcome="connected_callback" onclick="setCallOutcome('connected_callback')" class="outcome-btn px-1.5 py-1 bg-[#fff3cd] hover:bg-[#ffeeba] text-[#856404] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Callback Requested [Hotkey: 2]">
-        <span>📅</span> <span>[2] CALLBACK</span>
+      <button type="button" data-outcome="teardown_sent" onclick="setCallOutcome('teardown_sent')" class="outcome-btn px-1 py-1 bg-[#cce5ff] hover:bg-[#b8daff] text-[#004085] border border-[#17120f] font-arcade text-[7.5px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Sent 3D Teardown [Hotkey: 3]">
+        <span>🔗</span> <span>[3] TEARDOWN</span>
       </button>
-      <button type="button" data-outcome="not_interested" onclick="setCallOutcome('not_interested')" class="outcome-btn px-1.5 py-1 bg-[#f8d7da] hover:bg-[#f5c6cb] text-[#721c24] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Disqualified [Hotkey: 3]">
-        <span>❌</span> <span>[3] DISQUAL</span>
+      <button type="button" data-outcome="connected_callback" onclick="setCallOutcome('connected_callback')" class="outcome-btn px-1 py-1 bg-[#e2e3e5] hover:bg-[#d6d8db] text-[#383d41] border border-[#17120f] font-arcade text-[7.5px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Callback Requested [Hotkey: 4]">
+        <span>📅</span> <span>[4] CALLBACK</span>
+      </button>
+      <button type="button" data-outcome="not_interested" onclick="setCallOutcome('not_interested')" class="outcome-btn px-1 py-1 bg-[#f8d7da] hover:bg-[#f5c6cb] text-[#721c24] border border-[#17120f] font-arcade text-[7.5px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Disqualified [Hotkey: 5]">
+        <span>❌</span> <span>[5] DISQUAL</span>
       </button>
     `;
   } else if (currentCallReach === 'gatekeeper') {
@@ -4476,7 +4504,19 @@ function saveAndNext() {
   if (p) {
     p.notes = notes;
     p.discoveryTime = discoveryTime;
-    if (discoveryTime) {
+    if (p.status === 'closed_won' || currentCallOutcome === 'closed_won') {
+      p.status = 'closed_won';
+      broadcastUnlock(p.id, 'closed_won');
+      saveLeadOverride(p.id, { status: 'closed_won', notes, closedTier: p.closedTier || 1, depositPaid: p.depositPaid || 25000 });
+      playSound('chime');
+      if (window.SFX && typeof window.SFX.playCelebrate === 'function') {
+        try { window.SFX.playCelebrate(); } catch(e) {}
+      }
+      if (window.Player3D && typeof window.Player3D.celebrateVictory === "function") {
+        window.Player3D.celebrateVictory();
+      }
+      showNotification(`🎉 50% Deposit & Deal Closed for ${p.name}!`);
+    } else if (discoveryTime) {
       p.status = 'discovery_booked';
       broadcastUnlock(p.id, 'discovery_booked');
       saveLeadOverride(p.id, { status: 'discovery_booked', notes, discoveryTime });
@@ -6507,6 +6547,354 @@ function downloadProposalMarkdown() {
   showNotification(`📥 Downloaded ${filename}!`);
 }
 
+// ==========================================================================
+// TWO-TRACK DEAL CLOSING ENGINE & SOVEREIGN IN-CALL PAYMENT TERMINAL
+// Track 1: Direct Partner Close (15% commission) with 50% UPI QR code
+// Track 2: Principal Escalation (10% safety net) with Executive Handoff Brief
+// ==========================================================================
+let currentDealTier = 1;
+
+const DEAL_TIERS = {
+  1: {
+    tierNum: 1,
+    name: "Tier 1: Speed & Direct Booking Engine",
+    total: 50000,
+    advance: 25000,
+    commission: 7500,
+    summary: "0.8s mobile paint, 1-tap WhatsApp consultation booking, DPDP Act 2023 compliance shield, 60 FPS performance floor."
+  },
+  2: {
+    tierNum: 2,
+    name: "Tier 2: Interactive 3D Showcase & Spatial UI",
+    total: 100000,
+    advance: 50000,
+    commission: 15000,
+    summary: "All Tier 1 features plus bespoke Three.js 3D spatial interactive showcase, dynamic lighting, and mobile 60 FPS guarantee."
+  },
+  3: {
+    tierNum: 3,
+    name: "Tier 3: Flagship Custom WebGPU Engine",
+    total: 200000,
+    advance: 100000,
+    commission: 30000,
+    summary: "Full WebGPU custom procedural shaders, real-time 3D configurator, multi-channel direct intake, and dedicated SLA handover."
+  }
+};
+
+function selectDealTier(tierNum) {
+  currentDealTier = tierNum;
+  playSound('click');
+  [1, 2, 3].forEach(t => {
+    const btn = document.getElementById(`dealTier${t}`);
+    if (btn) {
+      if (t === tierNum) {
+        btn.classList.add('active', 'bg-[#fce566]');
+        btn.classList.remove('bg-[#fffdf1]');
+        btn.setAttribute('aria-checked', 'true');
+      } else {
+        btn.classList.remove('active', 'bg-[#fce566]');
+        btn.classList.add('bg-[#fffdf1]');
+        btn.setAttribute('aria-checked', 'false');
+      }
+    }
+  });
+
+  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  const tier = DEAL_TIERS[tierNum] || DEAL_TIERS[1];
+
+  const totalEl = document.getElementById('dealSummaryTotal');
+  const advEl = document.getElementById('dealSummaryAdvance');
+  const commEl = document.getElementById('dealSummaryCommission');
+  const shareInput = document.getElementById('dealShareUrl');
+  const qrImg = document.getElementById('dealUpiQrImg');
+
+  if (totalEl) totalEl.innerText = `₹${tier.total.toLocaleString('en-IN')}`;
+  if (advEl) advEl.innerText = `₹${tier.advance.toLocaleString('en-IN')}`;
+  if (commEl) commEl.innerText = `₹${tier.commission.toLocaleString('en-IN')}`;
+
+  const clientName = p ? p.name : 'Client';
+  const cleanId = p ? p.id : 'deal';
+  const upiIntent = `upi://pay?pa=apoorvxs@okaxis&pn=Apoorv%20A%20S&am=${tier.advance}&cu=INR&tn=${encodeURIComponent(`50% Advance ${clientName.slice(0, 20)}`)}`;
+  
+  if (qrImg) {
+    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=4&data=${encodeURIComponent(upiIntent)}`;
+  }
+
+  const callerUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : (window.currentUser || {});
+  const partnerId = callerUser.sub || callerUser.uid || 'partner';
+  const clientProposalUrl = `https://apoorv.qzz.io/sales?proposal=${encodeURIComponent(cleanId)}&fee=${tier.total}&partner=${encodeURIComponent(partnerId)}`;
+  if (shareInput) shareInput.value = clientProposalUrl;
+}
+
+function openDealCommitmentModal(prospectId) {
+  const p = PROSPECTS.find(item => item.id === (prospectId || selectedProspectId));
+  if (!p) return;
+  playSound('click');
+
+  const nameEl = document.getElementById('dealClientName');
+  const dmEl = document.getElementById('dealClientDm');
+  if (nameEl) nameEl.innerText = p.name;
+  if (dmEl) dmEl.innerText = (p.dm || 'Decision Maker').split('(')[0].trim();
+
+  selectDealTier(1);
+  const modal = document.getElementById('dealCommitmentModal');
+  if (modal) modal.classList.remove('hidden');
+}
+
+function closeDealCommitmentModal() {
+  playSound('click');
+  const modal = document.getElementById('dealCommitmentModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function copyUpiId() {
+  playSound('click');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText('apoorvxs@okaxis').then(() => {
+      showNotification('📋 UPI ID apoorvxs@okaxis copied!');
+    });
+  }
+}
+
+function copyDealProposalLink() {
+  playSound('click');
+  const shareInput = document.getElementById('dealShareUrl');
+  const url = shareInput?.value || '';
+  if (!url) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => {
+      playSound('chime');
+      showNotification('⚡ Client Proposal & 50% Deposit URL copied to clipboard!');
+    });
+  } else {
+    shareInput?.select();
+    showNotification('📋 Link selected — press Ctrl+C / Cmd+C to copy');
+  }
+}
+
+function sendWhatsAppDealCommitment() {
+  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  if (!p) return;
+  playSound('click');
+
+  const tier = DEAL_TIERS[currentDealTier] || DEAL_TIERS[1];
+  const callerUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : (window.currentUser || {});
+  const callerName = callerUser.displayName || callerUser.name || 'Authorized Outreach Partner';
+  const partnerId = callerUser.sub || callerUser.uid || 'partner';
+  const url = `https://apoorv.qzz.io/sales?proposal=${encodeURIComponent(p.id)}&fee=${tier.total}&partner=${encodeURIComponent(partnerId)}`;
+
+  const cleanPhone = (p.phone || '').replace(/[^0-9]/g, '');
+  const targetPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
+  const cleanDm = (p.dm || 'Director').split('(')[0].trim();
+  const cleanName = (p.name || 'Establishment').split(',')[0].trim();
+
+  const msg = `Namaste ${cleanDm},\n\nFollowing our discussion regarding ${cleanName}:\n\nHere is your official Executive Proposal & 1-Page Milestone SOW from Apoorv A S (Creative Technologist & 3D WebUI Architect):\n\n📋 Package: ${tier.name}\n💰 Total Investment: ₹${tier.total.toLocaleString('en-IN')}\n⚡ 50% Kickoff Advance: ₹${tier.advance.toLocaleString('en-IN')}\n\n🔒 60 FPS PERFORMANCE SLA GUARANTEE:\nIf your delivered site fails to achieve a locked 60 FPS floor or Core Web Vitals pass on modern mobile, Apoorv guarantees a 100% full refund of your deposit.\n\n👉 Review Proposal & Pay Deposit via UPI/Card:\n${url}\n\nUPI ID: apoorvxs@okaxis\n\nWarm regards,\n${callerName}\nOffice of Apoorv A S | https://apoorv.qzz.io`;
+
+  const waLink = targetPhone
+    ? `https://wa.me/${targetPhone}?text=${encodeURIComponent(msg)}`
+    : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+
+  if (typeof recordPartnerActivity === 'function') {
+    recordPartnerActivity('PROPOSAL_DISPATCH', selectedProspectId, { client: p.name, tier: currentDealTier, url });
+  }
+
+  if (typeof window !== "undefined") {
+    window.open(waLink, '_blank');
+  }
+}
+
+function confirmDealDepositReceived() {
+  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  if (!p) return;
+  playSound('chime');
+
+  const tier = DEAL_TIERS[currentDealTier] || DEAL_TIERS[1];
+  p.status = 'closed_won';
+  p.closedTier = tier.tierNum;
+  p.depositPaid = tier.advance;
+  p.notes = (p.notes ? `${p.notes}\n` : '') + `[CLOSED WON] Deposit of ₹${tier.advance.toLocaleString('en-IN')} confirmed on ${new Date().toLocaleDateString('en-IN')}. Commission: ₹${tier.commission.toLocaleString('en-IN')}.`;
+
+  saveLeadOverride(p.id, {
+    status: 'closed_won',
+    closedTier: tier.tierNum,
+    depositPaid: tier.advance,
+    notes: p.notes
+  });
+
+  if (typeof recordPartnerActivity === 'function') {
+    recordPartnerActivity('DEAL_CLOSED', p.id, {
+      client: p.name,
+      tier: tier.tierNum,
+      fee: tier.total,
+      advance: tier.advance,
+      commission: tier.commission
+    });
+  }
+
+  if (window.SFX && typeof window.SFX.playCelebrate === 'function') {
+    try { window.SFX.playCelebrate(); } catch(e) {}
+  }
+  if (window.Player3D && typeof window.Player3D.celebrateVictory === 'function') {
+    try { window.Player3D.celebrateVictory(); } catch(e) {}
+  }
+  if (typeof window.triggerHaptic === 'function') {
+    window.triggerHaptic([50, 100, 50, 100]);
+  }
+
+  showNotification(`🎉 50% Deposit Confirmed! Deal Closed & Commission of ₹${tier.commission.toLocaleString('en-IN')} Unlocked!`);
+  closeDealCommitmentModal();
+  updateProfileDropdownUI();
+}
+
+// Track 2: Executive Handoff to Apoorv
+function openExecutiveHandoffModal(prospectId) {
+  const p = PROSPECTS.find(item => item.id === (prospectId || selectedProspectId));
+  if (!p) return;
+  playSound('click');
+
+  const nameEl = document.getElementById('handoffClientName');
+  if (nameEl) nameEl.innerText = `${p.name} (${(p.dm || 'Owner').split('(')[0].trim()})`;
+
+  const timeInp = document.getElementById('handoffMeetingTime');
+  if (timeInp && !timeInp.value) {
+    const tomorrow = new Date(Date.now() + 24 * 3600 * 1000);
+    tomorrow.setHours(15, 0, 0, 0);
+    const pad = n => String(n).padStart(2, '0');
+    timeInp.value = `${tomorrow.getFullYear()}-${pad(tomorrow.getMonth() + 1)}-${pad(tomorrow.getDate())}T${pad(tomorrow.getHours())}:${pad(tomorrow.getMinutes())}`;
+  }
+
+  const notesEl = document.getElementById('handoffContextNotes');
+  if (notesEl && (!notesEl.value || notesEl.value.trim() === '')) {
+    const callNotes = document.getElementById('callNotesInput')?.value?.trim();
+    notesEl.value = callNotes || `Client interested in 60 FPS mobile overhaul; requested Google Meet walkthrough with Apoorv regarding ${p.techStack || 'web'} architecture.`;
+  }
+
+  updateHandoffBriefPreview();
+  const modal = document.getElementById('executiveHandoffModal');
+  if (modal) modal.classList.remove('hidden');
+}
+
+function closeExecutiveHandoffModal() {
+  playSound('click');
+  const modal = document.getElementById('executiveHandoffModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function getExecutiveHandoffBriefText() {
+  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  if (!p) return '';
+
+  const callerUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : (window.currentUser || {});
+  const callerName = callerUser.displayName || callerUser.name || 'Authorized Partner';
+  const partnerId = callerUser.sub || callerUser.uid || 'partner';
+
+  const timeVal = document.getElementById('handoffMeetingTime')?.value || 'Tomorrow at 3:00 PM';
+  const formattedTime = new Date(timeVal).toLocaleString('en-IN', {
+    weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+  });
+  const contextNotes = document.getElementById('handoffContextNotes')?.value?.trim() || 'Client requested direct architecture walkthrough with Apoorv.';
+
+  return `🚀 EXECUTIVE HANDOFF BRIEF FOR APOORV
+Target Enterprise: ${p.name}
+Decision Maker: ${p.dm} (Phone: ${p.phone || 'N/A'})
+Meeting Slot: ${formattedTime} (Google Meet)
+Referred By: ${callerName} (ID: ${partnerId}) -> 10% Referral Safety Net Active
+
+DETECTED TELEMETRY & BOTTLENECKS:
+- Detected Stack: ${p.techStack || 'WordPress'}
+- Mobile 4G LCP: ${p.lcpTime || '4.4s'} (Benchmark: < 0.8s)
+- Est. Revenue Leak: ${p.revenueLeak || '₹1,80,000/mo'}
+- Aggregator Bleed: ${p.wastedSpend || '₹42,000/yr'}
+
+KEY QUESTIONS & DISCUSSION CONTEXT:
+${contextNotes}
+
+LIVE WEAPONS & CLOSING RAILS:
+- Interactive Teardown: https://apoorv.qzz.io/sales?prospect=${encodeURIComponent(p.id)}&ref=${encodeURIComponent(partnerId)}
+- Live Closing Terminal: https://apoorv.qzz.io/sales?proposal=${encodeURIComponent(p.id)}&fee=50000&partner=${encodeURIComponent(partnerId)}`;
+}
+
+function updateHandoffBriefPreview() {
+  const previewEl = document.getElementById('handoffBriefPreview');
+  if (previewEl) {
+    previewEl.textContent = getExecutiveHandoffBriefText();
+  }
+}
+
+function copyHandoffBriefText() {
+  playSound('click');
+  const text = getExecutiveHandoffBriefText();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      playSound('chime');
+      showNotification('📋 Executive Handoff Brief copied to clipboard!');
+    });
+  }
+}
+
+function generateApoorvMeetInvite() {
+  playSound('click');
+  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  if (!p) return;
+
+  const timeVal = document.getElementById('handoffMeetingTime')?.value;
+  const startDate = timeVal ? new Date(timeVal) : new Date(Date.now() + 24 * 3600 * 1000);
+  const endDate = new Date(startDate.getTime() + 15 * 60 * 1000);
+  const formatGCalDate = d => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+
+  const callerUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : (window.currentUser || {});
+  const partnerEmail = callerUser.email || '';
+
+  const title = encodeURIComponent(`15-Min Strategy Walkthrough: ${p.name} & Apoorv A S`);
+  const details = encodeURIComponent(getExecutiveHandoffBriefText());
+  const location = encodeURIComponent('Google Meet Video Call');
+  const dates = `${formatGCalDate(startDate)}/${formatGCalDate(endDate)}`;
+
+  let gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`;
+  gcalUrl += `&add=apoorvxs@gmail.com`;
+  if (partnerEmail) gcalUrl += `&add=${encodeURIComponent(partnerEmail)}`;
+
+  if (typeof window !== "undefined") {
+    window.open(gcalUrl, '_blank');
+  }
+}
+
+function sendHandoffBriefToApoorv() {
+  playSound('click');
+  const brief = getExecutiveHandoffBriefText();
+  const waUrl = `https://wa.me/?text=${encodeURIComponent(brief)}`;
+  if (typeof window !== "undefined") {
+    window.open(waUrl, '_blank');
+  }
+}
+
+function saveHandoffAndAdvance() {
+  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  if (!p) return;
+  playSound('chime');
+
+  const timeVal = document.getElementById('handoffMeetingTime')?.value;
+  const formattedTime = timeVal ? new Date(timeVal).toLocaleString('en-IN') : 'Tomorrow';
+  const contextNotes = document.getElementById('handoffContextNotes')?.value?.trim() || '';
+
+  p.status = 'discovery_booked';
+  p.discoveryTime = formattedTime;
+  p.notes = (p.notes ? `${p.notes}\n` : '') + `[FORWARDED TO APOORV] Discovery Call at ${formattedTime}. Notes: ${contextNotes}`;
+
+  saveLeadOverride(p.id, {
+    status: 'discovery_booked',
+    discoveryTime: formattedTime,
+    notes: p.notes
+  });
+
+  const discInput = document.getElementById('discoveryInput');
+  if (discInput) discInput.value = formattedTime;
+
+  closeExecutiveHandoffModal();
+  showNotification(`🤝 Handoff scheduled for ${p.name}! Advancing lead...`);
+  saveAndNext();
+}
+
 
 
 
@@ -7328,6 +7716,23 @@ if (typeof window !== 'undefined') {
     if (s.currentCallReach !== undefined) currentCallReach = s.currentCallReach;
     if (s.currentCallOutcome !== undefined) currentCallOutcome = s.currentCallOutcome;
   };
+  // Two-Track Deal Closing & Executive Handoff exports
+  window.DEAL_TIERS = DEAL_TIERS;
+  window.selectDealTier = selectDealTier;
+  window.openDealCommitmentModal = openDealCommitmentModal;
+  window.closeDealCommitmentModal = closeDealCommitmentModal;
+  window.copyUpiId = copyUpiId;
+  window.copyDealProposalLink = copyDealProposalLink;
+  window.sendWhatsAppDealCommitment = sendWhatsAppDealCommitment;
+  window.confirmDealDepositReceived = confirmDealDepositReceived;
+  window.openExecutiveHandoffModal = openExecutiveHandoffModal;
+  window.closeExecutiveHandoffModal = closeExecutiveHandoffModal;
+  window.getExecutiveHandoffBriefText = getExecutiveHandoffBriefText;
+  window.updateHandoffBriefPreview = updateHandoffBriefPreview;
+  window.copyHandoffBriefText = copyHandoffBriefText;
+  window.generateApoorvMeetInvite = generateApoorvMeetInvite;
+  window.sendHandoffBriefToApoorv = sendHandoffBriefToApoorv;
+  window.saveHandoffAndAdvance = saveHandoffAndAdvance;
 }
 if (typeof global !== 'undefined') {
   global.initForensicWatermark = initForensicWatermark;
@@ -7375,6 +7780,24 @@ if (typeof global !== 'undefined') {
     if (s.currentCallReach !== undefined) currentCallReach = s.currentCallReach;
     if (s.currentCallOutcome !== undefined) currentCallOutcome = s.currentCallOutcome;
   };
+
+  // Two-Track Deal Closing & Executive Handoff exports
+  global.DEAL_TIERS = DEAL_TIERS;
+  global.selectDealTier = selectDealTier;
+  global.openDealCommitmentModal = openDealCommitmentModal;
+  global.closeDealCommitmentModal = closeDealCommitmentModal;
+  global.copyUpiId = copyUpiId;
+  global.copyDealProposalLink = copyDealProposalLink;
+  global.sendWhatsAppDealCommitment = sendWhatsAppDealCommitment;
+  global.confirmDealDepositReceived = confirmDealDepositReceived;
+  global.openExecutiveHandoffModal = openExecutiveHandoffModal;
+  global.closeExecutiveHandoffModal = closeExecutiveHandoffModal;
+  global.getExecutiveHandoffBriefText = getExecutiveHandoffBriefText;
+  global.updateHandoffBriefPreview = updateHandoffBriefPreview;
+  global.copyHandoffBriefText = copyHandoffBriefText;
+  global.generateApoorvMeetInvite = generateApoorvMeetInvite;
+  global.sendHandoffBriefToApoorv = sendHandoffBriefToApoorv;
+  global.saveHandoffAndAdvance = saveHandoffAndAdvance;
 }
 
 // Initial visibility check on load

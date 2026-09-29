@@ -130,10 +130,18 @@ test.describe("Mobile Caller Workflow & Touch Ergonomics (< 768px)", () => {
     // Screenshot 4: Step 2 Dynamic Outcomes on Mobile
     await page.screenshot({ path: path.join(artifactDir, "mobile_caller_04_step2_outcomes.png"), fullPage: false });
 
-    // 8. Select Outcome: Booked Discovery
+    // 8. Select Outcome: Booked Discovery (Track 2: Opens Executive Handoff Modal)
     const outcomeBooked = outcomeContainer.locator("button").first();
     await outcomeBooked.click();
     await page.waitForTimeout(400);
+
+    const handoffModal = page.locator("#executiveHandoffModal");
+    await expect(handoffModal).toBeVisible();
+
+    // Close modal to proceed with workbench notes testing
+    const handoffCloseBtn = page.locator("#executiveHandoffModal button[aria-label='Close Handoff Window']");
+    await handoffCloseBtn.click();
+    await page.waitForTimeout(300);
 
     // 9. Test 1-Tap Quick-Tag Note Chips
     const tagChip = page.locator(".quick-tag-chip").first();

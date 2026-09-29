@@ -168,6 +168,14 @@
 
     <!-- TROJAN 3D PERFORMANCE TEARDOWN CONTAINER (DYNAMICALLY MOUNTED ON URL PARAMS) -->
     <section id="trojan-teardown-section" class="trojan-teardown-section hidden" data-kaboom-body="true" aria-label="Personalized 3D Performance Teardown">
+      <!-- Verified Architectural Credentials Banner -->
+      <div id="trojan-credentials-banner" class="trojan-credentials-banner" data-kaboom-body="true">
+        <span class="trojan-badge-pill" data-kaboom-body="true">🛡️ VERIFIED ARCHITECTURAL DOSSIER</span>
+        <span class="trojan-dossier-meta font-mono text-xs" data-kaboom-body="true">
+          REF: <strong id="trojan-dossier-id">RADAR-CLIENT</strong> • PRINCIPAL: <strong>APOORV A S</strong> (CREATIVE TECHNOLOGIST &amp; 3D ARCHITECT) • ATTRIBUTED PARTNER: <strong id="trojan-partner-id">CORE-STUDIO</strong>
+        </span>
+      </div>
+
       <div class="trojan-badge-bar" data-kaboom-body="true">
         <span class="trojan-badge-pill" data-kaboom-body="true">⚡ CONFIDENTIAL ARCHITECTURAL TEARDOWN</span>
         <span id="trojan-target-badge" class="trojan-target-badge" data-kaboom-body="true">PREPARED FOR: <strong id="trojan-client-name">--</strong></span>
@@ -246,12 +254,135 @@
         </div>
       </div>
 
-      <!-- CTA Button Row -->
+      <!-- Interactive Revenue Recovery Simulator -->
+      <div id="trojan-simulator-card" class="trojan-simulator-card" data-kaboom-body="true">
+        <div class="simulator-header" data-kaboom-body="true">
+          <span class="font-arcade text-xs">📊 REVENUE RECOVERY SIMULATOR</span>
+          <span class="font-mono text-xs text-muted">AGGREGATOR BLEED VS 60 FPS DIRECT</span>
+        </div>
+        <div class="simulator-sliders-grid" data-kaboom-body="true">
+          <div class="slider-control" data-kaboom-body="true">
+            <div class="slider-label-row">
+              <label for="sim-visitors" class="font-mono text-xs">Monthly Inbound Footfall / Visitors:</label>
+              <span id="sim-visitors-val" class="font-mono font-bold text-xs">3,000 / mo</span>
+            </div>
+            <input type="range" id="sim-visitors" min="500" max="25000" step="500" value="3000" oninput="calculateRevenueRecovery()" class="retro-slider" data-kaboom-body="true">
+          </div>
+          <div class="slider-control" data-kaboom-body="true">
+            <div class="slider-label-row">
+              <label for="sim-aov" class="font-mono text-xs">Average Order / Booking Value:</label>
+              <span id="sim-aov-val" class="font-mono font-bold text-xs">₹2,500</span>
+            </div>
+            <input type="range" id="sim-aov" min="500" max="15000" step="250" value="2500" oninput="calculateRevenueRecovery()" class="retro-slider" data-kaboom-body="true">
+          </div>
+        </div>
+        <div class="simulator-results-row" data-kaboom-body="true">
+          <div class="sim-result-box sim-result-bad">
+            <span class="sim-metric-lbl font-mono">EST. MONTHLY AGGREGATOR BLEED:</span>
+            <span id="sim-bleed-val" class="sim-metric-num text-bad font-mono">₹1,50,000 / mo</span>
+            <span class="sim-metric-sub font-mono">20% commission to intermediaries</span>
+          </div>
+          <div class="sim-result-box sim-result-good">
+            <span class="sim-metric-lbl font-mono">RECOVERED DIRECT EARNINGS:</span>
+            <span id="sim-recovered-val" class="sim-metric-num text-good font-mono">₹1,50,000 / mo</span>
+            <span class="sim-metric-sub font-mono">100% owned directly by your brand</span>
+          </div>
+          <div class="sim-result-box sim-result-highlight">
+            <span class="sim-metric-lbl font-mono">EST. SPRINT PAYBACK PERIOD:</span>
+            <span id="sim-payback-val" class="sim-metric-num text-highlight font-mono">10 Days</span>
+            <span class="sim-metric-sub font-mono">Based on ₹50,000 sprint fee</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dual-Action Conversion Bar -->
       <div class="trojan-cta-row" data-kaboom-body="true">
-        <button type="button" id="trojan-cta-btn" onclick="claimTrojanConsultation()" class="trojan-claim-btn font-arcade" data-kaboom-body="true">
-          [ ⚡ CLAIM 15-MINUTE STRATEGY WALKTHROUGH ]
-        </button>
-        <span class="trojan-guarantee font-mono text-xs" data-kaboom-body="true">Complimentary ₹4,999 technical audit applied • Direct screen share with Apoorv</span>
+        <div class="trojan-dual-actions" data-kaboom-body="true">
+          <button type="button" id="trojan-cta-btn" onclick="claimTrojanConsultation()" class="trojan-claim-btn font-arcade" data-kaboom-body="true">
+            [ 📅 BOOK 15-MIN STRATEGY WALKTHROUGH WITH APOORV ]
+          </button>
+          <button type="button" id="trojan-fasttrack-btn" onclick="toggleTrojanPaymentView()" class="trojan-fasttrack-btn font-arcade" data-kaboom-body="true">
+            [ ⚡ FAST-TRACK: REVIEW SOW &amp; LOCK 50% DEPOSIT ]
+          </button>
+        </div>
+        <span class="trojan-guarantee font-mono text-xs" data-kaboom-body="true">100% Mathematical SLA Guarantee: Full refund if architecture fails 60 FPS or Core Web Vitals on mobile • Direct screen share with Apoorv</span>
+      </div>
+
+      <!-- Sovereign Payment & Milestone SOW Terminal (Fast-Track / ?proposal=...) -->
+      <div id="trojan-payment-view" class="trojan-payment-view hidden" data-kaboom-body="true">
+        <div class="trojan-payment-header">
+          <div>
+            <span class="trojan-badge-pill" style="background:#047857; color:#fff;">⚡ FAST-TRACK CLOSING TERMINAL</span>
+            <h3 class="font-arcade text-sm mt-1">Sovereign 1-Page Milestone SOW &amp; Deposit Terminal</h3>
+            <p class="font-mono text-xs text-muted">Direct Escrow • Zero Intermediary Markups • 50/25/25 Structured Release</p>
+          </div>
+          <button type="button" onclick="toggleTrojanPaymentView(false)" class="trojan-close-btn font-arcade" aria-label="Close Payment Terminal">✕</button>
+        </div>
+
+        <!-- Scope Tier Selection -->
+        <div class="trojan-payment-tiers" role="radiogroup" aria-label="Select Scope Tier">
+          <button type="button" id="publicTier1" onclick="selectPublicDealTier(1)" class="public-tier-btn active" role="radio" aria-checked="true">
+            <span class="font-arcade text-[9px]">TIER 1: SPEED &amp; BOOKING</span>
+            <strong class="tier-price">₹50,000</strong>
+            <span class="tier-advance font-mono text-xs">50% Advance: ₹25,000</span>
+            <span class="tier-deliverable font-mono text-[11px]">Sub-0.8s LCP • 100% Direct Booking Engine</span>
+          </button>
+          <button type="button" id="publicTier2" onclick="selectPublicDealTier(2)" class="public-tier-btn" role="radio" aria-checked="false">
+            <span class="font-arcade text-[9px]">TIER 2: 3D SPATIAL SHOWCASE</span>
+            <strong class="tier-price">₹1,00,000</strong>
+            <span class="tier-advance font-mono text-xs">50% Advance: ₹50,000</span>
+            <span class="tier-deliverable font-mono text-[11px]">Interactive Three.js Experience • Cel-shaded FX</span>
+          </button>
+          <button type="button" id="publicTier3" onclick="selectPublicDealTier(3)" class="public-tier-btn" role="radio" aria-checked="false">
+            <span class="font-arcade text-[9px]">TIER 3: WEBGPU CUSTOM ENGINE</span>
+            <strong class="tier-price">₹2,00,000</strong>
+            <span class="tier-advance font-mono text-xs">50% Advance: ₹1,00,000</span>
+            <span class="tier-deliverable font-mono text-[11px]">Proprietary WebGPU/GLSL Spatial Engine</span>
+          </button>
+        </div>
+
+        <!-- Payment Breakdown & Dynamic UPI QR -->
+        <div class="trojan-payment-body">
+          <!-- QR Card -->
+          <div class="trojan-qr-card">
+            <span class="font-arcade text-[9px] text-center">SCAN TO LOCK 50% ADVANCE DEPOSIT</span>
+            <div class="qr-container">
+              <img id="publicUpiQrImg" src="" alt="Dynamic 50% Advance UPI QR Code" class="qr-img">
+            </div>
+            <div class="upi-id-box font-mono text-xs">
+              <span>UPI ID:</span>
+              <code id="publicUpiIdText" class="font-bold">apoorvxs@okaxis</code>
+              <button type="button" onclick="copyPublicUpiId()" class="copy-upi-btn" title="Copy UPI ID">📋</button>
+            </div>
+            <span class="font-mono text-[10px] text-muted text-center">All UPI Apps: GPay • PhonePe • Paytm • BHIM • Cred</span>
+          </div>
+
+          <!-- SOW & SLA Summary -->
+          <div class="trojan-sow-card font-mono text-xs">
+            <div class="sow-row">
+              <span class="text-muted">Total Fixed SOW Scope:</span>
+              <strong id="publicSummaryTotal" class="font-bold">₹50,000</strong>
+            </div>
+            <div class="sow-row advance-row">
+              <span class="font-bold text-good">50% Advance Due to Commence:</span>
+              <strong id="publicSummaryAdvance" class="font-bold text-good text-sm">₹25,000</strong>
+            </div>
+            <div class="sow-specs">
+              <div class="sow-spec-header font-arcade text-[9px]">1-PAGE MILESTONE SOW SPECIFICATIONS:</div>
+              <div>• <strong>Phase 1 (50% Advance):</strong> Architecture design, asset rigging, and staging prototype live in 7 days.</div>
+              <div>• <strong>Phase 2 (25% Staging):</strong> Mobile QA review, client feedback integration, and 60 FPS compliance audit.</div>
+              <div>• <strong>Phase 3 (25% Cutover):</strong> Domain switch, production deployment, and full source code IP release.</div>
+              <div class="sla-badge font-bold text-bad">
+                🛡️ 60 FPS MATHEMATICAL SLA GUARANTEE: If the deployed production build fails to maintain locked 60 FPS or pass Core Web Vitals on mobile, 100% of the advance deposit is immediately refunded.
+              </div>
+            </div>
+            <div class="trojan-payment-actions">
+              <a id="btnPublicWhatsAppProof" href="#" target="_blank" rel="noopener noreferrer" class="whatsapp-proof-btn font-arcade text-xs">
+                💬 NOTIFY APOORV ON WHATSAPP (+91 94954 62450)
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
