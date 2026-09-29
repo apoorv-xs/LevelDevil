@@ -44,14 +44,24 @@ describe("Workspace Mobile App (PWA) & Standalone Installation System", () => {
     expect(swContent).toContain("caches.match");
   });
 
-  it("workspace/index.html includes install buttons and the retro-brutalist install modal", () => {
+  it("workspace/index.html includes install buttons in profile dropdown and the retro-brutalist install modal", () => {
     const html = fs.readFileSync(workspaceHtmlPath, "utf-8");
-    expect(html).toContain("id=\"workspaceInstallAppBtn\"");
+    // Topbar button removed to declutter header; install triggered post-tour or via profile dropdown
+    expect(html).not.toContain("id=\"workspaceInstallAppBtn\"");
     expect(html).toContain("id=\"dropdownInstallAppBtn\"");
     expect(html).toContain("id=\"installAppModal\"");
     expect(html).toContain("id=\"tabBtnAndroid\"");
     expect(html).toContain("id=\"tabBtnIOS\"");
     expect(html).toContain("id=\"btnTriggerNativeInstall\"");
+  });
+
+  it("workspace/app.js triggers openInstallAppModal upon completing the 5-step tour when eligible", () => {
+    const appCode = fs.readFileSync(workspaceAppPath, "utf-8");
+    expect(appCode).toContain("openInstallAppModal");
+    expect(appCode).toContain("isInstallAppEligible");
+    expect(appCode).toContain("isRunningInStandaloneMode");
+    // Verify post-tour trigger is hooked in nextWorkspaceTourStep
+    expect(appCode).toMatch(/nextWorkspaceTourStep[\s\S]*?openInstallAppModal/);
   });
 
   it("workspace/app.js strictly gates mobile install eligibility to signed-in and verified users only", () => {

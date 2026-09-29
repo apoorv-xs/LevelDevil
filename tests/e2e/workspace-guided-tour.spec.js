@@ -139,4 +139,45 @@ test.describe("Subsystem 21: Workstation Guided Walkthrough Overlay E2E", () => 
     await skipBtn.click();
     await expect(tourModal).toBeHidden();
   });
+
+  test("4. Completing Step 5 prompts the App Install modal for verified callers", async ({ page }) => {
+    await page.goto("http://localhost:5173/workspace/");
+    await page.waitForLoadState("domcontentloaded");
+    await page.waitForTimeout(400);
+
+    // Disable test mode for this specific test so the post-tour install trigger fires
+    await page.evaluate(() => {
+      window.localStorage.removeItem("sprintdial_test_mode");
+      window.__TEST_MODE__ = false;
+    });
+
+    // Open tour directly at Step 5
+    await page.evaluate(() => {
+      if (typeof window.openWorkspaceTour === "function") {
+        window.openWorkspaceTour(4);
+      }
+    });
+
+    const tourModal = page.locator("#workspaceTourModal");
+    await expect(tourModal).toBeVisible();
+    await expect(page.locator("#tourStepTitle")).toContainText("Commission Wallet");
+    await expect(page.locator("#tourBtnNextText")).toContainText("START DIALING");
+
+    // Click START DIALING
+    const nextBtn = page.locator("#tourBtnNext");
+    await nextBtn.click();
+
+    // Tour should close
+    await expect(tourModal).toBeHidden();
+
+    // App Install modal should pop up!
+    const installModal = page.locator("#installAppModal");
+    await expect(installModal).toBeVisible({ timeout: 2000 });
+    await expect(page.locator("#installModalTitle")).toContainText("INSTALL CLIENT RADAR APP");
+
+    // Close the install modal
+    const closeInstallBtn = page.locator("#installAppModal button[aria-label='Close Install Window']");
+    await closeInstallBtn.click();
+    await expect(installModal).toBeHidden();
+  });
 });

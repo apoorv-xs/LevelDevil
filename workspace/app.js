@@ -2838,6 +2838,18 @@ function nextWorkspaceTourStep() {
     if (typeof window.SFX !== 'undefined' && typeof window.SFX.playCelebrate === 'function') {
       try { window.SFX.playCelebrate(); } catch(e) {}
     }
+
+    // Post-Tour: Prompt to install Client Radar as a standalone app if eligible and not already standalone
+    const isTestMode = (typeof localStorage !== 'undefined' && localStorage.getItem('sprintdial_test_mode')) || (typeof window !== 'undefined' && window.__TEST_MODE__);
+    if (!isTestMode && typeof isInstallAppEligible === 'function' && isInstallAppEligible() && typeof isRunningInStandaloneMode === 'function' && !isRunningInStandaloneMode()) {
+      if (typeof setTimeout === 'function') {
+        setTimeout(() => {
+          if (typeof openInstallAppModal === 'function') {
+            openInstallAppModal();
+          }
+        }, 350);
+      }
+    }
   }
 }
 

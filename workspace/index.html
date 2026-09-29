@@ -805,11 +805,6 @@
         <span class="admin-label-full">Admin Console</span><span class="admin-label-short">Admin</span>
       </button>
 
-      <!-- Install Mobile App Trigger (Strictly visible once signed in & verified) -->
-      <button id="workspaceInstallAppBtn" onclick="handleInstallAppClick()" class="topbar-btn install-app-btn hidden" aria-label="Install Mobile App" title="Install Workspace as Mobile App">
-        <span class="font-arcade text-[10px] flex items-center gap-1"><span>📲</span><span class="install-label hide-mobile"> APP</span></span>
-      </button>
-
       <!-- Mobile Menu Trigger -->
       <button id="mobile-menu-btn" class="topbar-btn mobile-menu-btn" aria-label="Open Navigation Menu" title="Open Navigation Menu" aria-expanded="false" aria-controls="mobile-menu-drawer" onclick="window.toggleMobileMenu?.()">[ ☰<span class="menu-label"> MENU</span> ]</button>
 
@@ -1278,10 +1273,10 @@
                 </svg>
               </a>
               <span class="text-[#17120f]/40">•</span>
-              <span id="activePhoneContainer" class="inline-flex items-center gap-1.5 bg-black/[0.04] px-2 py-0.5 rounded border border-black/[0.08]">
-                <span class="text-[10px] uppercase font-bold text-neutral-500">Phone:</span>
-                <span id="activePhoneDisplay" class="font-bold text-[#17120f]">--</span>
-                <button id="btnToggleUnmaskPhone" onclick="toggleUnmaskActiveProspectPhone()" type="button" class="hidden text-[9px] font-arcade bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] px-1.5 py-0.5 border border-[#17120f] shadow-[1px_1px_0_#17120f] cursor-pointer" title="Reveal Contact Phone">Reveal</button>
+              <span id="activePhoneContainer" class="inline-flex items-center gap-1.5 bg-[#fffdf1] px-2.5 py-1 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f]">
+                <span class="text-[10px] uppercase font-bold text-[#17120f]/70 font-mono">PHONE:</span>
+                <span id="activePhoneDisplay" class="text-xs sm:text-sm font-bold font-mono text-[#17120f] tracking-wide">--</span>
+                <button id="btnToggleUnmaskPhone" onclick="toggleUnmaskActiveProspectPhone()" type="button" class="hidden text-[9px] font-arcade bg-[#fce566] hover:bg-[#ffe040] text-[#17120f] px-2 py-0.5 border border-[#17120f] shadow-[1px_1px_0_#17120f] cursor-pointer font-bold" title="Reveal Contact Phone">Reveal</button>
               </span>
             </p>
           </div>
@@ -1406,22 +1401,22 @@
               <!-- STEP 1: Reach Status (Who answered?) -->
               <div class="space-y-1">
                 <div class="flex items-center justify-between">
-                  <span class="font-arcade text-[8px] font-bold text-[#17120f] flex items-center gap-1">
+                  <span class="font-arcade text-[9px] font-bold text-[#17120f] flex items-center gap-1">
                     <span>STEP 1:</span> <span class="text-[#17120f]/80">REACH STATUS</span>
                   </span>
-                  <span id="reachValidationIndicator" class="text-[8px] font-mono text-rose-600 font-bold hidden">SELECT REACH *</span>
+                  <span id="reachValidationIndicator" class="text-[9px] font-mono text-rose-600 font-bold hidden">SELECT REACH *</span>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-1">
-                  <button type="button" id="btnReachDM" onclick="setCallReach('dm_connected')" class="reach-btn px-1.5 py-1 bg-[#fffdf1] hover:bg-[#d4edda] text-[#17120f] border border-[#17120f] font-mono text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Spoke to Decision Maker">
+                  <button type="button" id="btnReachDM" onclick="setCallReach('dm_connected')" class="reach-btn px-2 py-1.5 bg-[#fffdf1] hover:bg-[#d4edda] text-[#17120f] border border-[#17120f] font-mono text-[10px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Spoke to Decision Maker">
                     <span>🟢</span> <span>Spoke to DM</span>
                   </button>
-                  <button type="button" id="btnReachGK" onclick="setCallReach('gatekeeper')" class="reach-btn px-1.5 py-1 bg-[#fffdf1] hover:bg-[#fff3cd] text-[#17120f] border border-[#17120f] font-mono text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Gatekeeper / Reception">
+                  <button type="button" id="btnReachGK" onclick="setCallReach('gatekeeper')" class="reach-btn px-2 py-1.5 bg-[#fffdf1] hover:bg-[#fff3cd] text-[#17120f] border border-[#17120f] font-mono text-[10px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Gatekeeper / Reception">
                     <span>🟡</span> <span>Gatekeeper</span>
                   </button>
-                  <button type="button" id="btnReachNoAns" onclick="setCallReach('no_answer')" class="reach-btn px-1.5 py-1 bg-[#fffdf1] hover:bg-[#e2e3e5] text-[#17120f] border border-[#17120f] font-mono text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="No Answer / Busy">
+                  <button type="button" id="btnReachNoAns" onclick="setCallReach('no_answer')" class="reach-btn px-2 py-1.5 bg-[#fffdf1] hover:bg-[#e2e3e5] text-[#17120f] border border-[#17120f] font-mono text-[10px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="No Answer / Busy">
                     <span>⚪</span> <span>No Answer</span>
                   </button>
-                  <button type="button" id="btnReachInvalid" onclick="setCallReach('invalid_number')" class="reach-btn px-1.5 py-1 bg-[#fffdf1] hover:bg-[#f8d7da] text-[#17120f] border border-[#17120f] font-mono text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Invalid / Disconnected #">
+                  <button type="button" id="btnReachInvalid" onclick="setCallReach('invalid_number')" class="reach-btn px-2 py-1.5 bg-[#fffdf1] hover:bg-[#f8d7da] text-[#17120f] border border-[#17120f] font-mono text-[10px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Invalid / Disconnected #">
                     <span>🔴</span> <span>Invalid #</span>
                   </button>
                 </div>
@@ -1430,23 +1425,23 @@
               <!-- STEP 2: Call Outcome (Dynamically updated based on Reach) -->
               <div class="space-y-1">
                 <div class="flex items-center justify-between">
-                  <span class="font-arcade text-[8px] font-bold text-[#17120f] flex items-center gap-1">
+                  <span class="font-arcade text-[9px] font-bold text-[#17120f] flex items-center gap-1">
                     <span>STEP 2:</span> <span id="outcomeStepTitle" class="text-[#17120f]/80">CALL OUTCOME</span>
                   </span>
-                  <span id="outcomeValidationIndicator" class="text-[8px] font-mono text-rose-600 font-bold hidden">SELECT OUTCOME *</span>
+                  <span id="outcomeValidationIndicator" class="text-[9px] font-mono text-rose-600 font-bold hidden">SELECT OUTCOME *</span>
                 </div>
                 <!-- Dynamic Outcome Buttons Container -->
                 <div id="outcomeOptionsContainer" class="grid grid-cols-2 sm:grid-cols-4 gap-1">
-                  <button type="button" id="btnOutcomeBooked" onclick="setCallOutcome('discovery_booked')" class="outcome-btn px-1.5 py-1 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Log Discovery Booked [Hotkey: 1]">
+                  <button type="button" id="btnOutcomeBooked" onclick="setCallOutcome('discovery_booked')" class="outcome-btn px-2 py-1.5 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Log Discovery Booked [Hotkey: 1]">
                     <span>🏆</span> <span>[1] BOOKED</span>
                   </button>
-                  <button type="button" id="btnOutcomeTeardown" onclick="setCallOutcome('teardown_sent')" class="outcome-btn px-1.5 py-1 bg-[#cce5ff] hover:bg-[#b8daff] text-[#004085] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Sent 3D Teardown">
+                  <button type="button" id="btnOutcomeTeardown" onclick="setCallOutcome('teardown_sent')" class="outcome-btn px-2 py-1.5 bg-[#cce5ff] hover:bg-[#b8daff] text-[#004085] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Sent 3D Teardown">
                     <span>🔗</span> <span>TEARDOWN</span>
                   </button>
-                  <button type="button" id="btnOutcomeCallback" onclick="setCallOutcome('connected_callback')" class="outcome-btn px-1.5 py-1 bg-[#fff3cd] hover:bg-[#ffeeba] text-[#856404] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Log Callback Requested [Hotkey: 2]">
+                  <button type="button" id="btnOutcomeCallback" onclick="setCallOutcome('connected_callback')" class="outcome-btn px-2 py-1.5 bg-[#fff3cd] hover:bg-[#ffeeba] text-[#856404] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Log Callback Requested [Hotkey: 2]">
                     <span>📅</span> <span>[2] CALLBACK</span>
                   </button>
-                  <button type="button" id="btnOutcomeDisqualified" onclick="setCallOutcome('not_interested')" class="outcome-btn px-1.5 py-1 bg-[#f8d7da] hover:bg-[#f5c6cb] text-[#721c24] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Log Disqualified [Hotkey: 3]">
+                  <button type="button" id="btnOutcomeDisqualified" onclick="setCallOutcome('not_interested')" class="outcome-btn px-2 py-1.5 bg-[#f8d7da] hover:bg-[#f5c6cb] text-[#721c24] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Log Disqualified [Hotkey: 3]">
                     <span>❌</span> <span>[3] DISQUAL</span>
                   </button>
                 </div>
@@ -1455,14 +1450,14 @@
               <!-- STEP 3: 1-Tap Quick-Tag Intel Chips -->
               <div class="space-y-1 pt-0.5">
                 <div class="flex items-center justify-between">
-                  <span class="font-arcade text-[8px] font-bold text-[#17120f] flex items-center gap-1">
+                  <span class="font-arcade text-[9px] font-bold text-[#17120f] flex items-center gap-1">
                     <span>STEP 3:</span> <span class="text-[#17120f]/80">QUICK-TAG INTEL</span>
                   </span>
                   <div class="flex items-center gap-1.5">
-                    <button id="btnCallbackNudge" type="button" onclick="sendCallbackNudgeWhatsApp()" title="Send 1-Tap WhatsApp follow-up nudge to prospect" class="px-1.5 py-0.5 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center gap-1 cursor-pointer">
+                    <button id="btnCallbackNudge" type="button" onclick="sendCallbackNudgeWhatsApp()" title="Send 1-Tap WhatsApp follow-up nudge to prospect" class="px-2 py-1 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center gap-1 cursor-pointer">
                       <span>💬</span> <span>1-TAP NUDGE</span>
                     </button>
-                    <span class="text-[8px] font-mono text-[#17120f]/60">1-tap tags</span>
+                    <span class="text-[9px] font-mono text-[#17120f]/60">1-tap tags</span>
                   </div>
                 </div>
                 <div class="flex flex-wrap gap-1">
@@ -1522,7 +1517,7 @@
                   </button>
                 </div>
               </div>
-              <p id="objectionText" class="font-mono text-[11px] text-[#17120f] leading-relaxed italic bg-[#fffdf1] p-2 border border-[#17120f]"></p>
+              <p id="objectionText" class="font-mono text-xs sm:text-sm text-[#17120f] font-medium leading-relaxed italic bg-[#fffdf1] p-3 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f]"></p>
               <div class="flex items-center justify-between pt-1">
                 <button type="button" onclick="appendActiveObjectionToNotes()" class="px-3 py-1 bg-[#17120f] hover:bg-[#2b221d] text-[#fffdf1] font-arcade text-[10px] font-bold shadow-[1px_1px_0_#fffdf1] transition flex items-center gap-1">
                   <span>+</span> <span>APPEND TO DISCOVERY NOTES</span>
