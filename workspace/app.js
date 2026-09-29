@@ -3614,6 +3614,9 @@ function setupKeyboardShortcuts() {
           callBtn.click();
           handleCallInitiated();
         }
+      } else if (e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        toggleBookmarkActiveLead();
       }
     }
   });
@@ -3636,6 +3639,110 @@ function advanceLead(direction) {
   selectProspect(filtered[nextIdx].id);
 }
 
+// -------------------------------------------------------------
+// CALLER SHORTLIST & BOOKMARK ENGINE (Save for Later)
+// -------------------------------------------------------------
+function getBookmarkStorageKey() {
+  const user = (typeof currentUser !== 'undefined' && currentUser)
+    ? currentUser
+    : ((typeof window !== 'undefined' && window.currentUser)
+      ? window.currentUser
+      : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+  const email = (user && user.email) ? user.email.toLowerCase().trim() : 'anonymous';
+  return `sprintdial_bookmarked_leads_${email}`;
+}
+
+function getBookmarkedLeadIds() {
+  if (typeof localStorage === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(getBookmarkStorageKey());
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function isLeadBookmarked(id) {
+  if (!id) return false;
+  const ids = getBookmarkedLeadIds();
+  return ids.includes(id);
+}
+
+function toggleBookmarkLead(id) {
+  const targetId = id || selectedProspectId;
+  if (!targetId) return;
+  const ids = getBookmarkedLeadIds();
+  const idx = ids.indexOf(targetId);
+  let isNowBookmarked = false;
+  if (idx === -1) {
+    ids.push(targetId);
+    isNowBookmarked = true;
+  } else {
+    ids.splice(idx, 1);
+    isNowBookmarked = false;
+  }
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(getBookmarkStorageKey(), JSON.stringify(ids));
+    }
+  } catch (e) {}
+
+  if (typeof playSound === 'function') {
+    playSound(isNowBookmarked ? 'chime' : 'click');
+  }
+
+  updateBookmarkButtonUI(targetId);
+  renderQueue();
+
+  if (typeof showNotification === 'function') {
+    const p = PROSPECTS.find(item => item.id === targetId);
+    const leadName = p ? p.name : 'Prospect';
+    showNotification(isNowBookmarked ? `★ Saved ${leadName} for later review.` : `☆ Removed ${leadName} from saved list.`);
+  }
+}
+
+function toggleBookmarkActiveLead() {
+  toggleBookmarkLead(selectedProspectId);
+}
+
+function updateBookmarkButtonUI(id) {
+  const targetId = id || selectedProspectId;
+  const btn = document.getElementById('btnBookmarkLead');
+  const starIcon = document.getElementById('bookmarkStarIcon');
+  const text = document.getElementById('bookmarkText');
+  if (!btn) return;
+
+  const bookmarked = isLeadBookmarked(targetId);
+  if (bookmarked) {
+    btn.className = "text-[10px] bg-[#fce566] text-[#17120f] font-arcade px-2 py-1 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] whitespace-nowrap cursor-pointer transition hover:bg-[#fff1bd] flex items-center gap-1 font-bold";
+    if (starIcon) starIcon.innerText = "★";
+    if (text) text.innerText = "SAVED";
+    btn.title = "Saved prospect (Press B to unsave)";
+  } else {
+    btn.className = "text-[10px] bg-[#fffdf1] text-[#17120f] font-arcade px-2 py-1 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] whitespace-nowrap cursor-pointer transition hover:bg-[#fce566] flex items-center gap-1";
+    if (starIcon) starIcon.innerText = "☆";
+    if (text) text.innerText = "SAVE";
+    btn.title = "Save for later review (Press B)";
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.getBookmarkStorageKey = getBookmarkStorageKey;
+  window.getBookmarkedLeadIds = getBookmarkedLeadIds;
+  window.isLeadBookmarked = isLeadBookmarked;
+  window.toggleBookmarkLead = toggleBookmarkLead;
+  window.toggleBookmarkActiveLead = toggleBookmarkActiveLead;
+  window.updateBookmarkButtonUI = updateBookmarkButtonUI;
+}
+if (typeof global !== 'undefined') {
+  global.getBookmarkStorageKey = getBookmarkStorageKey;
+  global.getBookmarkedLeadIds = getBookmarkedLeadIds;
+  global.isLeadBookmarked = isLeadBookmarked;
+  global.toggleBookmarkLead = toggleBookmarkLead;
+  global.toggleBookmarkActiveLead = toggleBookmarkActiveLead;
+  global.updateBookmarkButtonUI = updateBookmarkButtonUI;
+}
+
 // Status / Disposition Filter State
 let activeStatusFilter = 'all';
 
@@ -3647,6 +3754,9 @@ function matchStatus(p) {
   }
   if (activeStatusFilter === 'callbacks') {
     return p.status === 'gatekeeper_rejection' || p.status === 'connected_callback' || p.status === 'callback';
+  }
+  if (activeStatusFilter === 'starred') {
+    return isLeadBookmarked(p.id);
   }
   if (activeStatusFilter === 'interested') {
     return p.status === 'interested' || p.status === 'discovery_booked' || p.status === 'closed_won';
@@ -3665,6 +3775,7 @@ function filterStatus(status) {
     all: 'statusTabAll',
     fresh: 'statusTabFresh',
     callbacks: 'statusTabCallbacks',
+    starred: 'statusTabStarred',
     interested: 'statusTabInterested'
   };
   const tabEl = document.getElementById(map[status]);
@@ -3804,9 +3915,34 @@ function renderQueue() {
     });
   }
 
-  document.getElementById('leadCountBadge').innerText = `${filtered.length} Leads`;
+  const user = (typeof currentUser !== 'undefined' && currentUser)
+    ? currentUser
+    : ((typeof window !== 'undefined' && window.currentUser)
+      ? window.currentUser
+      : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+  const isOwner = isOwnerUser(user);
+
+  const countBadge = document.getElementById('leadCountBadge');
+  if (countBadge) {
+    countBadge.innerText = isOwner ? `${filtered.length} Leads` : 'RADAR ACTIVE';
+  }
+
   const mobileQueueCount = document.getElementById('mobileQueueCount');
   if (mobileQueueCount) mobileQueueCount.innerText = filtered.length;
+
+  const mobileCountWrapper = document.getElementById('mobileQueueCountWrapper');
+  if (mobileCountWrapper) {
+    if (isOwner) {
+      mobileCountWrapper.classList.remove('hidden');
+    } else {
+      mobileCountWrapper.classList.add('hidden');
+    }
+  }
+
+  const btnExport = document.getElementById('btnExportQueueCsv');
+  if (btnExport) {
+    btnExport.style.display = isOwner ? 'inline-flex' : 'none';
+  }
 
   filtered.forEach(p => {
     const isSelected = p.id === selectedProspectId;
@@ -3847,15 +3983,19 @@ function renderQueue() {
     const safeBadgeText = escapeHTML(badgeText);
     const safeDm = escapeHTML(p.dm);
     const safePtype = escapeHTML(p.ptype);
+    const isBookmarked = isLeadBookmarked(p.id);
 
     item.innerHTML = `
       <div class="flex justify-between items-center gap-1.5">
         <span class="font-bold text-xs text-white truncate flex-1 min-w-0">${safeName}</span>
-        <span class="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded shrink-0 ${badgeClass}">${safeBadgeText}</span>
+        <div class="flex items-center gap-1 shrink-0">
+          ${isBookmarked ? `<span class="text-[#fce566] text-xs font-bold shrink-0 drop-shadow-[0_1px_0_#17120f]" title="Saved Prospect">★</span>` : ''}
+          <span class="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded shrink-0 ${badgeClass}">${safeBadgeText}</span>
+        </div>
       </div>
-      <div class="flex justify-between items-center gap-1.5 text-[11px] text-gray-400">
+      <div class="flex justify-between items-center gap-2 text-[11px] text-gray-400 mt-0.5">
         <span class="truncate flex-1 min-w-0">${safeDm}</span>
-        <span class="font-mono text-neutral-400 font-medium text-[10px] shrink-0">${safePtype}</span>
+        <span class="text-[7.5px] font-arcade px-1 py-0.5 bg-[#fffdf1] border border-[#17120f] shadow-[1px_1px_0_#17120f] text-[#17120f] font-bold shrink-0 uppercase tracking-wider">${safePtype}</span>
       </div>
     `;
 
@@ -3972,13 +4112,27 @@ function renderActiveProspect() {
     ratingEl.innerText = `★ ${p.rating || '4.8'}`;
   }
 
-  // Update real-time queue position indicator (e.g., "Lead 1 of 65")
+  // Update real-time queue position indicator (e.g., "Lead 1 of 60" for Owner, "Account #1" for Callers)
   const filteredForPos = PROSPECTS.filter(item => (activeCityFilter === 'All' || item.city === activeCityFilter) && matchStatus(item) && matchSearch(item));
   const curPosIdx = filteredForPos.findIndex(item => item.id === p.id);
   const leadPosEl = document.getElementById('leadQueuePosition');
   if (leadPosEl) {
-    leadPosEl.innerText = curPosIdx !== -1 ? `Lead ${curPosIdx + 1} of ${filteredForPos.length}` : `Lead 1 of ${filteredForPos.length}`;
+    const user = (typeof currentUser !== 'undefined' && currentUser)
+      ? currentUser
+      : ((typeof window !== 'undefined' && window.currentUser)
+        ? window.currentUser
+        : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+    const isOwner = isOwnerUser(user);
+    const posNum = curPosIdx !== -1 ? (curPosIdx + 1) : 1;
+    if (isOwner) {
+      leadPosEl.innerText = `Lead ${posNum} of ${filteredForPos.length}`;
+    } else {
+      leadPosEl.innerText = `Account #${posNum}`;
+    }
   }
+
+  // Update Bookmark / Save Button UI
+  updateBookmarkButtonUI(p.id);
   document.getElementById('activeDM').innerText = p.dm;
   document.getElementById('activeCity').innerText = p.city;
   const isNoSite = !p.site || p.site === '#' || p.ptype === 'STARTER';
@@ -5976,6 +6130,17 @@ function exportProspectsJSON() {
 
 function exportActiveQueueCsv() {
   if (typeof playSound === 'function') playSound('click');
+  const user = (typeof currentUser !== 'undefined' && currentUser)
+    ? currentUser
+    : ((typeof window !== 'undefined' && window.currentUser)
+      ? window.currentUser
+      : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+  if (!isOwnerUser(user)) {
+    if (typeof showNotification === 'function') {
+      showNotification('[LOCKED] CSV export is restricted to Owner/Admin sessions.');
+    }
+    return;
+  }
   const filtered = PROSPECTS.filter(item => (activeCityFilter === 'All' || item.city === activeCityFilter) && matchSearch(item));
   if (!filtered.length) {
     showNotification('[ALERT] No matching prospects in current queue to export.');

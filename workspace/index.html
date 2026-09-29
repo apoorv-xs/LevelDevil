@@ -1181,7 +1181,7 @@
   <div id="mobileSwitcherTabs" class="hidden md:hidden bg-[#fff4c9] border-b-2 border-[#17120f] px-3 py-1.5 flex items-center justify-center shrink-0">
     <div class="flex bg-[#fffdf1] p-0.5 text-xs border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] w-full font-arcade">
       <button id="mobileTabQueue" onclick="showMobilePane('queue')" class="flex-1 py-1.5 font-bold text-[#17120f] bg-[#fce566] border border-[#17120f] transition text-center">
-        Queue (<span id="mobileQueueCount">60</span>)
+        Queue<span id="mobileQueueCountWrapper" class="hidden"> (<span id="mobileQueueCount">60</span>)</span>
       </button>
       <button id="mobileTabCockpit" onclick="showMobilePane('cockpit')" class="flex-1 py-1.5 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center">
         Cockpit
@@ -1368,7 +1368,7 @@
             <button onclick="filterCity('Bangalore')" class="city-tab px-1.5 sm:px-2 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition" data-kaboom-body="true">BLR</button>
             <button onclick="filterCity('Hyderabad')" class="city-tab px-1.5 sm:px-2 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition" data-kaboom-body="true">HYD</button>
           </div>
-          <span id="leadCountBadge" class="text-[9px] sm:text-[10px] font-arcade text-[#17120f] bg-[#fffdf1] px-1.5 py-1 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] shrink-0 whitespace-nowrap">60 Leads</span>
+          <span id="leadCountBadge" class="text-[9px] sm:text-[10px] font-arcade text-[#17120f] bg-[#fffdf1] px-1.5 py-1 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] shrink-0 whitespace-nowrap">RADAR ACTIVE</span>
         </div>
 
         <!-- Row 2: Status Tabs + Compact CSV Export Dock -->
@@ -1377,6 +1377,7 @@
             <button id="statusTabAll" type="button" onclick="filterStatus('all')" class="status-tab active flex-1 py-1 font-bold text-[#17120f] bg-[#fce566] transition text-center" title="All Leads">ALL</button>
             <button id="statusTabFresh" type="button" onclick="filterStatus('fresh')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center" title="Fresh / Untouched Leads">FRESH</button>
             <button id="statusTabCallbacks" type="button" onclick="filterStatus('callbacks')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center" title="Scheduled Callbacks">CB</button>
+            <button id="statusTabStarred" type="button" onclick="filterStatus('starred')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center" title="Bookmarked / Saved for Later">★</button>
             <button id="statusTabInterested" type="button" onclick="filterStatus('interested')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center" title="Interested & Booked Leads">WINS</button>
           </div>
           <button 
@@ -1384,6 +1385,7 @@
             type="button"
             onclick="exportActiveQueueCsv()" 
             title="Export current territory and filtered queue to CSV spreadsheet"
+            style="display:none;"
             class="py-1 px-2 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[9px] font-bold flex items-center justify-center gap-1 transition shrink-0 whitespace-nowrap">
             <span>[CSV]</span>
           </button>
@@ -1445,7 +1447,7 @@
               <button id="btnPrevLeadHero" data-kaboom-body="true" onclick="advanceLead(-1)" title="Previous Prospect (K)" class="px-2.5 py-1 text-xs font-arcade text-[#17120f] hover:bg-[#fce566] transition flex items-center gap-1">
                 <span>◀</span>
               </button>
-              <span id="leadQueuePosition" class="text-[10px] font-arcade text-[#17120f] px-2.5 py-1 border-x border-[#17120f]/30 whitespace-nowrap">Lead 1 of 60</span>
+              <span id="leadQueuePosition" class="text-[10px] font-arcade text-[#17120f] px-2.5 py-1 border-x border-[#17120f]/30 whitespace-nowrap">Account #1</span>
               <button id="btnNextLeadHero" data-kaboom-body="true" onclick="advanceLead(1)" title="Next Prospect (J)" class="px-2.5 py-1 text-xs font-arcade text-[#17120f] hover:bg-[#fce566] transition flex items-center gap-1">
                 <span>▶</span>
               </button>
@@ -1455,7 +1457,16 @@
             <div class="flex items-center gap-1.5 flex-wrap">
               <span id="activeFee" data-kaboom-body="true" class="text-[10px] font-arcade px-2 py-1 bg-[#d4edda] text-[#155724] border-2 border-[#17120f] font-bold shadow-[1px_1px_0_#17120f] whitespace-nowrap">Floor ₹50,000</span>
               <span id="currentLockStatus" class="text-[10px] font-arcade px-2 py-1 bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] whitespace-nowrap">Ready</span>
-              <span id="activeRating" class="text-[10px] bg-[#fff1bd] text-[#17120f] font-arcade px-2 py-1 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] whitespace-nowrap">★ --</span>
+              <button 
+                id="btnBookmarkLead" 
+                type="button"
+                onclick="toggleBookmarkActiveLead()" 
+                title="Bookmark / Save for later (B)"
+                class="text-[10px] bg-[#fffdf1] text-[#17120f] font-arcade px-2 py-1 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] whitespace-nowrap cursor-pointer transition hover:bg-[#fce566] flex items-center gap-1">
+                <span id="bookmarkStarIcon">☆</span>
+                <span id="bookmarkText">SAVE</span>
+              </button>
+              <span id="activeRating" class="hidden">★ --</span>
               <span id="activeType" class="text-[10px] font-arcade px-2 py-1 bg-[#fffdf1] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] whitespace-nowrap">UPGRADE</span>
             </div>
           </div>
