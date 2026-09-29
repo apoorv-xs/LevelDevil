@@ -1576,6 +1576,44 @@ function renderAdminInvitationsList() {
   });
 }
 
+function claimActiveInvite(token) {
+  if (!token) return;
+  if (!currentUser) {
+    if (typeof sessionStorage !== 'undefined') sessionStorage.setItem('sprintdial_active_invite_token', token);
+    handleWorkspaceGoogleAuth();
+    return;
+  }
+  const storedInvites = getStoredInvitations();
+  const inv = storedInvites.find(i => i.token === token && i.status === 'pending');
+  if (!inv) {
+    showNotification('⚠️ Invitation is invalid or expired.');
+    return;
+  }
+  inv.status = 'redeemed';
+  inv.redeemedBy = currentUser.email;
+  inv.redeemedAt = new Date().toISOString();
+  saveStoredInvitations(storedInvites);
+  if (typeof sessionStorage !== 'undefined') sessionStorage.removeItem('sprintdial_active_invite_token');
+
+  const userSlug = (currentUser.email || '').split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+  customWorkers[userSlug] = {
+    name: currentUser.displayName || currentUser.name || userSlug,
+    email: currentUser.email,
+    role: 'caller',
+    commissionTier: inv.commissionRate || '15%',
+    picture: currentUser.photoURL || currentUser.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.displayName || userSlug)}&background=1E3A8A&color=60A5FA&bold=true`,
+    createdAt: new Date().toISOString()
+  };
+  saveCustomWorkers(customWorkers);
+
+  const banner = document.getElementById('inviteRedemptionBanner');
+  if (banner) banner.remove();
+
+  showNotification(`🎉 Invitation claimed! Activated as Outreach Partner (${inv.commissionRate || '15%'} tier).`);
+  updateProfileDropdownUI();
+  if (typeof renderAdminInvitesList === 'function') renderAdminInvitesList();
+}
+
 function handleInviteToken(token) {
   if (!token) return;
   const invites = getStoredInvitations();
@@ -1586,45 +1624,72 @@ function handleInviteToken(token) {
 
   const inviteBanner = document.createElement('div');
   inviteBanner.id = 'inviteRedemptionBanner';
-  inviteBanner.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-[9999] max-w-lg w-[95%] bg-[#101114] border border-blue-500/60 shadow-2xl rounded-2xl p-4 text-white font-mono';
+  inviteBanner.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-[9999] max-w-lg w-[95%] p-4 font-mono';
+  inviteBanner.style.cssText = 'background: #17120f !important; color: #fffdf1 !important; border: 3px solid #17120f !important; box-shadow: 6px 6px 0 rgba(23, 18, 15, 0.5) !important;';
 
   if (inv && inv.status === 'pending' && new Date(inv.expiresAt) > new Date()) {
+    sessionStorage.setItem('sprintdial_active_invite_token', token);
+    const claimButtonHtml = currentUser ? `
+      <button type="button" onclick="claimActiveInvite('${escapeHTML(token)}')" class="px-4 py-2 bg-[#4deeea] text-[#17120f] hover:bg-[#38d4d0] border-2 border-[#17120f] font-mono text-xs font-bold transition flex items-center gap-1.5 shadow-[2px_2px_0_#17120f] cursor-pointer">
+        <span>👑</span><span>Claim as ${escapeHTML(currentUser.displayName || currentUser.name || currentUser.email)}</span>
+      </button>
+    ` : `
+      <button type="button" onclick="handleWorkspaceGoogleAuth()" class="px-4 py-2 bg-[#fce566] text-[#17120f] hover:bg-[#fffdf1] border-2 border-[#17120f] font-mono text-xs font-bold transition flex items-center gap-2 shadow-[2px_2px_0_#17120f] cursor-pointer">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24"><path fill="currentColor" d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.344-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"/></svg>
+        <span>Sign in with Google to Claim</span>
+      </button>
+    `;
+
     inviteBanner.innerHTML = `
       <div class="flex items-start justify-between gap-3">
-        <div class="space-y-1">
+        <div class="space-y-1.5 min-w-0">
           <div class="flex items-center gap-2">
             <span class="text-base">🎉</span>
-            <span class="text-sm font-bold text-white">Sales Rep Invitation Active</span>
+            <span class="text-xs sm:text-sm font-bold text-[#fce566] font-arcade tracking-wider">SALES REP INVITATION</span>
           </div>
-          <p class="text-xs text-slate-300 font-sans">
-            You've been invited by Apoorv as an <strong class="text-blue-300 font-mono">${escapeHTML(inv.roleTitle || 'Outreach Partner')}</strong>. Sign in with Google below to unlock the Client Radar Cockpit and activate your 15% commission tier.
+          <p class="text-xs text-[#fff4c9] font-mono leading-relaxed mt-1">
+            You've been invited by Apoorv as an <strong class="text-[#4deeea] font-mono">${escapeHTML(inv.roleTitle || 'Outreach Partner')}</strong>. Claim your invitation to activate your 15% revenue-share commission tier.
           </p>
+          <div class="pt-2 flex flex-wrap items-center gap-2">
+            ${claimButtonHtml}
+            <button type="button" onclick="this.closest('#inviteRedemptionBanner').remove()" class="px-3 py-2 bg-[#fffdf1] text-[#17120f] hover:bg-[#fce566] border-2 border-[#17120f] font-mono text-xs font-bold transition shadow-[2px_2px_0_#17120f] cursor-pointer">
+              Dismiss
+            </button>
+          </div>
         </div>
-        <button onclick="this.closest('#inviteRedemptionBanner').remove()" class="text-slate-400 hover:text-white text-xs px-2 py-1 cursor-pointer">✕</button>
+        <button type="button" onclick="this.closest('#inviteRedemptionBanner').remove()" class="text-[#fce566] hover:text-white text-xs px-2 py-1 cursor-pointer font-bold">✕</button>
       </div>
     `;
-    sessionStorage.setItem('sprintdial_active_invite_token', token);
   } else if (inv && inv.status === 'redeemed') {
     inviteBanner.innerHTML = `
       <div class="flex items-center justify-between gap-3">
-        <div class="text-xs text-amber-300 font-sans">ℹ️ This invitation has already been redeemed. Please sign in with your authorized account.</div>
-        <button onclick="this.closest('#inviteRedemptionBanner').remove()" class="text-slate-400 hover:text-white text-xs px-2 py-1 cursor-pointer">✕</button>
+        <div class="text-xs text-[#fce566] font-mono">ℹ️ This invitation has already been redeemed. Please sign in with your authorized account.</div>
+        <button type="button" onclick="this.closest('#inviteRedemptionBanner').remove()" class="text-[#fce566] hover:text-white text-xs px-2 py-1 cursor-pointer font-bold">✕</button>
       </div>
     `;
   } else {
     sessionStorage.setItem('sprintdial_active_invite_token', token);
     inviteBanner.innerHTML = `
       <div class="flex items-start justify-between gap-3">
-        <div class="space-y-1">
+        <div class="space-y-1.5 min-w-0">
           <div class="flex items-center gap-2">
             <span class="text-base">🔑</span>
-            <span class="text-sm font-bold text-white">Outreach Partner Invitation</span>
+            <span class="text-xs sm:text-sm font-bold text-[#fce566] font-arcade tracking-wider">OUTREACH PARTNER INVITE</span>
           </div>
-          <p class="text-xs text-slate-300 font-sans">
+          <p class="text-xs text-[#fff4c9] font-mono leading-relaxed mt-1">
             Sign in with Google to claim your Sales Rep invitation and access the Client Radar Cockpit.
           </p>
+          <div class="pt-2 flex flex-wrap items-center gap-2">
+            <button type="button" onclick="handleWorkspaceGoogleAuth()" class="px-4 py-2 bg-[#fce566] text-[#17120f] hover:bg-[#fffdf1] border-2 border-[#17120f] font-mono text-xs font-bold transition flex items-center gap-2 shadow-[2px_2px_0_#17120f] cursor-pointer">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24"><path fill="currentColor" d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.344-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"/></svg>
+              <span>Sign in with Google</span>
+            </button>
+            <button type="button" onclick="this.closest('#inviteRedemptionBanner').remove()" class="px-3 py-2 bg-[#fffdf1] text-[#17120f] hover:bg-[#fce566] border-2 border-[#17120f] font-mono text-xs font-bold transition shadow-[2px_2px_0_#17120f] cursor-pointer">
+              Dismiss
+            </button>
+          </div>
         </div>
-        <button onclick="this.closest('#inviteRedemptionBanner').remove()" class="text-slate-400 hover:text-white text-xs px-2 py-1 cursor-pointer">✕</button>
+        <button type="button" onclick="this.closest('#inviteRedemptionBanner').remove()" class="text-[#fce566] hover:text-white text-xs px-2 py-1 cursor-pointer font-bold">✕</button>
       </div>
     `;
   }
@@ -9203,10 +9268,16 @@ if (typeof global !== 'undefined') {
   global.openPartnerWalletModal = openPartnerWalletModal;
   global.closePartnerWalletModal = closePartnerWalletModal;
   global.savePartnerUpiId = savePartnerUpiId;
-  global.updateWalletModalUI = updateWalletModalUI;
   global.requestUpiSettlement = requestUpiSettlement;
   global.settleDealCommission = settleDealCommission;
   global.settleAllClearedCommissions = settleAllClearedCommissions;
+  global.claimActiveInvite = claimActiveInvite;
+  global.handleInviteToken = handleInviteToken;
+}
+
+if (typeof window !== 'undefined') {
+  window.claimActiveInvite = claimActiveInvite;
+  window.handleInviteToken = handleInviteToken;
 }
 
 // Initial visibility check on load

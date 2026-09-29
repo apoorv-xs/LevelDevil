@@ -8,6 +8,17 @@
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#e6a83b">
 
+  <!-- Open Graph / Social Cards for Partner Invites & Previews -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://apoorv.qzz.io/workspace/">
+  <meta property="og:title" content="SprintDial // Client Intelligence Radar — Authorized Partner Portal">
+  <meta property="og:description" content="Official client intelligence radar, 15% revenue share commission tracking, and live dialer cockpit for creative engineering contracts.">
+  <meta property="og:image" content="https://apoorv.qzz.io/thumbnail.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SprintDial // Client Intelligence Radar — Authorized Partner Portal">
+  <meta name="twitter:description" content="Official client intelligence radar, 15% revenue share commission tracking, and live dialer cockpit for creative engineering contracts.">
+  <meta name="twitter:image" content="https://apoorv.qzz.io/thumbnail.png">
+
   <!-- Universal Retro Typography & Global Shell Styling -->
   <link rel="stylesheet" href="/fonts.css">
   <link rel="stylesheet" href="/shell.css">
@@ -587,6 +598,26 @@
       border: 1px solid var(--ink) !important;
       color: var(--ink) !important;
       box-shadow: 1px 1px 0 var(--ink) !important;
+    }
+
+    /* Invite Redemption Banner High Contrast */
+    .retro-workspace #inviteRedemptionBanner {
+      background: #17120f !important;
+      color: #fffdf1 !important;
+      border: 3px solid #17120f !important;
+      box-shadow: 6px 6px 0 rgba(23, 18, 15, 0.6) !important;
+    }
+    .retro-workspace #inviteRedemptionBanner p {
+      color: #fff4c9 !important;
+    }
+    .retro-workspace #inviteRedemptionBanner strong {
+      color: #4deeea !important;
+    }
+    .retro-workspace #inviteRedemptionBanner .font-arcade {
+      color: #fce566 !important;
+    }
+    .retro-workspace #inviteRedemptionBanner button {
+      color: #17120f !important;
     }
 
     /* Mobile Bars */
@@ -3449,76 +3480,76 @@
       
       <!-- Top Title Banner -->
       <div style="background: #17120f !important; color: #fce566 !important;" class="p-4 text-center border-b-[3px] border-[#17120f]">
-        <div style="color: #fce566 !important; opacity: 0.75;" class="text-[9px] tracking-[3px] font-mono">CLIENT RADAR // OUTREACH PARTNER ONBOARDING</div>
+        <div style="color: #fce566 !important; opacity: 0.9;" class="text-[11px] tracking-[2px] font-mono">CLIENT RADAR // OUTREACH PARTNER ONBOARDING</div>
         <h2 style="color: #fce566 !important;" class="text-base font-bold mt-1 tracking-wide uppercase">🎯 Outreach Partner &amp; Referral Briefing</h2>
-        <div style="color: #fff4c9 !important; opacity: 0.9;" class="text-[10px] mt-1 font-mono">Compensation, Rules of Engagement & Payout Terms</div>
+        <div style="color: #fff4c9 !important; opacity: 0.95;" class="text-xs mt-1 font-mono">Compensation, Rules of Engagement & Payout Terms</div>
       </div>
 
       <div class="p-5 space-y-5 text-xs">
         <!-- Section 1: Setter & Closer Partnership Structure (Closed Deals Only) -->
         <div class="space-y-2">
-          <div class="text-[11px] font-bold tracking-wider uppercase border-b-2 border-[#17120f] pb-1 flex items-center justify-between">
+          <div class="text-xs font-bold tracking-wider uppercase border-b-2 border-[#17120f] pb-1 flex items-center justify-between">
             <span>💰 Commission Policy (Closed Revenue Payouts)</span>
-            <span style="background: #17120f !important; color: #fce566 !important;" class="text-[9px] px-2 py-0.5 font-bold border border-[#17120f]">Closed Deals Only</span>
+            <span style="background: #17120f !important; color: #fce566 !important;" class="text-[11px] px-2.5 py-0.5 font-bold border border-[#17120f]">Closed Deals Only</span>
           </div>
 
           <div class="space-y-2.5">
             <!-- Tier 1: 10% Standard Discovery Booking -->
-            <div class="bg-[#fffdf1] border-2 border-[#17120f] p-3">
+            <div class="bg-[#fffdf1] border-2 border-[#17120f] p-3.5">
               <div class="flex items-start justify-between gap-3">
                 <div>
-                  <div class="font-bold text-[12px] text-neutral-900 flex items-center gap-1.5">
+                  <div class="font-bold text-[13px] text-neutral-900 flex items-center gap-1.5">
                     <span>🗓️</span><span>Standard Discovery Booking (10% Cut)</span>
                   </div>
-                  <div class="text-[11px] opacity-85 mt-1 leading-relaxed">
+                  <div class="text-xs opacity-90 mt-1 leading-relaxed">
                     You qualify client interest using our performance audit, verify the Decision Maker, and <strong>lock a 15-minute consultation on Apoorv's calendar</strong>. Apoorv demonstrates live WebGPU/60 FPS systems and closes the contract.
                   </div>
                 </div>
                 <div class="text-right shrink-0">
-                  <span class="text-xs font-bold text-neutral-800 bg-[#fce566] border border-[#17120f] px-2 py-1 inline-block">10% Cut</span>
-                  <div class="text-[9px] font-bold text-neutral-700 mt-1">$500 / $5k deal</div>
+                  <span class="text-xs font-bold text-neutral-800 bg-[#fce566] border border-[#17120f] px-2.5 py-1 inline-block">10% Cut</span>
+                  <div class="text-xs font-bold text-neutral-800 mt-1">$500 / $5k deal</div>
                 </div>
               </div>
 
               <!-- Payout Examples Grid -->
-              <div class="border-t border-[#17120f]/20 mt-2.5 pt-2 grid grid-cols-2 gap-2 text-[10px]">
+              <div class="border-t border-[#17120f]/20 mt-2.5 pt-2 grid grid-cols-2 gap-2 text-xs">
                 <div class="bg-[#fff4c9] p-2 border border-[#17120f]/30">
-                  <div class="text-neutral-600 uppercase text-[9px] font-bold">Standard Project ($5k Floor)</div>
-                  <div class="font-bold text-[12px] text-neutral-800 mt-0.5">$500 Payout</div>
+                  <div class="text-neutral-700 uppercase text-[11px] font-bold">Standard Project ($5k Floor)</div>
+                  <div class="font-bold text-[13px] text-neutral-900 mt-0.5">$500 Payout</div>
                 </div>
                 <div class="bg-[#fff4c9] p-2 border border-[#17120f]/30">
-                  <div class="text-neutral-600 uppercase text-[9px] font-bold">Flagship System ($15k+)</div>
-                  <div class="font-bold text-[12px] text-neutral-800 mt-0.5">$1,500+ Payout</div>
+                  <div class="text-neutral-700 uppercase text-[11px] font-bold">Flagship System ($15k+)</div>
+                  <div class="font-bold text-[13px] text-neutral-900 mt-0.5">$1,500+ Payout</div>
                 </div>
               </div>
             </div>
 
             <!-- Tier 2: 15% Pre-Sold Prime Booking (High Quality Incentive) -->
-            <div class="bg-[#d4edda] border-2 border-[#155724] p-3 shadow-[2px_2px_0_#155724]">
+            <div class="bg-[#d4edda] border-2 border-[#155724] p-3.5 shadow-[2px_2px_0_#155724]">
               <div class="flex items-start justify-between gap-3">
                 <div>
-                  <div class="font-bold text-[12px] text-[#155724] flex items-center gap-1.5">
+                  <div class="font-bold text-[13px] text-[#155724] flex items-center gap-1.5">
                     <span>👑</span><span>Pre-Sold Warm Booking (15% Prime Cut!)</span>
                   </div>
-                  <div class="text-[11px] text-[#155724]/90 mt-1 leading-relaxed">
+                  <div class="text-xs text-[#155724]/95 mt-1 leading-relaxed">
                     You navigate client parameters, walk them through spatial/performance opportunities, and <strong>confirm their alignment with our $5,000 project floor</strong> before booking Apoorv. The client arrives primed for deployment!
                   </div>
                 </div>
                 <div class="text-right shrink-0">
-                  <span class="text-xs font-bold text-white bg-[#155724] border border-[#155724] px-2 py-1 inline-block">15% Cut</span>
-                  <div class="text-[9px] font-bold text-[#155724] mt-1">$750 / $5k deal</div>
+                  <span class="text-xs font-bold text-white bg-[#155724] border border-[#155724] px-2.5 py-1 inline-block">15% Cut</span>
+                  <div class="text-xs font-bold text-[#155724] mt-1">$750 / $5k deal</div>
                 </div>
               </div>
 
               <!-- Payout Examples Grid -->
-              <div class="border-t border-[#155724]/20 mt-2.5 pt-2 grid grid-cols-2 gap-2 text-[10px]">
-                <div class="bg-white/85 p-2 border border-[#155724]/30">
-                  <div class="text-[#155724] uppercase text-[9px] font-bold">Standard Project ($5k Floor)</div>
-                  <div class="font-bold text-[12px] text-[#155724] mt-0.5">$750 Payout</div>
+              <div class="border-t border-[#155724]/20 mt-2.5 pt-2 grid grid-cols-2 gap-2 text-xs">
+                <div class="bg-white/90 p-2 border border-[#155724]/30">
+                  <div class="text-[#155724] uppercase text-[11px] font-bold">Standard Project ($5k Floor)</div>
+                  <div class="font-bold text-[13px] text-[#155724] mt-0.5">$750 Payout</div>
                 </div>
-                <div class="bg-white/85 p-2 border border-[#155724]/30">
-                  <div class="text-[#155724] uppercase text-[9px] font-bold">Enterprise Build ($30k)</div>
-                  <div class="font-bold text-[12px] text-[#155724] mt-0.5">$4,500 Payout</div>
+                <div class="bg-white/90 p-2 border border-[#155724]/30">
+                  <div class="text-[#155724] uppercase text-[11px] font-bold">Enterprise Build ($30k)</div>
+                  <div class="font-bold text-[13px] text-[#155724] mt-0.5">$4,500 Payout</div>
                 </div>
               </div>
             </div>
@@ -3527,34 +3558,34 @@
 
         <!-- Section 2: How It Works Flow -->
         <div class="space-y-2">
-          <div class="text-[11px] font-bold tracking-wider uppercase border-b-2 border-[#17120f] pb-1">
+          <div class="text-xs font-bold tracking-wider uppercase border-b-2 border-[#17120f] pb-1">
             🔄 The Referral &amp; Closing Model
           </div>
-          <div class="grid grid-cols-3 gap-2 text-center text-[10px]">
-            <div class="bg-[#fffdf1] border-2 border-[#17120f] p-2 flex flex-col items-center">
-              <span class="text-base mb-1">⚡</span>
-              <span class="font-bold text-neutral-900">1. Identify & Engage</span>
-              <span class="text-[9px] opacity-80 mt-0.5 leading-snug">Introduce diagnostic audit & resolve technical questions</span>
+          <div class="grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="bg-[#fffdf1] border-2 border-[#17120f] p-2.5 flex flex-col items-center">
+              <span class="text-lg mb-1">⚡</span>
+              <span class="font-bold text-neutral-900 text-[11px]">1. Identify & Engage</span>
+              <span class="text-[11px] text-neutral-700 mt-1 leading-snug">Introduce diagnostic audit & resolve technical questions</span>
             </div>
-            <div class="bg-[#fffdf1] border-2 border-[#17120f] p-2 flex flex-col items-center">
-              <span class="text-base mb-1">🗓️</span>
-              <span class="font-bold text-neutral-900">2. Lock Apoorv's Meet</span>
-              <span class="text-[9px] opacity-80 mt-0.5 leading-snug">Click "Cal Meet" & book 15-min screen share slot</span>
+            <div class="bg-[#fffdf1] border-2 border-[#17120f] p-2.5 flex flex-col items-center">
+              <span class="text-lg mb-1">🗓️</span>
+              <span class="font-bold text-neutral-900 text-[11px]">2. Lock Apoorv's Meet</span>
+              <span class="text-[11px] text-neutral-700 mt-1 leading-snug">Click "Cal Meet" & book 15-min screen share slot</span>
             </div>
-            <div class="bg-[#d4edda] border-2 border-[#155724] p-2 flex flex-col items-center">
-              <span class="text-base mb-1">👑</span>
-              <span class="font-bold text-[#155724]">3. Apoorv Closes</span>
-              <span class="text-[9px] text-[#155724]/90 mt-0.5 leading-snug">Apoorv runs live demo & you get 10%–15% commission (UPI / Bank Transfer)</span>
+            <div class="bg-[#d4edda] border-2 border-[#155724] p-2.5 flex flex-col items-center">
+              <span class="text-lg mb-1">👑</span>
+              <span class="font-bold text-[#155724] text-[11px]">3. Apoorv Closes</span>
+              <span class="text-[11px] text-[#155724] font-medium mt-1 leading-snug">Apoorv runs live demo & you get 10%–15% commission (UPI / Bank Transfer)</span>
             </div>
           </div>
         </div>
 
         <!-- Section 3: Payout Details -->
         <div class="space-y-2">
-          <div class="text-[11px] font-bold tracking-wider uppercase border-b-2 border-[#17120f] pb-1">
+          <div class="text-xs font-bold tracking-wider uppercase border-b-2 border-[#17120f] pb-1">
             📅 Payout Schedule & Payment Rails
           </div>
-          <ul class="space-y-1.5 text-[11px] pl-4 list-disc leading-relaxed">
+          <ul class="space-y-1.5 text-xs pl-4 list-disc leading-relaxed">
             <li><strong>Method:</strong> Direct <strong>UPI / Bank Transfer</strong> to your registered account details.</li>
             <li><strong>Timing:</strong> Payout is triggered within <strong>24–48 hours</strong> of client invoice/deposit clearance.</li>
             <li><strong>Lead Attribution:</strong> Every prospect engagement is permanently tagged with your Partner ID, ensuring 100% credit for closed contracts originating from your referral.</li>
@@ -3563,10 +3594,10 @@
 
         <!-- Section 4: Rules & Engagement -->
         <div class="space-y-2">
-          <div class="text-[11px] font-bold tracking-wider uppercase border-b-2 border-[#17120f] pb-1">
+          <div class="text-xs font-bold tracking-wider uppercase border-b-2 border-[#17120f] pb-1">
             📋 Rules of Engagement & Booking Standards
           </div>
-          <ul class="space-y-1.5 text-[11px] pl-4 list-disc leading-relaxed">
+          <ul class="space-y-1.5 text-xs pl-4 list-disc leading-relaxed">
             <li>Introduce yourself as an <strong>Authorized Referral Partner representing Apoorv's Creative Engineering Practice</strong>.</li>
             <li>Leverage the technical objection navigator and competitive speed data provided in the radar cockpit.</li>
             <li><strong>Respect Regional Business Windows:</strong> Conduct outreach strictly during standard professional business hours (09:00 AM – 06:00 PM in the prospect's local timezone).</li>
@@ -3578,8 +3609,8 @@
         </div>
 
         <!-- Section 5: Legal & Confidentiality Disclaimer -->
-        <div class="bg-[#fffdf1] border-2 border-[#17120f] p-3 text-[10px] leading-relaxed text-[#17120f]/90 space-y-1">
-          <div class="font-bold uppercase tracking-wider text-[9px] text-[#92400e] flex items-center gap-1">
+        <div class="bg-[#fffdf1] border-2 border-[#17120f] p-3 text-[11px] leading-relaxed text-[#17120f]/90 space-y-1">
+          <div class="font-bold uppercase tracking-wider text-[11px] text-[#92400e] flex items-center gap-1">
             <span>⚖️</span><span>Independent Referral Agreement &amp; Rules</span>
           </div>
           <div>
