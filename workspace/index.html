@@ -393,6 +393,34 @@
       font-size: 9px !important;
     }
 
+    /* Tactical Animations & Guided Call Styles */
+    @keyframes shakePulse {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+    .shake-card {
+      animation: shakePulse 0.4s ease-in-out !important;
+      border-color: #e11d48 !important;
+      box-shadow: 0 0 0 2px #e11d48, 3px 3px 0 #17120f !important;
+    }
+    .reach-btn-active {
+      background: #fce566 !important;
+      color: #17120f !important;
+      border-width: 2px !important;
+      font-weight: 800 !important;
+      box-shadow: inset 1px 1px 0 #17120f, 2px 2px 0 #17120f !important;
+      transform: translate(1px, 1px);
+    }
+    .outcome-btn-active {
+      background: #17120f !important;
+      color: #fce566 !important;
+      border-width: 2px !important;
+      font-weight: 800 !important;
+      box-shadow: 2px 2px 0 #fce566 !important;
+      transform: translate(1px, 1px);
+    }
+
     /* General Typography & Headers */
     .retro-workspace h1,
     .retro-workspace h2,
@@ -1320,17 +1348,103 @@
               </div>
             </div>
 
-            <!-- 1-Tap Quick Outcome Disposition Bar -->
-            <div class="grid grid-cols-3 gap-1.5 pt-0.5">
-              <button type="button" onclick="logOutcome('interested')" title="Log Interested [Hotkey: 1]" class="px-2 py-1 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1">
-                <span>[1]</span> <span>INTERESTED</span>
-              </button>
-              <button type="button" onclick="logOutcome('connected_callback')" title="Log Busy / Callback [Hotkey: 2]" class="px-2 py-1 bg-[#fff3cd] hover:bg-[#ffeeba] text-[#856404] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1">
-                <span>[2]</span> <span>BUSY / CB</span>
-              </button>
-              <button type="button" onclick="logOutcome('not_interested')" title="Log Disqualified [Hotkey: 3]" class="px-2 py-1 bg-[#f8d7da] hover:bg-[#f5c6cb] text-[#721c24] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1">
-                <span>[3]</span> <span>DISQUALIFIED</span>
-              </button>
+            <!-- IN-CALL FLIGHT & WRAP-UP HUD (MANDATORY DISPOSITION GATE) -->
+            <div id="callWrapCard" class="border-2 border-[#17120f] bg-[#fffdf1] p-2.5 shadow-[2px_2px_0_#17120f] space-y-2 transition-all">
+              
+              <!-- Flight Status & Live Telemetry Banner -->
+              <div class="flex items-center justify-between border-b border-[#17120f]/20 pb-1.5">
+                <div class="flex items-center gap-2">
+                  <span id="callFlightBadge" class="px-2 py-0.5 font-arcade text-[9px] font-bold border border-[#17120f] bg-[#fff3cd] text-[#856404] shadow-[1px_1px_0_#17120f] flex items-center gap-1.5">
+                    <span id="callFlightDot" class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>
+                    <span id="callFlightStatusText">READY TO DIAL</span>
+                  </span>
+                  <!-- Active Stopwatch Display -->
+                  <div id="callTimerBox" class="hidden items-center gap-1.5 px-2 py-0.5 font-mono text-[9px] font-bold bg-[#17120f] text-[#fce566] border border-[#17120f] shadow-[1px_1px_0_#17120f]">
+                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                    <span id="callTimerDigits">00:00</span>
+                  </div>
+                </div>
+                <button type="button" id="btnCancelDial" onclick="cancelActiveDial()" class="hidden px-2 py-0.5 text-[9px] font-mono font-bold text-rose-700 hover:text-white hover:bg-rose-700 border border-dashed border-rose-500 transition items-center gap-1">
+                  <span>↩</span> <span>Cancel Dial (Misclick)</span>
+                </button>
+              </div>
+
+              <!-- STEP 1: Reach Status (Who answered?) -->
+              <div class="space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-arcade text-[8px] font-bold text-[#17120f] flex items-center gap-1">
+                    <span>STEP 1:</span> <span class="text-[#17120f]/80">REACH STATUS</span>
+                  </span>
+                  <span id="reachValidationIndicator" class="text-[8px] font-mono text-rose-600 font-bold hidden">SELECT REACH *</span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-1">
+                  <button type="button" id="btnReachDM" onclick="setCallReach('dm_connected')" class="reach-btn px-1.5 py-1 bg-[#fffdf1] hover:bg-[#d4edda] text-[#17120f] border border-[#17120f] font-mono text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Spoke to Decision Maker">
+                    <span>🟢</span> <span>Spoke to DM</span>
+                  </button>
+                  <button type="button" id="btnReachGK" onclick="setCallReach('gatekeeper')" class="reach-btn px-1.5 py-1 bg-[#fffdf1] hover:bg-[#fff3cd] text-[#17120f] border border-[#17120f] font-mono text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Gatekeeper / Reception">
+                    <span>🟡</span> <span>Gatekeeper</span>
+                  </button>
+                  <button type="button" id="btnReachNoAns" onclick="setCallReach('no_answer')" class="reach-btn px-1.5 py-1 bg-[#fffdf1] hover:bg-[#e2e3e5] text-[#17120f] border border-[#17120f] font-mono text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="No Answer / Busy">
+                    <span>⚪</span> <span>No Answer</span>
+                  </button>
+                  <button type="button" id="btnReachInvalid" onclick="setCallReach('invalid_number')" class="reach-btn px-1.5 py-1 bg-[#fffdf1] hover:bg-[#f8d7da] text-[#17120f] border border-[#17120f] font-mono text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Invalid / Disconnected #">
+                    <span>🔴</span> <span>Invalid #</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- STEP 2: Call Outcome (Dynamically updated based on Reach) -->
+              <div class="space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-arcade text-[8px] font-bold text-[#17120f] flex items-center gap-1">
+                    <span>STEP 2:</span> <span id="outcomeStepTitle" class="text-[#17120f]/80">CALL OUTCOME</span>
+                  </span>
+                  <span id="outcomeValidationIndicator" class="text-[8px] font-mono text-rose-600 font-bold hidden">SELECT OUTCOME *</span>
+                </div>
+                <!-- Dynamic Outcome Buttons Container -->
+                <div id="outcomeOptionsContainer" class="grid grid-cols-2 sm:grid-cols-4 gap-1">
+                  <button type="button" id="btnOutcomeBooked" onclick="setCallOutcome('discovery_booked')" class="outcome-btn px-1.5 py-1 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Log Discovery Booked [Hotkey: 1]">
+                    <span>🏆</span> <span>[1] BOOKED</span>
+                  </button>
+                  <button type="button" id="btnOutcomeTeardown" onclick="setCallOutcome('teardown_sent')" class="outcome-btn px-1.5 py-1 bg-[#cce5ff] hover:bg-[#b8daff] text-[#004085] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Sent 3D Teardown">
+                    <span>🔗</span> <span>TEARDOWN</span>
+                  </button>
+                  <button type="button" id="btnOutcomeCallback" onclick="setCallOutcome('connected_callback')" class="outcome-btn px-1.5 py-1 bg-[#fff3cd] hover:bg-[#ffeeba] text-[#856404] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Log Callback Requested [Hotkey: 2]">
+                    <span>📅</span> <span>[2] CALLBACK</span>
+                  </button>
+                  <button type="button" id="btnOutcomeDisqualified" onclick="setCallOutcome('not_interested')" class="outcome-btn px-1.5 py-1 bg-[#f8d7da] hover:bg-[#f5c6cb] text-[#721c24] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Log Disqualified [Hotkey: 3]">
+                    <span>❌</span> <span>[3] DISQUAL</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- STEP 3: 1-Tap Quick-Tag Intel Chips -->
+              <div class="space-y-1 pt-0.5">
+                <div class="flex items-center justify-between">
+                  <span class="font-arcade text-[8px] font-bold text-[#17120f] flex items-center gap-1">
+                    <span>STEP 3:</span> <span class="text-[#17120f]/80">QUICK-TAG INTEL</span>
+                  </span>
+                  <span class="text-[8px] font-mono text-[#17120f]/60">1-tap appends to notes</span>
+                </div>
+                <div class="flex flex-wrap gap-1">
+                  <button type="button" onclick="appendNoteTag('In Consultations')" class="px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
+                    + In Consultations
+                  </button>
+                  <button type="button" onclick="appendNoteTag('Asked for WhatsApp')" class="px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
+                    + Asked for WhatsApp
+                  </button>
+                  <button type="button" onclick="appendNoteTag('Uses WordPress')" class="px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
+                    + Uses WordPress
+                  </button>
+                  <button type="button" onclick="appendNoteTag('Decision Next Month')" class="px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
+                    + Decision Next Month
+                  </button>
+                  <button type="button" onclick="appendNoteTag('Follow Up Tomorrow')" class="px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
+                    + Follow Up Tomorrow
+                  </button>
+                </div>
+              </div>
+
             </div>
 
             <!-- 6 Objection Soundboard Chips -->
@@ -1457,7 +1571,6 @@
 
         <!-- COMPATIBILITY HOOKS (Hidden from UI, preserving 100% app.js stability) -->
         <div class="hidden" aria-hidden="true">
-          <div id="callTimerBox"><span id="callTimerDigits">00:00</span></div>
           <div id="lockedBadge"></div>
           <div id="scriptContentBox"></div>
           <button id="tabModePitch"></button>

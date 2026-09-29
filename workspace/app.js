@@ -1,8 +1,12 @@
 // Client Radar — Outbound Intelligence Console
 // Strictly On Apoorv's Behalf
-let PROSPECTS = (typeof window !== 'undefined' && window.DEFAULT_PROSPECTS) 
-  ? window.DEFAULT_PROSPECTS 
-  : (typeof DEFAULT_PROSPECTS !== 'undefined' ? DEFAULT_PROSPECTS : (typeof global !== 'undefined' && global.DEFAULT_PROSPECTS ? global.DEFAULT_PROSPECTS : []));
+let PROSPECTS = (typeof window !== 'undefined' && Array.isArray(window.PROSPECTS) && window.PROSPECTS.length > 0)
+  ? window.PROSPECTS
+  : ((typeof global !== 'undefined' && Array.isArray(global.PROSPECTS) && global.PROSPECTS.length > 0)
+    ? global.PROSPECTS
+    : ((typeof window !== 'undefined' && window.DEFAULT_PROSPECTS) 
+      ? window.DEFAULT_PROSPECTS 
+      : (typeof DEFAULT_PROSPECTS !== 'undefined' ? DEFAULT_PROSPECTS : (typeof global !== 'undefined' && global.DEFAULT_PROSPECTS ? global.DEFAULT_PROSPECTS : []))));
 
 function escapeHTML(str) {
   if (str === null || str === undefined) return '';
@@ -130,6 +134,13 @@ let soundEnabled = true;
 // Call Timer Variables
 let callTimerInterval = null;
 let callSeconds = 0;
+
+// Guided In-Call Workflow & Mandatory Disposition Gate State
+let isCallActive = false;
+let callPendingDisposition = false;
+let activeCallProspectId = null;
+let currentCallReach = null;
+let currentCallOutcome = null;
 
 // MediaRecorder Variables for 15s Voice Memo
 let mediaRecorder = null;
@@ -352,6 +363,9 @@ function broadcastDNC(prospectId) {
 }
 
 function showNotification(msg) {
+  if (typeof global !== 'undefined' && typeof global.showNotification === 'function' && global.showNotification !== showNotification) {
+    try { global.showNotification(msg); } catch (e) {}
+  }
   const bar = document.getElementById('lockNotificationBar');
   const msgSpan = document.getElementById('liveStatusMsg');
   if (msgSpan) msgSpan.innerText = msg;
@@ -2599,13 +2613,43 @@ function setupKeyboardShortcuts() {
     } else if (!e.ctrlKey && !e.metaKey && !e.altKey) {
       if (e.key === '1') {
         e.preventDefault();
-        logOutcome('interested');
+        if (callPendingDisposition) {
+          if (!currentCallReach) setCallReach('dm_connected');
+          const firstBtn = document.querySelector('#outcomeOptionsContainer .outcome-btn:first-child');
+          if (firstBtn) {
+            firstBtn.click();
+          } else {
+            setCallOutcome('discovery_booked');
+          }
+        } else {
+          logOutcome('interested');
+        }
       } else if (e.key === '2') {
         e.preventDefault();
-        logOutcome('gatekeeper_rejection');
+        if (callPendingDisposition) {
+          if (!currentCallReach) setCallReach('dm_connected');
+          const secondBtn = document.querySelector('#outcomeOptionsContainer .outcome-btn:nth-child(2)');
+          if (secondBtn) {
+            secondBtn.click();
+          } else {
+            setCallOutcome('connected_callback');
+          }
+        } else {
+          logOutcome('gatekeeper_rejection');
+        }
       } else if (e.key === '3') {
         e.preventDefault();
-        logOutcome('not_interested');
+        if (callPendingDisposition) {
+          if (!currentCallReach) setCallReach('dm_connected');
+          const thirdBtn = document.querySelector('#outcomeOptionsContainer .outcome-btn:nth-child(3)');
+          if (thirdBtn) {
+            thirdBtn.click();
+          } else {
+            setCallOutcome('not_interested');
+          }
+        } else {
+          logOutcome('not_interested');
+        }
       } else if (e.key === ' ') {
         e.preventDefault();
         saveAndNext();
@@ -2632,6 +2676,7 @@ function toggleShortcutsModal() {
 }
 
 function advanceLead(direction) {
+  if (typeof canAdvanceLead === 'function' && !canAdvanceLead()) return;
   playSound('click');
   const filtered = PROSPECTS.filter(item => (activeCityFilter === 'All' || item.city === activeCityFilter) && matchStatus(item) && matchSearch(item));
   if (!filtered.length) return;
@@ -2799,10 +2844,23 @@ function renderQueue() {
 }
 
 function selectProspect(id, playSoundEffect = false) {
+  if (callPendingDisposition && activeCallProspectId && activeCallProspectId !== id) {
+    const user = (typeof currentUser !== 'undefined' && currentUser)
+      ? currentUser
+      : ((typeof window !== 'undefined' && window.currentUser)
+        ? window.currentUser
+        : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+    const isOwner = typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(user?.email);
+    if (!isOwner && !validateCallDisposition()) {
+      flashDispositionGateWarning("⚠️ Complete current call disposition before switching prospects.");
+      return;
+    }
+  }
   if (playSoundEffect) {
     playSound('click');
   }
   selectedProspectId = id;
+  resetCallWorkflowState();
   renderQueue();
   renderActiveProspect();
   const p = PROSPECTS.find(item => item.id === id);
@@ -3196,7 +3254,9 @@ function renderActiveProspect() {
   if (notesInput) {
     notesInput.value = p.notes || '';
     if (!notesInput._hasSaveListener) {
-      notesInput.addEventListener('input', () => saveNotesLocally());
+      if (typeof notesInput.addEventListener === 'function') {
+        notesInput.addEventListener('input', () => saveNotesLocally());
+      }
       notesInput._hasSaveListener = true;
     }
   }
@@ -3208,6 +3268,9 @@ function renderActiveProspect() {
 
   // Teleprompter
   updateScriptUI(p);
+
+  // In-Call Flight & Mandatory Disposition Gate HUD
+  updateCallHUDState();
 }
 
 function updateMoatSolutions(p, isNoSite) {
@@ -3264,15 +3327,32 @@ function updateMoatSolutions(p, isNoSite) {
   }
 }
 
-// Active Call Stopwatch
+// Active Call Stopwatch & Guided In-Call Flight HUD
 function handleCallInitiated() {
-  if (!currentUser) {
+  const user = (typeof window !== 'undefined' && window.currentUser)
+    ? window.currentUser
+    : ((typeof global !== 'undefined' && global.currentUser)
+      ? global.currentUser
+      : ((typeof currentUser !== 'undefined' && currentUser) ? currentUser : null));
+  if (!user) {
     showNotification('🔑 Sign in with your Partner or Owner credentials to initiate active calls.');
     openAuthGate();
     return;
   }
-  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  currentUser = user;
+
+  const curProspectId = (typeof window !== 'undefined' && window.selectedProspectId)
+    ? window.selectedProspectId
+    : ((typeof global !== 'undefined' && global.selectedProspectId) ? global.selectedProspectId : selectedProspectId);
+  const prospectsList = (typeof window !== 'undefined' && Array.isArray(window.PROSPECTS) && window.PROSPECTS.length > 0)
+    ? window.PROSPECTS
+    : ((typeof global !== 'undefined' && Array.isArray(global.PROSPECTS) && global.PROSPECTS.length > 0)
+      ? global.PROSPECTS
+      : ((typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS)) ? PROSPECTS : []));
+  const p = prospectsList.find(item => item.id === curProspectId) || prospectsList[0];
   if (!p) return;
+
+  selectedProspectId = p.id;
 
   if (typeof isProspectPhoneUnmasked === 'function' && !isProspectPhoneUnmasked(p.id)) {
     const unmasked = unmaskProspectPhone(p.id);
@@ -3280,11 +3360,20 @@ function handleCallInitiated() {
   }
 
   p.status = 'locked';
-  p.lockedBy = currentUser.name;
-  p.lockedEmail = currentUser.email;
+  p.lockedBy = user.name;
+  p.lockedEmail = user.email;
   broadcastLock(p.id);
+
+  // Activate In-Call Flight Mode & Mandatory Disposition Gate
+  isCallActive = true;
+  callPendingDisposition = true;
+  activeCallProspectId = p.id;
+  currentCallReach = null;
+  currentCallOutcome = null;
+
   renderQueue();
   renderActiveProspect();
+  updateCallHUDState();
 
   startCallTimer();
   if (typeof recordPartnerActivity === 'function') {
@@ -3297,8 +3386,10 @@ function startCallTimer() {
   callSeconds = 0;
   const timerBox = document.getElementById('callTimerBox');
   const timerDigits = document.getElementById('callTimerDigits');
-  timerBox.classList.remove('hidden');
-  timerBox.classList.add('flex');
+  if (timerBox) {
+    timerBox.classList.remove('hidden');
+    timerBox.classList.add('flex');
+  }
 
   if (typeof window !== 'undefined' && window.System1Brain) {
     window.System1Brain.onCallStateChange?.(true, 0);
@@ -3308,7 +3399,9 @@ function startCallTimer() {
     callSeconds++;
     const mins = String(Math.floor(callSeconds / 60)).padStart(2, '0');
     const secs = String(callSeconds % 60).padStart(2, '0');
-    timerDigits.innerText = `${mins}:${secs}`;
+    if (timerDigits) {
+      timerDigits.innerText = `${mins}:${secs}`;
+    }
     if (callSeconds % 15 === 0 && typeof window !== 'undefined' && window.System1Brain) {
       window.System1Brain.callDuration = callSeconds;
     }
@@ -3317,12 +3410,327 @@ function startCallTimer() {
 
 function stopCallTimer() {
   clearInterval(callTimerInterval);
+  isCallActive = false;
   const timerBox = document.getElementById('callTimerBox');
-  timerBox.classList.add('hidden');
-  timerBox.classList.remove('flex');
+  if (timerBox) {
+    timerBox.classList.add('hidden');
+    timerBox.classList.remove('flex');
+  }
   if (typeof window !== 'undefined' && window.System1Brain) {
     window.System1Brain.onCallStateChange?.(false, callSeconds);
   }
+  updateCallHUDState();
+}
+
+// ============================================================================
+// GUIDED IN-CALL WORKFLOW & MANDATORY DISPOSITION GATE SUBSYSTEM 18
+// ============================================================================
+
+function setCallReach(reachType) {
+  currentCallReach = reachType;
+  updateReachUI();
+  updateOutcomeOptionsUI();
+  updateCallHUDState();
+  playSound('click');
+}
+
+function setCallOutcome(outcomeType) {
+  currentCallOutcome = outcomeType;
+  updateOutcomeUI();
+  updateCallHUDState();
+  playSound('click');
+
+  if (outcomeType === 'discovery_booked') {
+    const discInput = document.getElementById('discoveryInput');
+    if (discInput) {
+      discInput.focus();
+      showNotification('🎉 Set discovery meeting time and tap Complete & Next!');
+    }
+  } else if (outcomeType === 'teardown_sent') {
+    const p = PROSPECTS.find(item => item.id === selectedProspectId);
+    if (p) {
+      showNotification(`🔗 Generated 3D teardown brief for ${p.name}`);
+    }
+  }
+}
+
+function appendNoteTag(tagText) {
+  const notesEl = document.getElementById('callNotesInput');
+  if (!notesEl) return;
+  const tagFormatted = `[${tagText}]`;
+  if (!notesEl.value.includes(tagFormatted)) {
+    notesEl.value = notesEl.value ? `${notesEl.value.trim()} ${tagFormatted}` : tagFormatted;
+  }
+  saveNotesLocally();
+  playSound('click');
+  showNotification(`Added tag: ${tagFormatted}`);
+}
+
+function cancelActiveDial() {
+  playSound('click');
+  stopCallTimer();
+  const prospectId = activeCallProspectId || selectedProspectId;
+  const prospectsList = (typeof window !== 'undefined' && Array.isArray(window.PROSPECTS) && window.PROSPECTS.length > 0)
+    ? window.PROSPECTS
+    : ((typeof global !== 'undefined' && Array.isArray(global.PROSPECTS) && global.PROSPECTS.length > 0)
+      ? global.PROSPECTS
+      : ((typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS)) ? PROSPECTS : []));
+  const p = prospectsList.find(item => item.id === prospectId);
+  const user = (typeof currentUser !== 'undefined' && currentUser)
+    ? currentUser
+    : ((typeof window !== 'undefined' && window.currentUser)
+      ? window.currentUser
+      : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+  if (p && p.status === 'locked' && (!p.lockedEmail || p.lockedEmail === user?.email)) {
+    p.status = 'ready';
+    p.lockedBy = null;
+    p.lockedEmail = null;
+    broadcastUnlock(p.id, 'ready');
+  }
+  resetCallWorkflowState();
+  showNotification('↩ Dial cancelled (misclick). No penalty recorded.');
+  renderQueue();
+  renderActiveProspect();
+}
+
+function resetCallWorkflowState() {
+  isCallActive = false;
+  callPendingDisposition = false;
+  activeCallProspectId = null;
+  currentCallReach = null;
+  currentCallOutcome = null;
+  updateCallHUDState();
+  updateReachUI();
+  updateOutcomeUI();
+}
+
+function validateCallDisposition() {
+  return Boolean(currentCallReach && currentCallOutcome);
+}
+
+function updateCallHUDState() {
+  const badge = document.getElementById('callFlightBadge');
+  const dot = document.getElementById('callFlightDot');
+  const statusText = document.getElementById('callFlightStatusText');
+  const cancelBtn = document.getElementById('btnCancelDial');
+  const reachIndicator = document.getElementById('reachValidationIndicator');
+  const outcomeIndicator = document.getElementById('outcomeValidationIndicator');
+  const handoffBtn = document.getElementById('btnNextLeadHandoff');
+
+  const user = (typeof currentUser !== 'undefined' && currentUser)
+    ? currentUser
+    : ((typeof window !== 'undefined' && window.currentUser)
+      ? window.currentUser
+      : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+  const isOwner = typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(user?.email);
+
+  if (cancelBtn) {
+    if (isCallActive || callPendingDisposition) {
+      cancelBtn.classList.remove('hidden');
+      cancelBtn.classList.add('flex');
+    } else {
+      cancelBtn.classList.add('hidden');
+      cancelBtn.classList.remove('flex');
+    }
+  }
+
+  if (isCallActive) {
+    if (badge) {
+      badge.className = "px-2 py-0.5 font-arcade text-[9px] font-bold border border-[#17120f] bg-[#fce566] text-[#17120f] shadow-[1px_1px_0_#17120f] flex items-center gap-1.5";
+    }
+    if (dot) {
+      dot.className = "w-2 h-2 rounded-full bg-rose-600 animate-ping inline-block";
+    }
+    if (statusText) {
+      statusText.innerText = "● IN-CALL ACTIVE";
+    }
+  } else if (callPendingDisposition) {
+    if (badge) {
+      badge.className = "px-2 py-0.5 font-arcade text-[9px] font-bold border border-[#17120f] bg-rose-100 text-rose-800 shadow-[1px_1px_0_#17120f] flex items-center gap-1.5";
+    }
+    if (dot) {
+      dot.className = "w-2 h-2 rounded-full bg-rose-600 inline-block";
+    }
+    if (statusText) {
+      statusText.innerText = "⚠️ DISPOSITION PENDING";
+    }
+  } else {
+    if (badge) {
+      badge.className = "px-2 py-0.5 font-arcade text-[9px] font-bold border border-[#17120f] bg-[#fff3cd] text-[#856404] shadow-[1px_1px_0_#17120f] flex items-center gap-1.5";
+    }
+    if (dot) {
+      dot.className = "w-2 h-2 rounded-full bg-amber-500 inline-block";
+    }
+    if (statusText) {
+      statusText.innerText = "READY TO DIAL";
+    }
+  }
+
+  if (reachIndicator) {
+    if (callPendingDisposition && !currentCallReach) {
+      reachIndicator.classList.remove('hidden');
+    } else {
+      reachIndicator.classList.add('hidden');
+    }
+  }
+
+  if (outcomeIndicator) {
+    if (callPendingDisposition && currentCallReach && !currentCallOutcome) {
+      outcomeIndicator.classList.remove('hidden');
+    } else {
+      outcomeIndicator.classList.add('hidden');
+    }
+  }
+
+  if (handoffBtn) {
+    if (callPendingDisposition && !isOwner) {
+      if (!validateCallDisposition()) {
+        handoffBtn.innerHTML = `⚠️ Log Disposition &rarr; (Space)`;
+        handoffBtn.classList.add('border-rose-600');
+      } else {
+        handoffBtn.innerHTML = `Complete & Next &rarr; (Space)`;
+        handoffBtn.classList.remove('border-rose-600');
+      }
+    } else {
+      handoffBtn.innerHTML = `Save & Next &rarr; (Space)`;
+      handoffBtn.classList.remove('border-rose-600');
+    }
+  }
+}
+
+function updateReachUI() {
+  const reachBtns = {
+    dm_connected: document.getElementById('btnReachDM'),
+    gatekeeper: document.getElementById('btnReachGK'),
+    no_answer: document.getElementById('btnReachNoAns'),
+    invalid_number: document.getElementById('btnReachInvalid')
+  };
+
+  Object.entries(reachBtns).forEach(([key, btn]) => {
+    if (!btn) return;
+    if (key === currentCallReach) {
+      btn.classList.add('reach-btn-active');
+    } else {
+      btn.classList.remove('reach-btn-active');
+    }
+  });
+}
+
+function updateOutcomeUI() {
+  const container = document.getElementById('outcomeOptionsContainer');
+  if (!container) return;
+  const outcomeBtns = container.querySelectorAll('.outcome-btn');
+  outcomeBtns.forEach(btn => {
+    const oc = btn.getAttribute('data-outcome') || '';
+    if (oc && oc === currentCallOutcome) {
+      btn.classList.add('outcome-btn-active');
+    } else {
+      btn.classList.remove('outcome-btn-active');
+    }
+  });
+}
+
+function updateOutcomeOptionsUI() {
+  const container = document.getElementById('outcomeOptionsContainer');
+  const title = document.getElementById('outcomeStepTitle');
+  if (!container) return;
+
+  if (currentCallReach === 'dm_connected') {
+    if (title) title.innerText = "DECISION MAKER OUTCOME";
+    container.innerHTML = `
+      <button type="button" data-outcome="discovery_booked" onclick="setCallOutcome('discovery_booked')" class="outcome-btn px-1.5 py-1 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Discovery Booked [Hotkey: 1]">
+        <span>🏆</span> <span>[1] BOOKED</span>
+      </button>
+      <button type="button" data-outcome="teardown_sent" onclick="setCallOutcome('teardown_sent')" class="outcome-btn px-1.5 py-1 bg-[#cce5ff] hover:bg-[#b8daff] text-[#004085] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Sent 3D Teardown">
+        <span>🔗</span> <span>TEARDOWN</span>
+      </button>
+      <button type="button" data-outcome="connected_callback" onclick="setCallOutcome('connected_callback')" class="outcome-btn px-1.5 py-1 bg-[#fff3cd] hover:bg-[#ffeeba] text-[#856404] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Callback Requested [Hotkey: 2]">
+        <span>📅</span> <span>[2] CALLBACK</span>
+      </button>
+      <button type="button" data-outcome="not_interested" onclick="setCallOutcome('not_interested')" class="outcome-btn px-1.5 py-1 bg-[#f8d7da] hover:bg-[#f5c6cb] text-[#721c24] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Disqualified [Hotkey: 3]">
+        <span>❌</span> <span>[3] DISQUAL</span>
+      </button>
+    `;
+  } else if (currentCallReach === 'gatekeeper') {
+    if (title) title.innerText = "GATEKEEPER OUTCOME";
+    container.innerHTML = `
+      <button type="button" data-outcome="gatekeeper_callback" onclick="setCallOutcome('gatekeeper_callback')" class="outcome-btn px-1.5 py-1 bg-[#fff3cd] hover:bg-[#ffeeba] text-[#856404] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Callback Later [Hotkey: 1]">
+        <span>📞</span> <span>[1] CB LATER</span>
+      </button>
+      <button type="button" data-outcome="gatekeeper_info" onclick="setCallOutcome('gatekeeper_info')" class="outcome-btn px-1.5 py-1 bg-[#e2e3e5] hover:bg-[#d6d8db] text-[#383d41] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Desk Email Sent [Hotkey: 2]">
+        <span>📧</span> <span>[2] EMAIL SENT</span>
+      </button>
+      <button type="button" data-outcome="gatekeeper_rejection" onclick="setCallOutcome('gatekeeper_rejection')" class="outcome-btn px-1.5 py-1 bg-[#f8d7da] hover:bg-[#f5c6cb] text-[#721c24] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Gatekeeper Block [Hotkey: 3]">
+        <span>🚫</span> <span>[3] GK BLOCK</span>
+      </button>
+      <button type="button" data-outcome="not_interested" onclick="setCallOutcome('not_interested')" class="outcome-btn px-1.5 py-1 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Disqualified">
+        <span>❌</span> <span>DISQUAL</span>
+      </button>
+    `;
+  } else if (currentCallReach === 'no_answer') {
+    if (title) title.innerText = "NO ANSWER OUTCOME";
+    container.innerHTML = `
+      <button type="button" data-outcome="callback" onclick="setCallOutcome('callback')" class="outcome-btn px-1.5 py-1 bg-[#fff3cd] hover:bg-[#ffeeba] text-[#856404] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Requeue Tomorrow [Hotkey: 1]">
+        <span>🔁</span> <span>[1] REQUEUE TOMORROW</span>
+      </button>
+      <button type="button" data-outcome="no_answer_retry" onclick="setCallOutcome('no_answer_retry')" class="outcome-btn px-1.5 py-1 bg-[#e2e3e5] hover:bg-[#d6d8db] text-[#383d41] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Retry Later Today [Hotkey: 2]">
+        <span>📞</span> <span>[2] RETRY TODAY</span>
+      </button>
+      <button type="button" data-outcome="not_interested" onclick="setCallOutcome('not_interested')" class="outcome-btn px-1.5 py-1 bg-[#f8d7da] hover:bg-[#f5c6cb] text-[#721c24] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Disqualify [Hotkey: 3]">
+        <span>❌</span> <span>[3] DISQUAL</span>
+      </button>
+    `;
+  } else if (currentCallReach === 'invalid_number') {
+    if (title) title.innerText = "INVALID NUMBER OUTCOME";
+    container.innerHTML = `
+      <button type="button" data-outcome="blacklisted" onclick="setCallOutcome('blacklisted')" class="outcome-btn px-1.5 py-1 bg-[#f8d7da] hover:bg-[#f5c6cb] text-[#721c24] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Blacklist Invalid # [Hotkey: 1]">
+        <span>🚫</span> <span>[1] EXCLUDE / DEAD #</span>
+      </button>
+      <button type="button" data-outcome="gatekeeper_rejection" onclick="setCallOutcome('gatekeeper_rejection')" class="outcome-btn px-1.5 py-1 bg-[#e2e3e5] hover:bg-[#d6d8db] text-[#383d41] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Wrong Number [Hotkey: 2]">
+        <span>🔍</span> <span>[2] WRONG #</span>
+      </button>
+    `;
+  }
+  updateOutcomeUI();
+}
+
+function flashDispositionGateWarning(msg) {
+  playSound('click');
+  if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
+    window.triggerHaptic([50, 50, 50]);
+  }
+  const card = document.getElementById('callWrapCard');
+  if (card) {
+    card.classList.remove('shake-card');
+    void card.offsetWidth; // trigger reflow
+    card.classList.add('shake-card');
+    setTimeout(() => {
+      card?.classList.remove('shake-card');
+    }, 500);
+  }
+  showNotification(msg || "⚠️ Complete call disposition before proceeding.");
+}
+
+function canAdvanceLead() {
+  const user = (typeof window !== 'undefined' && window.currentUser)
+    ? window.currentUser
+    : ((typeof global !== 'undefined' && global.currentUser)
+      ? global.currentUser
+      : ((typeof currentUser !== 'undefined' && currentUser) ? currentUser : null));
+  const isOwner = (typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(user?.email)) || (user?.email === 'apoorvxs@gmail.com');
+  if (isOwner) return true;
+
+  const curProspectId = (typeof window !== 'undefined' && window.selectedProspectId)
+    ? window.selectedProspectId
+    : ((typeof global !== 'undefined' && global.selectedProspectId) ? global.selectedProspectId : selectedProspectId);
+
+  if (callPendingDisposition && (activeCallProspectId === curProspectId || !activeCallProspectId)) {
+    if (!validateCallDisposition()) {
+      flashDispositionGateWarning("⚠️ Complete call disposition (Reach + Outcome) before proceeding to next prospect.");
+      return false;
+    }
+  }
+  return true;
 }
 
 // Teleprompter Angles
@@ -3620,13 +4028,15 @@ function updateScriptUI(p) {
     }
     box.innerHTML = scriptHtml;
   } else {
-    const angleScripts = p.scripts[activeAngle] || p.scripts.speed || {};
+    const angleScripts = (p.scripts && (p.scripts[activeAngle] || p.scripts.speed)) || {};
     if (activeLang === 'ml' && angleScripts.ml) {
       box.innerHTML = `<p class="text-base leading-loose font-normal text-gray-100">${escapeHTML(angleScripts.ml)}</p>`;
     } else if (activeLang === 'manglish' && angleScripts.manglish) {
       box.innerHTML = `<p class="text-sm italic font-mono text-blue-200 leading-relaxed">${escapeHTML(angleScripts.manglish)}</p>`;
-    } else {
+    } else if (angleScripts.en) {
       box.innerHTML = `<p class="text-sm sm:text-base leading-relaxed text-gray-200">${escapeHTML(angleScripts.en)}</p>`;
+    } else {
+      box.innerHTML = `<p class="text-sm sm:text-base leading-relaxed text-gray-200">${escapeHTML(p.script || '')}</p>`;
     }
   }
 }
@@ -3772,6 +4182,7 @@ function logOutcome(status) {
     playSound('click');
     showNotification(`Logged outcome '${status.replace('_', ' ')}' by ${currentUser?.name || 'Caller'}`);
   }
+  resetCallWorkflowState();
   renderQueue();
   renderActiveProspect();
   updateProfileDropdownUI();
@@ -3782,6 +4193,7 @@ function markDNC() {
   if (!p) return;
   if (confirm(`Permanently exclude ${p.name} from active client radar outreach?`)) {
     stopCallTimer();
+    resetCallWorkflowState();
     p.status = 'blacklisted';
     saveLeadOverride(p.id, { status: 'blacklisted' });
     broadcastDNC(p.id);
@@ -4031,6 +4443,27 @@ function sendWhatsAppTeardown() {
 }
 
 function saveAndNext() {
+  const user = (typeof window !== 'undefined' && window.currentUser)
+    ? window.currentUser
+    : ((typeof global !== 'undefined' && global.currentUser)
+      ? global.currentUser
+      : ((typeof currentUser !== 'undefined' && currentUser) ? currentUser : null));
+  const isOwner = (typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(user?.email)) || (user?.email === 'apoorvxs@gmail.com');
+
+  if (callPendingDisposition && activeCallProspectId === selectedProspectId && !isOwner) {
+    if (!validateCallDisposition()) {
+      flashDispositionGateWarning("⚠️ Complete call disposition (Reach + Outcome) before proceeding to next prospect.");
+      return;
+    }
+  }
+
+  // If a valid outcome was chosen from the guided workflow, log it!
+  if (currentCallOutcome) {
+    logOutcome(currentCallOutcome);
+  }
+
+  resetCallWorkflowState();
+
   if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
     window.triggerHaptic([35, 40, 35]);
   }
@@ -6490,26 +6923,26 @@ function maskPhoneNumber(phone) {
 }
 
 function isProspectPhoneUnmasked(prospectId) {
-  const user = (typeof currentUser !== 'undefined' && currentUser)
-    ? currentUser
-    : ((typeof window !== 'undefined' && window.currentUser)
-      ? window.currentUser
-      : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+  const user = (typeof window !== 'undefined' && window.currentUser)
+    ? window.currentUser
+    : ((typeof global !== 'undefined' && global.currentUser)
+      ? global.currentUser
+      : ((typeof currentUser !== 'undefined' && currentUser) ? currentUser : null));
   const email = user?.email || '';
-  if (typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(email)) {
+  if ((typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(email)) || (email === 'apoorvxs@gmail.com')) {
     return true;
   }
   return sessionUnmaskedProspects.has(prospectId);
 }
 
 function checkUnmaskVelocity() {
-  const user = (typeof currentUser !== 'undefined' && currentUser)
-    ? currentUser
-    : ((typeof window !== 'undefined' && window.currentUser)
-      ? window.currentUser
-      : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+  const user = (typeof window !== 'undefined' && window.currentUser)
+    ? window.currentUser
+    : ((typeof global !== 'undefined' && global.currentUser)
+      ? global.currentUser
+      : ((typeof currentUser !== 'undefined' && currentUser) ? currentUser : null));
   const email = user?.email || 'guest';
-  if (typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(email)) {
+  if ((typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(email)) || (email === 'apoorvxs@gmail.com')) {
     return { allowed: true, count: 0, limit: UNMASK_LIMIT_PER_HOUR };
   }
 
@@ -6534,11 +6967,11 @@ function checkUnmaskVelocity() {
 }
 
 function recordUnmaskVelocity(prospectId) {
-  const user = (typeof currentUser !== 'undefined' && currentUser)
-    ? currentUser
-    : ((typeof window !== 'undefined' && window.currentUser)
-      ? window.currentUser
-      : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+  const user = (typeof window !== 'undefined' && window.currentUser)
+    ? window.currentUser
+    : ((typeof global !== 'undefined' && global.currentUser)
+      ? global.currentUser
+      : ((typeof currentUser !== 'undefined' && currentUser) ? currentUser : null));
   const email = user?.email || 'guest';
   const key = `sprintdial_unmask_velocity_${email.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
   let history = [];
@@ -6566,21 +6999,21 @@ function unmaskProspectPhone(prospectId) {
   }
   if (!prospectId) return false;
 
-  const prospectsList = (typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS) && PROSPECTS.length > 0)
-    ? PROSPECTS
+  const prospectsList = (typeof window !== 'undefined' && Array.isArray(window.PROSPECTS) && window.PROSPECTS.length > 0)
+    ? window.PROSPECTS
     : ((typeof global !== 'undefined' && Array.isArray(global.PROSPECTS) && global.PROSPECTS.length > 0)
       ? global.PROSPECTS
-      : ((typeof window !== 'undefined' && Array.isArray(window.PROSPECTS)) ? window.PROSPECTS : []));
+      : ((typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS)) ? PROSPECTS : []));
   const p = prospectsList.find(item => item.id === prospectId);
   if (!p) return false;
 
-  const user = (typeof currentUser !== 'undefined' && currentUser)
-    ? currentUser
-    : ((typeof window !== 'undefined' && window.currentUser)
-      ? window.currentUser
-      : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+  const user = (typeof window !== 'undefined' && window.currentUser)
+    ? window.currentUser
+    : ((typeof global !== 'undefined' && global.currentUser)
+      ? global.currentUser
+      : ((typeof currentUser !== 'undefined' && currentUser) ? currentUser : null));
   const email = user?.email || '';
-  const isOwner = typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(email);
+  const isOwner = (typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(email)) || (email === 'apoorvxs@gmail.com');
 
   if (isOwner || sessionUnmaskedProspects.has(prospectId)) {
     sessionUnmaskedProspects.add(prospectId);
@@ -6862,6 +7295,39 @@ if (typeof window !== 'undefined') {
   window.encodeSteganographicTag = encodeSteganographicTag;
   window.decodeSteganographicTag = decodeSteganographicTag;
   window.taintAttributedText = taintAttributedText;
+
+  // Guided In-Call Workflow & Mandatory Disposition Gate
+  window.handleCallInitiated = handleCallInitiated;
+  window.advanceLead = advanceLead;
+  window.saveAndNext = saveAndNext;
+  window.logOutcome = logOutcome;
+  window.setSelectedProspectId = (id) => { selectedProspectId = id; if (typeof window !== 'undefined') window.selectedProspectId = id; if (typeof global !== 'undefined') global.selectedProspectId = id; };
+  window.getSelectedProspectId = () => selectedProspectId;
+  window.setCallReach = setCallReach;
+  window.setCallOutcome = setCallOutcome;
+  window.appendNoteTag = appendNoteTag;
+  window.cancelActiveDial = cancelActiveDial;
+  window.resetCallWorkflowState = resetCallWorkflowState;
+  window.validateCallDisposition = validateCallDisposition;
+  window.canAdvanceLead = canAdvanceLead;
+  window.updateCallHUDState = updateCallHUDState;
+  window.updateReachUI = updateReachUI;
+  window.updateOutcomeUI = updateOutcomeUI;
+  window.updateOutcomeOptionsUI = updateOutcomeOptionsUI;
+  window.flashDispositionGateWarning = flashDispositionGateWarning;
+  window.setCurrentUser = (u) => { currentUser = u; if (typeof window !== 'undefined') window.currentUser = u; if (typeof global !== 'undefined') global.currentUser = u; };
+  window.getCurrentUser = () => currentUser;
+  window.getCallWorkflowState = () => ({ isCallActive, callPendingDisposition, activeCallProspectId, currentCallReach, currentCallOutcome });
+  window.setCallWorkflowState = (s) => {
+    if (s.isCallActive !== undefined) isCallActive = s.isCallActive;
+    if (s.callPendingDisposition !== undefined) callPendingDisposition = s.callPendingDisposition;
+    if (s.activeCallProspectId !== undefined) {
+      activeCallProspectId = s.activeCallProspectId;
+      selectedProspectId = s.activeCallProspectId;
+    }
+    if (s.currentCallReach !== undefined) currentCallReach = s.currentCallReach;
+    if (s.currentCallOutcome !== undefined) currentCallOutcome = s.currentCallOutcome;
+  };
 }
 if (typeof global !== 'undefined') {
   global.initForensicWatermark = initForensicWatermark;
@@ -6876,6 +7342,39 @@ if (typeof global !== 'undefined') {
   global.encodeSteganographicTag = encodeSteganographicTag;
   global.decodeSteganographicTag = decodeSteganographicTag;
   global.taintAttributedText = taintAttributedText;
+
+  // Guided In-Call Workflow & Mandatory Disposition Gate
+  global.handleCallInitiated = handleCallInitiated;
+  global.advanceLead = advanceLead;
+  global.saveAndNext = saveAndNext;
+  global.logOutcome = logOutcome;
+  global.setCurrentUser = (u) => { currentUser = u; if (typeof window !== 'undefined') window.currentUser = u; if (typeof global !== 'undefined') global.currentUser = u; };
+  global.getCurrentUser = () => currentUser;
+  global.setSelectedProspectId = (id) => { selectedProspectId = id; if (typeof window !== 'undefined') window.selectedProspectId = id; if (typeof global !== 'undefined') global.selectedProspectId = id; };
+  global.getSelectedProspectId = () => selectedProspectId;
+  global.setCallReach = setCallReach;
+  global.setCallOutcome = setCallOutcome;
+  global.appendNoteTag = appendNoteTag;
+  global.cancelActiveDial = cancelActiveDial;
+  global.resetCallWorkflowState = resetCallWorkflowState;
+  global.validateCallDisposition = validateCallDisposition;
+  global.canAdvanceLead = canAdvanceLead;
+  global.updateCallHUDState = updateCallHUDState;
+  global.updateReachUI = updateReachUI;
+  global.updateOutcomeUI = updateOutcomeUI;
+  global.updateOutcomeOptionsUI = updateOutcomeOptionsUI;
+  global.flashDispositionGateWarning = flashDispositionGateWarning;
+  global.getCallWorkflowState = () => ({ isCallActive, callPendingDisposition, activeCallProspectId, currentCallReach, currentCallOutcome });
+  global.setCallWorkflowState = (s) => {
+    if (s.isCallActive !== undefined) isCallActive = s.isCallActive;
+    if (s.callPendingDisposition !== undefined) callPendingDisposition = s.callPendingDisposition;
+    if (s.activeCallProspectId !== undefined) {
+      activeCallProspectId = s.activeCallProspectId;
+      selectedProspectId = s.activeCallProspectId;
+    }
+    if (s.currentCallReach !== undefined) currentCallReach = s.currentCallReach;
+    if (s.currentCallOutcome !== undefined) currentCallOutcome = s.currentCallOutcome;
+  };
 }
 
 // Initial visibility check on load
