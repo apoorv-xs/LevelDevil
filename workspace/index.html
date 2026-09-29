@@ -1708,6 +1708,9 @@
           </div>
 
           <div class="flex items-center gap-1.5">
+            <button id="btnOpenJargonDecoder" type="button" onclick="showLaymanAnalogy('lcp')" class="px-2 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono text-[9.5px] font-bold transition flex items-center gap-1 cursor-pointer" title="Open Caller Jargon Decoder">
+              <span>💡</span> <span class="hidden sm:inline">DECODER</span>
+            </button>
             <span class="text-[9.5px] text-neutral-400 font-mono hidden sm:inline">Telemetry</span>
             <button id="btnToggleDossierCollapse" type="button" onclick="toggleDossierCollapse()" class="text-neutral-400 hover:text-white text-xs px-2 py-0.5 border border-white/[0.1] rounded transition cursor-pointer" title="Collapse / Expand Dossier Pane">
               <span id="dossierCollapseIcon">◀</span>
@@ -1729,43 +1732,81 @@
             <div class="space-y-2">
               <div class="text-[11px] font-arcade text-white uppercase font-bold flex items-center justify-between">
                 <span>Conversational Cheat Sheet:</span>
-                <span class="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">NO TECH JARGON</span>
+                <div class="flex items-center gap-1.5">
+                  <div class="flex bg-[#15161B] p-0.5 border border-white/[0.1] rounded text-[9px] font-mono">
+                    <button id="btnDossierLangEn" type="button" onclick="switchDossierLang('en')" class="px-2 py-0.5 rounded font-bold text-[9px] font-mono bg-white/[0.18] text-white border border-white/20 transition cursor-pointer">EN</button>
+                    <button id="btnDossierLangMl" type="button" onclick="switchDossierLang('ml')" class="px-2 py-0.5 rounded font-medium text-[9px] font-mono text-neutral-400 hover:text-white transition cursor-pointer">ML</button>
+                  </div>
+                  <span class="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 hidden sm:inline">NO TECH JARGON</span>
+                </div>
               </div>
 
-              <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1">
-                <div class="text-[10px] font-mono text-neutral-300 font-semibold flex items-center gap-1.5">
-                  <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">01</span>
-                  <span>HEADLESS EDGE CACHING & SPEED</span>
+              <!-- Card 01: Speed & Icebreaker -->
+              <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1.5 hover:border-white/10 transition">
+                <div class="flex items-center justify-between text-[10px] font-mono text-neutral-300 font-semibold">
+                  <div class="flex items-center gap-1.5">
+                    <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">01</span>
+                    <span>HEADLESS SPEED & INTAKE</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <button type="button" onclick="copyTalkTrack(1)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Copy to clipboard">📋 Copy</button>
+                    <button type="button" onclick="speakTalkTrack(1)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Listen Audio">🔊</button>
+                    <button type="button" onclick="showLaymanAnalogy('lcp')" class="px-1.5 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-[9px] font-mono transition cursor-pointer" title="Decode LCP">💡 ?</button>
+                  </div>
                 </div>
                 <p id="callerIcebreakerText" class="text-xs text-neutral-200 leading-relaxed font-sans">
                   "How many of your monthly inquiries come straight from your site versus paying 15-25% to aggregators?"
                 </p>
               </div>
 
-              <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1">
-                <div class="text-[10px] font-mono text-neutral-300 font-semibold flex items-center gap-1.5">
-                  <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">02</span>
-                  <span>CELLULAR CONVERSION BOTTLENECK</span>
+              <!-- Card 02: Analogy & Cellular Dropoff -->
+              <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1.5 hover:border-white/10 transition">
+                <div class="flex items-center justify-between text-[10px] font-mono text-neutral-300 font-semibold">
+                  <div class="flex items-center gap-1.5">
+                    <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">02</span>
+                    <span>CELLULAR CONVERSION BOTTLENECK</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <button type="button" onclick="copyTalkTrack(2)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Copy to clipboard">📋 Copy</button>
+                    <button type="button" onclick="speakTalkTrack(2)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Listen Audio">🔊</button>
+                    <button type="button" onclick="showLaymanAnalogy('lcp')" class="px-1.5 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-[9px] font-mono transition cursor-pointer" title="Decode Speed">💡 ?</button>
+                  </div>
                 </div>
                 <p id="callerLaymanAnalogy" class="text-xs text-neutral-200 leading-relaxed font-sans">
                   "Your website is like having a clinic door with a rusty latch taking 4.1 seconds to open..."
                 </p>
               </div>
 
-              <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1">
-                <div class="text-[10px] font-mono text-neutral-300 font-semibold flex items-center gap-1.5">
-                  <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">03</span>
-                  <span>PRIVACY & DPDP FORM SHIELDING</span>
+              <!-- Card 03: DPDP & Legal Shielding -->
+              <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1.5 hover:border-white/10 transition">
+                <div class="flex items-center justify-between text-[10px] font-mono text-neutral-300 font-semibold">
+                  <div class="flex items-center gap-1.5">
+                    <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">03</span>
+                    <span>PRIVACY & DPDP FORM SHIELDING</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <button type="button" onclick="copyTalkTrack(3)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Copy to clipboard">📋 Copy</button>
+                    <button type="button" onclick="speakTalkTrack(3)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Listen Audio">🔊</button>
+                    <button type="button" onclick="showLaymanAnalogy('dpdp')" class="px-1.5 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-[9px] font-mono transition cursor-pointer" title="Decode DPDP">💡 ?</button>
+                  </div>
                 </div>
                 <p id="callerSecurityHook" class="text-xs text-neutral-200 leading-relaxed font-sans">
                   "Their intake form lacks anti-bot security, risking Chrome trust warnings."
                 </p>
               </div>
 
-              <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1">
-                <div class="text-[10px] font-mono text-neutral-300 font-semibold flex items-center gap-1.5">
-                  <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">04</span>
-                  <span>DIRECT INTAKE & 60 FPS WEBGL ADVANTAGE</span>
+              <!-- Card 04: Direct WhatsApp & 60 FPS WebGL Edge -->
+              <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1.5 hover:border-white/10 transition">
+                <div class="flex items-center justify-between text-[10px] font-mono text-neutral-300 font-semibold">
+                  <div class="flex items-center gap-1.5">
+                    <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">04</span>
+                    <span>DIRECT INTAKE & 60 FPS ADVANTAGE</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <button type="button" onclick="copyTalkTrack(4)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Copy to clipboard">📋 Copy</button>
+                    <button type="button" onclick="speakTalkTrack(4)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Listen Audio">🔊</button>
+                    <button type="button" onclick="showLaymanAnalogy('webgl')" class="px-1.5 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-[9px] font-mono transition cursor-pointer" title="Decode WebGL">💡 ?</button>
+                  </div>
                 </div>
                 <p id="callerCompetitorEdge" class="text-xs text-neutral-200 leading-relaxed font-sans">
                   "Top clinics use zero-latency WhatsApp direct booking to capture consultations with zero commissions."
@@ -1773,15 +1814,21 @@
               </div>
             </div>
 
-            <!-- 5. ARCHITECTURAL DEEP DIVES -->
+            <!-- 5. ARCHITECTURAL DEEP DIVES / JARGON GLOSSARY PILLS -->
             <div class="pt-1 border-t border-white/[0.06]">
-              <div class="text-[10px] font-arcade text-neutral-300 uppercase mb-1.5">Layman Analogy Explanations:</div>
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[10px] font-arcade text-neutral-300 uppercase">Jargon Decoder Pills:</span>
+                <span class="text-[9px] font-mono text-neutral-400">Click to decode</span>
+              </div>
               <div class="flex flex-wrap gap-1">
-                <button onclick="showLaymanAnalogy('lcp')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">LCP (Speed)</button>
-                <button onclick="showLaymanAnalogy('dom')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">DOM (Bloat)</button>
-                <button onclick="showLaymanAnalogy('dpdp')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">DPDP (Legal)</button>
-                <button onclick="showLaymanAnalogy('tls')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">TLS (Security)</button>
-                <button onclick="showLaymanAnalogy('webgl')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">WebGL (3D)</button>
+                <button type="button" onclick="showLaymanAnalogy('lcp')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">⚡ Speed (LCP)</button>
+                <button type="button" onclick="showLaymanAnalogy('dpdp')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">⚖️ DPDP Law</button>
+                <button type="button" onclick="showLaymanAnalogy('thumb')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">📱 Thumb-Zone</button>
+                <button type="button" onclick="showLaymanAnalogy('aggregator')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">💸 Aggregator</button>
+                <button type="button" onclick="showLaymanAnalogy('dom')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">📦 WP Bloat</button>
+                <button type="button" onclick="showLaymanAnalogy('friction')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">⏳ Friction</button>
+                <button type="button" onclick="showLaymanAnalogy('tls')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">🔒 TLS/SSL</button>
+                <button type="button" onclick="showLaymanAnalogy('headless')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">✨ 60 FPS Headless</button>
               </div>
             </div>
           </div>
@@ -1792,9 +1839,12 @@
             <div class="grid grid-cols-2 gap-2">
               <!-- Revenue Leak -->
               <div class="bg-[#15161B] border border-white/[0.06] rounded-xl p-3 space-y-1 hover:border-white/[0.12] transition">
-                <div class="text-[10px] font-mono text-neutral-400 flex items-center gap-1.5 uppercase font-medium">
-                  <span class="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0"></span>
-                  <span>Revenue Leak</span>
+                <div class="text-[10px] font-mono text-neutral-400 flex items-center justify-between uppercase font-medium">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0"></span>
+                    <span>Revenue Leak</span>
+                  </div>
+                  <button type="button" onclick="showLaymanAnalogy('aggregator')" class="text-amber-300 hover:text-amber-200 transition text-[9px] font-bold" title="Decode Aggregator Bleed">💡 ?</button>
                 </div>
                 <div id="revenueLeakBadge" class="font-bold text-xs text-white leading-tight">₹1,80,000/mo Leak</div>
                 <div class="text-[10px] text-neutral-400">Cellular 4G drop-off</div>
@@ -1802,9 +1852,12 @@
 
               <!-- DPDP Act Status -->
               <div class="bg-[#15161B] border border-white/[0.06] rounded-xl p-3 space-y-1 hover:border-white/[0.12] transition">
-                <div class="text-[10px] font-mono text-neutral-400 flex items-center gap-1.5 uppercase font-medium">
-                  <span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span>
-                  <span>DPDP Status</span>
+                <div class="text-[10px] font-mono text-neutral-400 flex items-center justify-between uppercase font-medium">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span>
+                    <span>DPDP Status</span>
+                  </div>
+                  <button type="button" onclick="showLaymanAnalogy('dpdp')" class="text-amber-300 hover:text-amber-200 transition text-[9px] font-bold" title="Decode DPDP Compliance">💡 ?</button>
                 </div>
                 <div id="dpdpComplianceBadge" class="font-bold text-xs text-white leading-tight">Non-Compliant</div>
                 <div id="dpdpRiskBadge" class="text-[10px] text-amber-400 font-medium">High Legal Risk</div>
@@ -1812,9 +1865,12 @@
 
               <!-- Thumb Zone -->
               <div class="bg-[#15161B] border border-white/[0.06] rounded-xl p-3 space-y-1 hover:border-white/[0.12] transition">
-                <div class="text-[10px] font-mono text-neutral-400 flex items-center gap-1.5 uppercase font-medium">
-                  <span class="w-1.5 h-1.5 rounded-full bg-neutral-400 shrink-0"></span>
-                  <span>Thumb-Zone</span>
+                <div class="text-[10px] font-mono text-neutral-400 flex items-center justify-between uppercase font-medium">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-neutral-400 shrink-0"></span>
+                    <span>Thumb-Zone</span>
+                  </div>
+                  <button type="button" onclick="showLaymanAnalogy('thumb')" class="text-amber-300 hover:text-amber-200 transition text-[9px] font-bold" title="Decode Thumb-Zone UX">💡 ?</button>
                 </div>
                 <div id="thumbZoneBadge" class="font-bold text-xs text-white leading-tight">No Sticky Bar</div>
                 <div class="text-[10px] text-neutral-400">Mobile Web UX</div>
@@ -1822,9 +1878,12 @@
 
               <!-- Friction Index -->
               <div class="bg-[#15161B] border border-white/[0.06] rounded-xl p-3 space-y-1 hover:border-white/[0.12] transition">
-                <div class="text-[10px] font-mono text-neutral-400 flex items-center gap-1.5 uppercase font-medium">
-                  <span class="w-1.5 h-1.5 rounded-full bg-neutral-400 shrink-0"></span>
-                  <span>Friction</span>
+                <div class="text-[10px] font-mono text-neutral-400 flex items-center justify-between uppercase font-medium">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-neutral-400 shrink-0"></span>
+                    <span>Friction</span>
+                  </div>
+                  <button type="button" onclick="showLaymanAnalogy('friction')" class="text-amber-300 hover:text-amber-200 transition text-[9px] font-bold" title="Decode Booking Friction">💡 ?</button>
                 </div>
                 <div id="bookingFrictionBadge" class="font-bold text-xs text-white leading-tight">7 Steps</div>
                 <div id="bookingSeverityBadge" class="text-[9.5px] text-amber-400 font-medium leading-tight truncate">Severe Drop-off</div>
@@ -1838,13 +1897,19 @@
                 <span id="timingBadge" class="font-mono text-[11px] font-semibold text-amber-300">Moderate Availability</span>
               </div>
               <div class="p-2.5 flex items-center justify-between">
-                <span class="text-[11px] font-mono text-neutral-400">Mobile Speed & LCP:</span>
+                <span class="text-[11px] font-mono text-neutral-400 flex items-center gap-1">
+                  <span>Mobile Speed & LCP:</span>
+                  <button type="button" onclick="showLaymanAnalogy('lcp')" class="text-amber-300 hover:text-amber-200 transition text-[9px] font-bold" title="Decode LCP Speed">💡 ?</button>
+                </span>
                 <span class="font-mono text-[11px] text-white">
                   <strong id="speedScore" class="text-rose-400">32/100</strong> • <span id="lcpTime" class="text-neutral-300">4.1s</span>
                 </span>
               </div>
               <div class="p-2.5 flex items-center justify-between">
-                <span class="text-[11px] font-mono text-neutral-400">Detected CMS:</span>
+                <span class="text-[11px] font-mono text-neutral-400 flex items-center gap-1">
+                  <span>Detected CMS:</span>
+                  <button type="button" onclick="showLaymanAnalogy('dom')" class="text-amber-300 hover:text-amber-200 transition text-[9px] font-bold" title="Decode WordPress Bloat">💡 ?</button>
+                </span>
                 <span id="techStackBadge" class="font-mono text-[11px] text-neutral-200 truncate max-w-[160px]">WordPress / Elementor</span>
               </div>
               <div class="p-2.5 flex items-center justify-between">
@@ -2082,34 +2147,96 @@
   </div>
 
   <!-- 2. LAYMAN ANALOGY MODAL -->
-  <div id="laymanAnalogyModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[1000]">
-    <div class="studio-panel-elevated rounded-2xl max-w-lg w-full p-6 space-y-4 border border-white/10 shadow-2xl">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <span id="laymanAnalogyIcon" class="text-xl">💡</span>
+  <!-- 2. CALLER JARGON DECODER & PITCH GYM MODAL -->
+  <div id="laymanAnalogyModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-[1000] overflow-y-auto">
+    <div class="studio-panel-elevated rounded-2xl max-w-xl w-full p-4 sm:p-6 space-y-3 sm:space-y-4 border border-white/10 shadow-2xl bg-[#15161B] my-auto">
+
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b border-white/10 pb-3 gap-2">
+        <div class="flex items-center gap-2.5">
+          <span id="laymanAnalogyIcon" class="text-2xl p-1.5 rounded-lg bg-white/[0.06] border border-white/10">⚡</span>
           <div>
-            <h3 id="laymanAnalogyTitle" class="text-sm font-bold text-white font-mono">Layman Concept</h3>
-            <span id="laymanAnalogyCategory" class="text-[10px] font-mono text-blue-400">SPEED METAPHOR</span>
+            <h3 id="laymanAnalogyTitle" class="text-sm sm:text-base font-bold text-white font-mono leading-tight">Layman Concept</h3>
+            <span id="laymanAnalogyCategory" class="text-[9.5px] font-mono text-amber-400 font-semibold tracking-wide uppercase">SPEED METAPHOR</span>
           </div>
         </div>
-        <button onclick="closeLaymanAnalogy()" class="text-neutral-400 hover:text-white text-lg">✕</button>
+
+        <div class="flex items-center gap-2">
+          <!-- Bilingual Language Toggle inside modal -->
+          <div class="flex bg-black/40 p-0.5 border border-white/10 rounded-lg text-xs font-mono">
+            <button id="analogyModalLangEn" type="button" onclick="switchAnalogyLang('en')" class="px-2 py-0.5 rounded font-bold text-xs bg-[#fce566] text-[#17120f] border border-[#17120f] transition cursor-pointer">EN</button>
+            <button id="analogyModalLangMl" type="button" onclick="switchAnalogyLang('ml')" class="px-2 py-0.5 rounded text-xs bg-white/[0.06] text-neutral-400 hover:text-white border border-white/[0.1] transition cursor-pointer">ML</button>
+          </div>
+          <button type="button" onclick="closeLaymanAnalogy()" class="text-neutral-400 hover:text-white text-xl p-1 hover:bg-white/[0.06] rounded transition cursor-pointer" aria-label="Close Decoder">✕</button>
+        </div>
       </div>
 
-      <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-2">
-        <div class="text-[10px] font-mono text-amber-400 uppercase font-semibold">Everyday Analogy:</div>
-        <p id="laymanAnalogyMetaphor" class="text-sm text-neutral-200 leading-relaxed font-sans"></p>
+      <!-- Quick Term Switcher Strip -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1.5 custom-scrollbar text-[10px] font-mono select-none">
+        <button type="button" onclick="showLaymanAnalogy('lcp')" data-analogy-key="lcp" class="analogy-pill-btn px-2 py-1 rounded bg-[#fce566] text-[#17120f] font-bold border border-white/10 whitespace-nowrap transition cursor-pointer">⚡ Speed</button>
+        <button type="button" onclick="showLaymanAnalogy('dpdp')" data-analogy-key="dpdp" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">⚖️ DPDP</button>
+        <button type="button" onclick="showLaymanAnalogy('thumb')" data-analogy-key="thumb" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">📱 Thumb</button>
+        <button type="button" onclick="showLaymanAnalogy('aggregator')" data-analogy-key="aggregator" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">💸 Aggregator</button>
+        <button type="button" onclick="showLaymanAnalogy('dom')" data-analogy-key="dom" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">📦 WP Bloat</button>
+        <button type="button" onclick="showLaymanAnalogy('friction')" data-analogy-key="friction" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">⏳ Friction</button>
+        <button type="button" onclick="showLaymanAnalogy('tls')" data-analogy-key="tls" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">🔒 TLS/SSL</button>
+        <button type="button" onclick="showLaymanAnalogy('headless')" data-analogy-key="headless" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">✨ 60 FPS</button>
       </div>
 
-      <div class="space-y-1">
-        <div class="text-[10px] font-mono text-neutral-400 uppercase">Spoken Script Talking Point:</div>
-        <p id="laymanAnalogyTalkingPoint" class="text-xs text-neutral-300 leading-relaxed"></p>
+      <!-- Cognitive Layer 1: Real-World Everyday Metaphor -->
+      <div class="bg-[#101114] border border-amber-500/20 rounded-xl p-3.5 space-y-1.5">
+        <div class="text-[10px] font-mono text-amber-300 uppercase font-bold flex items-center gap-1.5">
+          <span>🧠 Mental Picture (Real-World Analogy):</span>
+        </div>
+        <p id="laymanAnalogyMetaphor" class="text-xs sm:text-sm text-neutral-100 leading-relaxed font-sans"></p>
       </div>
 
-      <div class="pt-2 flex justify-end">
-        <button onclick="closeLaymanAnalogy()" class="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-mono text-xs transition">
-          Got It
+      <!-- Cognitive Layer 2: Say This, Not That Contrast Box -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+        <!-- Robotic IT Talk to Avoid -->
+        <div class="bg-rose-950/20 border border-rose-800/40 rounded-xl p-3 space-y-1">
+          <div class="text-[9.5px] font-mono text-rose-300 font-bold uppercase flex items-center gap-1">
+            <span>❌ Robotic IT Talk (Avoid):</span>
+          </div>
+          <p id="laymanAnalogyContrastBad" class="text-[11px] text-rose-200/80 leading-relaxed font-sans italic"></p>
+        </div>
+
+        <!-- Casual High-Status Script to Say -->
+        <div class="bg-emerald-950/20 border border-emerald-800/40 rounded-xl p-3 space-y-1">
+          <div class="text-[9.5px] font-mono text-emerald-300 font-bold uppercase flex items-center gap-1">
+            <span>✅ Casual Pitch (Say This):</span>
+          </div>
+          <p id="laymanAnalogyTalkingPoint" class="text-[11px] text-emerald-100 leading-relaxed font-sans font-medium"></p>
+        </div>
+      </div>
+
+      <!-- Cognitive Layer 3: Killshot Test Question -->
+      <div class="bg-[#101114] border border-white/10 rounded-xl p-3 space-y-1">
+        <div class="text-[9.5px] font-mono text-amber-400 font-bold uppercase flex items-center gap-1">
+          <span>🎯 Live Test Question (Ask Client on 4G):</span>
+        </div>
+        <p id="laymanAnalogyKillshot" class="text-xs text-neutral-200 leading-relaxed font-sans"></p>
+      </div>
+
+      <!-- Action Footer -->
+      <div class="pt-2 flex items-center justify-between gap-2 flex-wrap border-t border-white/10">
+        <div class="flex items-center gap-1.5">
+          <button type="button" onclick="copyCurrentAnalogy()" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-mono text-xs transition flex items-center gap-1 cursor-pointer">
+            <span>📋</span> <span>Copy Script</span>
+          </button>
+          <button type="button" onclick="speakCurrentAnalogy()" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-mono text-xs transition flex items-center gap-1 cursor-pointer">
+            <span>🔊</span> <span>Hear Audio</span>
+          </button>
+          <button type="button" onclick="appendCurrentAnalogyToNotes()" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-neutral-300 hover:text-white font-mono text-xs transition flex items-center gap-1 cursor-pointer hidden sm:flex">
+            <span>📝</span> <span>Add to Notes</span>
+          </button>
+        </div>
+
+        <button type="button" onclick="closeLaymanAnalogy()" class="px-4 py-1.5 rounded-lg bg-[#fce566] hover:bg-[#ebd555] text-[#17120f] font-mono text-xs font-bold transition cursor-pointer">
+          Done
         </button>
       </div>
+
     </div>
   </div>
 

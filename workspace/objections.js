@@ -88,28 +88,112 @@
       metaphor: "Instead of handing a patient a flat paper brochure, it's like putting an interactive, touchable glass miniature in their hands to spin and inspect.",
       metaphorMl: "ഒരു സാധാരണ കടലാസ് നോട്ടീസ് കൊടുക്കുന്നതിന് പകരം, പേഷ്യന്റിന്റെ കയ്യിൽ തിരിച്ചുനോക്കാവുന്ന ഒരു 3D മോഡൽ കൊടുക്കുന്നത് പോലെ.",
       talkingPoint: "Apoorv designs interactive 3D web experiences so prospective clients can dynamically interact with your procedures and treatments, justifying premium ticket pricing.",
-      talkingPointMl: "ഫ്ലാറ്റ് വെബ്‌സൈറ്റുകൾക്ക് പകരം രോഗികൾക്ക് ഫോണിൽ നേരിട്ട് കണ്ട് ബോധ്യപ്പെടാൻ കഴിയുന്ന 3D ഇന്ററാക്ടീവ് വിഷ്വൽ എക്സ്പീരിയൻസുകളാണ് അപൂർവ് തയ്യാറാക്കുന്നത്."
+      talkingPointMl: "ഫ്ലാറ്റ് വെബ്‌സൈറ്റുകൾക്ക് പകരം രോഗികൾക്ക് ഫോണിൽ നേരിട്ട് കണ്ട് ബോധ്യപ്പെടാൻ കഴിയുന്ന 3D ഇന്ററാക്ടീവ് വിഷ്വൽ എക്സ്പീരിയൻസുകളാണ് അപൂർവ് തയ്യാറാക്കുന്നത്.",
+      contrastBad: "We develop WebGL shaders and GPU-accelerated canvas pipelines.",
+      contrastBadMl: "ഞങ്ങൾ വെബ്ജിഎൽ ഷേഡറുകളും ജിപിയു കാൻവാസുകളും ചെയ്യുന്നു.",
+      killshotQuestion: "Would you rather show patients flat before-and-after photos, or let them rotate an interactive 3D model of their smile transformation right on their phone?",
+      killshotQuestionMl: "സാധാരണ ഫോട്ടോകൾ കാണിക്കുന്നതിലും എത്രയോ ഇരട്ടി വിശ്വാസ്യതയോടെ പേഷ്യൻസിന് ഫോണിൽ നേരിട്ട് കണ്ട് ബോധ്യപ്പെടാൻ കഴിയുന്ന 3D മോഡലുകൾ വെബ്സൈറ്റിൽ കാണിക്കുന്നത് ബിസിനസിന് ഗുണം ചെയ്യില്ലേ?"
+    },
+    thumb: {
+      title: "Thumb-Zone UX (Mobile Ergonomics & Sticky CTA)",
+      icon: "📱",
+      category: "Mobile Conversion & One-Handed Ease",
+      metaphor: "A physical department store where the billing counter is only at the front door. When shoppers walk down aisle 4, they have to hike all the way back just to ask a question.",
+      metaphorMl: "ഒരു കടയിൽ കസ്റ്റമർ അകത്തേക്ക് നടക്കുമ്പോൾ കാഷ് കൗണ്ടർ മുൻവശത്ത് മാത്രം ഉള്ളതുപോലെ. ഒരു ചോദ്യം ചോദിക്കാൻ പോലും അവർ വീണ്ടും നടന്നു വരണം.",
+      talkingPoint: "Over 85% of your mobile visitors scroll with one thumb. When they scroll down to read your doctor bios, your phone button completely disappears. They have to scroll all the way back up to contact you, so most just leave.",
+      talkingPointMl: "85% ആളുകളും ഒരു കൈ കൊണ്ടാണ് മൊബൈൽ ഉപയോഗിക്കുന്നത്. താഴേക്ക് സ്ക്രോൾ ചെയ്യുമ്പോൾ ഫോൺ വിളിക്കാനുള്ള ബട്ടൺ മുകളിലേക്ക് മറഞ്ഞുപോകുന്നു. താഴെ ഒരു ഫിക്സഡ് ബട്ടൺ ഇല്ലാത്തതിനാൽ പകുതിയിലധികം ആളുകൾ കോൾ ചെയ്യാതെ ബാക്ക് അടിച്ചു പോകുന്നു.",
+      contrastBad: "Your viewport lacks sticky viewport bottom navigation in the ergonomic thumb reach zone.",
+      contrastBadMl: "നിങ്ങളുടെ വ്യൂപോർട്ടിൽ തമ്പ്-സോൺ നാവിഗേഷൻ ഇല്ല.",
+      killshotQuestion: "When you scroll down on your own website, is there a button under your thumb right now to call your clinic with one tap?",
+      killshotQuestionMl: "നിങ്ങളുടെ സ്വന്തം വെബ്‌സൈറ്റിൽ താഴേക്ക് സ്ക്രോൾ ചെയ്യുമ്പോൾ വിരൽത്തുമ്പിൽ ഒറ്റ ടാപ്പിൽ കോൾ ചെയ്യാനുള്ള ബട്ടൺ ഇപ്പോൾ കാണുന്നുണ്ടോ?"
+    },
+    aggregator: {
+      title: "Aggregator Bleed (Practo / Zomato Commission Bleed)",
+      icon: "💸",
+      category: "Direct Revenue Protection & Middleman Fees",
+      metaphor: "Paying an auto or cab driver a 25% commission to bring your regular existing family members to your house.",
+      metaphorMl: "നിങ്ങളെ വർഷങ്ങളായി അറിയാവുന്ന സ്ഥിരം രോഗികൾ ക്ലിനിക്കിൽ വരുമ്പോൾ പോലും ഒരു ഇടനിലക്കാരന് 20% കമ്മീഷൻ കൊടുക്കുന്നത് പോലെ.",
+      talkingPoint: "You are paying Practo ₹2,000 to ₹5,000 every month just to book appointments for patients who already searched specifically for your clinic name. A direct WhatsApp portal keeps 100% of those bookings in your clinic.",
+      talkingPointMl: "നിങ്ങളുടെ ക്ലിനിക്കിന്റെ പേര് നേരിട്ട് സെർച്ച് ചെയ്തു വരുന്ന പേഷ്യൻസിൽ നിന്ന് പോലും പ്രാക്ടോയും മറ്റ് ഇടനിലക്കാരും വലിയ കമ്മീഷൻ എടുക്കുന്നുണ്ട്. നേരിട്ടുള്ള ഒരു വാട്സാപ്പ് ബുക്കിംഗ് സിസ്റ്റം വഴി ഈ നഷ്ടം പൂർണ്ണമായി ഒഴിവാക്കാം.",
+      contrastBad: "You suffer from severe platform disintermediation and 20% take-rate margin compression.",
+      contrastBadMl: "പ്ലാറ്റ്‌ഫോം ഡിസ്ഇന്റർമീഡിയേഷൻ വഴി മാർജിൻ കംപ്രഷൻ ഉണ്ടാകുന്നു.",
+      killshotQuestion: "How much did your clinic pay aggregators last month just for appointments from patients who already knew your name?",
+      killshotQuestionMl: "കഴിഞ്ഞ മാസം മാത്രം നിങ്ങളുടെ ക്ലിനിക്കിന്റെ സ്വന്തം പേരിൽ വന്ന പേഷ്യൻസിനായി എത്ര രൂപ ഇടനിലക്കാർക്ക് കമ്മീഷൻ നൽകേണ്ടി വന്നു?"
+    },
+    friction: {
+      title: "Booking Friction (Multi-Step Form Drop-off Risk)",
+      icon: "⏳",
+      category: "Form Abandonment & Instant Booking",
+      metaphor: "An airport reception that demands your blood group, shoe size, and college degree just to print your boarding pass.",
+      metaphorMl: "ഒരു ഡോക്ടറോട് ഒരു സംശയം ചോദിക്കാൻ വേണ്ടി 5 കോളങ്ങൾ ഉള്ള വലിയൊരു ഫോറം പൂരിപ്പിക്കാൻ പറയുന്നതുപോലെ. ആളുകൾ പാതിവഴിയിൽ ഉപേക്ഷിച്ചു പോകും.",
+      talkingPoint: "Every extra text field in a contact form cuts mobile inquiries by 11%. Your current form asks for 5+ details before patients can even talk to reception. High-converting clinics replace this with a 1-tap WhatsApp consultation link.",
+      talkingPointMl: "ഓരോ അധിക ഫീൽഡും 11% ആളുകളെ പിന്തിരിപ്പിക്കുന്നു. വലിയ ഫോറങ്ങൾ പൂരിപ്പിക്കുന്നതിന് പകരം ഒറ്റ ടാപ്പിൽ വാട്സാപ്പിൽ കണക്റ്റ് ചെയ്യുന്ന സംവിധാനമാണ് ആളുകൾക്കിഷ്ടം.",
+      contrastBad: "Your user journey exhibits severe multi-step input funnel degradation.",
+      contrastBadMl: "മൾട്ടി-സ്റ്റെപ്പ് ഫണൽ ഇൻപുട്ട് ഫ്രിക്ഷൻ ഡ്രോപ്പ്-ഓഫ് ഉണ്ടാക്കുന്നു.",
+      killshotQuestion: "How many inquiries did your website form receive this week compared to direct WhatsApp messages?",
+      killshotQuestionMl: "ഈ കഴിഞ്ഞ ആഴ്ച നിങ്ങളുടെ വെബ്സൈറ്റ് ഫോറം വഴി എത്ര എൻക്വയറി കിട്ടി? ആളുകൾ ഫോറം ഉപേക്ഷിച്ചു പോകുന്നത് ശ്രദ്ധിച്ചിട്ടുണ്ടോ?"
+    },
+    headless: {
+      title: "Apoorv 60 FPS Headless Architecture (Zero-Plugin Pure Code)",
+      icon: "⚡",
+      category: "Engine Superiority & Enterprise Speed",
+      metaphor: "A Formula 1 car engineered from pure carbon fiber versus a standard family sedan loaded with 40 heavy roof racks and spare tires.",
+      metaphorMl: "40 ചാക്ക് ഭാരവും ചുമന്നുകൊണ്ട് ഓടുന്ന പഴയ കാറും, ഭാരമില്ലാത്ത പുതിയ സ്പോർട്സ് കാറും തമ്മിലുള്ള വ്യത്യാസം പോലെ.",
+      talkingPoint: "Apoorv doesn't use generic WordPress templates or heavy page builders. He writes direct, custom code that loads in under 0.8 seconds and animates at 60 FPS without plugins, feeling as fluid as an iPhone app.",
+      talkingPointMl: "അപൂർവ് പഴയ വേർഡ്പ്രസ്സ് പ്ലഗിനുകൾ ഉപയോഗിക്കുന്നില്ല. 0.8 സെക്കൻഡിൽ ലോഡ് ആകുന്ന കസ്റ്റം കോഡിങ് ആയതുകൊണ്ട് ഫോൺ ഹാങ് ആകില്ല, ഐഫോൺ ആപ്പ് പോലെ സ്മൂത്ത് ആയി പ്രവർത്തിക്കും.",
+      contrastBad: "We architect zero-dependency WebGL headless bundles with DPR clamping.",
+      contrastBadMl: "ഞങ്ങൾ ഡിപിആർ ക്ലാമ്പിംഗ് ഉള്ള വെബ്ജിഎൽ ഹെഡ്‌ലെസ്സ് ബണ്ടിൽ ചെയ്യുന്നു.",
+      killshotQuestion: "Does your current website feel as fast and smooth as opening an app on an iPhone?",
+      killshotQuestionMl: "നിങ്ങളുടെ ഇപ്പോഴത്തെ വെബ്സൈറ്റ് തുറക്കുമ്പോൾ ഒരു ഐഫോൺ ആപ്പ് പോലെ ഞൊടിയിടയിൽ സ്മൂത്തായി പ്രവർത്തിക്കുന്നുണ്ടോ?"
     }
   };
 
-  let activeAnalogyKey = null;
+  // Add contrast and killshot questions to existing items if not present
+  if (LAYMAN_ANALOGIES.lcp) {
+    LAYMAN_ANALOGIES.lcp.contrastBad = "Your Largest Contentful Paint is 4.4 seconds which breaches Core Web Vitals threshold.";
+    LAYMAN_ANALOGIES.lcp.contrastBadMl = "നിങ്ങളുടെ എൽസിപി സ്കോർ 4.4 സെക്കൻഡ് ആണ്, ഇത് കോർ വെബ് വൈറ്റൽസ് പരാജയപ്പെടുത്തുന്നു.";
+    LAYMAN_ANALOGIES.lcp.killshotQuestion = "Do you have your phone with you right now? Try opening your website on 4G—count the seconds of blank screen before your phone button shows up.";
+    LAYMAN_ANALOGIES.lcp.killshotQuestionMl = "ഡോക്ടറുടെ കയ്യിൽ ഇപ്പോൾ മൊബൈൽ ഫോൺ ഉണ്ടോ? ഒന്ന് വെബ്സൈറ്റ് തുറന്ന് നോക്കാമോ, ഫോൺ നമ്പർ കാണാൻ എത്ര സെക്കൻഡ് ബ്ലാങ്ക് സ്ക്രീൻ വരുന്നുണ്ടെന്ന്?";
+  }
+  if (LAYMAN_ANALOGIES.dom) {
+    LAYMAN_ANALOGIES.dom.contrastBad = "Excessive DOM depth and CSSOM recalculation thrashing.";
+    LAYMAN_ANALOGIES.dom.contrastBadMl = "ഡോം ഡെപ്ത് അധികമായതിനാൽ സിഎസ്എസ്ഒഎം റീകാൽക്കുലേഷൻ സ്ലോ ആകുന്നു.";
+    LAYMAN_ANALOGIES.dom.killshotQuestion = "When was the last time someone updated all the background plugins on your site without something breaking?";
+    LAYMAN_ANALOGIES.dom.killshotQuestionMl = "വെബ്സൈറ്റിലെ പഴയ വേർഡ്പ്രസ്സ് പ്ലഗിനുകൾ അവസാനമായി എപ്പോഴാണ് അപ്ഡേറ്റ് ചെയ്തത്?";
+  }
+  if (LAYMAN_ANALOGIES.dpdp) {
+    LAYMAN_ANALOGIES.dpdp.contrastBad = "You are violating Section 6 of the DPDP Act 2023 regarding affirmative consent.";
+    LAYMAN_ANALOGIES.dpdp.contrastBadMl = "നിങ്ങൾ ഡിപിഡിപി നിയമത്തിലെ സെക്ഷൻ 6 ലംഘിക്കുന്നു.";
+    LAYMAN_ANALOGIES.dpdp.killshotQuestion = "Did your web developer update your patient intake forms when the DPDP Act passed last year, or are you still using the old template?";
+    LAYMAN_ANALOGIES.dpdp.killshotQuestionMl = "കഴിഞ്ഞ വർഷം പാസ്സായ പുതിയ ഡിപിഡിപി ഡാറ്റാ നിയമപ്രകാരം വെബ്സൈറ്റിലെ ഫോറം മാറ്റാൻ ആരെങ്കിലും ശ്രദ്ധിച്ചിരുന്നോ?";
+  }
+  if (LAYMAN_ANALOGIES.tls) {
+    LAYMAN_ANALOGIES.tls.contrastBad = "Inadequate cipher suites and missing HSTS preloading headers.";
+    LAYMAN_ANALOGIES.tls.contrastBadMl = "എച്ച്ടിഎസ്ടി പ്രീലോഡിങ് ഹെഡർ ഇല്ലാത്തതിനാൽ സെക്യൂരിറ്റി വീക്കാണ്.";
+    LAYMAN_ANALOGIES.tls.killshotQuestion = "Have you noticed Chrome showing a 'Not Secure' warning beside your web address on some phones?";
+    LAYMAN_ANALOGIES.tls.killshotQuestionMl = "ചില ഫോണുകളിൽ നിങ്ങളുടെ വെബ്സൈറ്റിന് മുകളിൽ 'Not Secure' എന്ന വാണിംഗ് വരുന്നത് കണ്ടിട്ടുണ്ടോ?";
+  }
+
+  let activeAnalogyKey = "lcp";
 
   function showLaymanAnalogy(key) {
     if (typeof playSound === 'function') playSound('click');
-    activeAnalogyKey = key;
+    activeAnalogyKey = key || activeAnalogyKey || 'lcp';
     const modal = document.getElementById('laymanAnalogyModal');
     const icon = document.getElementById('laymanAnalogyIcon');
     const title = document.getElementById('laymanAnalogyTitle');
     const cat = document.getElementById('laymanAnalogyCategory');
     const metaphor = document.getElementById('laymanAnalogyMetaphor');
     const talkingPoint = document.getElementById('laymanAnalogyTalkingPoint');
+    const contrastBad = document.getElementById('laymanAnalogyContrastBad');
+    const killshot = document.getElementById('laymanAnalogyKillshot');
 
-    const item = LAYMAN_ANALOGIES[key];
+    const item = LAYMAN_ANALOGIES[activeAnalogyKey];
     if (!item || !modal) return;
 
-    if (icon) icon.innerText = item.icon;
-    if (title) title.innerText = item.title;
-    if (cat) cat.innerText = item.category;
+    if (icon) icon.innerText = item.icon || '⚡';
+    if (title) title.innerText = item.title || 'Technical Concept';
+    if (cat) cat.innerText = item.category || 'ARCHITECTURE';
 
     const currentLang = (typeof activeLang !== 'undefined') ? activeLang : 'ml';
 
@@ -119,8 +203,100 @@
     if (talkingPoint) {
       talkingPoint.innerText = (currentLang === 'ml' && item.talkingPointMl) ? item.talkingPointMl : item.talkingPoint;
     }
+    if (contrastBad) {
+      contrastBad.innerText = (currentLang === 'ml' && item.contrastBadMl) ? item.contrastBadMl : (item.contrastBad || "Generic technical specification.");
+    }
+    if (killshot) {
+      killshot.innerText = (currentLang === 'ml' && item.killshotQuestionMl) ? item.killshotQuestionMl : (item.killshotQuestion || "Ask the prospect to test this live on their phone.");
+    }
+
+    // Update active tab buttons inside the modal if present
+    if (typeof document !== 'undefined' && typeof document.querySelectorAll === 'function') {
+      document.querySelectorAll('.analogy-pill-btn').forEach(btn => {
+        const btnKey = btn.getAttribute('data-analogy-key');
+        if (btnKey === activeAnalogyKey) {
+          btn.classList.add('bg-[#fce566]', 'text-[#17120f]', 'font-bold');
+          btn.classList.remove('bg-white/[0.04]', 'text-neutral-300');
+        } else {
+          btn.classList.remove('bg-[#fce566]', 'text-[#17120f]', 'font-bold');
+          btn.classList.add('bg-white/[0.04]', 'text-neutral-300');
+        }
+      });
+    }
+
+    // Update modal language buttons
+    const btnEn = document.getElementById('analogyModalLangEn');
+    const btnMl = document.getElementById('analogyModalLangMl');
+    if (btnEn && btnMl) {
+      if (currentLang === 'en') {
+        btnEn.className = "px-2 py-0.5 rounded font-bold text-xs bg-[#fce566] text-[#17120f] border border-[#17120f]";
+        btnMl.className = "px-2 py-0.5 rounded text-xs bg-white/[0.06] text-neutral-400 hover:text-white border border-white/[0.1]";
+      } else {
+        btnMl.className = "px-2 py-0.5 rounded font-bold text-xs bg-[#fce566] text-[#17120f] border border-[#17120f]";
+        btnEn.className = "px-2 py-0.5 rounded text-xs bg-white/[0.06] text-neutral-400 hover:text-white border border-white/[0.1]";
+      }
+    }
 
     modal.classList.remove('hidden');
+  }
+
+  function switchAnalogyLang(lang) {
+    if (typeof activeLang !== 'undefined') {
+      activeLang = lang;
+    }
+    if (typeof window !== 'undefined') {
+      window.activeLang = lang;
+    }
+    showLaymanAnalogy(activeAnalogyKey || 'lcp');
+  }
+
+  function speakCurrentAnalogy() {
+    const item = LAYMAN_ANALOGIES[activeAnalogyKey];
+    if (!item) return;
+    const currentLang = (typeof activeLang !== 'undefined') ? activeLang : 'ml';
+    const textToSpeak = (currentLang === 'ml' && item.talkingPointMl) ? item.talkingPointMl : item.talkingPoint;
+    
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(textToSpeak);
+        utterance.lang = currentLang === 'ml' ? 'ml-IN' : 'en-US';
+        utterance.rate = 0.95;
+        utterance.pitch = 1.0;
+        window.speechSynthesis.speak(utterance);
+        if (typeof showNotification === 'function') {
+          showNotification('🔊 Playing spoken conversational audio...');
+        }
+      } catch (e) {
+        if (typeof playSound === 'function') playSound('chime');
+      }
+    } else {
+      if (typeof playSound === 'function') playSound('chime');
+    }
+  }
+
+  function copyCurrentAnalogy() {
+    const item = LAYMAN_ANALOGIES[activeAnalogyKey];
+    if (!item) return;
+    const currentLang = (typeof activeLang !== 'undefined') ? activeLang : 'ml';
+    const textToCopy = (currentLang === 'ml' && item.talkingPointMl) ? item.talkingPointMl : item.talkingPoint;
+    
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        if (typeof showNotification === 'function') {
+          showNotification('📋 Conversational script copied to clipboard!');
+        }
+        if (typeof playSound === 'function') playSound('click');
+      }).catch(() => {});
+    }
+  }
+
+  function appendCurrentAnalogyToNotes() {
+    const item = LAYMAN_ANALOGIES[activeAnalogyKey];
+    if (!item) return;
+    const currentLang = (typeof activeLang !== 'undefined') ? activeLang : 'ml';
+    const text = (currentLang === 'ml' && item.talkingPointMl) ? item.talkingPointMl : item.talkingPoint;
+    appendObjectionToNotes(item.title, text);
   }
 
   function closeLaymanAnalogy() {
@@ -128,6 +304,9 @@
     activeAnalogyKey = null;
     const modal = document.getElementById('laymanAnalogyModal');
     if (modal) modal.classList.add('hidden');
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
   }
 
   function appendObjectionToNotes(objectionTitle, rebuttalText) {
@@ -147,6 +326,10 @@
     LAYMAN_ANALOGIES,
     showLaymanAnalogy,
     closeLaymanAnalogy,
+    switchAnalogyLang,
+    speakCurrentAnalogy,
+    copyCurrentAnalogy,
+    appendCurrentAnalogyToNotes,
     appendObjectionToNotes
   };
 
@@ -154,6 +337,10 @@
   root.LAYMAN_ANALOGIES = LAYMAN_ANALOGIES;
   root.showLaymanAnalogy = showLaymanAnalogy;
   root.closeLaymanAnalogy = closeLaymanAnalogy;
+  root.switchAnalogyLang = switchAnalogyLang;
+  root.speakCurrentAnalogy = speakCurrentAnalogy;
+  root.copyCurrentAnalogy = copyCurrentAnalogy;
+  root.appendCurrentAnalogyToNotes = appendCurrentAnalogyToNotes;
   root.appendObjectionToNotes = appendObjectionToNotes;
   root.ObjectionEngine = ObjectionEngine;
 
