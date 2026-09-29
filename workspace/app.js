@@ -2008,10 +2008,11 @@ function handleIncomingAuditEntry(entry) {
 function getProfileTelemetry() {
   const allLeads = (typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS)) ? PROSPECTS : [];
 
-  // 1. Successes: discovery_booked or interested
+  // 1. Successes: closed_won, discovery_booked, interested
+  const closedWon = allLeads.filter(p => p.status === 'closed_won');
   const booked = allLeads.filter(p => p.status === 'discovery_booked');
   const interested = allLeads.filter(p => p.status === 'interested');
-  const totalSuccess = booked.length + interested.length;
+  const totalSuccess = closedWon.length + booked.length + interested.length;
 
   // 2. Rejections: not_interested, gatekeeper_rejection, blacklisted
   const notInterested = allLeads.filter(p => p.status === 'not_interested');
@@ -2020,7 +2021,7 @@ function getProfileTelemetry() {
   const totalRejections = notInterested.length + gatekeeper.length + blacklisted.length;
 
   // 3. Callbacks / in-flight
-  const callbacks = allLeads.filter(p => p.status === 'connected_callback');
+  const callbacks = allLeads.filter(p => p.status === 'connected_callback' || p.status === 'callback');
 
   // 4. Dials today vs daily target
   const currentDials = typeof dialsToday !== 'undefined' ? dialsToday : 0;
@@ -2028,16 +2029,84 @@ function getProfileTelemetry() {
   const dialPct = Math.min(100, Math.round((currentDials / maxGoal) * 100));
 
   // 5. Booked Pipeline Value
-  const bookedVal = booked.reduce((sum, p) => sum + (Number(p.targetFee) || 50000), 0);
+  const bookedVal = booked.reduce((sum, p) => sum + (Number(p.targetFee) || 50000), 0) +
+                    closedWon.reduce((sum, p) => sum + (Number(p.targetFee) || (typeof DEAL_TIERS !== 'undefined' && DEAL_TIERS[p.closedTier]?.total) || 50000), 0);
 
   // 6. Win Rate Percentage (Conversions / (Conversions + Rejections))
   const totalDecided = totalSuccess + totalRejections;
   const winRate = totalDecided > 0 ? Math.round((totalSuccess / totalDecided) * 100) : 0;
 
+  // 7. Commission Wallet Ledger & Balances
+  const settledIds = typeof getSettledCommissionIds === 'function' ? getSettledCommissionIds() : [];
+
+  let clearedCommission = 0;
+  let settledCommission = 0;
+  let pendingCommission = 0;
+  const ledger = [];
+
+  // Process closed_won deals (15% direct commission)
+  closedWon.forEach(p => {
+    const tierNum = p.closedTier || 1;
+    const tierInfo = (typeof DEAL_TIERS !== 'undefined' && DEAL_TIERS[tierNum])
+      ? DEAL_TIERS[tierNum]
+      : { name: `Tier ${tierNum}`, total: Number(p.targetFee) || 50000, advance: 25000, commission: Math.round((Number(p.targetFee) || 50000) * 0.15) };
+    const commAmount = p.commission || tierInfo.commission || Math.round(tierInfo.total * 0.15);
+    const isSettled = settledIds.includes(p.id);
+
+    if (isSettled) {
+      settledCommission += commAmount;
+    } else {
+      clearedCommission += commAmount;
+    }
+
+    ledger.push({
+      id: p.id,
+      name: p.name || 'Prospect',
+      city: p.city || '',
+      dm: p.dm || '',
+      type: 'closed_won',
+      tierNum,
+      tierName: tierInfo.name,
+      totalFee: tierInfo.total,
+      advancePaid: p.depositPaid || tierInfo.advance,
+      commission: commAmount,
+      isSettled,
+      statusText: isSettled ? 'SETTLED' : 'CLEARED',
+      updatedAt: p.updatedAt || new Date().toISOString()
+    });
+  });
+
+  // Process discovery_booked deals (10% referral safety net)
+  booked.forEach(p => {
+    const targetFee = Number(p.targetFee) || 50000;
+    const commAmount = Math.round(targetFee * 0.10); // 10% safety net
+    pendingCommission += commAmount;
+
+    ledger.push({
+      id: p.id,
+      name: p.name || 'Prospect',
+      city: p.city || '',
+      dm: p.dm || '',
+      type: 'discovery_booked',
+      tierNum: null,
+      tierName: 'Discovery Handoff',
+      totalFee: targetFee,
+      advancePaid: 0,
+      commission: commAmount,
+      isSettled: false,
+      statusText: 'PENDING_WALKTHROUGH',
+      updatedAt: p.updatedAt || new Date().toISOString()
+    });
+  });
+
+  const streak = typeof getShiftStreak === 'function' ? getShiftStreak() : 1;
+  const milestone = typeof getDialMilestone === 'function' ? getDialMilestone(currentDials) : { level: 0, name: 'Ready', badge: '📡 QUEUED', class: 'bg-white/10 text-gray-400 font-medium' };
+
   return {
     dialsToday: currentDials,
     maxGoal,
     dialPct,
+    closedWonCount: closedWon.length,
     bookedCount: booked.length,
     interestedCount: interested.length,
     totalSuccess,
@@ -2047,7 +2116,14 @@ function getProfileTelemetry() {
     totalRejections,
     callbackCount: callbacks.length,
     bookedVal,
-    winRate
+    winRate,
+    clearedCommission,
+    pendingCommission,
+    settledCommission,
+    totalLifetimeCommission: clearedCommission + settledCommission,
+    ledger,
+    streak,
+    milestone
   };
 }
 
@@ -2059,6 +2135,17 @@ function updateProfileDropdownUI() {
       : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
   if (!user) return;
   const telemetry = getProfileTelemetry();
+
+  // Topbar Wallet Pill Synchronization
+  const topbarWalletPill = document.getElementById('topbarWalletPill');
+  const topbarWalletAmount = document.getElementById('topbarWalletAmount');
+  if (topbarWalletAmount) {
+    topbarWalletAmount.textContent = `₹${(telemetry.clearedCommission || 0).toLocaleString('en-IN')}`;
+  }
+  if (topbarWalletPill) {
+    topbarWalletPill.classList.remove('hidden');
+    topbarWalletPill.classList.add('flex');
+  }
 
   // Profile Identity info
   const nameEl = document.getElementById('dropdownUserName');
@@ -2129,6 +2216,10 @@ function updateProfileDropdownUI() {
     if (ownerStreamContainer) ownerStreamContainer.classList.remove('hidden');
     if (ownerActionButtons) ownerActionButtons.classList.remove('hidden');
     if (callerActionButtons) callerActionButtons.classList.add('hidden');
+    const streakBadgeEl = document.getElementById('profileStreakBadge');
+    if (streakBadgeEl) streakBadgeEl.classList.add('hidden');
+    const milestoneBadgeEl = document.getElementById('profileMilestoneBadge');
+    if (milestoneBadgeEl) milestoneBadgeEl.classList.add('hidden');
     if (adminBtn) {
       // Redundant with topbar Admin console button - keep hidden in dropdown for Owner
       adminBtn.classList.add('hidden');
@@ -2210,6 +2301,17 @@ function updateProfileDropdownUI() {
   } else {
     // Partner Caller Telemetry View
     if (cockpitTitleEl) cockpitTitleEl.textContent = '📊 SALES TELEMETRY';
+    const streakBadgeEl = document.getElementById('profileStreakBadge');
+    if (streakBadgeEl) {
+      streakBadgeEl.textContent = `🔥 ${telemetry.streak}D STREAK`;
+      streakBadgeEl.classList.remove('hidden');
+    }
+    const milestoneBadgeEl = document.getElementById('profileMilestoneBadge');
+    if (milestoneBadgeEl) {
+      milestoneBadgeEl.textContent = telemetry.milestone.badge;
+      milestoneBadgeEl.className = `text-[8px] font-arcade border border-[#17120f] px-1 py-0.5 ${telemetry.milestone.class}`;
+      milestoneBadgeEl.classList.remove('hidden');
+    }
     if (card1TitleEl) card1TitleEl.textContent = '📡 OUTREACH';
     if (card2TitleEl) card2TitleEl.textContent = '🎉 BOOKED';
     if (card3TitleEl) card3TitleEl.textContent = '🛑 REJECTIONS';
@@ -2226,8 +2328,20 @@ function updateProfileDropdownUI() {
     if (dialProgressBar) dialProgressBar.style.width = `${telemetry.dialPct}%`;
 
     if (successCountEl) successCountEl.textContent = telemetry.totalSuccess;
-    if (winRateBadgeEl) winRateBadgeEl.textContent = `${telemetry.winRate}% WIN`;
-    if (bookedValEl) bookedValEl.textContent = `₹${telemetry.bookedVal.toLocaleString('en-IN')} Value`;
+    if (winRateBadgeEl) {
+      if (telemetry.pendingCommission > 0) {
+        winRateBadgeEl.textContent = `+₹${telemetry.pendingCommission.toLocaleString('en-IN')} PEND`;
+      } else {
+        winRateBadgeEl.textContent = `${telemetry.winRate}% WIN`;
+      }
+    }
+    if (bookedValEl) {
+      if (telemetry.clearedCommission > 0) {
+        bookedValEl.textContent = `₹${telemetry.clearedCommission.toLocaleString('en-IN')} Earned`;
+      } else {
+        bookedValEl.textContent = `₹${telemetry.bookedVal.toLocaleString('en-IN')} Value`;
+      }
+    }
 
     if (rejectionCountEl) rejectionCountEl.textContent = telemetry.totalRejections;
     if (rejectionBreakdownEl) {
@@ -2581,7 +2695,7 @@ function setupKeyboardShortcuts() {
     }
 
     // When modal overlay is active, disable single-character workbench hotkeys
-    const hasActiveModal = Boolean(document.querySelector('#authGateOverlay:not(.hidden), #adminModal:not(.hidden), #proposalModal:not(.hidden), #dealCommitmentModal:not(.hidden), #executiveHandoffModal:not(.hidden), #clientTeardownModal:not(.hidden), #customLeadModal:not(.hidden)'));
+    const hasActiveModal = Boolean(document.querySelector('#authGateOverlay:not(.hidden), #adminModal:not(.hidden), #proposalModal:not(.hidden), #dealCommitmentModal:not(.hidden), #executiveHandoffModal:not(.hidden), #partnerWalletModal:not(.hidden), #clientTeardownModal:not(.hidden), #customLeadModal:not(.hidden)'));
     if (hasActiveModal) {
       if (e.key === 'Escape') {
         closeProfileDropdown();
@@ -2590,6 +2704,7 @@ function setupKeyboardShortcuts() {
         closeProposalModal();
         if (typeof closeDealCommitmentModal === 'function') closeDealCommitmentModal();
         if (typeof closeExecutiveHandoffModal === 'function') closeExecutiveHandoffModal();
+        if (typeof closePartnerWalletModal === 'function') closePartnerWalletModal();
         closeClientTeardownModal();
         closeLaymanAnalogy();
         if (typeof closeObjectionBox === 'function') closeObjectionBox();
@@ -2611,6 +2726,7 @@ function setupKeyboardShortcuts() {
       closeProposalModal();
       if (typeof closeDealCommitmentModal === 'function') closeDealCommitmentModal();
       if (typeof closeExecutiveHandoffModal === 'function') closeExecutiveHandoffModal();
+      if (typeof closePartnerWalletModal === 'function') closePartnerWalletModal();
       closeClientTeardownModal();
       closeLaymanAnalogy();
       if (typeof closeObjectionBox === 'function') closeObjectionBox();
@@ -2798,10 +2914,80 @@ function matchSearch(p) {
   );
 }
 
+function getCallbackAging(prospect) {
+  if (!prospect) {
+    return {
+      elapsedHours: 0,
+      isDueToday: true,
+      isOverdue: false,
+      isZombie: false,
+      badgeText: '⏰ DUE TODAY',
+      badgeClass: 'bg-amber-950/50 text-amber-300 border border-amber-700/50'
+    };
+  }
+  const timestamp = prospect.updatedAt || prospect.createdAt;
+  if (!timestamp) {
+    return {
+      elapsedHours: 0,
+      isDueToday: true,
+      isOverdue: false,
+      isZombie: false,
+      badgeText: '⏰ DUE TODAY',
+      badgeClass: 'bg-amber-950/50 text-amber-300 border border-amber-700/50'
+    };
+  }
+  const date = new Date(timestamp);
+  const now = new Date();
+  const elapsedMs = Math.max(0, now.getTime() - date.getTime());
+  const elapsedHours = elapsedMs / (1000 * 60 * 60);
+
+  if (elapsedHours >= 48) {
+    return {
+      elapsedHours: Math.round(elapsedHours),
+      isDueToday: false,
+      isOverdue: false,
+      isZombie: true,
+      badgeText: `🚨 ZOMBIE (${Math.round(elapsedHours)}h)`,
+      badgeClass: 'bg-rose-950/60 text-rose-300 border border-rose-500 font-bold animate-pulse'
+    };
+  } else if (elapsedHours >= 24) {
+    return {
+      elapsedHours: Math.round(elapsedHours),
+      isDueToday: false,
+      isOverdue: true,
+      isZombie: false,
+      badgeText: `⚠️ OVERDUE (${Math.round(elapsedHours)}h)`,
+      badgeClass: 'bg-amber-500/20 text-amber-300 border border-amber-500 font-bold animate-pulse'
+    };
+  } else {
+    return {
+      elapsedHours: Math.round(elapsedHours),
+      isDueToday: true,
+      isOverdue: false,
+      isZombie: false,
+      badgeText: '⏰ DUE TODAY',
+      badgeClass: 'bg-amber-950/50 text-amber-300 border border-amber-700/50'
+    };
+  }
+}
+
 function renderQueue() {
   const listEl = document.getElementById('queueList');
   listEl.innerHTML = '';
-  const filtered = PROSPECTS.filter(p => (activeCityFilter === 'All' || p.city === activeCityFilter) && matchStatus(p) && matchSearch(p));
+  let filtered = PROSPECTS.filter(p => (activeCityFilter === 'All' || p.city === activeCityFilter) && matchStatus(p) && matchSearch(p));
+
+  // If in callbacks tab, prioritize overdue and zombie leads at the top of the queue
+  if (activeStatusFilter === 'callbacks') {
+    filtered = [...filtered].sort((a, b) => {
+      const agingA = getCallbackAging(a);
+      const agingB = getCallbackAging(b);
+      const weightA = agingA.isZombie ? 3 : (agingA.isOverdue ? 2 : 1);
+      const weightB = agingB.isZombie ? 3 : (agingB.isOverdue ? 2 : 1);
+      if (weightB !== weightA) return weightB - weightA;
+      return agingB.elapsedHours - agingA.elapsedHours;
+    });
+  }
+
   document.getElementById('leadCountBadge').innerText = `${filtered.length} Leads`;
   const mobileQueueCount = document.getElementById('mobileQueueCount');
   if (mobileQueueCount) mobileQueueCount.innerText = filtered.length;
@@ -2833,8 +3019,9 @@ function renderQueue() {
       badgeClass = "bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold";
       badgeText = "Retained";
     } else if (p.status === 'gatekeeper_rejection' || p.status === 'connected_callback' || p.status === 'callback') {
-      badgeClass = "bg-amber-950/50 text-amber-300 border border-amber-700/50";
-      badgeText = "Callback";
+      const aging = getCallbackAging(p);
+      badgeClass = aging.badgeClass;
+      badgeText = aging.badgeText;
     } else if (p.status !== 'available') {
       badgeClass = "bg-amber-950/50 text-amber-300 border border-amber-700/50";
       badgeText = p.status.replace('_', ' ');
@@ -4184,10 +4371,23 @@ function logOutcome(status) {
     recordPartnerActivity('OUTCOME_LOGGED', selectedProspectId, { client: p.name, status });
   }
 
-  // Update Daily Dial Progress
+  // Update Daily Dial Progress & Shift Streak
   dialsToday++;
   saveDialsToday();
+  if (typeof updateShiftStreakOnDial === 'function') {
+    updateShiftStreakOnDial();
+  }
   updateDialProgress();
+
+  // Dial Milestone Celebrations
+  if (dialsToday === 5 || dialsToday === 10 || dialsToday === 15 || dialsToday === 20) {
+    const ms = typeof getDialMilestone === 'function' ? getDialMilestone(dialsToday) : { name: `${dialsToday} Dials` };
+    playSound('chime');
+    if (window.SFX && typeof window.SFX.playCelebrate === 'function') {
+      try { window.SFX.playCelebrate(); } catch(e) {}
+    }
+    showNotification(`🔥 MILESTONE UNLOCKED: ${dialsToday} Dials — ${ms.name}!`);
+  }
 
   saveLeadOverride(p.id, { status });
 
@@ -6895,8 +7095,306 @@ function saveHandoffAndAdvance() {
   saveAndNext();
 }
 
+// =============================================================
+// SUBSYSTEM 20: PARTNER GAMIFICATION, COMMISSION WALLET & RETENTION ENGINE (CATEGORY C)
+// =============================================================
 
+function getSettledCommissionIds() {
+  try {
+    const raw = (typeof localStorage !== 'undefined' && localStorage.getItem('sprintdial_settled_commissions')) || '[]';
+    return JSON.parse(raw);
+  } catch (e) {
+    return [];
+  }
+}
 
+function getDialMilestone(dials) {
+  const d = Number(dials) || 0;
+  if (d >= 20) return { level: 4, name: 'Target Crushed', badge: '🏆 CRUSHED', class: 'bg-[#fce566] text-[#17120f] font-bold' };
+  if (d >= 15) return { level: 3, name: 'Power Hour', badge: '🚀 POWER', class: 'bg-purple-900 text-purple-200 font-bold' };
+  if (d >= 10) return { level: 2, name: 'Flow State', badge: '⚡ FLOW', class: 'bg-emerald-900 text-emerald-200 font-bold' };
+  if (d >= 5)  return { level: 1, name: 'Warm Up', badge: '🔥 WARM', class: 'bg-amber-900 text-amber-200 font-bold' };
+  return { level: 0, name: 'Ready', badge: '📡 QUEUED', class: 'bg-white/10 text-gray-400 font-medium' };
+}
+
+function updateShiftStreakOnDial() {
+  try {
+    if (typeof localStorage === 'undefined') return 1;
+    const today = new Date().toISOString().slice(0, 10);
+    const raw = localStorage.getItem('sprintdial_streak_data');
+    let streakData = raw ? JSON.parse(raw) : { lastDate: '', count: 0 };
+
+    if (streakData.lastDate === today) {
+      return streakData.count || 1;
+    }
+
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    if (streakData.lastDate === yesterday) {
+      streakData.count = (streakData.count || 0) + 1;
+    } else {
+      streakData.count = 1;
+    }
+    streakData.lastDate = today;
+    localStorage.setItem('sprintdial_streak_data', JSON.stringify(streakData));
+    return streakData.count;
+  } catch (e) {
+    return 1;
+  }
+}
+
+function getShiftStreak() {
+  try {
+    if (typeof localStorage === 'undefined') return 1;
+    const raw = localStorage.getItem('sprintdial_streak_data');
+    if (!raw) return 1;
+    const streakData = JSON.parse(raw);
+    const today = new Date().toISOString().slice(0, 10);
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    if (streakData.lastDate === today || streakData.lastDate === yesterday) {
+      return streakData.count || 1;
+    }
+    return 1;
+  } catch (e) {
+    return 1;
+  }
+}
+
+function sendCallbackNudgeWhatsApp(prospectId) {
+  const targetId = prospectId || (typeof selectedProspectId !== 'undefined' ? selectedProspectId : ((typeof global !== 'undefined') ? global.selectedProspectId : null));
+  const allLeads = (typeof global !== 'undefined' && Array.isArray(global.PROSPECTS) && global.PROSPECTS.length > 0)
+    ? global.PROSPECTS
+    : ((typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS)) ? PROSPECTS : []);
+  const p = allLeads.find(item => item.id === targetId);
+  if (!p) {
+    showNotification('⚠️ Please select a prospect first.');
+    return;
+  }
+  playSound('click');
+
+  const cleanPhone = (p.phone || '').replace(/[^0-9]/g, '');
+  const targetPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
+  const cleanDm = (p.dm || 'Director').split('(')[0].trim();
+  const cleanName = (p.name || 'Establishment').split(',')[0].trim();
+
+  const callerUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : (window.currentUser || {});
+  const callerName = callerUser.displayName || callerUser.name || 'Outreach Partner';
+  const partnerId = callerUser.sub || callerUser.uid || 'partner';
+  const teardownUrl = `https://apoorv.qzz.io/sales?prospect=${encodeURIComponent(p.id)}&partner=${encodeURIComponent(partnerId)}`;
+
+  const msg = `Namaste ${cleanDm},\n\nFollowing up on our brief conversation regarding ${cleanName}.\n\nDid you get an opportunity to review the 60 FPS performance comparison & revenue leak audit we prepared?\n👉 ${teardownUrl}\n\nApoorv A S (Creative Technologist & 3D WebUI Architect) has a brief 10-minute window today at 3:30 PM for a screen share to show how your direct inquiries can increase by 25%.\n\nDoes 3:30 PM today work for you?\n\nWarm regards,\n${callerName}\nOffice of Apoorv A S | https://apoorv.qzz.io`;
+
+  const waLink = targetPhone
+    ? `https://wa.me/${targetPhone}?text=${encodeURIComponent(msg)}`
+    : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+
+  if (typeof recordPartnerActivity === 'function') {
+    recordPartnerActivity('CALLBACK_NUDGE_SENT', p.id, { client: p.name, phone: targetPhone });
+  }
+
+  showNotification(`💬 Prepared WhatsApp Callback Nudge for ${cleanDm}!`);
+  if (typeof window !== "undefined") {
+    window.open(waLink, '_blank');
+  }
+}
+
+function openPartnerWalletModal() {
+  playSound('click');
+  const modal = document.getElementById('partnerWalletModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    updateWalletModalUI();
+  }
+}
+
+function closePartnerWalletModal() {
+  playSound('click');
+  const modal = document.getElementById('partnerWalletModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function savePartnerUpiId(val) {
+  if (typeof localStorage !== 'undefined' && val) {
+    localStorage.setItem('sprintdial_partner_upi', val.trim());
+  }
+}
+
+function updateWalletModalUI() {
+  const telemetry = getProfileTelemetry();
+  const clearedEl = document.getElementById('walletClearedBalance');
+  const pendingEl = document.getElementById('walletPendingBalance');
+  const settledEl = document.getElementById('walletSettledBalance');
+  const upiInput = document.getElementById('partnerUpiInput');
+  const ledgerList = document.getElementById('walletLedgerList');
+  const ownerActions = document.getElementById('walletOwnerActions');
+
+  if (clearedEl) clearedEl.textContent = `₹${(telemetry.clearedCommission || 0).toLocaleString('en-IN')}`;
+  if (pendingEl) pendingEl.textContent = `₹${(telemetry.pendingCommission || 0).toLocaleString('en-IN')}`;
+  if (settledEl) settledEl.textContent = `₹${(telemetry.settledCommission || 0).toLocaleString('en-IN')}`;
+
+  if (upiInput && !upiInput.value) {
+    const savedUpi = (typeof localStorage !== 'undefined' && localStorage.getItem('sprintdial_partner_upi')) || '';
+    if (savedUpi) upiInput.value = savedUpi;
+  }
+
+  const user = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : (window.currentUser || {});
+  const isOwner = isOwnerUser(user);
+
+  if (ownerActions) {
+    if (isOwner) {
+      ownerActions.classList.remove('hidden');
+    } else {
+      ownerActions.classList.add('hidden');
+    }
+  }
+
+  if (ledgerList) {
+    ledgerList.innerHTML = '';
+    if (!telemetry.ledger || telemetry.ledger.length === 0) {
+      ledgerList.innerHTML = `
+        <div class="p-4 bg-white/5 border border-white/10 text-center font-mono text-xs text-neutral-400 space-y-1">
+          <p>📡 No commission ledger records yet.</p>
+          <p class="text-[10px] text-neutral-500">Close deals directly on call for 15% instant commission, or forward discovery walkthroughs for 10% referral safety net.</p>
+        </div>
+      `;
+      return;
+    }
+
+    telemetry.ledger.forEach(item => {
+      const row = document.createElement('div');
+      const isWon = item.type === 'closed_won';
+      row.className = `p-3 bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[#17120f]`;
+
+      let statusBadge = '';
+      if (item.isSettled) {
+        statusBadge = `<span class="px-2 py-0.5 bg-emerald-100 text-emerald-900 border border-emerald-500 font-arcade text-[8px] font-bold">✅ SETTLED</span>`;
+      } else if (isWon) {
+        statusBadge = `<span class="px-2 py-0.5 bg-[#fce566] text-[#17120f] border border-[#17120f] font-arcade text-[8px] font-bold">💰 CLEARED (15%)</span>`;
+      } else {
+        statusBadge = `<span class="px-2 py-0.5 bg-blue-100 text-blue-900 border border-blue-400 font-arcade text-[8px] font-bold">⏳ PENDING (10%)</span>`;
+      }
+
+      const clientName = escapeHTML(item.name);
+      const tierName = escapeHTML(item.tierName);
+      const commStr = `+₹${item.commission.toLocaleString('en-IN')}`;
+
+      let ownerActionBtn = '';
+      if (isOwner && isWon && !item.isSettled) {
+        ownerActionBtn = `
+          <button type="button" onclick="settleDealCommission('${item.id}')" title="Mark as settled" class="px-2 py-1 bg-[#17120f] hover:bg-black text-[#fce566] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] transition active:translate-x-[1px] active:translate-y-[1px]">
+            MARK SETTLED
+          </button>
+        `;
+      }
+
+      row.innerHTML = `
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-bold text-xs truncate max-w-[220px]">${clientName}</span>
+            ${statusBadge}
+          </div>
+          <div class="text-[10px] text-neutral-600 font-mono mt-0.5">
+            ${tierName} • Advance: ₹${(item.advancePaid || 0).toLocaleString('en-IN')} • Total: ₹${(item.totalFee || 0).toLocaleString('en-IN')}
+          </div>
+        </div>
+        <div class="flex items-center gap-3 shrink-0 self-end sm:self-center">
+          <span class="font-arcade text-xs font-black ${item.isSettled ? 'text-neutral-500 line-through' : (isWon ? 'text-[#155724]' : 'text-blue-800')}">
+            ${commStr}
+          </span>
+          ${ownerActionBtn}
+        </div>
+      `;
+
+      ledgerList.appendChild(row);
+    });
+  }
+}
+
+function requestUpiSettlement() {
+  playSound('click');
+  const telemetry = getProfileTelemetry();
+  const cleared = telemetry.clearedCommission;
+
+  if (cleared <= 0) {
+    showNotification('⚠️ No cleared commission balance available for settlement yet.');
+    return;
+  }
+
+  const upiInput = document.getElementById('partnerUpiInput');
+  const upiId = upiInput?.value.trim() || ((typeof localStorage !== 'undefined') ? localStorage.getItem('sprintdial_partner_upi') : '') || '';
+  if (!upiId || !upiId.includes('@')) {
+    showNotification('⚠️ Please enter a valid UPI ID (e.g. partner@okaxis) to request payout.');
+    upiInput?.focus();
+    return;
+  }
+
+  const callerUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : (window.currentUser || {});
+  const callerName = callerUser.displayName || callerUser.name || 'Outreach Partner';
+  const callerEmail = callerUser.email || '';
+
+  const clearedDeals = telemetry.ledger.filter(d => d.type === 'closed_won' && !d.isSettled);
+  const ledgerLines = clearedDeals.map(d => `• ${d.name} (${d.tierName}) → Commission: ₹${d.commission.toLocaleString('en-IN')}`).join('\n');
+
+  const msg = `⚡ OUTREACH PARTNER COMMISSION SETTLEMENT REQUEST\n\nPartner: ${callerName} (${callerEmail})\nRegistered UPI: ${upiId}\nRequested Payout: ₹${cleared.toLocaleString('en-IN')}\n\nVerified Deal Ledger:\n${ledgerLines}\n\nTotal Cleared Balance: ₹${cleared.toLocaleString('en-IN')}\n\nPlease transfer and mark settled.\nOffice of Apoorv A S | SprintDial Cockpit`;
+
+  const waLink = `https://wa.me/919495462450?text=${encodeURIComponent(msg)}`;
+
+  if (typeof recordPartnerActivity === 'function') {
+    recordPartnerActivity('SETTLEMENT_REQUESTED', 'wallet', {
+      amount: cleared,
+      upiId,
+      dealsCount: clearedDeals.length
+    });
+  }
+
+  showNotification('⚡ Opening WhatsApp to dispatch verified settlement request to Apoorv...');
+  if (typeof window !== "undefined") {
+    window.open(waLink, '_blank');
+  }
+}
+
+function settleDealCommission(prospectId) {
+  const user = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : (window.currentUser || {});
+  if (!isOwnerUser(user)) {
+    showNotification('🛑 Only the Owner (Apoorv) can clear commission settlements.');
+    return;
+  }
+  playSound('chime');
+  const settled = getSettledCommissionIds();
+  if (!settled.includes(prospectId)) {
+    settled.push(prospectId);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('sprintdial_settled_commissions', JSON.stringify(settled));
+    }
+  }
+  showNotification('✅ Deal commission marked as SETTLED!');
+  updateWalletModalUI();
+  updateProfileDropdownUI();
+}
+
+function settleAllClearedCommissions() {
+  const user = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : (window.currentUser || {});
+  if (!isOwnerUser(user)) {
+    showNotification('🛑 Only the Owner (Apoorv) can clear commission settlements.');
+    return;
+  }
+  playSound('chime');
+  const telemetry = getProfileTelemetry();
+  const clearedDeals = telemetry.ledger.filter(d => d.type === 'closed_won' && !d.isSettled);
+  if (clearedDeals.length === 0) {
+    showNotification('ℹ️ No cleared deals pending settlement.');
+    return;
+  }
+  const settled = getSettledCommissionIds();
+  clearedDeals.forEach(d => {
+    if (!settled.includes(d.id)) settled.push(d.id);
+  });
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem('sprintdial_settled_commissions', JSON.stringify(settled));
+  }
+  showNotification(`✅ Successfully settled ₹${telemetry.clearedCommission.toLocaleString('en-IN')} across ${clearedDeals.length} deals!`);
+  updateWalletModalUI();
+  updateProfileDropdownUI();
+}
 
 // Responsive Mobile Cockpit / Queue Switcher
 function showMobilePane(pane) {
@@ -7733,6 +8231,22 @@ if (typeof window !== 'undefined') {
   window.generateApoorvMeetInvite = generateApoorvMeetInvite;
   window.sendHandoffBriefToApoorv = sendHandoffBriefToApoorv;
   window.saveHandoffAndAdvance = saveHandoffAndAdvance;
+
+  // Subsystem 20: Partner Gamification, Commission Wallet & Retention Engine
+  window.getProfileTelemetry = getProfileTelemetry;
+  window.getCallbackAging = getCallbackAging;
+  window.sendCallbackNudgeWhatsApp = sendCallbackNudgeWhatsApp;
+  window.getDialMilestone = getDialMilestone;
+  window.updateShiftStreakOnDial = updateShiftStreakOnDial;
+  window.getShiftStreak = getShiftStreak;
+  window.getSettledCommissionIds = getSettledCommissionIds;
+  window.openPartnerWalletModal = openPartnerWalletModal;
+  window.closePartnerWalletModal = closePartnerWalletModal;
+  window.savePartnerUpiId = savePartnerUpiId;
+  window.updateWalletModalUI = updateWalletModalUI;
+  window.requestUpiSettlement = requestUpiSettlement;
+  window.settleDealCommission = settleDealCommission;
+  window.settleAllClearedCommissions = settleAllClearedCommissions;
 }
 if (typeof global !== 'undefined') {
   global.initForensicWatermark = initForensicWatermark;
@@ -7798,6 +8312,22 @@ if (typeof global !== 'undefined') {
   global.generateApoorvMeetInvite = generateApoorvMeetInvite;
   global.sendHandoffBriefToApoorv = sendHandoffBriefToApoorv;
   global.saveHandoffAndAdvance = saveHandoffAndAdvance;
+
+  // Subsystem 20: Partner Gamification, Commission Wallet & Retention Engine
+  global.getProfileTelemetry = getProfileTelemetry;
+  global.getCallbackAging = getCallbackAging;
+  global.sendCallbackNudgeWhatsApp = sendCallbackNudgeWhatsApp;
+  global.getDialMilestone = getDialMilestone;
+  global.updateShiftStreakOnDial = updateShiftStreakOnDial;
+  global.getShiftStreak = getShiftStreak;
+  global.getSettledCommissionIds = getSettledCommissionIds;
+  global.openPartnerWalletModal = openPartnerWalletModal;
+  global.closePartnerWalletModal = closePartnerWalletModal;
+  global.savePartnerUpiId = savePartnerUpiId;
+  global.updateWalletModalUI = updateWalletModalUI;
+  global.requestUpiSettlement = requestUpiSettlement;
+  global.settleDealCommission = settleDealCommission;
+  global.settleAllClearedCommissions = settleAllClearedCommissions;
 }
 
 // Initial visibility check on load
