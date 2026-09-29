@@ -3956,7 +3956,7 @@ function renderActiveProspect() {
   }
   document.getElementById('activeFee').innerText = `Floor ${p.fee}`;
 
-  const isUnmasked = (typeof isProspectPhoneUnmasked === 'function') ? isProspectPhoneUnmasked(p.id) : true;
+  const isUnmasked = (typeof isProspectPhoneUnmasked === 'function') ? isProspectPhoneUnmasked(p.id) : false;
   const rawPhone = p.phone || p.tel || '';
   const maskedPhone = (typeof maskPhoneNumber === 'function') ? maskPhoneNumber(rawPhone) : rawPhone;
   const displayPhone = isUnmasked ? (rawPhone || '--') : maskedPhone;
@@ -3967,26 +3967,14 @@ function renderActiveProspect() {
     activePhoneDisplay.innerText = displayPhone;
   }
   if (btnToggleUnmaskPhone) {
-    const user = (typeof currentUser !== 'undefined' && currentUser)
-      ? currentUser
-      : ((typeof window !== 'undefined' && window.currentUser)
-        ? window.currentUser
-        : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
-    const isOwner = typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(user?.email);
-    if (isOwner || isUnmasked) {
-      btnToggleUnmaskPhone.classList.add('hidden');
-    } else {
-      btnToggleUnmaskPhone.classList.remove('hidden');
-    }
+    btnToggleUnmaskPhone.classList.remove('hidden');
+    btnToggleUnmaskPhone.innerText = isUnmasked ? 'Hide' : 'Reveal';
+    btnToggleUnmaskPhone.title = isUnmasked ? 'Hide Contact Phone' : 'Reveal Contact Phone';
   }
 
   const callPhoneTextEl = document.getElementById('callPhoneText');
   if (callPhoneTextEl) {
-    if (isUnmasked) {
-      callPhoneTextEl.innerText = rawPhone ? `Call ${rawPhone}` : 'Call Prospect';
-    } else {
-      callPhoneTextEl.innerText = `👁️ Reveal & Call (${maskedPhone})`;
-    }
+    callPhoneTextEl.innerText = isUnmasked ? 'Call Prospect [D]' : 'Reveal & Call [D]';
   }
 
   // Site Link
@@ -8850,15 +8838,7 @@ function maskPhoneNumber(phone) {
 }
 
 function isProspectPhoneUnmasked(prospectId) {
-  const user = (typeof window !== 'undefined' && window.currentUser)
-    ? window.currentUser
-    : ((typeof global !== 'undefined' && global.currentUser)
-      ? global.currentUser
-      : ((typeof currentUser !== 'undefined' && currentUser) ? currentUser : null));
-  const email = user?.email || '';
-  if ((typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(email)) || (email === 'apoorvxs@gmail.com')) {
-    return true;
-  }
+  if (!prospectId) return false;
   return sessionUnmaskedProspects.has(prospectId);
 }
 
@@ -8983,8 +8963,13 @@ function unmaskProspectPhone(prospectId) {
 }
 
 function toggleUnmaskActiveProspectPhone() {
-  if (typeof selectedProspectId !== 'undefined') {
-    unmaskProspectPhone(selectedProspectId);
+  if (typeof selectedProspectId !== 'undefined' && selectedProspectId) {
+    if (sessionUnmaskedProspects.has(selectedProspectId)) {
+      sessionUnmaskedProspects.delete(selectedProspectId);
+      if (typeof renderActiveProspect === 'function') renderActiveProspect();
+    } else {
+      unmaskProspectPhone(selectedProspectId);
+    }
   }
 }
 

@@ -88,7 +88,8 @@ describe("Subsystem 17: Sovereign Anti-Theft Moat & Cryptographic Data Shield", 
 
     global.PROSPECTS = [
       { id: "p-test-1", name: "Apex Dental Studio", city: "Kochi", dm: "Dr. Apex", phone: "+91 94470 12345", tel: "+919447012345", fee: "₹50,000", status: "available" },
-      { id: "p-test-2", name: "Luxe Spatial Resort", city: "Kumarakom", dm: "Mr. Resort", phone: "+91 98460 54321", tel: "+919846054321", fee: "₹80,000", status: "available" }
+      { id: "p-test-2", name: "Luxe Spatial Resort", city: "Kumarakom", dm: "Mr. Resort", phone: "+91 98460 54321", tel: "+919846054321", fee: "₹80,000", status: "available" },
+      { id: "p-test-3", name: "Owner Test Lead", city: "Kochi", dm: "Dr. Owner", phone: "+91 94470 99999", tel: "+919447099999", fee: "₹50,000", status: "available" }
     ];
   });
 
@@ -117,9 +118,12 @@ describe("Subsystem 17: Sovereign Anti-Theft Moat & Cryptographic Data Shield", 
     expect(isProspectPhoneUnmasked("p-test-1")).toBe(true);
     expect(isProspectPhoneUnmasked("p-test-2")).toBe(false);
 
-    // As Owner (apoorvxs@gmail.com): always unmasked for all prospects
+    // As Owner (apoorvxs@gmail.com): initially masked for privacy, but unmasks on demand with zero rate limits
     global.currentUser = { email: "apoorvxs@gmail.com", name: "Apoorv A S", role: "owner" };
-    expect(isProspectPhoneUnmasked("p-test-2")).toBe(true);
+    expect(isProspectPhoneUnmasked("p-test-3")).toBe(false);
+    const ownerOk = unmaskProspectPhone("p-test-3");
+    expect(ownerOk).toBe(true);
+    expect(isProspectPhoneUnmasked("p-test-3")).toBe(true);
   });
 
   it("17.3 Enforces hourly velocity limit of 10 unmasks per partner and flags risk alert", async () => {
