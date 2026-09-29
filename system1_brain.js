@@ -580,8 +580,9 @@
             this.currentThought = text;
             if (typeof document === "undefined") return;
             if (!this.bubbleElement) this.setupBubble();
+            if (!this.bubbleElement) return;
             const now = (typeof performance !== "undefined") ? performance.now() : Date.now();
-            const isPriority = text.includes("dispatched") || text.includes("TOUCHDOWN") || text.includes("Terra Firma") || text.includes("HARD-LIGHT") || text.includes("[SYS]") || text.includes("Missing") || text.includes("Scope:") || text.includes("Tier unlocked");
+            const isPriority = text.includes("//") || text.includes("RADAR") || text.includes("COCKPIT") || text.includes("dispatched") || text.includes("TOUCHDOWN") || text.includes("Terra Firma") || text.includes("HARD-LIGHT") || text.includes("[SYS]") || text.includes("Missing") || text.includes("Scope:") || text.includes("Tier unlocked");
 
             if (this.bubbleElement && this.bubbleElement.classList.contains("hud-active")) {
                 if (isPriority) {

@@ -2831,12 +2831,8 @@ const WORKSPACE_TOUR_STEPS = [
     title: '1. Territory Queue & Zombie Radar',
     summary: 'The workstation prioritizes 65 curated enterprise prospects. Overdue and cold leads automatically float to the top so you never lose high-intent deals.',
     visual: `┌── TERRITORY QUEUE ──────────────────────────────┐
-│ [ALL LEADS (65)]  [★ CALLBACKS (4)]  [WON (2)] │
-│ ─────────────────────────────────────────────── │
-│ [ZOMBIE >48H] (72h)   │ Dr. Thomas Varghese (Dental) │
-│ [OVERDUE] (36h) │ Malabar Heritage Grand Villa│
-│ [DUE TODAY]     │ Kochi Spine & Ortho Centre  │
-│ ● READY TO DIAL │ Paragon Luxury Grand Resort │
+│ [ALL (65)]  [CALLBACKS (4)]  [ZOMBIE] [OVERDUE] │
+│ ● READY TO DIAL     │ Paragon Luxury Grand Resort  │
 └─────────────────────────────────────────────────┘`,
     laptop: [
       "• <strong>Left Column:</strong> Browse all 65 enterprise leads with active status filters.",
@@ -2862,10 +2858,9 @@ const WORKSPACE_TOUR_STEPS = [
     title: '2. Client Dossier & Revenue Leak Intel',
     summary: 'Every prospect comes pre-audited with empirical mobile 4G latency, estimated revenue drop-off, third-party aggregator bleed, and DPDP Act legal compliance.',
     visual: `┌── CLIENT AUDIT DOSSIER ─────────────────────────┐
-│ TARGET: Malabar Heritage Grand Villa (Wayanad)  │
+│ TARGET     : Malabar Heritage Grand Villa       │
 │ MOBILE LCP : 4.8s [CRITICAL 4G SPEED DEFICIT]   │
-│ AGGREGATOR : ₹48,000/yr BLEED (MakeMyTrip/OTA) │
-│ DPDP 2023  : [!] NON-COMPLIANT (Statutory Pen)  │
+│ AGGREGATOR : ₹48,000/yr BLEED (MakeMyTrip/OTA)  │
 │ PROPOSAL   : ₹50,000 Turnkey WebGPU Spatial Core│
 └─────────────────────────────────────────────────┘`,
     laptop: [
@@ -2891,10 +2886,9 @@ const WORKSPACE_TOUR_STEPS = [
     title: '3. In-Call Flight HUD & Mandatory Dispositions',
     summary: 'Dialing starts an active stopwatch. To prevent lost data or skipping callbacks, active calls must be dispositioned through a guided 2-step gate.',
     visual: `┌── IN-CALL FLIGHT HUD ───────────────────────────┐
-│ [LIVE DIAL] [ 02:15 ]  [ ↩ CANCEL (MISCLICK) ]  │
-│ STEP 1: [● Spoke to DM] [▲ Gatekeeper] [⚪ No Ans]│
+│ [LIVE DIAL] [ 02:15 ]     [ ↩ CANCEL DIAL ]     │
+│ STEP 1: [● Spoke to DM] [▲ Gatekeeper] [No Ans] │
 │ STEP 2: [WIN: BOOKED] [TEARDOWN] [CALLBACK]     │
-│ TAGS  : [+ Asked WhatsApp] [+ In Consultations] │
 └─────────────────────────────────────────────────┘`,
     laptop: [
       "• <strong>Start Call:</strong> Click <span class='font-bold text-neutral-900'>[CALL (TEL)]</span> or press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>D</kbd> to launch live flight HUD & stopwatch.",
@@ -2920,11 +2914,10 @@ const WORKSPACE_TOUR_STEPS = [
     title: '4. Two-Track Deal Closing & Sovereign Payment Terminal',
     summary: 'Strike while the iron is hot. Close deals autonomously on the spot for a 15% commission, or escalate enterprise walkthroughs to Apoorv for a 10% safety net.',
     visual: `┌── TWO-TRACK CLOSING TERMINAL ───────────────────┐
-│ TRACK 1: [ ◈ CLOSE (15% COMMISSION) ]           │
+│ TRACK 1: [ CLOSE (15% COMMISSION) ]             │
 │   → Live 50% UPI QR Code (apoorvxs@okaxis)       │
-│   → 1-Page Milestone SOW (50/25/25) & 60 FPS SLA │
-│ TRACK 2: [ ◈ FORWARD (10% REFERRAL SAFETY NET) ]│
-│   → 15-Min Google Meet Slot on Apoorv's Calendar │
+│ TRACK 2: [ FORWARD (10% REFERRAL SAFETY NET) ]  │
+│   → 15-Min Google Meet Slot on Apoorv's Calendar│
 └─────────────────────────────────────────────────┘`,
     laptop: [
       "• <strong>Track 1 (Direct Close — 15% Cut):</strong> When DM agrees, click <span class='font-bold text-neutral-900'>[ ◈ CLOSE (15%) ]</span>. Select Tier (₹50k/₹100k/₹200k), show live 50% UPI deposit QR, and click 'Mark 50% Deposit Received'.",
@@ -2949,20 +2942,19 @@ const WORKSPACE_TOUR_STEPS = [
     title: '5. Sovereign Commission Wallet & Shift Momentum',
     summary: 'Track every rupee earned in real-time. Request instant UPI settlements directly from the topbar, maintain dial streaks, and unlock dopamine milestones.',
     visual: `┌── SOVEREIGN WALLET & TELEMETRY ─────────────────┐
-│ TOPBAR   : [ 💰 ₹7,500 EARNED ]                 │
-│ STREAK   : 🔥 3D STREAK (Consecutive Active Days)│
-│ MILESTONE: ⚡ 10 DIALS: FLOW STATE [CHIME SFX]   │
-│ SETTLE   : [ ⚡ REQUEST UPI SETTLEMENT ]         │
+│ TOPBAR   : [ ₹7,500 EARNED ]                    │
+│ STREAK   : STREAK // 3D (Active Consecutive)   │
+│ SETTLE   : [ REQUEST UPI SETTLEMENT ]           │
 └─────────────────────────────────────────────────┘`,
     laptop: [
-      "• <strong>Live Wallet Pill:</strong> Click <span class='font-bold text-neutral-900'>[ 💰 ₹X EARNED ]</span> in topbar to inspect Cleared, Pending, and Settled balances.",
-      "• <strong>Instant UPI Payouts:</strong> Enter your UPI VPA and hit <span class='font-bold text-neutral-900'>[ ⚡ REQUEST UPI PAYOUT ]</span> to send automated WhatsApp settlement to Apoorv.",
+      "• <strong>Live Wallet Pill:</strong> Click <span class='font-bold text-neutral-900'>[ ₹X EARNED ]</span> in topbar to inspect Cleared, Pending, and Settled balances.",
+      "• <strong>Instant UPI Payouts:</strong> Enter your UPI VPA and hit <span class='font-bold text-neutral-900'>[ REQUEST UPI PAYOUT ]</span> to send automated WhatsApp settlement to Apoorv.",
       "• <strong>Closer Hotkeys:</strong> <kbd class='px-1 bg-[#17120f] text-[#fce566]'>1</kbd> (Booked), <kbd class='px-1 bg-[#17120f] text-[#fce566]'>2</kbd> (Callback), <kbd class='px-1 bg-[#17120f] text-[#fce566]'>3</kbd> (Disqual), <kbd class='px-1 bg-[#17120f] text-[#fce566]'>Space</kbd> (Save/Next)."
     ],
     mobile: [
       "• <strong>Pinned Header:</strong> Live wallet pill is always visible in the mobile header.",
       "• <strong>Audio Chimes:</strong> Procedural droid synthesis chirps celebrate your 5, 10, 15, and 20 dial milestones.",
-      "• <strong>Re-open Anytime:</strong> Open the Profile Menu or tap <span class='font-bold text-neutral-900'>[ 💡 TOUR ]</span> anytime to review this flight manual!"
+      "• <strong>Re-open Anytime:</strong> Open the Profile Menu or tap <span class='font-bold text-neutral-900'>[ TOUR ]</span> anytime to review this flight manual!"
     ],
     proTip: "Hit 15 dials to enter 'POWER HOUR' and lock your daily shift streak. You are cleared for launch!"
   }
@@ -3076,12 +3068,68 @@ function updateTourSpotlight(stepIndex) {
     }
   }
 
+  // Positioning of tourCard relative to target element: OPPOSITE-SIDE DOCKING RULE
+  // Guarantees tourCard NEVER overlaps the active highlighted element
+  if (tourCard && !isMobile) {
+    if (stepIndex === 0 || stepIndex === 1) {
+      // Step 1: Target is on Left (Queue: 0 - 320px) -> Card docks on Right (over Column 3: 1040 - 1440px)
+      // Step 2: Target is in Center (Dossier: 366 - 1010px) -> Card docks on Right (over Column 3: 1040 - 1440px)
+      tourCard.style.marginLeft = 'auto';
+      tourCard.style.marginRight = '1rem';
+      tourCard.style.width = '350px';
+      tourCard.style.marginTop = 'auto';
+      tourCard.style.marginBottom = 'auto';
+    } else {
+      // Step 3 (Cockpit: Center-Bottom: 378 - 998px, y: 745) -> Card docks Top-Left in Column 1 (0 - 320px)
+      // Step 4 (Closing: Center/Right) -> Card docks Top-Left in Column 1 (0 - 320px)
+      // Step 5 (Wallet: Top-Right) -> Card docks Top-Left in Column 1 (0 - 320px)
+      tourCard.style.marginLeft = '0.5rem';
+      tourCard.style.marginRight = 'auto';
+      tourCard.style.width = '320px';
+      tourCard.style.marginTop = '3.5rem';
+      tourCard.style.marginBottom = 'auto';
+    }
+  } else if (tourCard && isMobile) {
+    tourCard.style.marginLeft = 'auto';
+    tourCard.style.marginRight = 'auto';
+    tourCard.style.width = '100%';
+    tourCard.style.marginTop = 'auto';
+    tourCard.style.marginBottom = '0.5rem';
+  }
+
   // Guide the Authentic 3D BB-8 Droid to Perch on the Active Tour Target
   if (typeof window !== 'undefined' && typeof window.smoothGlideTo === 'function') {
     const isMobileView = winW < 1024;
-    // Perch BB-8 on the top-right corner of the active section
-    const bb8TargetX = Math.round(isMobileView ? (x + w * 0.5) : Math.max(x + 50, x + w - 35));
-    const bb8TargetY = Math.max(70, Math.round(y - 12));
+    let bb8TargetX = 0;
+    let bb8TargetY = 0;
+
+    if (isMobileView) {
+      bb8TargetX = Math.round(x + w * 0.5);
+      bb8TargetY = Math.max(60, Math.min(y - 20, winH * 0.3));
+    } else {
+      if (stepIndex === 0) {
+        // Step 1: Queue -> Perch on top-right of queue
+        bb8TargetX = Math.round(x + Math.min(270, w - 40));
+        bb8TargetY = Math.max(70, Math.round(y - 12));
+      } else if (stepIndex === 1) {
+        // Step 2: Dossier -> Perch on top-left of Dossier title
+        bb8TargetX = Math.round(x + 50);
+        bb8TargetY = Math.max(70, Math.round(y - 38));
+      } else if (stepIndex === 2) {
+        // Step 3: In-call Cockpit -> Perch right above the Cockpit bar
+        bb8TargetX = Math.round(x + 50);
+        bb8TargetY = Math.max(70, Math.round(y - 38));
+      } else if (stepIndex === 3) {
+        // Step 4: Closing -> Perch right above the closing actions
+        bb8TargetX = Math.round(x + Math.min(w * 0.5, 220));
+        bb8TargetY = Math.max(70, Math.round(y - 28));
+      } else {
+        // Step 5: Wallet -> Perch right beside the topbar wallet pill
+        bb8TargetX = Math.round(x - 45);
+        bb8TargetY = Math.round(y + 20);
+      }
+    }
+
     try {
       window.smoothGlideTo(bb8TargetX, bb8TargetY, 450, () => {
         if (window.Player3D?.nod) window.Player3D.nod();
@@ -3090,32 +3138,6 @@ function updateTourSpotlight(stepIndex) {
         }
       });
     } catch(e) {}
-  }
-
-  // Gracefully clear legacy SVG companion if still cached in DOM
-  if (bb8) bb8.style.display = 'none';
-  if (laser && typeof laser.setAttribute === 'function') {
-    laser.setAttribute('x1', '0');
-    laser.setAttribute('y1', '0');
-    laser.setAttribute('x2', '0');
-    laser.setAttribute('y2', '0');
-  }
-  if (spark) spark.innerHTML = '';
-
-  // Positioning of tourCard relative to target element
-  if (tourCard && !isMobile) {
-    if (stepIndex === 3 || stepIndex === 4) {
-      // Steps 4 & 5: Card on left
-      tourCard.style.marginLeft = '2rem';
-      tourCard.style.marginRight = 'auto';
-    } else {
-      // Steps 1, 2, 3: Card on right
-      tourCard.style.marginLeft = 'auto';
-      tourCard.style.marginRight = '2rem';
-    }
-  } else if (tourCard && isMobile) {
-    tourCard.style.marginLeft = 'auto';
-    tourCard.style.marginRight = 'auto';
   }
 }
 
@@ -3166,6 +3188,14 @@ function openWorkspaceTour(stepIndex = 0) {
   currentWorkspaceTourStep = Math.max(0, Math.min(stepIndex, WORKSPACE_TOUR_STEPS.length - 1));
   const modal = document.getElementById('workspaceTourModal');
   if (!modal) return;
+
+  // Immediately hide onboarding disclaimer if present so the live workstation is fully visible
+  const disclaimer = document.getElementById('onboardingDisclaimer');
+  if (disclaimer) {
+    disclaimer.classList.add('hidden');
+    disclaimer.style.display = 'none';
+  }
+
   modal.classList.remove('hidden');
   modal.style.display = 'flex';
   if (typeof document !== 'undefined' && document.body?.classList) {
@@ -3273,6 +3303,51 @@ function prevWorkspaceTourStep() {
   }
 }
 
+let currentTourDeviceTab = (typeof window !== 'undefined' && window.innerWidth < 1024) ? 'mob' : 'desk';
+
+function switchTourDeviceTab(mode) {
+  currentTourDeviceTab = mode;
+  updateTourInstructionsUI();
+}
+
+function updateTourInstructionsUI() {
+  const step = WORKSPACE_TOUR_STEPS[currentWorkspaceTourStep];
+  if (!step) return;
+  const deskTab = document.getElementById('tourTabDesk');
+  const mobTab = document.getElementById('tourTabMob');
+  const labelEl = document.getElementById('tourGuidanceDeviceLabel');
+  const activeList = document.getElementById('tourActiveInstructions');
+  const laptopList = document.getElementById('tourLaptopInstructions');
+  const mobileList = document.getElementById('tourMobileInstructions');
+
+  const isDesk = currentTourDeviceTab === 'desk';
+
+  if (deskTab) {
+    deskTab.className = isDesk 
+      ? 'px-1.5 py-0.5 text-[8px] font-arcade border border-[#17120f] bg-[#fce566] text-[#17120f] font-bold cursor-pointer'
+      : 'px-1.5 py-0.5 text-[8px] font-arcade border border-[#17120f] bg-[#fffdf1] text-[#17120f] cursor-pointer';
+  }
+  if (mobTab) {
+    mobTab.className = !isDesk
+      ? 'px-1.5 py-0.5 text-[8px] font-arcade border border-[#17120f] bg-[#fce566] text-[#17120f] font-bold cursor-pointer'
+      : 'px-1.5 py-0.5 text-[8px] font-arcade border border-[#17120f] bg-[#fffdf1] text-[#17120f] cursor-pointer';
+  }
+  if (labelEl) {
+    labelEl.textContent = isDesk ? 'DESKTOP / LAPTOP CONTROLS' : 'MOBILE TOUCH CONTROLS';
+  }
+
+  const items = isDesk ? step.laptop : step.mobile;
+  if (activeList) {
+    activeList.innerHTML = items.map(item => `<div>${item}</div>`).join('');
+  }
+  if (laptopList) {
+    laptopList.innerHTML = step.laptop.map(item => `<div>${item}</div>`).join('');
+  }
+  if (mobileList) {
+    mobileList.innerHTML = step.mobile.map(item => `<div>${item}</div>`).join('');
+  }
+}
+
 function renderWorkspaceTourStep(stepIndex) {
   const step = WORKSPACE_TOUR_STEPS[stepIndex];
   if (!step) return;
@@ -3296,15 +3371,7 @@ function renderWorkspaceTourStep(stepIndex) {
   const summaryEl = document.getElementById('tourStepSummary');
   if (summaryEl) summaryEl.textContent = step.summary;
 
-  const laptopList = document.getElementById('tourLaptopInstructions');
-  if (laptopList) {
-    laptopList.innerHTML = step.laptop.map(item => `<div>${item}</div>`).join('');
-  }
-
-  const mobileList = document.getElementById('tourMobileInstructions');
-  if (mobileList) {
-    mobileList.innerHTML = step.mobile.map(item => `<div>${item}</div>`).join('');
-  }
+  updateTourInstructionsUI();
 
   const proTipText = document.getElementById('tourProTipText');
   if (proTipText) proTipText.textContent = step.proTip;
@@ -3335,6 +3402,8 @@ if (typeof window !== 'undefined') {
   window.renderWorkspaceTourStep = renderWorkspaceTourStep;
   window.updateTourSpotlight = updateTourSpotlight;
   window.pingTourTarget = pingTourTarget;
+  window.switchTourDeviceTab = switchTourDeviceTab;
+  window.updateTourInstructionsUI = updateTourInstructionsUI;
 }
 if (typeof global !== 'undefined') {
   global.maybeShowOnboardingDisclaimer = maybeShowOnboardingDisclaimer;
@@ -3347,6 +3416,8 @@ if (typeof global !== 'undefined') {
   global.renderWorkspaceTourStep = renderWorkspaceTourStep;
   global.updateTourSpotlight = updateTourSpotlight;
   global.pingTourTarget = pingTourTarget;
+  global.switchTourDeviceTab = switchTourDeviceTab;
+  global.updateTourInstructionsUI = updateTourInstructionsUI;
 }
 
 function signOut() {

@@ -3715,82 +3715,78 @@
     </svg>
 
     <!-- Main Tactical Flight Manual Card -->
-    <div id="tourCard" class="relative z-[20] pointer-events-auto max-w-[620px] w-full max-h-[92vh] flex flex-col bg-[#fff4c9] border-[3px] border-[#17120f] shadow-[8px_8px_0_#17120f] font-mono text-[#17120f] overflow-hidden select-none" style="transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+    <div id="tourCard" class="relative z-[20] pointer-events-auto w-full max-w-[380px] xl:max-w-[360px] max-h-[82vh] flex flex-col bg-[#fff4c9] border-[3px] border-[#17120f] shadow-[8px_8px_0_#17120f] font-mono text-[#17120f] overflow-hidden select-none" style="transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
       
       <!-- Top Title & Flight Manual Header -->
-      <div style="background: #17120f !important; color: #fce566 !important;" class="p-3 sm:p-4 border-b-[3px] border-[#17120f] flex items-center justify-between gap-2 shrink-0">
+      <div style="background: #17120f !important; color: #fce566 !important;" class="p-2.5 sm:p-3 border-b-[3px] border-[#17120f] flex items-center justify-between gap-2 shrink-0">
         <div class="flex items-center gap-2 flex-wrap">
-          <span id="tourStepBadge" class="px-2 py-0.5 font-arcade text-[9px] bg-[#fce566] text-[#17120f] font-bold border border-[#17120f]">STEP 1 OF 5</span>
-          <span id="tourTargetIndicator" class="px-2 py-0.5 font-arcade text-[9px] bg-[#4deeea]/20 text-[#4deeea] border border-[#4deeea] font-bold hidden sm:inline-block">[RADAR] TARGET: COLUMN 1 QUEUE</span>
+          <span id="tourStepBadge" class="px-1.5 py-0.5 font-arcade text-[9px] bg-[#fce566] text-[#17120f] font-bold border border-[#17120f]">STEP 1 OF 5</span>
+          <span id="tourTargetIndicator" class="px-1.5 py-0.5 font-arcade text-[8px] bg-[#4deeea]/20 text-[#4deeea] border border-[#4deeea] font-bold hidden sm:inline-block">[RADAR] TARGET</span>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1.5">
           <!-- Step indicator dots -->
-          <div id="tourStepDots" class="flex items-center gap-1.5 mr-2">
+          <div id="tourStepDots" class="flex items-center gap-1 mr-1">
             <!-- 5 dots populated dynamically -->
           </div>
-          <button type="button" onclick="closeWorkspaceTour(true)" class="px-2 py-1 bg-transparent hover:bg-white/20 text-[#fce566] text-[9px] font-arcade border border-[#fce566]/40 transition cursor-pointer" title="Exit Walkthrough">
-            ✕ SKIP
+          <button type="button" onclick="closeWorkspaceTour(true)" class="px-1.5 py-0.5 bg-transparent hover:bg-white/20 text-[#fce566] text-[8px] font-arcade border border-[#fce566]/40 transition cursor-pointer" title="Exit Walkthrough">
+            [X] CLOSE
           </button>
         </div>
       </div>
 
       <!-- Scrollable Main Tour Content -->
-      <div class="p-4 sm:p-5 space-y-3.5 overflow-y-auto custom-scrollbar flex-1">
+      <div class="p-3 sm:p-3.5 space-y-2.5 overflow-y-auto custom-scrollbar flex-1">
         
         <!-- Tactical Visual ASCII / Mini-HUD Preview Box -->
-        <div id="tourVisualBox" class="p-2.5 sm:p-3 bg-[#17120f] text-[#fce566] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] font-mono text-[10px] leading-tight overflow-x-auto whitespace-pre">
+        <div id="tourVisualBox" class="p-2 bg-[#17120f] text-[#fce566] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-mono text-[9px] leading-tight overflow-x-auto whitespace-pre">
           <!-- Dynamically populated with step visual UI diagram -->
         </div>
 
         <!-- Step Title & High-Signal Summary -->
-        <div class="space-y-1">
-          <h3 id="tourStepTitle" class="font-arcade text-xs sm:text-sm font-bold text-[#17120f] uppercase flex items-center gap-2">
+        <div class="space-y-0.5">
+          <h3 id="tourStepTitle" class="font-arcade text-xs font-bold text-[#17120f] uppercase flex items-center gap-2">
             <!-- Dynamically populated -->
           </h3>
-          <p id="tourStepSummary" class="text-[11px] leading-relaxed text-[#17120f]/90">
+          <p id="tourStepSummary" class="text-[10px] leading-relaxed text-[#17120f]/90">
             <!-- Dynamically populated -->
           </p>
         </div>
 
         <!-- Co-Pilot Status & Target Re-Focus Bar -->
-        <div class="p-2 bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] flex items-center justify-between gap-2">
-          <div class="text-[10px] font-mono flex items-center gap-1.5 min-w-0">
+        <div class="p-1.5 bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] flex items-center justify-between gap-2">
+          <div class="text-[9px] font-mono flex items-center gap-1.5 min-w-0">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
             <span id="tourTargetSubtext" class="truncate text-[#17120f]/80">BB-8 co-pilot synchronized with active sector</span>
           </div>
-          <button type="button" onclick="pingTourTarget()" class="px-2.5 py-1 bg-[#fce566] hover:bg-[#ebd34f] text-[#17120f] border border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[9px] font-bold transition flex items-center gap-1 shrink-0 cursor-pointer active:translate-x-[1px] active:translate-y-[1px]" title="Re-center focus on target element">
+          <button type="button" onclick="pingTourTarget()" class="px-2 py-0.5 bg-[#fce566] hover:bg-[#ebd34f] text-[#17120f] border border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[8px] font-bold transition flex items-center gap-1 shrink-0 cursor-pointer active:translate-x-[1px] active:translate-y-[1px]" title="Re-center focus on target element">
             <span>[TARGET]</span> <span>FOCUS</span>
           </button>
         </div>
 
-        <!-- Dual Guidance: Laptop vs Mobile Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-          <!-- Laptop Experience Card -->
-          <div class="p-2.5 bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1">
-            <div class="font-arcade text-[9px] font-bold text-[#17120f] flex items-center gap-1 border-b border-[#17120f]/20 pb-1">
-              <span>[DESK]</span> <span>LAPTOP / DESKTOP VIEW</span>
+        <!-- Adaptive Guidance: Laptop / Mobile Device View -->
+        <div class="p-2 bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1.5">
+          <div class="flex items-center justify-between border-b border-[#17120f]/20 pb-1">
+            <div class="font-arcade text-[8px] font-bold text-[#17120f] flex items-center gap-1">
+              <span>[RADAR]</span> <span id="tourGuidanceDeviceLabel">DESKTOP / LAPTOP CONTROLS</span>
             </div>
-            <div id="tourLaptopInstructions" class="text-[10px] space-y-1 text-[#17120f]/90 leading-snug">
-              <!-- Dynamically populated -->
-            </div>
-          </div>
-
-          <!-- Mobile Experience Card -->
-          <div class="p-2.5 bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1">
-            <div class="font-arcade text-[9px] font-bold text-[#17120f] flex items-center gap-1 border-b border-[#17120f]/20 pb-1">
-              <span>[MOB]</span> <span>MOBILE PHONE VIEW</span>
-            </div>
-            <div id="tourMobileInstructions" class="text-[10px] space-y-1 text-[#17120f]/90 leading-snug">
-              <!-- Dynamically populated -->
+            <div class="flex items-center gap-1">
+              <button type="button" id="tourTabDesk" onclick="switchTourDeviceTab('desk')" class="px-1.5 py-0.5 text-[8px] font-arcade border border-[#17120f] bg-[#fce566] text-[#17120f] font-bold cursor-pointer" title="Desktop hotkeys & mouse controls">DESK</button>
+              <button type="button" id="tourTabMob" onclick="switchTourDeviceTab('mob')" class="px-1.5 py-0.5 text-[8px] font-arcade border border-[#17120f] bg-[#fffdf1] text-[#17120f] cursor-pointer" title="Mobile touch controls">MOB</button>
             </div>
           </div>
+          <div id="tourActiveInstructions" class="text-[9.5px] space-y-1 text-[#17120f]/90 leading-snug">
+            <!-- Dynamically populated based on active tab -->
+          </div>
+          <!-- Backward-compatible test elements -->
+          <div id="tourLaptopInstructions" class="hidden"></div>
+          <div id="tourMobileInstructions" class="hidden"></div>
         </div>
 
         <!-- Sovereign Pro Tip / Commercial Edge -->
-        <div class="p-2 bg-[#fce566] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] flex items-start gap-2">
-          <span class="text-xs shrink-0 font-mono text-[#fce566]">[FOCUS]</span>
-          <div class="text-[10px] leading-snug text-[#17120f]">
-            <strong class="font-arcade text-[9px] uppercase tracking-wider block">PRO-TIP FOR CALLERS:</strong>
+        <div class="p-1.5 bg-[#fce566] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] flex items-start gap-1.5">
+          <span class="text-[9px] shrink-0 font-arcade text-[#17120f] font-bold">[TIP]</span>
+          <div class="text-[9.5px] leading-snug text-[#17120f]">
+            <strong class="font-arcade text-[8px] uppercase tracking-wider block">PRO-TIP FOR CALLERS:</strong>
             <span id="tourProTipText"></span>
           </div>
         </div>
@@ -3798,16 +3794,16 @@
       </div>
 
       <!-- Action Footer (Back / Next / Finish) -->
-      <div class="p-3 sm:p-4 bg-[#fffdf1] border-t-2 border-[#17120f] flex items-center justify-between gap-3 shrink-0">
-        <button id="tourBtnPrev" type="button" onclick="prevWorkspaceTourStep()" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#fffdf1] hover:bg-[#e2e3e5] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-[9px] font-bold transition flex items-center gap-1 cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
+      <div class="p-2.5 sm:p-3 bg-[#fffdf1] border-t-2 border-[#17120f] flex items-center justify-between gap-2 shrink-0">
+        <button id="tourBtnPrev" type="button" onclick="prevWorkspaceTourStep()" class="px-3 py-1 bg-[#fffdf1] hover:bg-[#e2e3e5] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-[9px] font-bold transition flex items-center gap-1 cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
           <span>←</span> <span>PREV</span>
         </button>
 
-        <div class="text-[9px] font-mono text-[#17120f]/70 hidden sm:block">
-          Use <kbd class="px-1 bg-[#17120f] text-[#fce566] font-bold">←</kbd> <kbd class="px-1 bg-[#17120f] text-[#fce566] font-bold">→</kbd> or <kbd class="px-1 bg-[#17120f] text-[#fce566] font-bold">ESC</kbd>
+        <div class="text-[8px] font-mono text-[#17120f]/70 hidden sm:block">
+          <kbd class="px-1 bg-[#17120f] text-[#fce566] font-bold">←</kbd> <kbd class="px-1 bg-[#17120f] text-[#fce566] font-bold">→</kbd> or <kbd class="px-1 bg-[#17120f] text-[#fce566] font-bold">ESC</kbd>
         </div>
 
-        <button id="tourBtnNext" type="button" onclick="nextWorkspaceTourStep()" class="px-4 py-1.5 sm:px-5 sm:py-2 bg-[#17120f] hover:bg-black text-[#fce566] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-[10px] font-bold transition flex items-center gap-1.5 cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
+        <button id="tourBtnNext" type="button" onclick="nextWorkspaceTourStep()" class="px-3.5 py-1.5 bg-[#17120f] hover:bg-black text-[#fce566] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-[9px] font-bold transition flex items-center gap-1 cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
           <span id="tourBtnNextText">NEXT STEP</span> <span>→</span>
         </button>
       </div>
