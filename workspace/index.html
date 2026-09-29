@@ -838,12 +838,18 @@
       display: none !important;
     }
 
-    /* Subsystem 21: Real 3D BB-8 Foreground Elevation During Guided Tour */
+    /* Subsystem 21: Real 3D BB-8 Foreground Elevation & Spotlight Clarity */
     body.tour-active #three-canvas {
       z-index: 1065 !important;
     }
     body.tour-active .companion-bubble {
       z-index: 1066 !important;
+    }
+    .tour-focus-target {
+      position: relative !important;
+      z-index: 1061 !important;
+      box-shadow: 0 0 0 3px #fce566, 0 8px 32px rgba(23, 18, 15, 0.45) !important;
+      transition: box-shadow 0.3s ease !important;
     }
     #tourTargetLaserBorder {
       animation: dashMove 24s linear infinite;
@@ -3680,20 +3686,20 @@
     </div>
   </div>
 
-  <!-- INTERACTIVE WORKSTATION GUIDED WALKTHROUGH OVERLAY (SUBSYSTEM 21: BB-8 ASTROMECH LASER TOUR) -->
-  <div id="workspaceTourModal" class="hidden fixed inset-0 z-[1060] bg-[#17120f]/60 backdrop-blur-[2px] flex items-center justify-center p-3 sm:p-4 overflow-hidden select-none" role="dialog" aria-modal="true" aria-labelledby="tourStepTitle">
+  <!-- INTERACTIVE WORKSTATION GUIDED WALKTHROUGH OVERLAY (SUBSYSTEM 21: CO-PILOT GUIDED WALKTHROUGH) -->
+  <div id="workspaceTourModal" class="hidden fixed inset-0 z-[1060] pointer-events-none flex items-center justify-center p-3 sm:p-4 overflow-hidden select-none" role="dialog" aria-modal="true" aria-labelledby="tourStepTitle">
     
-    <!-- 60 FPS SVG Motion Spotlight & Hard-Light Laser Canvas -->
+    <!-- 60 FPS SVG Motion Spotlight & Ambient Mask Canvas -->
     <svg id="tourSpotlightSvg" class="absolute inset-0 w-full h-full pointer-events-none z-[1]" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <mask id="tourSpotlightMask">
-          <!-- Opaque dim base -->
+          <!-- Opaque white base = dimmed background -->
           <rect width="100%" height="100%" fill="white" />
-          <!-- Black cutout reveals the live highlighted UI element -->
-          <rect id="tourSpotlightCutout" x="0" y="0" width="0" height="0" rx="6" ry="6" fill="black" style="transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);" />
+          <!-- Black cutout reveals the live highlighted UI element with 100% crystal clarity -->
+          <rect id="tourSpotlightCutout" x="0" y="0" width="0" height="0" rx="6" ry="6" fill="black" style="transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);" />
         </mask>
         <filter id="tourLaserGlow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
             <feMergeNode in="SourceGraphic" />
@@ -3701,15 +3707,15 @@
         </filter>
       </defs>
 
-      <!-- Dimmed backdrop with radial mask cutout -->
-      <rect width="100%" height="100%" fill="#17120f" opacity="0.8" mask="url(#tourSpotlightMask)" />
+      <!-- Dimmed backdrop covering only the NON-highlighted area (clean 60% ink wash) -->
+      <rect width="100%" height="100%" fill="#17120f" opacity="0.65" mask="url(#tourSpotlightMask)" />
 
-      <!-- Pulsing Cyan Boundary around Highlighted Element -->
-      <rect id="tourTargetLaserBorder" x="0" y="0" width="0" height="0" rx="6" ry="6" fill="none" stroke="#4deeea" stroke-width="2.5" stroke-dasharray="8 4" filter="url(#tourLaserGlow)" style="transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);" />
+      <!-- Pulsing Sovereign Gold Boundary around Highlighted Element -->
+      <rect id="tourTargetLaserBorder" x="0" y="0" width="0" height="0" rx="6" ry="6" fill="none" stroke="#fce566" stroke-width="3" stroke-dasharray="8 4" filter="url(#tourLaserGlow)" style="transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);" />
     </svg>
 
     <!-- Main Tactical Flight Manual Card -->
-    <div id="tourCard" class="relative z-[20] max-w-[620px] w-full max-h-[92vh] flex flex-col bg-[#fff4c9] border-[3px] border-[#17120f] shadow-[8px_8px_0_#17120f] font-mono text-[#17120f] overflow-hidden select-none" style="transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+    <div id="tourCard" class="relative z-[20] pointer-events-auto max-w-[620px] w-full max-h-[92vh] flex flex-col bg-[#fff4c9] border-[3px] border-[#17120f] shadow-[8px_8px_0_#17120f] font-mono text-[#17120f] overflow-hidden select-none" style="transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
       
       <!-- Top Title & Flight Manual Header -->
       <div style="background: #17120f !important; color: #fce566 !important;" class="p-3 sm:p-4 border-b-[3px] border-[#17120f] flex items-center justify-between gap-2 shrink-0">
@@ -3746,14 +3752,14 @@
           </p>
         </div>
 
-        <!-- Interactive Laser Focus Ping Bar -->
+        <!-- Co-Pilot Status & Target Re-Focus Bar -->
         <div class="p-2 bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] flex items-center justify-between gap-2">
           <div class="text-[10px] font-mono flex items-center gap-1.5 min-w-0">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
-            <span id="tourTargetSubtext" class="truncate text-[#17120f]/80">BB-8 laser locked onto active workspace sector</span>
+            <span id="tourTargetSubtext" class="truncate text-[#17120f]/80">BB-8 co-pilot synchronized with active sector</span>
           </div>
-          <button type="button" onclick="pingTourTarget()" class="px-2.5 py-1 bg-[#4deeea] hover:bg-[#38d4d0] text-[#17120f] border border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[9px] font-bold transition flex items-center gap-1 shrink-0 cursor-pointer active:translate-x-[1px] active:translate-y-[1px]" title="Re-pulse laser beam onto target element">
-            <span>[RADAR]</span> <span>FOCUS</span>
+          <button type="button" onclick="pingTourTarget()" class="px-2.5 py-1 bg-[#fce566] hover:bg-[#ebd34f] text-[#17120f] border border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[9px] font-bold transition flex items-center gap-1 shrink-0 cursor-pointer active:translate-x-[1px] active:translate-y-[1px]" title="Re-center focus on target element">
+            <span>[TARGET]</span> <span>FOCUS</span>
           </button>
         </div>
 

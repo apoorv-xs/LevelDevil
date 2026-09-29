@@ -917,9 +917,18 @@ onLoad(() => {
     onUpdate(() => {
         const dtTotal = dt();
         const currentScrollY = window.scrollY || window.pageYOffset || 0;
+        const isTourActive = typeof document !== "undefined" && document.body?.classList?.contains("tour-active");
+
+        if (isTourActive && player) {
+            player.vy = 0;
+            if (player.vel) {
+                player.vel.x = 0;
+                player.vel.y = 0;
+            }
+        }
 
         // Pillar 1 & 2: 3-Sub-Step Vertical Integration with Swept Interval Collision
-        if (isPhysicsActive && !isRespawning && !window.isAirborneGlide && dtTotal > 0) {
+        if (isPhysicsActive && !isRespawning && !window.isAirborneGlide && !isTourActive && dtTotal > 0) {
             const clampedDt = Math.min(dtTotal, 0.05);
             const SUB_STEPS = 3;
             const subDt = clampedDt / SUB_STEPS;
@@ -1123,7 +1132,7 @@ onLoad(() => {
         }
 
         // Autonomous System 1 Decision Brain Execution
-        if (!window.isAirborneGlide && window.controlMode === "autonomous" && isPhysicsActive && !isRespawning && player) {
+        if (!window.isAirborneGlide && !isTourActive && window.controlMode === "autonomous" && isPhysicsActive && !isRespawning && player) {
             _reusableTelemetry.scrollY = currentScrollY;
             _reusableTelemetry.viewportFocusY = currentScrollY + window.innerHeight * 0.45;
             _reusableTelemetry.viewportHeight = window.innerHeight;

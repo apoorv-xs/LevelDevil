@@ -2826,7 +2826,7 @@ const WORKSPACE_TOUR_STEPS = [
     badge: 'STEP 1 OF 5 // QUEUE',
     targetSelector: '#queuePane, #queueList, #queueListContainer',
     targetLabel: 'COLUMN 1 // TERRITORY QUEUE & ZOMBIE RADAR',
-    targetSubtext: 'BB-8 aiming hard-light laser at active priority queue',
+    targetSubtext: 'BB-8 co-pilot synchronized with active priority queue',
     bb8Sector: '// QUEUE RADAR LOCKED',
     title: '1. Territory Queue & Zombie Radar',
     summary: 'The workstation prioritizes 65 curated enterprise prospects. Overdue and cold leads automatically float to the top so you never lose high-intent deals.',
@@ -3066,13 +3066,24 @@ function updateTourSpotlight(stepIndex) {
     border.setAttribute('height', String(h));
   }
 
-  // Guide the Authentic 3D BB-8 Droid to the Active Tour Target
+  // Elevate live target element to foreground for 100% crystal clarity
+  if (typeof document !== 'undefined' && typeof document.querySelectorAll === 'function') {
+    document.querySelectorAll('.tour-focus-target').forEach(el => {
+      el.classList.remove('tour-focus-target');
+    });
+    if (targetEl && targetEl.classList) {
+      targetEl.classList.add('tour-focus-target');
+    }
+  }
+
+  // Guide the Authentic 3D BB-8 Droid to Perch on the Active Tour Target
   if (typeof window !== 'undefined' && typeof window.smoothGlideTo === 'function') {
     const isMobileView = winW < 1024;
-    const bb8TargetX = Math.round(isMobileView ? (x + w * 0.5) : (x + w + 45));
-    const bb8TargetY = Math.round(y + (window.scrollY || 0) + Math.min(80, h * 0.35));
+    // Perch BB-8 on the top-right corner of the active section
+    const bb8TargetX = Math.round(isMobileView ? (x + w * 0.5) : Math.max(x + 50, x + w - 35));
+    const bb8TargetY = Math.max(70, Math.round(y - 12));
     try {
-      window.smoothGlideTo(bb8TargetX, bb8TargetY, 500, () => {
+      window.smoothGlideTo(bb8TargetX, bb8TargetY, 450, () => {
         if (window.Player3D?.nod) window.Player3D.nod();
         if (window.System1Brain?.emitThought) {
           window.System1Brain.emitThought(step.bb8Sector || step.title, 4000);
@@ -3187,6 +3198,11 @@ function closeWorkspaceTour(markCompleted = true) {
   }
   if (typeof document !== 'undefined' && document.body?.classList) {
     document.body.classList.remove('tour-active');
+  }
+  if (typeof document !== 'undefined' && typeof document.querySelectorAll === 'function') {
+    document.querySelectorAll('.tour-focus-target').forEach(el => {
+      el.classList.remove('tour-focus-target');
+    });
   }
   if (markCompleted) {
     localStorage.setItem('sprintdial_tour_completed', 'true');
