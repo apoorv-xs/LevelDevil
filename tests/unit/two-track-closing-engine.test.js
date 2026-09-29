@@ -90,7 +90,7 @@ describe("Two-Track Deal Closing Engine & Sovereign Payment Terminal", () => {
     });
 
     it("supports closed_won in queue rendering and status matching", () => {
-      expect(workspaceApp).toContain('💰 WON');
+      expect(workspaceApp).toContain('[SOW] WON');
       expect(workspaceApp).toContain("p.status === 'closed_won'");
     });
   });

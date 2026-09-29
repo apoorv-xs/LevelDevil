@@ -929,13 +929,13 @@
       </div>
 
       <!-- Interactive BB-8 Co-Pilot Tour Trigger -->
-      <button id="btnBB8Guide" class="topbar-btn guide-btn" onclick="window.System1Brain?.showGuidanceHUD?.()" aria-label="Summon BB-8 Guide" title="Summon BB-8 Guide">[ 🤖<span class="guide-label hidden xl:inline"> GUIDE</span> ]</button>
+      <button id="btnBB8Guide" class="topbar-btn guide-btn" onclick="window.System1Brain?.showGuidanceHUD?.()" aria-label="Summon BB-8 Guide" title="Summon BB-8 Guide">[ ◈<span class="guide-label hidden xl:inline"> GUIDE</span> ]</button>
 
       <!-- Workstation Guided Tour Trigger -->
-      <button id="btnWorkspaceTour" class="topbar-btn tour-btn hide-mobile" onclick="openWorkspaceTour(0)" aria-label="Workstation Guided Tour" title="Workstation Tour & Caller Flight Manual">[ 💡<span class="tour-label hidden lg:inline"> TOUR</span> ]</button>
+      <button id="btnWorkspaceTour" class="topbar-btn tour-btn hide-mobile" onclick="openWorkspaceTour(0)" aria-label="Workstation Guided Tour" title="Workstation Tour & Caller Flight Manual">[ ▷<span class="tour-label hidden lg:inline"> TOUR</span> ]</button>
 
       <!-- Audio SFX Toggle -->
-      <button id="sfx-toggle-btn" class="topbar-btn sfx-btn" aria-label="Toggle Sound Effects" title="Toggle Sound Effects">[ 🔊<span class="sfx-label hidden xl:inline"> SFX</span> ]</button>
+      <button id="sfx-toggle-btn" class="topbar-btn sfx-btn" aria-label="Toggle Sound Effects" title="Toggle Sound Effects">[ AUDIO<span class="sfx-label hidden xl:inline"> // ON</span> ]</button>
 
       <!-- Sign In Trigger (Visible when unauthenticated / guest) -->
       <button id="workspaceSignInBtnHeader" onclick="openAuthGate()" class="topbar-btn topbar-btn-primary flex items-center gap-1.5 cursor-pointer" title="Sign in with Google">
@@ -950,13 +950,13 @@
       </button>
 
       <!-- Mobile Menu Trigger -->
-      <button id="mobile-menu-btn" class="topbar-btn mobile-menu-btn" aria-label="Open Navigation Menu" title="Open Navigation Menu" aria-expanded="false" aria-controls="mobile-menu-drawer" onclick="window.toggleMobileMenu?.()">[ ☰<span class="menu-label"> MENU</span> ]</button>
+      <button id="mobile-menu-btn" class="topbar-btn mobile-menu-btn" aria-label="Open Navigation Menu" title="Open Navigation Menu" aria-expanded="false" aria-controls="mobile-menu-drawer" onclick="window.toggleMobileMenu?.()">[ =<span class="menu-label"> MENU</span> ]</button>
 
       <!-- User Chip & Profile Dropdown Container (Gated to Authenticated Session) -->
       <div id="userChipHeader" class="topbar-user-container hidden relative items-center gap-2 pl-2 border-l-2 border-[#17120f]">
         <!-- Partner Commission Wallet Trigger Pill -->
         <button id="topbarWalletPill" type="button" onclick="openPartnerWalletModal()" title="View Earned Commissions & UPI Payout Terminal" class="flex items-center gap-1.5 px-2.5 py-1 bg-[#fce566] hover:bg-[#ffe040] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[10px] font-bold transition select-none cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
-          <span>💰</span>
+          <span>[VAL]</span>
           <span id="topbarWalletAmount">₹0</span>
           <span class="text-[7.5px] font-mono opacity-80 uppercase tracking-tight hidden sm:inline">EARNED</span>
         </button>
@@ -993,7 +993,7 @@
           <div class="space-y-2">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-1.5 flex-wrap">
-                <span id="profileCockpitTitle" class="font-arcade text-[9px] text-[#17120f] font-bold uppercase tracking-wider">📊 SALES TELEMETRY</span>
+                <span id="profileCockpitTitle" class="font-arcade text-[9px] text-[#17120f] font-bold uppercase tracking-wider">TELEMETRY // REVENUE RADAR</span>
                 <span id="profileStreakBadge" class="hidden text-[8px] font-mono bg-[#17120f] text-[#fce566] border border-[#17120f] px-1 py-0.5"></span>
                 <span id="profileMilestoneBadge" class="hidden text-[8px] font-arcade border border-[#17120f] px-1 py-0.5"></span>
               </div>
@@ -1005,7 +1005,7 @@
               <!-- Card 1: Total Calls / Dials -->
               <div class="p-2 bg-[#fff4c9] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1">
                 <div class="flex items-center justify-between text-[9px] font-arcade">
-                  <span id="profileCard1Title">📡 OUTREACH</span>
+                  <span id="profileCard1Title">OUTREACH // DIALS</span>
                   <span id="profileDialsGoalText" class="font-mono text-[9px]">0/20</span>
                 </div>
                 <div class="font-arcade text-base font-black text-[#17120f]" id="profileDialsToday">0</div>
@@ -1017,7 +1017,7 @@
               <!-- Card 2: Successful / Booked -->
               <div class="p-2 bg-[#d4edda] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1">
                 <div class="flex items-center justify-between text-[9px] font-arcade text-[#155724]">
-                  <span id="profileCard2Title">🎉 BOOKED</span>
+                  <span id="profileCard2Title">CONVERTED // BOOKED</span>
                   <span id="profileWinRateBadge" class="font-mono text-[9px] font-bold">0% WIN</span>
                 </div>
                 <div class="font-arcade text-base font-black text-[#155724]" id="profileSuccessCount">0</div>
@@ -1027,7 +1027,7 @@
               <!-- Card 3: Rejections -->
               <div class="p-2 bg-[#f8d7da] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1">
                 <div class="flex items-center justify-between text-[9px] font-arcade text-[#721c24]">
-                  <span id="profileCard3Title">🛑 REJECTIONS</span>
+                  <span id="profileCard3Title">DISQUALIFIED // GATEKEEPER</span>
                 </div>
                 <div class="font-arcade text-base font-black text-[#721c24]" id="profileRejectionCount">0</div>
                 <p class="font-mono text-[9px] text-[#721c24] truncate" id="profileRejectionBreakdown">0 Disq • 0 Ineligible</p>
@@ -1047,10 +1047,10 @@
             <div id="ownerFleetSummaryStrip" class="hidden p-2.5 bg-[#17120f] text-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1" style="background: #17120f !important; color: #fffdf1 !important;">
               <div class="flex items-center justify-between text-[10px] font-arcade">
                 <span class="flex items-center gap-1.5 font-bold" style="color: #fce566 !important;">
-                  <span>👥</span><span>ACTIVE PARTNERS:</span>
+                  <span>›</span><span>PARTNERS // ACTIVE:</span>
                   <span id="ownerActivePartnersCount" class="font-mono font-bold px-1.5 py-0.5 rounded bg-white/20" style="color: #ffffff !important;">0</span>
                 </span>
-                <span id="ownerLeakRadarBadge" class="px-2 py-0.5 border font-mono text-[9px] font-bold" style="color: #86efac !important; background: #022c22 !important; border-color: #22c55e !important;">🟢 0 LEAK ALERTS</span>
+                <span id="ownerLeakRadarBadge" class="px-2 py-0.5 border font-mono text-[9px] font-bold" style="color: #86efac !important; background: #022c22 !important; border-color: #22c55e !important;">● 0 LEAK ALERTS</span>
               </div>
             </div>
 
@@ -1058,7 +1058,7 @@
             <div id="ownerSurveillanceStreamContainer" class="hidden space-y-1 pt-1 border-t-2 border-[#17120f]">
               <div class="flex items-center justify-between">
                 <span class="font-arcade text-[9px] text-[#17120f] font-bold flex items-center gap-1">
-                  <span>🚨</span><span>LIVE PARTNER SURVEILLANCE</span>
+                  <span>›</span><span>RADAR // PARTNER AUDIT TRAIL</span>
                 </span>
                 <span class="font-mono text-[8px] text-[#17120f]/70 animate-pulse">● LIVE</span>
               </div>
@@ -1073,10 +1073,10 @@
             <!-- Partner Controls (Visible for non-owner callers) -->
             <div id="callerActionButtons" class="grid grid-cols-2 gap-1.5">
               <button type="button" onclick="exportActiveQueueCsv()" title="Export current prospect radar queue to CSV spreadsheet" class="px-2 py-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-mono text-[10px] font-bold flex items-center justify-center gap-1 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
-                <span>📥</span> <span>Export CSV</span>
+                <span>[EXP]</span> <span>Export CSV</span>
               </button>
               <button id="btnResetShiftDials" type="button" onclick="resetShiftDials()" title="Reset shift counter to zero" class="px-2 py-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-mono text-[10px] font-bold flex items-center justify-center gap-1 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
-                <span>🔄</span> <span>Reset Counter</span>
+                <span>[RST]</span> <span>Reset Counter</span>
               </button>
             </div>
 
@@ -1084,22 +1084,22 @@
             <div id="ownerActionButtons" class="hidden space-y-1.5">
               <div class="grid grid-cols-2 gap-1.5">
                 <button type="button" onclick="openAdminSurveillanceLogs();" title="Jump directly to full partner surveillance logs in Admin Console" class="px-2 py-1.5 bg-[#fce566] hover:bg-[#ffe040] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[9px] font-bold flex items-center justify-center gap-1 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
-                  <span>🛡️</span> <span>AUDIT LOGS</span>
+                  <span>[LOG]</span> <span>AUDIT LOGS</span>
                 </button>
                 <button type="button" onclick="exportAuditLogsToCSV()" title="Export full partner activity & leak audit trail to CSV" class="px-2 py-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-mono text-[10px] font-bold flex items-center justify-center gap-1 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
-                  <span>📥</span> <span>Export Audit</span>
+                  <span>[EXP]</span> <span>Export Audit</span>
                 </button>
               </div>
             </div>
 
             <!-- Workstation Guided Tour Launcher -->
             <button id="btnDropdownTour" type="button" onclick="closeProfileDropdown(); openWorkspaceTour(0);" title="Re-launch interactive 5-step workstation tour" class="w-full px-2 py-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[10px] font-bold flex items-center justify-center gap-1.5 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
-              <span>💡</span> <span>WORKSTATION TOUR &amp; GUIDE</span>
+              <span>[DIR]</span> <span>WORKSTATION TOUR &amp; GUIDE</span>
             </button>
 
             <!-- Install Mobile App in Dropdown (Visible when verified) -->
             <button id="dropdownInstallAppBtn" type="button" onclick="closeProfileDropdown(); handleInstallAppClick();" class="hidden w-full px-2 py-1.5 bg-[#fce566] hover:bg-[#ffe040] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[10px] items-center justify-center gap-2 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
-              <span>📲</span> <span>INSTALL MOBILE APP</span>
+              <span>[APP]</span> <span>INSTALL MOBILE APP</span>
             </button>
 
             <!-- Secure Sign Out Button -->
@@ -1141,7 +1141,7 @@
   <div id="workspaceGateContainer" class="flex-1 overflow-y-auto flex items-center justify-center p-4 sm:p-8 bg-[#fff4c9]">
     <div class="max-w-xl w-full bg-[#fffdf1] border-[3px] border-[#17120f] shadow-[6px_6px_0_#17120f] p-6 sm:p-8 space-y-6 text-center" data-kaboom-body="true">
       <div class="inline-flex items-center gap-2 px-3 py-1 bg-[#fff1bd] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] text-[10px] font-arcade uppercase text-[#17120f]">
-        <span>🔒</span>
+        <span>[SEC]</span>
         <span>RESTRICTED ACCESS // CLIENT RADAR COCKPIT</span>
       </div>
 
@@ -1203,14 +1203,14 @@
           </div>
         </div>
         <button onclick="signOutGoogle()" class="px-2.5 py-1 text-[10px] font-arcade bg-[#fffdf1] hover:bg-[#f8d7da] hover:text-[#8f1727] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] transition cursor-pointer">
-          [ 🚪 Sign Out ]
+          [ SIGN OUT ]
         </button>
       </div>
 
       <!-- Clearance Notice Banner -->
       <div class="p-4 bg-[#fff1bd] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] space-y-2">
         <div class="flex items-center gap-2">
-          <span class="text-sm">🛡️</span>
+          <span class="text-sm">[AUTH]</span>
           <span class="font-arcade text-xs font-bold text-[#17120f] uppercase">Outreach Partner Access Required</span>
         </div>
         <p class="text-xs font-mono text-[#17120f]/80 leading-relaxed">
@@ -1222,7 +1222,7 @@
       <form id="portalApplicationForm" onsubmit="handleRepApplicationSubmit(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-arcade font-bold text-[#17120f] mb-1.5">
-            🎯 TARGET TERRITORY & VERTICAL
+            › TARGET TERRITORY & VERTICAL
           </label>
           <select id="portalApplicantTerritory" class="w-full bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] px-3 py-2 text-xs font-mono text-[#17120f] focus:outline-none focus:bg-[#fce566] transition">
             <option value="Kochi">Kochi — High-Value Architecture Studios, Dental Clinics, Luxury Retail</option>
@@ -1234,7 +1234,7 @@
 
         <div>
           <label class="block text-xs font-arcade font-bold text-[#17120f] mb-1.5">
-            ⚡ HOW WILL YOU INTRODUCE CLIENTS TO APOORV? (EXPERIENCE / APPROACH)
+            › HOW WILL YOU INTRODUCE CLIENTS TO APOORV? (EXPERIENCE / APPROACH)
           </label>
           <textarea 
             id="portalApplicantPitch" 
@@ -1246,7 +1246,7 @@
 
         <div>
           <label class="block text-xs font-arcade font-bold text-[#17120f] mb-1.5">
-            📱 WHATSAPP / CONTACT PHONE (OPTIONAL)
+            › WHATSAPP / CONTACT PHONE (OPTIONAL)
           </label>
           <input 
             type="text" 
@@ -1264,7 +1264,7 @@
           type="submit" 
           id="portalSubmitAppBtn" 
           class="w-full py-3 px-4 bg-[#fce566] hover:bg-[#ffe875] text-[#17120f] border-[3px] border-[#17120f] shadow-[4px_4px_0_#17120f] font-arcade text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0_#17120f]">
-          <span>🚀</span>
+          <span>[EXEC]</span>
           <span>APPLY FOR OUTREACH PARTNER ACCESS</span>
         </button>
       </form>
@@ -1331,7 +1331,7 @@
             onclick="exportActiveQueueCsv()" 
             title="Export current territory and filtered queue to CSV spreadsheet"
             class="py-1 px-2 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[9px] font-bold flex items-center justify-center gap-1 transition shrink-0 whitespace-nowrap">
-            <span>📥</span> <span>CSV</span>
+            <span>[CSV]</span> <span>CSV</span>
           </button>
         </div>
       </div>
@@ -1493,17 +1493,17 @@
         <div id="preCallIntelCard" class="studio-panel rounded-none p-3 sm:p-4 space-y-2 shrink-0 bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f]">
           <div class="flex items-center justify-between border-b border-[#17120f]/20 pb-1.5">
             <span class="font-arcade text-[10px] text-[#17120f] font-bold flex items-center gap-1.5">
-              <span>💡 PRE-CALL RECON & CONVERSATIONAL HOOK</span>
+              <span>[RECON] PRE-CALL HOOK</span>
             </span>
             <span class="text-[9px] font-mono text-[#17120f]/60 font-bold uppercase">10s Opening Pitch</span>
           </div>
           <div class="space-y-1.5 font-mono text-xs text-[#17120f]">
             <div class="flex items-start gap-2 bg-[#fff4c9] p-2 border border-[#17120f]/20">
-              <span class="text-emerald-700 font-bold shrink-0">🎯 TALKING ANGLE:</span>
+              <span class="text-emerald-700 font-bold shrink-0">› TALKING ANGLE:</span>
               <span id="preCallHookText" class="leading-relaxed">"Are most of your high-intent inquiries coming straight from your website or third-party aggregators?"</span>
             </div>
             <div class="flex items-start gap-2 bg-[#fffdf1] p-1.5 border border-[#17120f]/10 text-[11px] text-[#17120f]/80">
-              <span class="text-rose-700 font-bold shrink-0">⚡ REVENUE LEAK:</span>
+              <span class="text-rose-700 font-bold shrink-0">› REVENUE LEAK:</span>
               <span id="preCallBleedText" class="leading-relaxed">Cellular 4G drop-off on slow mobile loading; high aggregator commissions.</span>
             </div>
           </div>
@@ -1533,7 +1533,7 @@
             <!-- Header with Quick Hotkeys & Defense Label -->
             <div class="flex items-center justify-between">
               <span class="font-arcade text-[10px] text-[#17120f] font-bold flex items-center gap-1.5">
-                <span>🛡️ STRATEGIC POSITIONING & OBJECTION DEFENSE</span>
+                <span>[DEFENSE] STRATEGIC POSITIONING &amp; OBJECTION DEFENSE</span>
               </span>
               <div class="hidden sm:flex items-center gap-1 font-mono text-[9px] text-[#17120f]/60">
                 <span>HOTKEYS:</span>
@@ -1565,7 +1565,7 @@
                 </div>
                 <div class="flex items-center gap-1.5">
                   <button id="btnCallbackNudge" type="button" onclick="sendCallbackNudgeWhatsApp()" title="Send 1-Tap WhatsApp follow-up nudge to prospect" class="px-2 py-0.5 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center gap-1 cursor-pointer">
-                    <span>💬</span> <span>1-TAP NUDGE</span>
+                    <span>[WA]</span> <span>1-TAP NUDGE</span>
                   </button>
                   <span class="hud-precall-note text-[9px] font-mono text-[#17120f]/70 hidden sm:inline">Tap 'Call' or press 'D' to activate HUD</span>
                   <button type="button" id="btnToggleHUDSteps" onclick="toggleCallHUDSteps()" class="px-1.5 py-0.5 text-[9px] font-mono text-[#17120f] bg-[#fff1bd] hover:bg-[#fce566] border border-[#17120f] transition cursor-pointer" title="Toggle full HUD preview">
@@ -1589,16 +1589,16 @@
                   </div>
                   <div class="grid grid-cols-2 sm:grid-cols-4 gap-1">
                     <button type="button" id="btnReachDM" onclick="setCallReach('dm_connected')" class="reach-btn px-2 py-1.5 bg-[#fffdf1] hover:bg-[#d4edda] text-[#17120f] border border-[#17120f] font-mono text-[10px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Spoke to Decision Maker">
-                      <span>🟢</span> <span>Spoke to DM</span>
+                      <span>●</span> <span>Spoke to DM</span>
                     </button>
                     <button type="button" id="btnReachGK" onclick="setCallReach('gatekeeper')" class="reach-btn px-2 py-1.5 bg-[#fffdf1] hover:bg-[#fff3cd] text-[#17120f] border border-[#17120f] font-mono text-[10px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Gatekeeper / Reception">
-                      <span>🟡</span> <span>Gatekeeper</span>
+                      <span>▲</span> <span>Gatekeeper</span>
                     </button>
                     <button type="button" id="btnReachNoAns" onclick="setCallReach('no_answer')" class="reach-btn px-2 py-1.5 bg-[#fffdf1] hover:bg-[#e2e3e5] text-[#17120f] border border-[#17120f] font-mono text-[10px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="No Answer / Busy">
-                      <span>⚪</span> <span>No Answer</span>
+                      <span>○</span> <span>No Answer</span>
                     </button>
                     <button type="button" id="btnReachInvalid" onclick="setCallReach('invalid_number')" class="reach-btn px-2 py-1.5 bg-[#fffdf1] hover:bg-[#f8d7da] text-[#17120f] border border-[#17120f] font-mono text-[10px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Invalid / Disconnected #">
-                      <span>🔴</span> <span>Invalid #</span>
+                      <span>■</span> <span>Invalid #</span>
                     </button>
                   </div>
                 </div>
@@ -1614,16 +1614,16 @@
                   <!-- Dynamic Outcome Buttons Container -->
                   <div id="outcomeOptionsContainer" class="grid grid-cols-2 sm:grid-cols-4 gap-1">
                     <button type="button" id="btnOutcomeBooked" onclick="setCallOutcome('discovery_booked')" class="outcome-btn px-2 py-1.5 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Log Discovery Booked [Hotkey: 1]">
-                      <span>🏆</span> <span>[1] BOOKED</span>
+                      <span>[1]</span> <span>BOOKED</span>
                     </button>
                     <button type="button" id="btnOutcomeTeardown" onclick="setCallOutcome('teardown_sent')" class="outcome-btn px-2 py-1.5 bg-[#cce5ff] hover:bg-[#b8daff] text-[#004085] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Sent 3D Teardown">
-                      <span>🔗</span> <span>TEARDOWN</span>
+                      <span>[LINK]</span> <span>TEARDOWN</span>
                     </button>
                     <button type="button" id="btnOutcomeCallback" onclick="setCallOutcome('connected_callback')" class="outcome-btn px-2 py-1.5 bg-[#fff3cd] hover:bg-[#ffeeba] text-[#856404] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Log Callback Requested [Hotkey: 2]">
-                      <span>📅</span> <span>[2] CALLBACK</span>
+                      <span>[2]</span> <span>CALLBACK</span>
                     </button>
                     <button type="button" id="btnOutcomeDisqualified" onclick="setCallOutcome('not_interested')" class="outcome-btn px-2 py-1.5 bg-[#f8d7da] hover:bg-[#f5c6cb] text-[#721c24] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Log Disqualified [Hotkey: 3]">
-                      <span>❌</span> <span>[3] DISQUAL</span>
+                      <span>[3]</span> <span>DISQUAL</span>
                     </button>
                   </div>
                 </div>
@@ -1661,22 +1661,22 @@
             <!-- 6 Objection Soundboard Chips -->
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-1 pt-1 border-t border-[#17120f]/20">
               <button type="button" id="btnObj0" onclick="toggleObjection(0)" class="objection-btn text-left text-[10px] px-2 py-1 rounded-none bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono transition truncate" title="Send Email / Brochure">
-                📄 Email/Brochure
+                [OBJ] Email/Brochure
               </button>
               <button type="button" id="btnObj1" onclick="toggleObjection(1)" class="objection-btn text-left text-[10px] px-2 py-1 rounded-none bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono transition truncate" title="Have Agency / Web Guy">
-                🏢 Have Agency
+                [OBJ] Have Agency
               </button>
               <button type="button" id="btnObj2" onclick="toggleObjection(2)" class="objection-btn text-left text-[10px] px-2 py-1 rounded-none bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono transition truncate" title="Not Investing Right Now">
-                💰 Not Investing
+                [OBJ] Not Investing
               </button>
               <button type="button" id="btnObj3" onclick="toggleObjection(3)" class="objection-btn text-left text-[10px] px-2 py-1 rounded-none bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono transition truncate" title="Practo / Zomato Enough">
-                🏥 Practo/Zomato
+                [OBJ] Practo/Zomato
               </button>
               <button type="button" id="btnObj4" onclick="toggleObjection(4)" class="objection-btn text-left text-[10px] px-2 py-1 rounded-none bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono transition truncate" title="Nephew / Friend Built">
-                👨‍💻 Friend Built
+                [OBJ] Friend Built
               </button>
               <button type="button" id="btnObj5" onclick="toggleObjection(5)" class="objection-btn text-left text-[10px] px-2 py-1 rounded-none bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono transition truncate" title="Instagram is Enough">
-                📸 Instagram Only
+                [OBJ] Instagram Only
               </button>
             </div>
 
@@ -1687,7 +1687,7 @@
                 <div class="flex items-center gap-1.5">
                   <span id="objectionLangIndicator" class="font-mono text-[9px] text-[#17120f]/80 uppercase">English</span>
                   <button type="button" onclick="toggleObjectionLang()" class="px-1.5 py-0.5 bg-[#fffdf1] text-[#17120f] border border-[#17120f] font-mono text-[9px] font-bold hover:bg-white transition">
-                    🌐 EN/ML
+                    LANG // EN/ML
                   </button>
                   <button type="button" onclick="closeObjectionBox()" class="px-1.5 py-0.5 bg-[#17120f] text-[#fffdf1] font-mono text-[9px] font-bold hover:bg-black transition">
                     ✕
@@ -1731,7 +1731,7 @@
         <div class="studio-panel rounded-none p-4 sm:p-5 space-y-3">
           <div class="flex items-center justify-between border-b-2 border-[#17120f] pb-2">
             <h2 class="font-arcade text-xs uppercase tracking-wider text-[#17120f] flex items-center gap-2">
-              <span>⚡ Technical Vulnerabilities & Core Web Vitals</span>
+              <span>[VULN] Technical Vulnerabilities &amp; Core Web Vitals</span>
             </h2>
             <span class="text-[10px] font-arcade text-[#17120f] bg-[#fff1bd] border-2 border-[#17120f] px-2 py-0.5">Mobile 4G Benchmark</span>
           </div>
@@ -1748,7 +1748,7 @@
         <div class="studio-panel-elevated rounded-none p-4 sm:p-5 space-y-3">
           <div class="flex items-center justify-between border-b-2 border-[#17120f] pb-2">
             <h2 class="font-arcade text-xs uppercase tracking-wider text-[#17120f] flex items-center gap-2">
-              <span>🛠️ 3D WebUI & High-Impact Conversion Solutions</span>
+              <span>[SOLN] 3D WebUI &amp; High-Impact Conversion Solutions</span>
             </h2>
             <span class="text-[10px] font-arcade text-[#17120f] bg-[#fce566] border-2 border-[#17120f] px-2 py-0.5">Apoorv Engineering Moat</span>
           </div>
@@ -1806,16 +1806,16 @@
         <div class="dossier-header-strip flex items-center justify-between font-mono text-[11px] text-neutral-400 border-b border-white/[0.06] pb-2 gap-2 flex-wrap">
           <div class="flex bg-[#15161B] p-0.5 border border-white/[0.1] rounded-lg text-[10px] font-mono">
             <button id="dossierTabTalk" type="button" onclick="switchDossierTab('talk')" class="dossier-tab-btn active px-2.5 py-1 rounded font-bold text-white bg-white/[0.12] transition cursor-pointer">
-              🗣️ TALK ANGLES
+              TALK ANGLES
             </button>
             <button id="dossierTabAudit" type="button" onclick="switchDossierTab('audit')" class="dossier-tab-btn px-2.5 py-1 rounded font-medium text-neutral-400 hover:text-white transition cursor-pointer">
-              📊 RAW AUDIT
+              RAW AUDIT
             </button>
           </div>
 
           <div class="flex items-center gap-1.5">
             <button id="btnOpenJargonDecoder" type="button" onclick="showLaymanAnalogy('lcp')" class="px-2 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono text-[9.5px] font-bold transition flex items-center gap-1 cursor-pointer" title="Open Caller Jargon Decoder">
-              <span>💡</span> <span class="hidden sm:inline">DECODER</span>
+              <span>[?]</span> <span class="hidden sm:inline">DECODER</span>
             </button>
             <span class="text-[9.5px] text-neutral-400 font-mono hidden sm:inline">Telemetry</span>
             <button id="btnToggleDossierCollapse" type="button" onclick="toggleDossierCollapse()" class="text-neutral-400 hover:text-white text-xs px-2 py-0.5 border border-white/[0.1] rounded transition cursor-pointer" title="Collapse / Expand Dossier Pane">
@@ -1855,9 +1855,9 @@
                     <span>HEADLESS SPEED & INTAKE</span>
                   </div>
                   <div class="flex items-center gap-1">
-                    <button type="button" onclick="copyTalkTrack(1)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Copy to clipboard">📋 Copy</button>
-                    <button type="button" onclick="speakTalkTrack(1)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Listen Audio">🔊</button>
-                    <button type="button" onclick="showLaymanAnalogy('lcp')" class="px-1.5 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-[9px] font-mono transition cursor-pointer" title="Decode LCP">💡 ?</button>
+                    <button type="button" onclick="copyTalkTrack(1)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Copy to clipboard">[COPY]</button>
+                    <button type="button" onclick="speakTalkTrack(1)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Listen Audio">[PLAY]</button>
+                    <button type="button" onclick="showLaymanAnalogy('lcp')" class="px-1.5 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-[9px] font-mono transition cursor-pointer" title="Decode LCP">[?]</button>
                   </div>
                 </div>
                 <p id="callerIcebreakerText" class="text-xs text-neutral-200 leading-relaxed font-sans">
@@ -1873,9 +1873,9 @@
                     <span>CELLULAR CONVERSION BOTTLENECK</span>
                   </div>
                   <div class="flex items-center gap-1">
-                    <button type="button" onclick="copyTalkTrack(2)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Copy to clipboard">📋 Copy</button>
-                    <button type="button" onclick="speakTalkTrack(2)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Listen Audio">🔊</button>
-                    <button type="button" onclick="showLaymanAnalogy('lcp')" class="px-1.5 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-[9px] font-mono transition cursor-pointer" title="Decode Speed">💡 ?</button>
+                    <button type="button" onclick="copyTalkTrack(2)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Copy to clipboard">[COPY]</button>
+                    <button type="button" onclick="speakTalkTrack(2)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Listen Audio">[PLAY]</button>
+                    <button type="button" onclick="showLaymanAnalogy('lcp')" class="px-1.5 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-[9px] font-mono transition cursor-pointer" title="Decode Speed">[?]</button>
                   </div>
                 </div>
                 <p id="callerLaymanAnalogy" class="text-xs text-neutral-200 leading-relaxed font-sans">
@@ -1891,9 +1891,9 @@
                     <span>PRIVACY & DPDP FORM SHIELDING</span>
                   </div>
                   <div class="flex items-center gap-1">
-                    <button type="button" onclick="copyTalkTrack(3)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Copy to clipboard">📋 Copy</button>
-                    <button type="button" onclick="speakTalkTrack(3)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Listen Audio">🔊</button>
-                    <button type="button" onclick="showLaymanAnalogy('dpdp')" class="px-1.5 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-[9px] font-mono transition cursor-pointer" title="Decode DPDP">💡 ?</button>
+                    <button type="button" onclick="copyTalkTrack(3)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Copy to clipboard">[COPY]</button>
+                    <button type="button" onclick="speakTalkTrack(3)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Listen Audio">[PLAY]</button>
+                    <button type="button" onclick="showLaymanAnalogy('dpdp')" class="px-1.5 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-[9px] font-mono transition cursor-pointer" title="Decode DPDP">[?]</button>
                   </div>
                 </div>
                 <p id="callerSecurityHook" class="text-xs text-neutral-200 leading-relaxed font-sans">
@@ -1909,9 +1909,9 @@
                     <span>DIRECT INTAKE & 60 FPS ADVANTAGE</span>
                   </div>
                   <div class="flex items-center gap-1">
-                    <button type="button" onclick="copyTalkTrack(4)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Copy to clipboard">📋 Copy</button>
-                    <button type="button" onclick="speakTalkTrack(4)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Listen Audio">🔊</button>
-                    <button type="button" onclick="showLaymanAnalogy('webgl')" class="px-1.5 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-[9px] font-mono transition cursor-pointer" title="Decode WebGL">💡 ?</button>
+                    <button type="button" onclick="copyTalkTrack(4)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Copy to clipboard">[COPY]</button>
+                    <button type="button" onclick="speakTalkTrack(4)" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.1] text-neutral-400 hover:text-white text-[9px] font-mono transition cursor-pointer" title="Listen Audio">[PLAY]</button>
+                    <button type="button" onclick="showLaymanAnalogy('webgl')" class="px-1.5 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-[9px] font-mono transition cursor-pointer" title="Decode WebGL">[?]</button>
                   </div>
                 </div>
                 <p id="callerCompetitorEdge" class="text-xs text-neutral-200 leading-relaxed font-sans">
@@ -1927,14 +1927,14 @@
                 <span class="text-[9px] font-mono text-neutral-400">Click to decode</span>
               </div>
               <div class="flex flex-wrap gap-1">
-                <button type="button" onclick="showLaymanAnalogy('lcp')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">⚡ Speed (LCP)</button>
-                <button type="button" onclick="showLaymanAnalogy('dpdp')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">⚖️ DPDP Law</button>
-                <button type="button" onclick="showLaymanAnalogy('thumb')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">📱 Thumb-Zone</button>
-                <button type="button" onclick="showLaymanAnalogy('aggregator')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">💸 Aggregator</button>
-                <button type="button" onclick="showLaymanAnalogy('dom')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">📦 WP Bloat</button>
-                <button type="button" onclick="showLaymanAnalogy('friction')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">⏳ Friction</button>
-                <button type="button" onclick="showLaymanAnalogy('tls')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">🔒 TLS/SSL</button>
-                <button type="button" onclick="showLaymanAnalogy('headless')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">✨ 60 FPS Headless</button>
+                <button type="button" onclick="showLaymanAnalogy('lcp')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">[LCP] Speed</button>
+                <button type="button" onclick="showLaymanAnalogy('dpdp')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">[LAW] DPDP Law</button>
+                <button type="button" onclick="showLaymanAnalogy('thumb')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">[UI] Thumb-Zone</button>
+                <button type="button" onclick="showLaymanAnalogy('aggregator')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">[AGG] Aggregator</button>
+                <button type="button" onclick="showLaymanAnalogy('dom')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">[DOM] WP Bloat</button>
+                <button type="button" onclick="showLaymanAnalogy('friction')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">[UX] Friction</button>
+                <button type="button" onclick="showLaymanAnalogy('tls')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">[SEC] TLS/SSL</button>
+                <button type="button" onclick="showLaymanAnalogy('headless')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition cursor-pointer">[SLA] 60 FPS Headless</button>
               </div>
             </div>
           </div>
@@ -1950,7 +1950,7 @@
                     <span class="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0"></span>
                     <span>Revenue Leak</span>
                   </div>
-                  <button type="button" onclick="showLaymanAnalogy('aggregator')" class="text-amber-300 hover:text-amber-200 transition text-[9px] font-bold" title="Decode Aggregator Bleed">💡 ?</button>
+                  <button type="button" onclick="showLaymanAnalogy('aggregator')" class="text-amber-300 hover:text-amber-200 transition text-[9px] font-bold" title="Decode Aggregator Bleed">[?]</button>
                 </div>
                 <div id="revenueLeakBadge" class="font-bold text-xs text-white leading-tight">₹1,80,000/mo Leak</div>
                 <div class="text-[10px] text-neutral-400">Cellular 4G drop-off</div>
@@ -1963,7 +1963,7 @@
                     <span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span>
                     <span>DPDP Status</span>
                   </div>
-                  <button type="button" onclick="showLaymanAnalogy('dpdp')" class="text-amber-300 hover:text-amber-200 transition text-[9px] font-bold" title="Decode DPDP Compliance">💡 ?</button>
+                  <button type="button" onclick="showLaymanAnalogy('dpdp')" class="text-amber-300 hover:text-amber-200 transition text-[9px] font-bold" title="Decode DPDP Compliance">[?]</button>
                 </div>
                 <div id="dpdpComplianceBadge" class="font-bold text-xs text-white leading-tight">Non-Compliant</div>
                 <div id="dpdpRiskBadge" class="text-[10px] text-amber-400 font-medium">High Legal Risk</div>
@@ -1976,7 +1976,7 @@
                     <span class="w-1.5 h-1.5 rounded-full bg-neutral-400 shrink-0"></span>
                     <span>Thumb-Zone</span>
                   </div>
-                  <button type="button" onclick="showLaymanAnalogy('thumb')" class="text-amber-300 hover:text-amber-200 transition text-[9px] font-bold" title="Decode Thumb-Zone UX">💡 ?</button>
+                  <button type="button" onclick="showLaymanAnalogy('thumb')" class="text-amber-300 hover:text-amber-200 transition text-[9px] font-bold" title="Decode Thumb-Zone UX">[?]</button>
                 </div>
                 <div id="thumbZoneBadge" class="font-bold text-xs text-white leading-tight">No Sticky Bar</div>
                 <div class="text-[10px] text-neutral-400">Mobile Web UX</div>
@@ -1989,7 +1989,7 @@
                     <span class="w-1.5 h-1.5 rounded-full bg-neutral-400 shrink-0"></span>
                     <span>Friction</span>
                   </div>
-                  <button type="button" onclick="showLaymanAnalogy('friction')" class="text-amber-300 hover:text-amber-200 transition text-[9px] font-bold" title="Decode Booking Friction">💡 ?</button>
+                  <button type="button" onclick="showLaymanAnalogy('friction')" class="text-amber-300 hover:text-amber-200 transition text-[9px] font-bold" title="Decode Booking Friction">[?]</button>
                 </div>
                 <div id="bookingFrictionBadge" class="font-bold text-xs text-white leading-tight">7 Steps</div>
                 <div id="bookingSeverityBadge" class="text-[9.5px] text-amber-400 font-medium leading-tight truncate">Severe Drop-off</div>
@@ -2005,7 +2005,7 @@
               <div class="p-2.5 flex items-center justify-between">
                 <span class="text-[11px] font-mono text-neutral-400 flex items-center gap-1">
                   <span>Mobile Speed & LCP:</span>
-                  <button type="button" onclick="showLaymanAnalogy('lcp')" class="text-amber-300 hover:text-amber-200 transition text-[9px] font-bold" title="Decode LCP Speed">💡 ?</button>
+                  <button type="button" onclick="showLaymanAnalogy('lcp')" class="text-amber-300 hover:text-amber-200 transition text-[9px] font-bold" title="Decode LCP Speed">[?]</button>
                 </span>
                 <span class="font-mono text-[11px] text-white">
                   <strong id="speedScore" class="text-rose-400">32/100</strong> • <span id="lcpTime" class="text-neutral-300">4.1s</span>
@@ -2014,7 +2014,7 @@
               <div class="p-2.5 flex items-center justify-between">
                 <span class="text-[11px] font-mono text-neutral-400 flex items-center gap-1">
                   <span>Detected CMS:</span>
-                  <button type="button" onclick="showLaymanAnalogy('dom')" class="text-amber-300 hover:text-amber-200 transition text-[9px] font-bold" title="Decode WordPress Bloat">💡 ?</button>
+                  <button type="button" onclick="showLaymanAnalogy('dom')" class="text-amber-300 hover:text-amber-200 transition text-[9px] font-bold" title="Decode WordPress Bloat">[?]</button>
                 </span>
                 <span id="techStackBadge" class="font-mono text-[11px] text-neutral-200 truncate max-w-[160px]">WordPress / Elementor</span>
               </div>
@@ -2196,13 +2196,13 @@
       </div>
 
       <div class="text-xs font-mono text-neutral-300 leading-relaxed bg-[#101114] p-3 rounded-xl border border-white/5">
-        🔒 <strong class="text-white">Notice:</strong> The prospect radar and audit dossiers are restricted to verified outreach partners. Select your path below:
+        [RESTRICTED] <strong class="text-white">Notice:</strong> The prospect radar and audit dossiers are restricted to verified outreach partners. Select your path below:
       </div>
 
       <!-- Path 1: Apply as Outreach Partner -->
       <div id="repApplicationSection" class="bg-[#101114] border border-blue-900/30 rounded-xl p-4 space-y-3">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-mono text-white font-bold">⚡ Apply for Outreach Partner Access</span>
+          <span class="text-xs font-mono text-white font-bold">[ACCESS] Apply for Outreach Partner Access</span>
           <span class="text-[10px] font-mono text-blue-400 font-bold">15% Commission Affiliate</span>
         </div>
         <form id="repApplicationForm" onsubmit="handleRepApplicationSubmit(event)" class="space-y-3">
@@ -2224,18 +2224,18 @@
             <input type="text" id="applicantPhone" placeholder="+91 / +1 ..." class="w-full bg-[#15161B] border border-white/10 rounded-lg px-2.5 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-white/30" />
           </div>
           <button type="submit" id="submitAppBtn" class="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
-            <span>🚀 Apply for Outreach Partner Access</span>
+            <span>[APPLY] Apply for Outreach Partner Access</span>
           </button>
         </form>
         <div id="applicantSuccessMsg" class="hidden text-xs font-mono text-emerald-400 bg-emerald-950/40 p-2.5 rounded-lg border border-emerald-800/40">
-          ✅ Application submitted! Status: <strong class="text-white">PENDING REVIEW</strong>. Apoorv will review and unlock your workspace access.
+          [SUBMITTED] Application submitted! Status: <strong class="text-white">PENDING REVIEW</strong>. Apoorv will review and unlock your workspace access.
         </div>
       </div>
 
       <!-- Path 2: Work with Apoorv as a Client -->
       <div class="bg-[#101114] border border-emerald-900/30 rounded-xl p-3 flex items-center justify-between gap-3">
         <div>
-          <div class="text-xs font-mono text-white font-bold">💼 Want to hire Apoorv for a Project?</div>
+          <div class="text-xs font-mono text-white font-bold">[PROJECT] Want to hire Apoorv for a Project?</div>
           <div class="text-[10px] font-mono text-neutral-400">Submit a project brief or schedule a 1-on-1 strategy call</div>
         </div>
         <a href="/sales" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition cursor-pointer whitespace-nowrap shrink-0">
@@ -2260,7 +2260,7 @@
       <!-- Modal Header -->
       <div class="flex items-center justify-between border-b border-white/10 pb-3 gap-2">
         <div class="flex items-center gap-2.5">
-          <span id="laymanAnalogyIcon" class="text-2xl p-1.5 rounded-lg bg-white/[0.06] border border-white/10">⚡</span>
+          <span id="laymanAnalogyIcon" class="text-sm font-mono p-1.5 rounded-lg bg-white/[0.06] border border-white/10 text-cyan-400 font-bold">[SDF]</span>
           <div>
             <h3 id="laymanAnalogyTitle" class="text-sm sm:text-base font-bold text-white font-mono leading-tight">Layman Concept</h3>
             <span id="laymanAnalogyCategory" class="text-[9.5px] font-mono text-amber-400 font-semibold tracking-wide uppercase">SPEED METAPHOR</span>
@@ -2279,20 +2279,20 @@
 
       <!-- Quick Term Switcher Strip -->
       <div class="flex items-center gap-1.5 overflow-x-auto pb-1.5 custom-scrollbar text-[10px] font-mono select-none">
-        <button type="button" onclick="showLaymanAnalogy('lcp')" data-analogy-key="lcp" class="analogy-pill-btn px-2 py-1 rounded bg-[#fce566] text-[#17120f] font-bold border border-white/10 whitespace-nowrap transition cursor-pointer">⚡ Speed</button>
-        <button type="button" onclick="showLaymanAnalogy('dpdp')" data-analogy-key="dpdp" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">⚖️ DPDP</button>
-        <button type="button" onclick="showLaymanAnalogy('thumb')" data-analogy-key="thumb" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">📱 Thumb</button>
-        <button type="button" onclick="showLaymanAnalogy('aggregator')" data-analogy-key="aggregator" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">💸 Aggregator</button>
-        <button type="button" onclick="showLaymanAnalogy('dom')" data-analogy-key="dom" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">📦 WP Bloat</button>
-        <button type="button" onclick="showLaymanAnalogy('friction')" data-analogy-key="friction" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">⏳ Friction</button>
-        <button type="button" onclick="showLaymanAnalogy('tls')" data-analogy-key="tls" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">🔒 TLS/SSL</button>
-        <button type="button" onclick="showLaymanAnalogy('headless')" data-analogy-key="headless" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">✨ 60 FPS</button>
+        <button type="button" onclick="showLaymanAnalogy('lcp')" data-analogy-key="lcp" class="analogy-pill-btn px-2 py-1 rounded bg-[#fce566] text-[#17120f] font-bold border border-white/10 whitespace-nowrap transition cursor-pointer">[LCP] Speed</button>
+        <button type="button" onclick="showLaymanAnalogy('dpdp')" data-analogy-key="dpdp" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">[LAW] DPDP</button>
+        <button type="button" onclick="showLaymanAnalogy('thumb')" data-analogy-key="thumb" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">[UI] Thumb</button>
+        <button type="button" onclick="showLaymanAnalogy('aggregator')" data-analogy-key="aggregator" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">[AGG] Aggregator</button>
+        <button type="button" onclick="showLaymanAnalogy('dom')" data-analogy-key="dom" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">[DOM] WP Bloat</button>
+        <button type="button" onclick="showLaymanAnalogy('friction')" data-analogy-key="friction" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">[UX] Friction</button>
+        <button type="button" onclick="showLaymanAnalogy('tls')" data-analogy-key="tls" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">[SEC] TLS/SSL</button>
+        <button type="button" onclick="showLaymanAnalogy('headless')" data-analogy-key="headless" class="analogy-pill-btn px-2 py-1 rounded bg-white/[0.04] text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition cursor-pointer">[SLA] 60 FPS</button>
       </div>
 
       <!-- Cognitive Layer 1: Real-World Everyday Metaphor -->
       <div class="bg-[#101114] border border-amber-500/20 rounded-xl p-3.5 space-y-1.5">
         <div class="text-[10px] font-mono text-amber-300 uppercase font-bold flex items-center gap-1.5">
-          <span>🧠 Mental Picture (Real-World Analogy):</span>
+          <span>› REAL-WORLD ANALOGY:</span>
         </div>
         <p id="laymanAnalogyMetaphor" class="text-xs sm:text-sm text-neutral-100 leading-relaxed font-sans"></p>
       </div>
@@ -2302,7 +2302,7 @@
         <!-- Robotic IT Talk to Avoid -->
         <div class="bg-rose-950/20 border border-rose-800/40 rounded-xl p-3 space-y-1">
           <div class="text-[9.5px] font-mono text-rose-300 font-bold uppercase flex items-center gap-1">
-            <span>❌ Robotic IT Talk (Avoid):</span>
+            <span>× AVOID (Robotic IT Talk):</span>
           </div>
           <p id="laymanAnalogyContrastBad" class="text-[11px] text-rose-200/80 leading-relaxed font-sans italic"></p>
         </div>
@@ -2310,7 +2310,7 @@
         <!-- Casual High-Status Script to Say -->
         <div class="bg-emerald-950/20 border border-emerald-800/40 rounded-xl p-3 space-y-1">
           <div class="text-[9.5px] font-mono text-emerald-300 font-bold uppercase flex items-center gap-1">
-            <span>✅ Casual Pitch (Say This):</span>
+            <span>› SAY THIS (Conversational Pitch):</span>
           </div>
           <p id="laymanAnalogyTalkingPoint" class="text-[11px] text-emerald-100 leading-relaxed font-sans font-medium"></p>
         </div>
@@ -2319,7 +2319,7 @@
       <!-- Cognitive Layer 3: Killshot Test Question -->
       <div class="bg-[#101114] border border-white/10 rounded-xl p-3 space-y-1">
         <div class="text-[9.5px] font-mono text-amber-400 font-bold uppercase flex items-center gap-1">
-          <span>🎯 Live Test Question (Ask Client on 4G):</span>
+          <span>› LIVE TEST QUESTION (Ask Client on 4G):</span>
         </div>
         <p id="laymanAnalogyKillshot" class="text-xs text-neutral-200 leading-relaxed font-sans"></p>
       </div>
@@ -2328,13 +2328,13 @@
       <div class="pt-2 flex items-center justify-between gap-2 flex-wrap border-t border-white/10">
         <div class="flex items-center gap-1.5">
           <button type="button" onclick="copyCurrentAnalogy()" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-mono text-xs transition flex items-center gap-1 cursor-pointer">
-            <span>📋</span> <span>Copy Script</span>
+            <span>[COPY]</span> <span>Copy Script</span>
           </button>
           <button type="button" onclick="speakCurrentAnalogy()" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-mono text-xs transition flex items-center gap-1 cursor-pointer">
-            <span>🔊</span> <span>Hear Audio</span>
+            <span>[AUDIO]</span> <span>Hear Audio</span>
           </button>
           <button type="button" onclick="appendCurrentAnalogyToNotes()" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-neutral-300 hover:text-white font-mono text-xs transition flex items-center gap-1 cursor-pointer hidden sm:flex">
-            <span>📝</span> <span>Add to Notes</span>
+            <span>[NOTES]</span> <span>Add to Notes</span>
           </button>
         </div>
 
@@ -2352,7 +2352,7 @@
       <div class="flex items-center justify-between border-b border-white/10 pb-3">
         <div>
           <div class="flex items-center gap-2">
-            <span class="px-2 py-0.5 text-[9px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/40 rounded">⚡ TROJAN 3D PITCH</span>
+            <span class="px-2 py-0.5 text-[9px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/40 rounded">[RADAR] TROJAN 3D PITCH</span>
             <h3 class="text-base font-bold text-white">Interactive Client Teardown</h3>
           </div>
           <p id="modalClientName" class="text-xs text-blue-400 font-mono mt-0.5">--</p>
@@ -2403,7 +2403,7 @@
             onclick="copyTeardownLink()" 
             class="px-4 py-2 bg-white text-neutral-950 hover:bg-neutral-200 font-mono text-xs font-semibold rounded-lg shrink-0 transition flex items-center gap-1.5"
           >
-            <span>⚡ Copy</span>
+            <span>[COPY]</span>
           </button>
         </div>
         <p class="text-[10px] text-neutral-400">When the client opens this link, they see an interactive 24 FPS vs 60 FPS performance comparison branded with their metrics.</p>
@@ -2417,13 +2417,13 @@
             class="px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-neutral-200 border border-white/[0.08] font-mono text-xs transition flex items-center gap-1.5"
             title="Open interactive page in a new tab"
           >
-            <span>👁️ Live Preview ↗</span>
+            <span>[PREVIEW] Live Preview ↗</span>
           </button>
           <button 
             onclick="sendWhatsAppTeardown()" 
             class="px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 font-mono text-xs transition flex items-center gap-1.5"
           >
-            <span>💬 Send WhatsApp</span>
+            <span>[ WA ] Send WhatsApp</span>
           </button>
         </div>
         <button 
@@ -2470,7 +2470,7 @@
       <div class="flex items-center justify-between border-b-2 border-[#17120f] pb-3">
         <div>
           <div class="flex items-center gap-2">
-            <span class="px-2 py-0.5 text-[9px] font-arcade bg-[#d4edda] text-[#155724] border border-[#17120f] shadow-[1px_1px_0_#17120f]">💰 SOVEREIGN CLOSING TERMINAL</span>
+            <span class="px-2 py-0.5 text-[9px] font-arcade bg-[#d4edda] text-[#155724] border border-[#17120f] shadow-[1px_1px_0_#17120f]">SOVEREIGN CLOSING TERMINAL</span>
             <h3 id="dealModalTitle" class="font-arcade text-xs sm:text-sm font-bold text-[#17120f]">50% Advance Commitment &amp; SOW</h3>
           </div>
           <p class="text-[11px] font-mono text-[#17120f]/80 mt-1">
@@ -2519,7 +2519,7 @@
           <div class="text-[9px] font-mono text-[#17120f]/80 mt-1.5 flex items-center gap-1">
             <span>UPI ID:</span>
             <code id="dealUpiIdText" class="font-bold select-all">apoorvxs@okaxis</code>
-            <button type="button" onclick="copyUpiId()" class="text-xs hover:text-emerald-700" title="Copy UPI ID">📋</button>
+            <button type="button" onclick="copyUpiId()" class="text-xs hover:text-emerald-700" title="Copy UPI ID">[COPY]</button>
           </div>
           <p class="text-[8px] text-neutral-500 font-mono mt-0.5">Google Pay • PhonePe • Paytm • BHIM • Cred</p>
         </div>
@@ -2571,7 +2571,7 @@
             onclick="copyDealProposalLink()" 
             class="px-3 py-1.5 bg-[#fce566] hover:bg-[#ffe58f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-[10px] font-bold shrink-0 transition"
           >
-            ⚡ Copy Link
+            [COPY LINK]
           </button>
         </div>
       </div>
@@ -2584,14 +2584,14 @@
             onclick="sendWhatsAppDealCommitment()" 
             class="px-3 py-2 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] font-arcade text-[9px] sm:text-[10px] font-bold flex items-center gap-1.5 transition active:translate-x-[1px] active:translate-y-[1px]"
           >
-            <span>💬 Send WhatsApp SOW &amp; QR</span>
+            <span>[ WA ] Send SOW &amp; QR</span>
           </button>
           <button 
             type="button"
             onclick="confirmDealDepositReceived()" 
             class="px-3 py-2 bg-[#fce566] hover:bg-[#ffd700] text-[#17120f] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] font-arcade text-[9px] sm:text-[10px] font-bold flex items-center gap-1.5 transition active:translate-x-[1px] active:translate-y-[1px]"
           >
-            <span>💰 Mark 50% Deposit Received</span>
+            <span>[COMMIT] Mark 50% Deposit Received</span>
           </button>
         </div>
         <button 
@@ -2612,7 +2612,7 @@
       <div class="flex items-center justify-between border-b-2 border-[#17120f] pb-3">
         <div>
           <div class="flex items-center gap-2">
-            <span class="px-2 py-0.5 text-[9px] font-arcade bg-[#fff3cd] text-[#856404] border border-[#17120f] shadow-[1px_1px_0_#17120f]">🤝 PRINCIPAL ESCALATION</span>
+            <span class="px-2 py-0.5 text-[9px] font-arcade bg-[#fff3cd] text-[#856404] border border-[#17120f] shadow-[1px_1px_0_#17120f]">PRINCIPAL ESCALATION</span>
             <h3 id="handoffModalTitle" class="font-arcade text-xs sm:text-sm font-bold text-[#17120f]">Executive Handoff to Apoorv</h3>
           </div>
           <p class="text-[11px] font-mono text-[#17120f]/80 mt-1">
@@ -2625,7 +2625,7 @@
       <!-- Partner Safety Net Banner -->
       <div class="p-3 bg-[#e8f4fd] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] space-y-1">
         <div class="font-arcade text-[9px] font-bold text-blue-900 flex items-center gap-1.5">
-          <span>🛡️ 10% REFERRAL SAFETY NET ACTIVE</span>
+          <span>SAFETY NET // 10% REFERRAL SAFETY NET ACTIVE</span>
         </div>
         <p class="text-[11px] text-blue-950 font-mono">
           When Apoorv conducts the Google Meet walkthrough and closes this deal, you automatically earn <strong>10% Referral Commission</strong> (₹5,000 on ₹50k, ₹10,000 on ₹1L, ₹20,000+ on enterprise).
@@ -2661,7 +2661,7 @@
       <div class="space-y-1">
         <div class="flex items-center justify-between text-[10px] font-arcade uppercase text-[#17120f]/80">
           <span>EXECUTIVE HANDOFF BRIEF (FOR APOORV):</span>
-          <button type="button" onclick="copyHandoffBriefText()" class="text-blue-700 font-bold hover:underline">📋 Copy Text</button>
+          <button type="button" onclick="copyHandoffBriefText()" class="text-blue-700 font-bold hover:underline">[COPY TEXT]</button>
         </div>
         <div id="handoffBriefPreview" class="p-2.5 bg-neutral-900 text-neutral-100 font-mono text-[10px] border border-[#17120f] whitespace-pre-wrap select-all max-h-32 overflow-y-auto"></div>
       </div>
@@ -2674,21 +2674,21 @@
             onclick="generateApoorvMeetInvite()" 
             class="px-3 py-2 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] font-arcade text-[9px] sm:text-[10px] font-bold flex items-center gap-1.5 transition active:translate-x-[1px] active:translate-y-[1px]"
           >
-            <span>📅 Google Calendar &amp; Meet</span>
+            <span>[CAL] Google Calendar &amp; Meet</span>
           </button>
           <button 
             type="button"
             onclick="sendHandoffBriefToApoorv()" 
             class="px-3 py-2 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] font-arcade text-[9px] sm:text-[10px] font-bold flex items-center gap-1.5 transition active:translate-x-[1px] active:translate-y-[1px]"
           >
-            <span>💬 Send to Apoorv (WA)</span>
+            <span>[ WA ] Send to Apoorv</span>
           </button>
           <button 
             type="button"
             onclick="saveHandoffAndAdvance()" 
             class="px-3 py-2 bg-[#fce566] hover:bg-[#ffd700] text-[#17120f] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] font-arcade text-[9px] sm:text-[10px] font-bold flex items-center gap-1.5 transition active:translate-x-[1px] active:translate-y-[1px]"
           >
-            <span>🚀 Save &amp; Advance Lead</span>
+            <span>[SYNC] Save &amp; Advance Lead</span>
           </button>
         </div>
         <button 
@@ -2709,7 +2709,7 @@
       <div class="flex items-center justify-between border-b-2 border-[#17120f] pb-3">
         <div>
           <div class="flex items-center gap-2">
-            <span class="px-2 py-0.5 text-[9px] font-arcade bg-[#fce566] text-[#17120f] border border-[#17120f] shadow-[1px_1px_0_#17120f] font-bold">💰 COMMISSIONS</span>
+            <span class="px-2 py-0.5 text-[9px] font-arcade bg-[#fce566] text-[#17120f] border border-[#17120f] shadow-[1px_1px_0_#17120f] font-bold">COMMISSIONS // WALLET</span>
             <h3 id="walletModalTitle" class="font-arcade text-xs sm:text-sm font-bold text-[#17120f]">Partner Wallet &amp; UPI Payout Terminal</h3>
           </div>
           <p class="text-[11px] font-mono text-[#17120f]/80 mt-1">
@@ -2724,7 +2724,7 @@
         <!-- Card 1: Cleared Balance -->
         <div class="p-3 bg-[#d4edda] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] space-y-1">
           <div class="font-arcade text-[9px] text-[#155724] font-bold flex items-center justify-between">
-            <span>💰 CLEARED</span>
+            <span>● CLEARED</span>
             <span class="text-[8px] font-mono">15% Direct</span>
           </div>
           <div id="walletClearedBalance" class="font-arcade text-lg sm:text-xl font-black text-[#155724]">₹0</div>
@@ -2744,7 +2744,7 @@
         <!-- Card 3: Historical Settled -->
         <div class="p-3 bg-[#fff4c9] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] space-y-1">
           <div class="font-arcade text-[9px] text-[#856404] font-bold flex items-center justify-between">
-            <span>💸 SETTLED</span>
+            <span>■ SETTLED</span>
             <span class="text-[8px] font-mono">Cleared</span>
           </div>
           <div id="walletSettledBalance" class="font-arcade text-lg sm:text-xl font-black text-[#856404]">₹0</div>
@@ -2756,7 +2756,7 @@
       <div class="p-3.5 bg-[#fce566] border-2 border-[#17120f] shadow-[4px_4px_0_#17120f] space-y-2.5">
         <div class="flex items-center justify-between">
           <span class="font-arcade text-[10px] text-[#17120f] font-bold flex items-center gap-1.5">
-            <span>⚡</span> <span>1-TAP UPI SETTLEMENT DISPATCHER</span>
+            <span>[DISP]</span> <span>UPI SETTLEMENT DISPATCHER</span>
           </span>
           <span class="text-[9px] font-mono text-[#17120f]/80">Zero-fee direct bank rail</span>
         </div>
@@ -2775,7 +2775,7 @@
             onclick="requestUpiSettlement()" 
             class="px-4 py-2 bg-[#17120f] hover:bg-black text-[#fce566] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-[10px] font-bold transition flex items-center justify-center gap-1.5 shrink-0 cursor-pointer active:translate-x-[1px] active:translate-y-[1px]"
           >
-            <span>⚡</span> <span>REQUEST UPI PAYOUT</span>
+            <span>[PAY]</span> <span>REQUEST UPI PAYOUT</span>
           </button>
         </div>
         <p class="text-[9px] text-[#17120f]/80 font-mono">
@@ -2786,7 +2786,7 @@
       <!-- Owner Actions Strip (Strictly for Owner) -->
       <div id="walletOwnerActions" class="hidden p-2.5 bg-[#17120f] text-[#fffdf1] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] flex items-center justify-between gap-2">
         <span class="font-arcade text-[9px] text-[#fce566] flex items-center gap-1">
-          <span>🛡️</span> <span>OWNER SETTLEMENT CLEARANCE</span>
+          <span>[AUTH]</span> <span>OWNER SETTLEMENT CLEARANCE</span>
         </span>
         <button 
           type="button" 
@@ -2801,7 +2801,7 @@
       <div class="space-y-1.5">
         <div class="flex items-center justify-between">
           <span class="font-arcade text-[10px] font-bold text-[#17120f] flex items-center gap-1">
-            <span>📋</span> <span>ITEMIZED COMMISSION LEDGER</span>
+            <span>[LEDGER]</span> <span>ITEMIZED COMMISSION LEDGER</span>
           </span>
           <span class="text-[9px] font-mono text-[#17120f]/70">Audited via closed deposits</span>
         </div>
@@ -2830,7 +2830,7 @@
       <!-- Modal Header -->
       <div class="flex items-center justify-between border-b-2 border-[#17120f] pb-3">
         <div class="flex items-center gap-2">
-          <span class="text-xl">📲</span>
+          <span class="text-xl">[APP]</span>
           <div>
             <h2 id="installModalTitle" class="font-arcade text-xs sm:text-sm font-bold text-[#17120f]">INSTALL CLIENT RADAR APP</h2>
             <p class="text-[10px] text-[#17120f]/80 font-mono mt-0.5">Standalone Full-Screen Cockpit • 0 Browser Chrome</p>
@@ -2854,10 +2854,10 @@
       <!-- Platform-Specific Instruction Tabs -->
       <div id="installPlatformTabs" class="flex border-2 border-[#17120f] bg-[#fffdf1]">
         <button id="tabBtnAndroid" type="button" onclick="switchInstallTab('android')" class="flex-1 py-2 text-center font-arcade text-[10px] font-bold border-r-2 border-[#17120f] bg-[#fce566] transition cursor-pointer">
-          🤖 ANDROID / CHROME
+          ANDROID // CHROME
         </button>
         <button id="tabBtnIOS" type="button" onclick="switchInstallTab('ios')" class="flex-1 py-2 text-center font-arcade text-[10px] font-bold bg-[#fffdf1] transition cursor-pointer">
-          🍎 IPHONE / SAFARI
+          IPHONE // SAFARI
         </button>
       </div>
 
@@ -2879,7 +2879,7 @@
         </div>
 
         <button id="btnTriggerNativeInstall" type="button" onclick="triggerNativeInstallPrompt()" class="w-full py-2.5 px-3 bg-[#10b981] hover:bg-[#059669] text-white border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] font-arcade text-[11px] font-bold flex items-center justify-center gap-2 cursor-pointer transition active:translate-x-[1px] active:translate-y-[1px]">
-          <span>📲</span> <span>TRIGGER 1-TAP INSTALL PROMPT</span>
+          <span>[INSTALL]</span> <span>TRIGGER 1-TAP INSTALL PROMPT</span>
         </button>
       </div>
 
@@ -2904,7 +2904,7 @@
       <!-- Action Footer -->
       <div class="flex items-center justify-between gap-2 pt-2 border-t-2 border-[#17120f]">
         <button type="button" onclick="copyWorkspaceUrl()" class="px-3 py-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-mono text-[11px] font-bold flex items-center gap-1.5 cursor-pointer transition active:translate-x-[1px] active:translate-y-[1px]">
-          <span>📋</span> <span id="copyUrlBtnText">Copy App URL</span>
+          <span>[COPY]</span> <span id="copyUrlBtnText">Copy App URL</span>
         </button>
         <button type="button" onclick="closeInstallAppModal()" class="px-4 py-1.5 bg-[#f8d7da] hover:bg-[#f5c6cb] text-[#721c24] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-[10px] font-bold cursor-pointer transition active:translate-x-[1px] active:translate-y-[1px]">
           Close Window
@@ -2956,10 +2956,10 @@
       <div class="flex border-b border-white/10 gap-1.5 sm:gap-2 font-mono text-[11px] sm:text-xs overflow-x-auto pb-1.5 shrink-0 custom-scrollbar">
         <button id="btnAdminTabGemini" onclick="switchAdminTab('gemini')" class="admin-tab-btn active px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white text-neutral-950 font-semibold transition shrink-0 shadow-sm">Gemini AI & Scout</button>
         <button id="btnAdminTabIngest" onclick="switchAdminTab('ingest')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Bulk Ingestion</button>
-        <button id="btnAdminTabLogs" onclick="switchAdminTab('logs')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>🛡️</span><span>Surveillance & Logs</span></button>
+        <button id="btnAdminTabLogs" onclick="switchAdminTab('logs')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>[SURV]</span><span>Surveillance & Logs</span></button>
         <button id="btnAdminTabSync" onclick="switchAdminTab('sync')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Cloud Sync</button>
-        <button id="btnAdminTabUsers" onclick="switchAdminTab('users')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>👥</span><span>Partners &amp; Invites</span></button>
-        <button id="btnAdminTabBrain" onclick="switchAdminTab('brain')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>🧠</span><span>Brain Studio</span></button>
+        <button id="btnAdminTabUsers" onclick="switchAdminTab('users')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>[PARTNERS]</span><span>Partners &amp; Invites</span></button>
+        <button id="btnAdminTabBrain" onclick="switchAdminTab('brain')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>[BRAIN]</span><span>Brain Studio</span></button>
       </div>
 
       <!-- Tab 1: Gemini AI -->
@@ -3038,12 +3038,12 @@
 
       <!-- Tab 3: Lead Pipeline & Data Sources Explorer + Partner Anti-Theft Surveillance -->
       <div id="adminTabLogs" class="hidden flex-1 overflow-y-auto space-y-4 custom-scrollbar">
-        <!-- 🛡️ REAL-TIME PARTNER ANTI-THEFT SURVEILLANCE & LEAK RADAR -->
+        <!-- REAL-TIME PARTNER ANTI-THEFT SURVEILLANCE & LEAK RADAR -->
         <div id="adminSurveillanceLogsSection" class="bg-[#101114] border-2 border-amber-500/40 rounded-xl p-3 sm:p-4 space-y-3 shadow-lg">
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2">
             <div class="flex items-center gap-2">
               <span class="text-sm font-arcade text-amber-300 font-bold flex items-center gap-1.5">
-                <span>🛡️</span>
+                <span>[SURV]</span>
                 <span>PARTNER ANTI-THEFT SURVEILLANCE RADAR</span>
               </span>
               <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono text-[9px] font-bold animate-pulse">● LIVE MONITORING</span>
@@ -3053,7 +3053,7 @@
                 <span>⬇️</span><span>EXPORT AUDIT CSV</span>
               </button>
               <button onclick="clearAuditLogs()" class="px-2 py-1 rounded bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 border border-rose-800/40 font-mono text-[9px] transition cursor-pointer flex items-center gap-1">
-                <span>🗑️</span><span>Clear</span>
+                <span>[DEL]</span><span>Clear</span>
               </button>
             </div>
           </div>
@@ -3101,7 +3101,7 @@
         <div class="bg-[#101114] border border-white/5 rounded-xl p-3 sm:p-4 space-y-2.5">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <span class="text-xs font-mono text-white font-bold flex items-center gap-1.5">
-              <span>📡</span>
+              <span>[RADAR]</span>
               <span>Active Lead Pipeline & Source Breakdown:</span>
             </span>
             <button onclick="exportCallDataToCSV()" class="px-2.5 py-1 rounded bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-300 border border-emerald-800/40 font-mono text-[10px] transition cursor-pointer flex items-center gap-1">
@@ -3111,7 +3111,7 @@
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[10px] font-mono">
             <div class="bg-[#15161B] border border-white/5 rounded-lg p-2.5 space-y-1">
               <div class="text-emerald-400 font-bold flex items-center justify-between">
-                <span>🟢 Core Production</span>
+                <span>● Core Production</span>
                 <span class="px-1.5 py-0.2 bg-emerald-950/60 rounded text-[9px]">60 Leads</span>
               </div>
               <div class="text-slate-400 text-[10px]">Source: <code class="text-amber-300">workspace/prospects_data.js</code></div>
@@ -3119,7 +3119,7 @@
             </div>
             <div class="bg-[#15161B] border border-white/5 rounded-lg p-2.5 space-y-1">
               <div class="text-purple-400 font-bold flex items-center justify-between">
-                <span>🟣 Custom Ingested</span>
+                <span>▲ Custom Ingested</span>
                 <span class="px-1.5 py-0.2 bg-purple-950/60 rounded text-[9px]">5 Leads</span>
               </div>
               <div class="text-slate-400 text-[10px]">Source: <code class="text-amber-300">workspace/custom_prospects.js</code></div>
@@ -3127,7 +3127,7 @@
             </div>
             <div class="bg-[#15161B] border border-white/5 rounded-lg p-2.5 space-y-1">
               <div class="text-cyan-400 font-bold flex items-center justify-between">
-                <span>☁️ Cloud Firestore</span>
+                <span>◆ Cloud Firestore</span>
                 <span class="px-1.5 py-0.2 bg-cyan-950/60 rounded text-[9px]">Bidirectional</span>
               </div>
               <div class="text-slate-400 text-[10px]">Collection: <code class="text-amber-300">prospects</code></div>
@@ -3159,11 +3159,11 @@
         <div class="bg-[#101114] border border-blue-900/30 rounded-xl p-4 space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-1.5">
             <div class="flex flex-wrap items-center gap-1.5">
-              <span class="text-xs font-mono text-white font-bold">☁️ Cloud Firestore (Spark Plan):</span>
+              <span class="text-xs font-mono text-white font-bold">Cloud Firestore (Spark Plan):</span>
               <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950/60 text-blue-300 border border-blue-800/40">100% Free Tier</span>
               <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/60">AUTO-SYNC</span>
             </div>
-            <span id="firestoreSyncStatusBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold">🟢 Firestore Ready</span>
+            <span id="firestoreSyncStatusBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold">● Firestore Ready</span>
           </div>
           <div class="text-[11px] font-mono text-slate-400 space-y-1">
             <div>Project ID: <span class="text-white">apoorv-sales</span> • Collection: <span class="text-blue-300">prospects</span></div>
@@ -3172,7 +3172,7 @@
           </div>
           <div class="pt-1 flex flex-col sm:flex-row flex-wrap gap-2">
             <button id="seedFirestoreBtn" onclick="uploadProspectsToFirestore()" class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
-              <span>🚀 Force Re-Sync to Firestore</span>
+              <span>[SYNC] Force Re-Sync to Firestore</span>
             </button>
             <button onclick="exportProspectsJSON()" class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 border border-white/10 font-mono text-xs transition flex items-center justify-center cursor-pointer">
               <span>⬇️ Download JSON Backup</span>
@@ -3184,7 +3184,7 @@
         <div class="bg-[#101114] border border-emerald-800/40 rounded-xl p-4 space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-1.5">
             <div class="flex flex-wrap items-center gap-1.5">
-              <span class="text-xs font-mono text-white font-bold">📊 Google Sheets Export:</span>
+              <span class="text-xs font-mono text-white font-bold">Google Sheets Export:</span>
               <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-800/40">1-Click</span>
             </div>
             <span id="gsheetSyncStatusBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-neutral-400 border border-white/5">Webhook Standby</span>
@@ -3196,15 +3196,15 @@
             <input type="text" id="gsheetWebhookUrlInput" placeholder="https://script.google.com/macros/s/.../exec?key=..." class="flex-1 min-w-0 bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-white/30" />
             <div class="flex gap-2 shrink-0">
               <button onclick="saveGoogleSheetsWebhookUI()" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition whitespace-nowrap cursor-pointer">Save & Connect</button>
-              <button onclick="pullFromGoogleSheetUI()" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition whitespace-nowrap cursor-pointer">🔄 Pull Rows</button>
+              <button onclick="pullFromGoogleSheetUI()" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition whitespace-nowrap cursor-pointer">[SYNC] Pull Rows</button>
             </div>
           </div>
           <div class="pt-2 border-t border-white/5 flex flex-col sm:flex-row flex-wrap gap-2">
             <button onclick="openGoogleSheet1Click()" class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1">
-              <span>📊 Export CSV & Open Google Sheets</span>
+              <span>[EXP] Export CSV & Open Google Sheets</span>
             </button>
             <button onclick="openCsvImportModal()" class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 border border-white/10 font-mono text-xs transition cursor-pointer flex items-center justify-center gap-1">
-              <span>📥 Paste / Import CSV</span>
+              <span>[IMP] Paste / Import CSV</span>
             </button>
           </div>
         </div>
@@ -3228,7 +3228,7 @@
         <div class="bg-[#101114] border border-blue-900/40 rounded-xl p-4 space-y-3.5 shadow-lg">
           <div class="flex flex-wrap items-center justify-between gap-1.5 border-b border-white/5 pb-2.5">
             <div class="flex items-center gap-2">
-              <span class="text-sm">✉️</span>
+              <span class="text-sm">[MAIL]</span>
               <span class="text-xs font-mono text-white font-bold">Invite Sales Rep / Outreach Partner via Email</span>
             </div>
             <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950/60 text-blue-300 border border-blue-800/40">From: apoorvxs@gmail.com</span>
@@ -3260,10 +3260,10 @@
 
             <div class="flex flex-col sm:flex-row flex-wrap items-center gap-2 pt-1">
               <button type="button" onclick="handleSendSalesRepInvite('email')" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition flex items-center justify-center gap-1.5 shadow cursor-pointer">
-                <span>✉️</span><span>Send Invite via Email (Gmail / Mailto)</span>
+                <span>[MAIL]</span><span>Send Invite via Email (Gmail / Mailto)</span>
               </button>
               <button type="button" onclick="handleSendSalesRepInvite('copy')" class="w-full sm:w-auto px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10 font-mono text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer">
-                <span>📋</span><span>Generate &amp; Copy Link Only</span>
+                <span>[LINK]</span><span>Generate &amp; Copy Link Only</span>
               </button>
             </div>
           </div>
@@ -3300,7 +3300,7 @@
         <!-- Rep Applications Queue (Owner Review) -->
         <div class="bg-[#101114] border border-blue-900/30 rounded-xl p-4 space-y-3">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-mono text-white font-bold">📋 Outreach Partner Applications Pending Review:</span>
+            <span class="text-xs font-mono text-white font-bold">APPLICATIONS // Pending Review:</span>
             <span id="adminPendingAppsBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950/60 text-blue-300 border border-blue-800/40">0 Pending</span>
           </div>
           <div id="adminApplicationsList" class="space-y-2">
@@ -3309,13 +3309,13 @@
         </div>
       </div>
 
-      <!-- Tab 6: 🧠 System 1 Brain Studio (Owner Dynamic Neural Training & Knowledge Inspector) -->
+      <!-- Tab 6: System 1 Brain Studio (Owner Dynamic Neural Training & Knowledge Inspector) -->
       <div id="adminTabBrain" class="hidden flex-1 overflow-y-auto space-y-4 custom-scrollbar">
         <!-- 1. Cognitive Telemetry Monitor (Live Real-Time Sub-1ms Stats) -->
         <div class="bg-[#101114] border border-purple-900/30 rounded-xl p-4 space-y-3">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="text-sm">🧠</span>
+              <span class="text-sm">[BRAIN]</span>
               <span class="text-xs font-mono text-white font-bold uppercase tracking-wider">Cognitive Telemetry & Frame Budget</span>
             </div>
             <span id="telemetryStatusPill" class="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-950/60 text-purple-300 border border-purple-800/40 font-bold">Latency: &lt; 0.2ms // 60 FPS</span>
@@ -3343,7 +3343,7 @@
         <!-- 2. Interactive Neural Training Module -->
         <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-mono text-white font-bold">⚡ Train New Cognitive Node / Trigger Rule:</span>
+            <span class="text-xs font-mono text-white font-bold">COGNITIVE // Train New Node / Trigger Rule:</span>
             <span class="text-[10px] font-mono text-neutral-500">Non-Autoregressive • Zero Compute Cost</span>
           </div>
           <form id="trainBrainForm" onsubmit="handleTrainBrainSubmit(event)" class="space-y-3">
@@ -3399,7 +3399,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <div class="sm:col-span-2">
                 <label class="text-[10px] font-mono text-neutral-400 block mb-1">Thought Balloon Text (Speech Bubble)</label>
-                <input type="text" id="trainThoughtText" required placeholder="e.g. ⚡ ARCHITECTING PROCEDURAL COMPUTE PIPELINE..." class="w-full bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-purple-500/50" />
+                <input type="text" id="trainThoughtText" required placeholder="e.g. [SYS] ARCHITECTING PROCEDURAL COMPUTE PIPELINE..." class="w-full bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-purple-500/50" />
               </div>
               <div class="grid grid-cols-2 gap-1">
                 <div>
@@ -3426,7 +3426,7 @@
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-1">
               <span class="text-[10px] font-mono text-neutral-400">Node will be hot-reloaded into memory and persisted locally & to Cloud Firestore.</span>
               <button type="submit" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-mono text-xs font-bold shadow-lg shadow-purple-900/30 transition flex items-center justify-center gap-1.5 cursor-pointer">
-                <span>⚡</span><span>Train Neural Node (Sub-1ms)</span>
+                <span>[EXEC]</span><span>Train Neural Node (Sub-1ms)</span>
               </button>
             </div>
           </form>
@@ -3436,7 +3436,7 @@
         <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div class="flex items-center gap-2">
-              <span class="text-xs font-mono text-white font-bold">🔍 Active Knowledge Graph Explorer:</span>
+              <span class="text-xs font-mono text-white font-bold">GRAPH // Active Knowledge Graph Explorer:</span>
               <span id="brainExplorerCountBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-neutral-400 border border-white/10">0 Nodes</span>
             </div>
             <!-- Search & Filter Controls -->
@@ -3468,20 +3468,20 @@
           </div>
           <div class="flex flex-col sm:flex-row flex-wrap gap-2">
             <button onclick="pushBrainToFirestoreUI()" class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
-              <span>☁️</span><span>Push to Cloud Firestore</span>
+              <span>[PUSH]</span><span>Push to Cloud Firestore</span>
             </button>
             <button onclick="syncBrainFromFirestoreUI()" class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
-              <span>🔄</span><span>Sync from Cloud</span>
+              <span>[PULL]</span><span>Sync from Cloud</span>
             </button>
             <button onclick="exportBrainDatasetUI()" class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-neutral-200 border border-white/10 font-mono text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
-              <span>💾</span><span>Export JSON Checkpoint</span>
+              <span>[SAVE]</span><span>Export JSON Checkpoint</span>
             </button>
             <label class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-neutral-200 border border-white/10 font-mono text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
-              <span>📂</span><span>Import JSON</span>
+              <span>[LOAD]</span><span>Import JSON</span>
               <input type="file" id="brainJsonFileInput" accept=".json" onchange="importBrainDatasetUI(event)" class="hidden" />
             </label>
             <button onclick="resetBrainToFactoryUI()" class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-red-900/40 hover:bg-red-800/60 text-red-200 border border-red-800/40 font-mono text-xs transition flex items-center justify-center gap-1.5 sm:ml-auto cursor-pointer">
-              <span>⚠️</span><span>Reset to Factory</span>
+              <span>[RESET]</span><span>Reset to Factory</span>
             </button>
           </div>
         </div>
@@ -3494,7 +3494,7 @@
     <div class="bg-[#0b0c0e] border border-white/10 rounded-2xl w-full max-w-xl p-5 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between">
         <h3 class="text-sm font-mono font-bold text-white flex items-center gap-2">
-          <span>📥 Ingest Prospects from Google Sheets (CSV)</span>
+          <span>[INGEST] Ingest Prospects from Google Sheets (CSV)</span>
         </h3>
         <button onclick="closeCsvImportModal()" class="text-neutral-400 hover:text-white font-mono text-sm cursor-pointer">✕</button>
       </div>
@@ -3516,7 +3516,7 @@
       <!-- Top Title Banner -->
       <div style="background: #17120f !important; color: #fce566 !important;" class="p-4 text-center border-b-[3px] border-[#17120f]">
         <div style="color: #fce566 !important; opacity: 0.9;" class="text-[11px] tracking-[2px] font-mono">CLIENT RADAR // OUTREACH PARTNER ONBOARDING</div>
-        <h2 style="color: #fce566 !important;" class="text-base font-bold mt-1 tracking-wide uppercase">🎯 Outreach Partner &amp; Referral Briefing</h2>
+        <h2 style="color: #fce566 !important;" class="text-base font-bold mt-1 tracking-wide uppercase">OUTREACH PARTNER &amp; REFERRAL BRIEFING</h2>
         <div style="color: #fff4c9 !important; opacity: 0.95;" class="text-xs mt-1 font-mono">Compensation, Rules of Engagement & Payout Terms</div>
       </div>
 
@@ -3524,7 +3524,7 @@
         <!-- Section 1: Setter & Closer Partnership Structure (Closed Deals Only) -->
         <div class="space-y-2">
           <div class="text-xs font-bold tracking-wider uppercase border-b-2 border-[#17120f] pb-1 flex items-center justify-between">
-            <span>💰 Commission Policy (Closed Revenue Payouts)</span>
+            <span>COMMISSION SCHEDULE // 15% REVENUE SHARE</span>
             <span style="background: #17120f !important; color: #fce566 !important;" class="text-[11px] px-2.5 py-0.5 font-bold border border-[#17120f]">Closed Deals Only</span>
           </div>
 
@@ -3534,7 +3534,7 @@
               <div class="flex items-start justify-between gap-3">
                 <div>
                   <div class="font-bold text-[13px] text-neutral-900 flex items-center gap-1.5">
-                    <span>🗓️</span><span>Standard Discovery Booking (10% Cut)</span>
+                    <span>01 //</span><span>Standard Discovery Booking (10% Cut)</span>
                   </div>
                   <div class="text-xs opacity-90 mt-1 leading-relaxed">
                     You qualify client interest using our performance audit, verify the Decision Maker, and <strong>lock a 15-minute consultation on Apoorv's calendar</strong>. Apoorv demonstrates live WebGPU/60 FPS systems and closes the contract.
@@ -3564,7 +3564,7 @@
               <div class="flex items-start justify-between gap-3">
                 <div>
                   <div class="font-bold text-[13px] text-[#155724] flex items-center gap-1.5">
-                    <span>👑</span><span>Pre-Sold Warm Booking (15% Prime Cut!)</span>
+                    <span>02 //</span><span>Pre-Sold Warm Booking (15% Prime Cut!)</span>
                   </div>
                   <div class="text-xs text-[#155724]/95 mt-1 leading-relaxed">
                     You navigate client parameters, walk them through spatial/performance opportunities, and <strong>confirm their alignment with our $5,000 project floor</strong> before booking Apoorv. The client arrives primed for deployment!
@@ -3594,21 +3594,21 @@
         <!-- Section 2: How It Works Flow -->
         <div class="space-y-2">
           <div class="text-xs font-bold tracking-wider uppercase border-b-2 border-[#17120f] pb-1">
-            🔄 The Referral &amp; Closing Model
+            00 // THE REFERRAL &amp; CLOSING MODEL
           </div>
           <div class="grid grid-cols-3 gap-2 text-center text-xs">
             <div class="bg-[#fffdf1] border-2 border-[#17120f] p-2.5 flex flex-col items-center">
-              <span class="text-lg mb-1">⚡</span>
+              <span class="text-xs mb-1 font-mono text-cyan-400 font-bold">01 //</span>
               <span class="font-bold text-neutral-900 text-[11px]">1. Identify & Engage</span>
               <span class="text-[11px] text-neutral-700 mt-1 leading-snug">Introduce diagnostic audit & resolve technical questions</span>
             </div>
             <div class="bg-[#fffdf1] border-2 border-[#17120f] p-2.5 flex flex-col items-center">
-              <span class="text-lg mb-1">🗓️</span>
+              <span class="text-xs mb-1 font-mono text-cyan-400 font-bold">02 //</span>
               <span class="font-bold text-neutral-900 text-[11px]">2. Lock Apoorv's Meet</span>
               <span class="text-[11px] text-neutral-700 mt-1 leading-snug">Click "Cal Meet" & book 15-min screen share slot</span>
             </div>
             <div class="bg-[#d4edda] border-2 border-[#155724] p-2.5 flex flex-col items-center">
-              <span class="text-lg mb-1">👑</span>
+              <span class="text-xs mb-1 font-mono text-cyan-400 font-bold">03 //</span>
               <span class="font-bold text-[#155724] text-[11px]">3. Apoorv Closes</span>
               <span class="text-[11px] text-[#155724] font-medium mt-1 leading-snug">Apoorv runs live demo & you get 10%–15% commission (UPI / Bank Transfer)</span>
             </div>
@@ -3618,7 +3618,7 @@
         <!-- Section 3: Payout Details -->
         <div class="space-y-2">
           <div class="text-xs font-bold tracking-wider uppercase border-b-2 border-[#17120f] pb-1">
-            📅 Payout Schedule & Payment Rails
+            PAYOUT SCHEDULE &amp; PAYMENT RAILS
           </div>
           <ul class="space-y-1.5 text-xs pl-4 list-disc leading-relaxed">
             <li><strong>Method:</strong> Direct <strong>UPI / Bank Transfer</strong> to your registered account details.</li>
@@ -3630,7 +3630,7 @@
         <!-- Section 4: Rules & Engagement -->
         <div class="space-y-2">
           <div class="text-xs font-bold tracking-wider uppercase border-b-2 border-[#17120f] pb-1">
-            📋 Rules of Engagement & Booking Standards
+            RULES OF ENGAGEMENT &amp; BOOKING STANDARDS
           </div>
           <ul class="space-y-1.5 text-xs pl-4 list-disc leading-relaxed">
             <li>Introduce yourself as an <strong>Authorized Referral Partner representing Apoorv's Creative Engineering Practice</strong>.</li>
@@ -3646,7 +3646,7 @@
         <!-- Section 5: Legal & Confidentiality Disclaimer -->
         <div class="bg-[#fffdf1] border-2 border-[#17120f] p-3 text-[11px] leading-relaxed text-[#17120f]/90 space-y-1">
           <div class="font-bold uppercase tracking-wider text-[11px] text-[#92400e] flex items-center gap-1">
-            <span>⚖️</span><span>Independent Referral Agreement &amp; Rules</span>
+            <span>LEGAL //</span><span>Independent Referral Agreement &amp; Rules</span>
           </div>
           <div>
             This is an independent commercial referral agreement, not an offer of employment or agency partnership. Compensation is strictly performance commission (15% per closed engagement, $750 base on $5,000 floor) distributed upon receipt of cleared client funds, with zero employment relationship. All prospect dossiers and architectural teardowns are proprietary to Apoorv A S. Outreach partners must conduct all correspondence professionally and respect immediate opt-out requests.
@@ -3657,7 +3657,7 @@
         <div class="pt-2">
           <button id="btnAcknowledgeOnboarding" onclick="acknowledgeOnboarding()"
             class="w-full py-3 px-4 bg-[#17120f] text-[#fce566] hover:bg-[#fce566] hover:text-[#17120f] font-mono font-bold text-xs uppercase tracking-wider border-2 border-[#17120f] transition-all duration-150 shadow-[4px_4px_0_#17120f] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none cursor-pointer flex items-center justify-center gap-2">
-            <span>✅</span>
+            <span>[✓]</span>
             <span>I Understand & Agree — Enter Workspace</span>
           </button>
         </div>
@@ -3703,7 +3703,7 @@
     <div id="tourBB8Companion" class="absolute z-[25] pointer-events-none flex flex-col items-center gap-1 opacity-0 transition-opacity duration-300" style="transition: left 0.45s cubic-bezier(0.16, 1, 0.3, 1), top 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease; transform: translate(-50%, -50%);">
       <!-- Droid Speech / Radar Status Chip -->
       <div id="tourBB8StatusChip" class="px-2 py-0.5 bg-[#17120f] text-[#4deeea] border border-[#4deeea] shadow-[2px_2px_0_#000] font-arcade text-[8px] whitespace-nowrap tracking-wider flex items-center gap-1">
-        <span>⚡ BB-8</span> <span id="tourBB8SectorText">// TARGET LOCKED</span>
+        <span>[SYS] BB-8</span> <span id="tourBB8SectorText">// TARGET LOCKED</span>
       </div>
 
       <!-- Detailed 2.5D BB-8 Vector Graphic with Laser Projector -->
@@ -3755,7 +3755,7 @@
       <div style="background: #17120f !important; color: #fce566 !important;" class="p-3 sm:p-4 border-b-[3px] border-[#17120f] flex items-center justify-between gap-2 shrink-0">
         <div class="flex items-center gap-2 flex-wrap">
           <span id="tourStepBadge" class="px-2 py-0.5 font-arcade text-[9px] bg-[#fce566] text-[#17120f] font-bold border border-[#17120f]">STEP 1 OF 5</span>
-          <span id="tourTargetIndicator" class="px-2 py-0.5 font-arcade text-[9px] bg-[#4deeea]/20 text-[#4deeea] border border-[#4deeea] font-bold hidden sm:inline-block">🎯 TARGET: COLUMN 1 QUEUE</span>
+          <span id="tourTargetIndicator" class="px-2 py-0.5 font-arcade text-[9px] bg-[#4deeea]/20 text-[#4deeea] border border-[#4deeea] font-bold hidden sm:inline-block">[RADAR] TARGET: COLUMN 1 QUEUE</span>
         </div>
         <div class="flex items-center gap-2">
           <!-- Step indicator dots -->
@@ -3793,7 +3793,7 @@
             <span id="tourTargetSubtext" class="truncate text-[#17120f]/80">BB-8 laser locked onto active workspace sector</span>
           </div>
           <button type="button" onclick="pingTourTarget()" class="px-2.5 py-1 bg-[#4deeea] hover:bg-[#38d4d0] text-[#17120f] border border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[9px] font-bold transition flex items-center gap-1 shrink-0 cursor-pointer active:translate-x-[1px] active:translate-y-[1px]" title="Re-pulse laser beam onto target element">
-            <span>⚡</span> <span>FOCUS</span>
+            <span>[RADAR]</span> <span>FOCUS</span>
           </button>
         </div>
 
@@ -3802,7 +3802,7 @@
           <!-- Laptop Experience Card -->
           <div class="p-2.5 bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1">
             <div class="font-arcade text-[9px] font-bold text-[#17120f] flex items-center gap-1 border-b border-[#17120f]/20 pb-1">
-              <span>💻</span> <span>LAPTOP / DESKTOP VIEW</span>
+              <span>[DESK]</span> <span>LAPTOP / DESKTOP VIEW</span>
             </div>
             <div id="tourLaptopInstructions" class="text-[10px] space-y-1 text-[#17120f]/90 leading-snug">
               <!-- Dynamically populated -->
@@ -3812,7 +3812,7 @@
           <!-- Mobile Experience Card -->
           <div class="p-2.5 bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1">
             <div class="font-arcade text-[9px] font-bold text-[#17120f] flex items-center gap-1 border-b border-[#17120f]/20 pb-1">
-              <span>📱</span> <span>MOBILE PHONE VIEW</span>
+              <span>[MOB]</span> <span>MOBILE PHONE VIEW</span>
             </div>
             <div id="tourMobileInstructions" class="text-[10px] space-y-1 text-[#17120f]/90 leading-snug">
               <!-- Dynamically populated -->
@@ -3822,7 +3822,7 @@
 
         <!-- Sovereign Pro Tip / Commercial Edge -->
         <div class="p-2 bg-[#fce566] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] flex items-start gap-2">
-          <span class="text-xs shrink-0">⚡</span>
+          <span class="text-xs shrink-0 font-mono text-[#fce566]">[FOCUS]</span>
           <div class="text-[10px] leading-snug text-[#17120f]">
             <strong class="font-arcade text-[9px] uppercase tracking-wider block">PRO-TIP FOR CALLERS:</strong>
             <span id="tourProTipText"></span>
@@ -3869,7 +3869,7 @@
   <!-- Anti-Snipping Privacy Shield Overlay (Triggered on OS Window Focus Loss / Snipping Tool) -->
   <div id="antiSnippingShield" aria-hidden="true">
     <div class="p-6 bg-[#17120f] border-[3px] border-[#fce566] shadow-[8px_8px_0_#000] max-w-md mx-auto space-y-3">
-      <div class="text-2xl">🔒</div>
+      <div class="text-2xl font-mono text-[#fce566] font-bold">[LOCKED]</div>
       <div class="text-xs text-[#fce566] tracking-wider font-bold">CLIENT RADAR COCKPIT LOCKED</div>
       <p class="font-mono text-[11px] text-[#fffdf1]/80 leading-relaxed">
         Window focus lost. Display blurred to protect confidential client telemetry and proprietary dossiers.

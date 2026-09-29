@@ -138,11 +138,11 @@
       if (typeof document === "undefined") return;
       const buttons = document.querySelectorAll("#sfx-toggle-btn, .sfx-toggle-btn, .sfx-btn");
       buttons.forEach((btn) => {
-        const icon = this.muted ? "🔇" : "🔊";
-        btn.innerHTML = `<span class="sfx-bracket">[ </span><span class="sfx-icon">${icon}</span><span class="sfx-label"> SFX</span><span class="sfx-bracket"> ]</span>`;
+        const icon = this.muted ? "OFF" : "ON";
+        btn.innerHTML = `<span class="sfx-bracket">[ </span><span class="sfx-label">AUDIO // </span><span class="sfx-icon">${icon}</span><span class="sfx-bracket"> ]</span>`;
         // In minimal test mock environments where innerHTML doesn't parse child elements
         if (!btn.children || btn.children.length === 0) {
-          btn.textContent = `[ ${icon} SFX ]`;
+          btn.textContent = `[ AUDIO // ${icon} ]`;
         }
         btn.setAttribute("aria-pressed", this.muted ? "false" : "true");
         if (this.muted) {
@@ -156,7 +156,7 @@
       if (typeof document.getElementById === "function") {
         const drawerIcon = document.getElementById("drawer-sfx-icon");
         const drawerText = document.getElementById("drawer-sfx-text");
-        if (drawerIcon) drawerIcon.textContent = this.muted ? "🔇" : "🔊";
+        if (drawerIcon) drawerIcon.textContent = this.muted ? "OFF" : "ON";
         if (drawerText) drawerText.textContent = this.muted ? "SOUND FX: MUTED" : "SOUND FX: ACTIVE";
       }
     }

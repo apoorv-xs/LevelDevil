@@ -609,7 +609,7 @@ describe("System 1 Decision Brain", () => {
         category: "custom_trigger",
         match: ["vip-secret-input"],
         page: "sales",
-        thought: "⚡ VIP clearance sequence detected. Unlocking fast-track rail.",
+        thought: "[SYS] VIP clearance sequence detected. Unlocking fast-track rail.",
         action: "celebrate"
       }, false);
 
@@ -667,7 +667,7 @@ describe("System 1 Decision Brain", () => {
             id: "cloud_trained_project",
             name: "CLOUD PROJECT",
             category: "project",
-            thought: "⚡ Synchronized from Cloud Firestore node.",
+            thought: "[SYS] Synchronized from Cloud Firestore node.",
             keywords: ["cloud", "webrtc"]
           })
         }

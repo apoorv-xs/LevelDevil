@@ -833,13 +833,13 @@ describe('Subsystem 5: Client Radar Workspace & Outreach Cockpit (Expanded Matri
 
     it('generates human-readable invite preview badge for admin list', () => {
       const formatInviteBadge = (inv) => {
-        const statusIcon = inv.status === 'redeemed' ? '🟢' : inv.status === 'revoked' ? '🔴' : '🟡';
+        const statusIcon = inv.status === 'redeemed' ? '●' : inv.status === 'revoked' ? '■' : '▲';
         return `${statusIcon} ${inv.email} [${inv.role || 'caller'}]`;
       };
 
-      expect(formatInviteBadge({ email: 'rep@firm.com', status: 'pending', role: 'caller' })).toBe('🟡 rep@firm.com [caller]');
-      expect(formatInviteBadge({ email: 'rep@firm.com', status: 'redeemed', role: 'caller' })).toBe('🟢 rep@firm.com [caller]');
-      expect(formatInviteBadge({ email: 'rep@firm.com', status: 'revoked', role: 'caller' })).toBe('🔴 rep@firm.com [caller]');
+      expect(formatInviteBadge({ email: 'rep@firm.com', status: 'pending', role: 'caller' })).toBe('▲ rep@firm.com [caller]');
+      expect(formatInviteBadge({ email: 'rep@firm.com', status: 'redeemed', role: 'caller' })).toBe('● rep@firm.com [caller]');
+      expect(formatInviteBadge({ email: 'rep@firm.com', status: 'revoked', role: 'caller' })).toBe('■ rep@firm.com [caller]');
     });
   });
 });

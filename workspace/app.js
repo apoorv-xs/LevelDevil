@@ -63,7 +63,7 @@ const OBJECTIONS = [
 const LAYMAN_ANALOGIES = (typeof window !== 'undefined' && window.LAYMAN_ANALOGIES) ? window.LAYMAN_ANALOGIES : {
   lcp: {
     title: "LCP (Largest Contentful Paint / Mobile Loading Speed)",
-    icon: "⚡",
+    icon: "[LCP]",
     category: "Mobile Speed & Drop-off Bottleneck",
     metaphor: "Like a clinic entrance with a jammed, rusty door latch that takes 4+ seconds to open. Patients get impatient waiting outside and simply walk to the clinic next door.",
     metaphorMl: "ക്ലിനിക്കിന്റെ മുൻവാതിൽ തുറക്കാൻ 4 സെക്കൻഡ് കുടുങ്ങി കിടക്കുന്നത് പോലെയാണ്. ആളുകൾ ക്ഷമകെട്ട് അടുത്ത ക്ലിനിക്കിലേക്ക് പോകും.",
@@ -76,7 +76,7 @@ const LAYMAN_ANALOGIES = (typeof window !== 'undefined' && window.LAYMAN_ANALOGI
   },
   dom: {
     title: "DOM Nodes (Bloated WordPress / Elementor Plugin Drag)",
-    icon: "📦",
+    icon: "[DOM]",
     category: "Code Clutter & Memory Weight",
     metaphor: "Like cramming 3,000 extra plastic chairs, filing cabinets, and boxes into a small consultation room. The doctor has to push through clutter just to greet one patient, slowing everything down.",
     metaphorMl: "ഒരു ചെറിയ റിസപ്ഷൻ റൂമിൽ 3000 പ്ലാസ്റ്റിക് കസേരകൾ കുത്തിനിറച്ചതുപോലെ. ഒരാൾക്ക് നടക്കാൻ പോലും സ്ഥലമില്ലാതെ എല്ലാം സ്ലോ ആകുന്നു.",
@@ -89,7 +89,7 @@ const LAYMAN_ANALOGIES = (typeof window !== 'undefined' && window.LAYMAN_ANALOGI
   },
   dpdp: {
     title: "DPDP Act 2023 (Digital Personal Data Protection Law)",
-    icon: "⚖️",
+    icon: "[LAW]",
     category: "Indian Legal & Regulatory Risk",
     metaphor: "Like leaving patient medical files and phone numbers in an open binder on the front reception counter where anyone can copy them. India's new law requires explicit consent checkboxes and encrypted storage.",
     metaphorMl: "രോഗികളുടെ ഫോൺ നമ്പറുകളും വിവരങ്ങളും റിസപ്ഷൻ കൗണ്ടറിൽ തുറന്നുവെച്ചിരിക്കുന്നത് പോലെയാണ്. പുതിയ ഡാറ്റാ പ്രൊട്ടക്ഷൻ നിയമപ്രകാരം വലിയ ഫൈൻ വരാം.",
@@ -102,7 +102,7 @@ const LAYMAN_ANALOGIES = (typeof window !== 'undefined' && window.LAYMAN_ANALOGI
   },
   tls: {
     title: "TLS / SSL (Data Encryption & Browser Security Badges)",
-    icon: "🔒",
+    icon: "[SEC]",
     category: "Security & Patient Trust Protection",
     metaphor: "Like sending private medical prescriptions on an open postcard that any delivery courier or competitor can read, instead of a stamped, tamper-proof sealed envelope.",
     metaphorMl: "രോഗിയുടെ പ്രൈവറ്റ് വിവരങ്ങൾ ഒരു തുറന്ന പോസ്റ്റ്കാർഡിൽ എഴുതി അയക്കുന്നത് പോലെയാണ്, സീൽ ചെയ്ത കവറിൽ അയക്കുന്നതിന് പകരം.",
@@ -115,7 +115,7 @@ const LAYMAN_ANALOGIES = (typeof window !== 'undefined' && window.LAYMAN_ANALOGI
   },
   ssl: {
     title: "TLS / SSL (Data Encryption & Browser Security Badges)",
-    icon: "🔒",
+    icon: "[SEC]",
     category: "Security & Patient Trust Protection",
     metaphor: "Like sending private medical prescriptions on an open postcard that any delivery courier or competitor can read, instead of a stamped, tamper-proof sealed envelope.",
     metaphorMl: "രോഗിയുടെ പ്രൈവറ്റ് വിവരങ്ങൾ ഒരു തുറന്ന പോസ്റ്റ്കാർഡിൽ എഴുതി അയക്കുന്നത് പോലെയാണ്, സീൽ ചെയ്ത കവറിൽ അയക്കുന്നതിന് പകരം.",
@@ -128,7 +128,7 @@ const LAYMAN_ANALOGIES = (typeof window !== 'undefined' && window.LAYMAN_ANALOGI
   },
   webgl: {
     title: "WebGL / 3D (Interactive Visual Showcase Architecture)",
-    icon: "✨",
+    icon: "[3D]",
     category: "Visual Prestige & High-Ticket Authority",
     metaphor: "Instead of handing a patient a flat paper brochure, it's like putting an interactive, touchable glass miniature in their hands to spin and inspect.",
     metaphorMl: "ഒരു സാധാരണ കടലാസ് നോട്ടീസ് കൊടുക്കുന്നതിന് പകരം, പേഷ്യന്റിന്റെ കയ്യിൽ തിരിച്ചുനോക്കാവുന്ന ഒരു 3D മോഡൽ കൊടുക്കുന്നത് പോലെ.",
@@ -141,7 +141,7 @@ const LAYMAN_ANALOGIES = (typeof window !== 'undefined' && window.LAYMAN_ANALOGI
   },
   thumb: {
     title: "Thumb-Zone UX (Mobile Ergonomics & Sticky CTA)",
-    icon: "📱",
+    icon: "[UI]",
     category: "Mobile Conversion & One-Handed Ease",
     metaphor: "A physical department store where the billing counter is only at the front door. When shoppers walk down aisle 4, they have to hike all the way back just to ask a question.",
     metaphorMl: "ഒരു കടയിൽ കസ്റ്റമർ അകത്തേക്ക് നടക്കുമ്പോൾ കാഷ് കൗണ്ടർ മുൻവശത്ത് മാത്രം ഉള്ളതുപോലെ. ഒരു ചോദ്യം ചോദിക്കാൻ പോലും അവർ വീണ്ടും നടന്നു വരണം.",
@@ -154,7 +154,7 @@ const LAYMAN_ANALOGIES = (typeof window !== 'undefined' && window.LAYMAN_ANALOGI
   },
   aggregator: {
     title: "Aggregator Bleed (Practo / Zomato Commission Bleed)",
-    icon: "💸",
+    icon: "[AGG]",
     category: "Direct Revenue Protection & Middleman Fees",
     metaphor: "Paying an auto or cab driver a 25% commission to bring your regular existing family members to your house.",
     metaphorMl: "നിങ്ങളെ വർഷങ്ങളായി അറിയാവുന്ന സ്ഥിരം രോഗികൾ ക്ലിനിക്കിൽ വരുമ്പോൾ പോലും ഒരു ഇടനിലക്കാരന് 20% കമ്മീഷൻ കൊടുക്കുന്നത് പോലെ.",
@@ -180,7 +180,7 @@ const LAYMAN_ANALOGIES = (typeof window !== 'undefined' && window.LAYMAN_ANALOGI
   },
   headless: {
     title: "Apoorv 60 FPS Headless Architecture (Zero-Plugin Pure Code)",
-    icon: "⚡",
+    icon: "[SLA]",
     category: "Engine Superiority & Enterprise Speed",
     metaphor: "A Formula 1 car engineered from pure carbon fiber versus a standard family sedan loaded with 40 heavy roof racks and spare tires.",
     metaphorMl: "40 ചാക്ക് ഭാരവും ചുമന്നുകൊണ്ട് ഓടുന്ന പഴയ കാറും, ഭാരമില്ലാത്ത പുതിയ സ്പോർട്സ് കാറും തമ്മിലുള്ള വ്യത്യാസം പോലെ.",
@@ -246,7 +246,7 @@ function toggleAudioSFX() {
   }
   const btn = document.getElementById('sfx-toggle-btn') || document.getElementById('sfxToggleBtn');
   if (btn) {
-    btn.innerText = soundEnabled ? '[ 🔊 SFX ]' : '[ 🔇 SFX ]';
+    btn.innerText = soundEnabled ? '[ AUDIO // ON ]' : '[ AUDIO // OFF ]';
     btn.classList.toggle('sfx-muted', !soundEnabled);
   }
   showNotification(soundEnabled ? 'UI Sound Effects Enabled' : 'UI Sound Effects Muted');
@@ -268,7 +268,7 @@ function handleIncomingRealtimeEvent(data) {
       p.lockedBy = data.callerName;
       p.lockedEmail = data.callerEmail;
       playSound('lock');
-      showNotification(`🔒 ${data.callerName} is calling ${p.name}! Lead locked.`);
+      showNotification(`[LOCKED] ${data.callerName} is calling ${p.name}! Lead locked.`);
       renderQueue();
       if (selectedProspectId === p.id) renderActiveProspect();
     }
@@ -285,7 +285,7 @@ function handleIncomingRealtimeEvent(data) {
     const p = PROSPECTS.find(item => item.id === data.prospectId);
     if (p) {
       p.status = 'blacklisted';
-      showNotification(`🚫 ${p.name} added to permanent DNC blacklist.`);
+      showNotification(`[BLOCKED] ${p.name} added to permanent DNC blacklist.`);
       renderQueue();
       if (selectedProspectId === p.id) renderActiveProspect();
     }
@@ -314,7 +314,7 @@ function saveFirebaseDbUrlUI() {
       return;
     }
     localStorage.setItem('sprintdial_firebase_db_url', url);
-    showNotification('🌐 Firebase Database connected for multi-computer anti-clash sync!');
+    showNotification('[SYNC] Firebase Database connected for multi-computer anti-clash sync!');
     initFirebaseSync();
   } else {
     localStorage.removeItem('sprintdial_firebase_db_url');
@@ -330,7 +330,7 @@ function initFirebaseSync() {
   if (dbUrl) {
     if (badge) {
       badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold";
-      badge.innerText = "🟢 Cloud Firebase Active";
+      badge.innerText = "● Cloud Firebase Active";
     }
     // Poll/listen to Firebase updates if configured
     try {
@@ -349,7 +349,7 @@ function initFirebaseSync() {
   } else {
     if (badge) {
       badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950/60 text-blue-300 border border-blue-700/60 font-bold";
-      badge.innerText = "🟢 Local & Tab Sync Active";
+      badge.innerText = "● Local & Tab Sync Active";
     }
   }
 }
@@ -463,38 +463,38 @@ function calculateTiming(category) {
 
   // Standard Business Window: Standard client outreach hours (09:00 AM - 07:00 PM)
   if (timeVal < 9.0 || timeVal >= 19.0) {
-    return { text: "🔴 Outside Business Window (Standard Hours: 9 AM - 7 PM)", cls: "badge-rush" };
+    return { text: "■ Outside Business Window (Standard Hours: 9 AM - 7 PM)", cls: "badge-rush" };
   }
 
   if (category === 'clinic') {
     if ((timeVal >= 13.5 && timeVal <= 16.0) || (timeVal >= 19.5 && timeVal <= 21.0)) {
-      return { text: "🟢 Optimal Window (Post-OPD Consultation)", cls: "badge-optimal" };
+      return { text: "● Optimal Window (Post-OPD Consultation)", cls: "badge-optimal" };
     } else if (timeVal >= 10.0 && timeVal < 13.5) {
-      return { text: "🔴 Morning OPD Rush (High Gatekeeper Drop-Off)", cls: "badge-rush" };
+      return { text: "■ Morning OPD Rush (High Gatekeeper Drop-Off)", cls: "badge-rush" };
     } else {
-      return { text: "🟡 Moderate Availability", cls: "badge-moderate" };
+      return { text: "▲ Moderate Availability", cls: "badge-moderate" };
     }
   } else if (category === 'restaurant') {
     if ((timeVal >= 10.5 && timeVal <= 12.0) || (timeVal >= 15.5 && timeVal <= 17.5)) {
-      return { text: "🟢 Ideal Window (Pre-Service Prep)", cls: "badge-optimal" };
+      return { text: "● Ideal Window (Pre-Service Prep)", cls: "badge-optimal" };
     } else if ((timeVal >= 12.5 && timeVal <= 15.0) || (timeVal >= 19.5 && timeVal <= 22.5)) {
-      return { text: "🔴 Dining Service Peak (Defer Outreach)", cls: "badge-rush" };
+      return { text: "■ Dining Service Peak (Defer Outreach)", cls: "badge-rush" };
     } else {
-      return { text: "🟡 Moderate Service Window", cls: "badge-moderate" };
+      return { text: "▲ Moderate Service Window", cls: "badge-moderate" };
     }
   } else if (category === 'salon') {
     if (timeVal >= 11.0 && timeVal <= 14.5) {
-      return { text: "🟢 Optimal Window (Mid-Day Gap)", cls: "badge-optimal" };
+      return { text: "● Optimal Window (Mid-Day Gap)", cls: "badge-optimal" };
     } else if (timeVal >= 17.0) {
-      return { text: "🟡 High Evening Footfall", cls: "badge-moderate" };
+      return { text: "▲ High Evening Footfall", cls: "badge-moderate" };
     } else {
-      return { text: "🟢 Normal Dialing Window", cls: "badge-optimal" };
+      return { text: "● Normal Dialing Window", cls: "badge-optimal" };
     }
   } else {
     if (timeVal >= 10.5 && timeVal <= 18.0) {
-      return { text: "🟢 Business Hours Active", cls: "badge-optimal" };
+      return { text: "● Business Hours Active", cls: "badge-optimal" };
     } else {
-      return { text: "🟡 Outside Standard Business Hours", cls: "badge-moderate" };
+      return { text: "▲ Outside Standard Business Hours", cls: "badge-moderate" };
     }
   }
 }
@@ -762,7 +762,7 @@ function handleUserAuthResolved(user) {
       localStorage.setItem('sprintdial_user', JSON.stringify(currentUser));
       localStorage.setItem('sprintdial_google_user', JSON.stringify(currentUser));
       onAuthVerified();
-      showNotification(`🎉 Welcome ${displayName}! Your Sales Rep invitation has been verified and redeemed.`);
+      showNotification(`[SUCCESS] Welcome ${displayName}! Your Sales Rep invitation has been verified and redeemed.`);
       return;
     }
 
@@ -935,7 +935,7 @@ function showApplicantPortal(user) {
       if (form) form.classList.add('hidden');
       if (successMsg) {
         successMsg.classList.remove('hidden');
-        successMsg.innerHTML = `✅ Application on file (<strong>${escapeHTML(existing.territory || 'General')}</strong>)! Status: <strong class="text-white">PENDING REVIEW</strong>. Apoorv will review and grant your partner access.`;
+        successMsg.innerHTML = `[ON FILE] Application on file (<strong>${escapeHTML(existing.territory || 'General')}</strong>)! Status: <strong class="text-white">PENDING REVIEW</strong>. Apoorv will review and grant your partner access.`;
       }
     } else {
       if (form) form.classList.remove('hidden');
@@ -991,7 +991,7 @@ function handleRepApplicationSubmit(e) {
   if (form) form.classList.add('hidden');
   if (successMsg) {
     successMsg.classList.remove('hidden');
-    successMsg.innerHTML = `✅ Application submitted! Status: <strong class="text-white">PENDING REVIEW</strong>. Apoorv will review your profile and unlock your workstation access.`;
+    successMsg.innerHTML = `[SUBMITTED] Application submitted! Status: <strong class="text-white">PENDING REVIEW</strong>. Apoorv will review your profile and unlock your workstation access.`;
   }
 
   // Update in-viewport portal
@@ -1041,7 +1041,7 @@ function approveApplicationAsWorker(appId) {
   }
 
   renderAdminUsersList();
-  showNotification(`✅ Approved ${app.name} (${app.email}) as authorized outreach partner!`);
+  showNotification(`[SAVED] Approved ${app.name} (${app.email}) as authorized outreach partner!`);
 }
 
 // Caller accounts registered dynamically by the Owner via Admin Console
@@ -1163,7 +1163,7 @@ function handleCreateWorkerAccount(e) {
   if (nameInput) nameInput.value = '';
 
   renderAdminUsersList();
-  showNotification(`✅ Partner account "@${username}" created successfully!`);
+  showNotification(`[SAVED] Partner account "@${username}" created successfully!`);
 }
 
 function deleteWorkerAccount(username) {
@@ -1173,7 +1173,7 @@ function deleteWorkerAccount(username) {
     delete workers[username];
     saveCustomWorkers(workers);
     renderAdminUsersList();
-    showNotification(`🗑️ Partner account "@${username}" removed.`);
+    showNotification(`[REMOVED] Partner account "@${username}" removed.`);
   }
 }
 
@@ -1437,9 +1437,9 @@ apoorvxs@gmail.com | https://apoorv.qzz.io`;
       window.location.href = mailtoUrl;
     }
 
-    showNotification(`✉️ Invitation generated for ${emails.length} recipient(s)! Mail composer opened & link copied.`);
+    showNotification(`[MAIL] Invitation generated for ${emails.length} recipient(s)! Mail composer opened & link copied.`);
   } else {
-    showNotification(`📋 Generated invitation! 1-click link copied to clipboard.`);
+    showNotification(`[COPIED] Generated invitation! 1-click link copied to clipboard.`);
   }
 }
 
@@ -1479,7 +1479,7 @@ apoorvxs@gmail.com | https://apoorv.qzz.io`;
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(inviteUrl).catch(() => {});
   }
-  showNotification(`✉️ Mail composer opened for ${inv.email} & link copied to clipboard.`);
+  showNotification(`[MAIL] Mail composer opened for ${inv.email} & link copied to clipboard.`);
 }
 
 function copyInviteLink(token) {
@@ -1487,7 +1487,7 @@ function copyInviteLink(token) {
   const inviteUrl = `${window.location.origin}/workspace/?invite=${token}`;
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(inviteUrl).then(() => {
-      showNotification('📋 Invite link copied to clipboard!');
+      showNotification('[COPIED] Invite link copied to clipboard!');
     }).catch(() => {
       prompt('Copy invite link:', inviteUrl);
     });
@@ -1505,7 +1505,7 @@ function revokeInvite(inviteId) {
     inv.status = 'revoked';
     saveStoredInvitations(invites);
     renderAdminInvitationsList();
-    showNotification('🚫 Invitation revoked.');
+    showNotification('[BLOCKED] Invitation revoked.');
   }
 }
 
@@ -1560,11 +1560,11 @@ function renderAdminInvitationsList() {
       </div>
       <div class="flex items-center gap-1.5 shrink-0 self-end sm:self-center">
         <button onclick="copyInviteLink('${inv.token}')" class="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 text-white font-mono text-[11px] transition flex items-center gap-1 cursor-pointer" title="Copy 1-Click Link">
-          <span>📋</span><span>Copy Link</span>
+          <span>[LINK]</span><span>Copy Link</span>
         </button>
         ${isPending ? `
           <button onclick="resendInviteEmail('${inv.id}')" class="px-2.5 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/30 font-mono text-[11px] transition flex items-center gap-1 cursor-pointer" title="Resend Email">
-            <span>✉️</span><span>Resend</span>
+            <span>[MAIL]</span><span>Resend</span>
           </button>
           <button onclick="revokeInvite('${inv.id}')" class="px-2 py-1 rounded bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/40 font-mono text-[11px] transition cursor-pointer" title="Revoke">
             ✕
@@ -1586,7 +1586,7 @@ function claimActiveInvite(token) {
   const storedInvites = getStoredInvitations();
   const inv = storedInvites.find(i => i.token === token && i.status === 'pending');
   if (!inv) {
-    showNotification('⚠️ Invitation is invalid or expired.');
+    showNotification('[ALERT] Invitation is invalid or expired.');
     return;
   }
   inv.status = 'redeemed';
@@ -1609,7 +1609,7 @@ function claimActiveInvite(token) {
   const banner = document.getElementById('inviteRedemptionBanner');
   if (banner) banner.remove();
 
-  showNotification(`🎉 Invitation claimed! Activated as Outreach Partner (${inv.commissionRate || '15%'} tier).`);
+  showNotification(`[SUCCESS] Invitation claimed! Activated as Outreach Partner (${inv.commissionRate || '15%'} tier).`);
   updateProfileDropdownUI();
   if (typeof renderAdminInvitesList === 'function') renderAdminInvitesList();
 }
@@ -1631,7 +1631,7 @@ function handleInviteToken(token) {
     sessionStorage.setItem('sprintdial_active_invite_token', token);
     const claimButtonHtml = currentUser ? `
       <button type="button" onclick="claimActiveInvite('${escapeHTML(token)}')" class="px-4 py-2 bg-[#4deeea] text-[#17120f] hover:bg-[#38d4d0] border-2 border-[#17120f] font-mono text-xs font-bold transition flex items-center gap-1.5 shadow-[2px_2px_0_#17120f] cursor-pointer">
-        <span>👑</span><span>Claim as ${escapeHTML(currentUser.displayName || currentUser.name || currentUser.email)}</span>
+        <span>[CLAIM]</span><span>Claim as ${escapeHTML(currentUser.displayName || currentUser.name || currentUser.email)}</span>
       </button>
     ` : `
       <button type="button" onclick="handleWorkspaceGoogleAuth()" class="px-4 py-2 bg-[#fce566] text-[#17120f] hover:bg-[#fffdf1] border-2 border-[#17120f] font-mono text-xs font-bold transition flex items-center gap-2 shadow-[2px_2px_0_#17120f] cursor-pointer">
@@ -1644,7 +1644,7 @@ function handleInviteToken(token) {
       <div class="flex items-start justify-between gap-3">
         <div class="space-y-1.5 min-w-0">
           <div class="flex items-center gap-2">
-            <span class="text-base">🎉</span>
+            <span class="text-xs font-mono font-bold text-emerald-400">[INVITED]</span>
             <span class="text-xs sm:text-sm font-bold text-[#fce566] font-arcade tracking-wider">SALES REP INVITATION</span>
           </div>
           <p class="text-xs text-[#fff4c9] font-mono leading-relaxed mt-1">
@@ -1673,7 +1673,7 @@ function handleInviteToken(token) {
       <div class="flex items-start justify-between gap-3">
         <div class="space-y-1.5 min-w-0">
           <div class="flex items-center gap-2">
-            <span class="text-base">🔑</span>
+            <span class="text-xs font-mono font-bold text-amber-400">[ACCESS]</span>
             <span class="text-xs sm:text-sm font-bold text-[#fce566] font-arcade tracking-wider">OUTREACH PARTNER INVITE</span>
           </div>
           <p class="text-xs text-[#fff4c9] font-mono leading-relaxed mt-1">
@@ -1779,7 +1779,7 @@ async function ensureProspectsLoaded() {
             const badge = document.getElementById('firestoreSyncStatusBadge');
             if (badge) {
               badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold";
-              badge.innerText = `🟢 Cloud Firestore Active (${PROSPECTS.length})`;
+              badge.innerText = `● Cloud Firestore Active (${PROSPECTS.length})`;
             }
             return;
           }
@@ -1990,68 +1990,68 @@ function recordPartnerActivity(actionType, prospectId, details = {}) {
 
     let isRisk = false;
     let riskLabel = 'ACTIVITY';
-    let riskBadge = '📋 LOGGED';
+    let riskBadge = '[LOG] LOGGED';
     let description = `${callerName} executed ${actionType} on ${prospectName}`;
 
     switch (actionType) {
       case 'CSV_EXPORT':
         isRisk = true;
         riskLabel = 'CRITICAL LEAK ALERT';
-        riskBadge = '⚠️ CSV EXPORT';
+        riskBadge = '[ALERT] CSV EXPORT';
         description = `${callerName} exported ${details.count || 'leads'} records to CSV (${details.territory || city})`;
         break;
       case 'TEARDOWN_PITCH':
         isRisk = !isOwner;
         riskLabel = isRisk ? 'UNAUTHORIZED PITCH' : '3D PITCH CREATED';
-        riskBadge = '🔗 TEARDOWN LINK';
+        riskBadge = '[LINK] TEARDOWN LINK';
         description = `${callerName} generated 3D teardown pitch link for ${prospectName}`;
         break;
       case 'CALL_INITIATED':
         isRisk = false;
         riskLabel = 'OUTREACH TOUCH';
-        riskBadge = '📞 CALL STARTED';
+        riskBadge = '[DIAL] CALL STARTED';
         description = `${callerName} dialed ${prospectName} (${p?.dm || 'DM'})`;
         break;
       case 'DOSSIER_VIEW':
         isRisk = false;
         riskLabel = 'DOSSIER RECON';
-        riskBadge = '👁️ VIEWED LEAD';
+        riskBadge = '[VIEW] VIEWED LEAD';
         description = `${callerName} viewed dossier for ${prospectName} (${city})`;
         break;
       case 'OUTCOME_LOGGED':
         isRisk = false;
         riskLabel = 'STATUS MUTATION';
-        riskBadge = `📝 ${(details.status || 'outcome').toUpperCase().replace('_', ' ')}`;
+        riskBadge = `[STATUS] ${(details.status || 'outcome').toUpperCase().replace('_', ' ')}`;
         description = `${callerName} marked ${prospectName} as ${details.status || 'updated'}`;
         break;
       case 'NOTE_SAVED':
         isRisk = false;
         riskLabel = 'NOTE APPENDED';
-        riskBadge = '💾 NOTE SAVED';
+        riskBadge = '[SAVE] NOTE SAVED';
         description = `${callerName} updated notes on ${prospectName}`;
         break;
       case 'DISCOVERY_BOOKED':
         isRisk = false;
         riskLabel = 'CALENDAR INVITE';
-        riskBadge = '📅 DISCOVERY SET';
+        riskBadge = '[CAL] DISCOVERY SET';
         description = `${callerName} booked discovery invite for ${prospectName}`;
         break;
       case 'CONTACT_UNMASKED':
         isRisk = false;
         riskLabel = 'PHONE REVEALED';
-        riskBadge = '👁️ PHONE REVEAL';
+        riskBadge = '[REVEAL] PHONE REVEAL';
         description = `${callerName} unmasked direct phone for ${prospectName}${details.remaining !== undefined ? ' (' + details.remaining + ' left)' : ''}`;
         break;
       case 'UNMASK_VELOCITY_EXCEEDED':
         isRisk = true;
         riskLabel = 'VELOCITY BREACH';
-        riskBadge = '🚨 RATE LIMIT';
+        riskBadge = '[ALERT] RATE LIMIT';
         description = `${callerName} exceeded hourly unmask velocity (${details.velocityCount || '10'}/${details.limit || '10'})`;
         break;
       case 'CLIPBOARD_TAINT_EXPORT':
         isRisk = !isOwner;
         riskLabel = isRisk ? 'SUSPECT PITCH COPY' : 'PITCH COPIED';
-        riskBadge = '📋 COPIED PITCH';
+        riskBadge = '[COPY] COPIED PITCH';
         description = `${callerName} copied ${details.contentType || 'dossier brief'} with steganographic fingerprint`;
         break;
       default:
@@ -2134,7 +2134,7 @@ function handleIncomingAuditEntry(entry) {
 
   if (isOwnerUser(user)) {
     if (entry.isRisk && !entry.isOwner) {
-      showNotification(`🚨 SURVEILLANCE RADAR: ${entry.callerName} (${entry.callerEmail}) triggered ${entry.riskBadge}!`);
+      showNotification(`[SECURITY] SURVEILLANCE RADAR: ${entry.callerName} (${entry.callerEmail}) triggered ${entry.riskBadge}!`);
       if (typeof playSound === 'function') playSound('chime');
     }
     const dropdown = document.getElementById('userProfileDropdown');
@@ -2247,7 +2247,7 @@ function getProfileTelemetry() {
   });
 
   const streak = typeof getShiftStreak === 'function' ? getShiftStreak() : 1;
-  const milestone = typeof getDialMilestone === 'function' ? getDialMilestone(currentDials) : { level: 0, name: 'Ready', badge: '📡 QUEUED', class: 'bg-white/10 text-gray-400 font-medium' };
+  const milestone = typeof getDialMilestone === 'function' ? getDialMilestone(currentDials) : { level: 0, name: 'Ready', badge: '[QUEUE]', class: 'bg-white/10 text-gray-400 font-medium' };
 
   return {
     dialsToday: currentDials,
@@ -2352,11 +2352,11 @@ function updateProfileDropdownUI() {
 
   if (isOwner) {
     // Owner Executive Fleet Radar & Anti-Theft Surveillance Mode
-    if (cockpitTitleEl) cockpitTitleEl.textContent = '🛡️ FLEET SURVEILLANCE & LEAK RADAR';
-    if (card1TitleEl) card1TitleEl.textContent = '📡 FLEET OUTREACH';
-    if (card2TitleEl) card2TitleEl.textContent = '💰 FLEET PIPELINE';
-    if (card3TitleEl) card3TitleEl.textContent = '🛑 DISQUALIFIED';
-    if (card4TitleEl) card4TitleEl.textContent = '⏱️ FOLLOW-UPS';
+    if (cockpitTitleEl) cockpitTitleEl.textContent = 'RADAR // PARTNER AUDIT TRAIL';
+    if (card1TitleEl) card1TitleEl.textContent = 'OUTREACH // FLEET DIALS';
+    if (card2TitleEl) card2TitleEl.textContent = 'PIPELINE // FLEET VALUE';
+    if (card3TitleEl) card3TitleEl.textContent = 'DISQUALIFIED';
+    if (card4TitleEl) card4TitleEl.textContent = 'CALLBACKS // IN-FLIGHT';
     if (callbackSubtitleEl) callbackSubtitleEl.textContent = 'Active Queued';
 
     if (ownerSummaryStrip) ownerSummaryStrip.classList.remove('hidden');
@@ -2407,10 +2407,10 @@ function updateProfileDropdownUI() {
     if (leakBadgeEl) {
       if (leakCount > 0) {
         leakBadgeEl.className = 'px-1.5 py-0.5 bg-rose-950 text-rose-300 border border-rose-500 font-mono text-[8px] font-bold animate-pulse';
-        leakBadgeEl.textContent = `🚨 ${leakCount} LEAK ALERT${leakCount > 1 ? 'S' : ''}`;
+        leakBadgeEl.textContent = `■ ${leakCount} LEAK ALERT${leakCount > 1 ? 'S' : ''}`;
       } else {
         leakBadgeEl.className = 'px-1.5 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 font-mono text-[8px] font-bold';
-        leakBadgeEl.textContent = '🟢 0 LEAK ALERTS';
+        leakBadgeEl.textContent = '● 0 LEAK ALERTS';
       }
     }
 
@@ -2453,10 +2453,10 @@ function updateProfileDropdownUI() {
     }
   } else {
     // Partner Caller Telemetry View
-    if (cockpitTitleEl) cockpitTitleEl.textContent = '📊 SALES TELEMETRY';
+    if (cockpitTitleEl) cockpitTitleEl.textContent = 'TELEMETRY // REVENUE RADAR';
     const streakBadgeEl = document.getElementById('profileStreakBadge');
     if (streakBadgeEl) {
-      streakBadgeEl.textContent = `🔥 ${telemetry.streak}D STREAK`;
+      streakBadgeEl.textContent = `STREAK // ${telemetry.streak}D`;
       streakBadgeEl.classList.remove('hidden');
     }
     const milestoneBadgeEl = document.getElementById('profileMilestoneBadge');
@@ -2465,10 +2465,10 @@ function updateProfileDropdownUI() {
       milestoneBadgeEl.className = `text-[8px] font-arcade border border-[#17120f] px-1 py-0.5 ${telemetry.milestone.class}`;
       milestoneBadgeEl.classList.remove('hidden');
     }
-    if (card1TitleEl) card1TitleEl.textContent = '📡 OUTREACH';
-    if (card2TitleEl) card2TitleEl.textContent = '🎉 BOOKED';
-    if (card3TitleEl) card3TitleEl.textContent = '🛑 REJECTIONS';
-    if (card4TitleEl) card4TitleEl.textContent = '⏱️ FOLLOW-UPS';
+    if (card1TitleEl) card1TitleEl.textContent = 'OUTREACH // DIALS';
+    if (card2TitleEl) card2TitleEl.textContent = 'CONVERTED // BOOKED';
+    if (card3TitleEl) card3TitleEl.textContent = 'DISQUALIFIED // GATEKEEPER';
+    if (card4TitleEl) card4TitleEl.textContent = 'CALLBACKS // IN-FLIGHT';
     if (callbackSubtitleEl) callbackSubtitleEl.textContent = 'Follow-ups';
 
     if (ownerSummaryStrip) ownerSummaryStrip.classList.add('hidden');
@@ -2566,7 +2566,7 @@ function exportAuditLogsToCSV() {
   if (typeof playSound === 'function') playSound('click');
   const logs = getAuditLogs();
   if (!logs || !logs.length) {
-    showNotification('⚠️ No partner activity logged yet to export.');
+    showNotification('[ALERT] No partner activity logged yet to export.');
     return;
   }
 
@@ -2619,19 +2619,19 @@ function exportAuditLogsToCSV() {
   link.click();
   document.body.removeChild(link);
 
-  showNotification('📥 Partner Surveillance Audit CSV exported successfully!');
+  showNotification('[EXPORT] Partner Surveillance Audit CSV exported successfully!');
 }
 
 function clearAuditLogs() {
   if (!isOwnerUser(currentUser)) {
-    showNotification('🔒 Only Owner (Apoorv) can clear surveillance audit logs.');
+    showNotification('[LOCKED] Only Owner (Apoorv) can clear surveillance audit logs.');
     return;
   }
   if (confirm('Permanently clear all partner activity and surveillance logs?')) {
     localStorage.removeItem(AUDIT_LOG_KEY);
     renderAdminAuditTable();
     updateProfileDropdownUI();
-    showNotification('🧹 Surveillance audit trail cleared.');
+    showNotification('[CLEARED] Surveillance audit trail cleared.');
   }
 }
 
@@ -2831,10 +2831,10 @@ const WORKSPACE_TOUR_STEPS = [
     visual: `┌── TERRITORY QUEUE ──────────────────────────────┐
 │ [ALL LEADS (65)]  [★ CALLBACKS (4)]  [WON (2)] │
 │ ─────────────────────────────────────────────── │
-│ 🚨 ZOMBIE (72h)  │ Dr. Thomas Varghese (Dental) │
-│ ⚠️ OVERDUE (36h) │ Malabar Heritage Grand Villa│
-│ ⏰ DUE TODAY     │ Kochi Spine & Ortho Centre  │
-│ 🟢 READY TO DIAL │ Paragon Luxury Grand Resort │
+│ [ZOMBIE >48H] (72h)   │ Dr. Thomas Varghese (Dental) │
+│ [OVERDUE] (36h) │ Malabar Heritage Grand Villa│
+│ [DUE TODAY]     │ Kochi Spine & Ortho Centre  │
+│ ● READY TO DIAL │ Paragon Luxury Grand Resort │
 └─────────────────────────────────────────────────┘`,
     laptop: [
       "• <strong>Left Column:</strong> Browse all 65 enterprise leads with active status filters.",
@@ -2844,7 +2844,7 @@ const WORKSPACE_TOUR_STEPS = [
     ],
     mobile: [
       "• <strong>Bottom Tab:</strong> Tap <span class='font-bold text-neutral-900'>[📋 QUEUE]</span> to browse leads on mobile.",
-      "• <strong>Urgency Sorting:</strong> Pulsating 🚨 ZOMBIE (>48h) and ⚠️ OVERDUE (24-48h) badges float to the top.",
+      "• <strong>Urgency Sorting:</strong> Pulsating [ZOMBIE >48H] (>48h) and [OVERDUE] (24-48h) badges float to the top.",
       "• <strong>Single Tap:</strong> Tap any prospect card to load their full dossier into active cockpit memory."
     ],
     proTip: "Always clear Zombie (>48h) and Overdue (24-48h) callbacks first at the start of your shift to rescue slipping revenue!"
@@ -2890,7 +2890,7 @@ const WORKSPACE_TOUR_STEPS = [
     summary: 'Dialing starts an active stopwatch. To prevent lost data or skipping callbacks, active calls must be dispositioned through a guided 2-step gate.',
     visual: `┌── IN-CALL FLIGHT HUD ───────────────────────────┐
 │ 🔴 LIVE DIAL [ ⏱️ 02:15 ]  [ ↩ CANCEL (MISCLICK) ]│
-│ STEP 1: [🟢 Spoke to DM] [🟡 Gatekeeper] [⚪ No Ans]│
+│ STEP 1: [● Spoke to DM] [▲ Gatekeeper] [⚪ No Ans]│
 │ STEP 2: [🏆 BOOKED] [🔗 TEARDOWN] [📅 CALLBACK]  │
 │ TAGS  : [+ Asked WhatsApp] [+ In Consultations] │
 └─────────────────────────────────────────────────┘`,
@@ -3239,7 +3239,7 @@ function nextWorkspaceTourStep() {
   } else {
     // Finished tour!
     closeWorkspaceTour(true);
-    showNotification('🚀 Workstation flight manual complete. Ready to dominate outreach!');
+    showNotification('[ADVANCED] Workstation flight manual complete. Ready to dominate outreach!');
     if (typeof window.SFX !== 'undefined' && typeof window.SFX.playCelebrate === 'function') {
       try { window.SFX.playCelebrate(); } catch(e) {}
     }
@@ -3627,7 +3627,7 @@ function getCallbackAging(prospect) {
       isDueToday: true,
       isOverdue: false,
       isZombie: false,
-      badgeText: '⏰ DUE TODAY',
+      badgeText: '[DUE TODAY]',
       badgeClass: 'bg-amber-950/50 text-amber-300 border border-amber-700/50'
     };
   }
@@ -3638,7 +3638,7 @@ function getCallbackAging(prospect) {
       isDueToday: true,
       isOverdue: false,
       isZombie: false,
-      badgeText: '⏰ DUE TODAY',
+      badgeText: '[DUE TODAY]',
       badgeClass: 'bg-amber-950/50 text-amber-300 border border-amber-700/50'
     };
   }
@@ -3653,7 +3653,7 @@ function getCallbackAging(prospect) {
       isDueToday: false,
       isOverdue: false,
       isZombie: true,
-      badgeText: `🚨 ZOMBIE (${Math.round(elapsedHours)}h)`,
+      badgeText: `[STALE // >48H] (${Math.round(elapsedHours)}h)`,
       badgeClass: 'bg-rose-950/60 text-rose-300 border border-rose-500 font-bold animate-pulse'
     };
   } else if (elapsedHours >= 24) {
@@ -3662,7 +3662,7 @@ function getCallbackAging(prospect) {
       isDueToday: false,
       isOverdue: true,
       isZombie: false,
-      badgeText: `⚠️ OVERDUE (${Math.round(elapsedHours)}h)`,
+      badgeText: `[OVERDUE] (${Math.round(elapsedHours)}h)`,
       badgeClass: 'bg-amber-500/20 text-amber-300 border border-amber-500 font-bold animate-pulse'
     };
   } else {
@@ -3671,7 +3671,7 @@ function getCallbackAging(prospect) {
       isDueToday: true,
       isOverdue: false,
       isZombie: false,
-      badgeText: '⏰ DUE TODAY',
+      badgeText: '[DUE TODAY]',
       badgeClass: 'bg-amber-950/50 text-amber-300 border border-amber-700/50'
     };
   }
@@ -3717,7 +3717,7 @@ function renderQueue() {
       badgeText = "Excluded";
     } else if (isClosedWon) {
       badgeClass = "bg-[#fce566] text-[#17120f] border border-[#17120f] font-bold font-arcade";
-      badgeText = "💰 WON";
+      badgeText = "[SOW] WON";
     } else if (isLocked) {
       badgeClass = "bg-rose-950/60 text-rose-300 border border-rose-700 font-bold animate-pulse";
       badgeText = "In Review";
@@ -4269,7 +4269,7 @@ function handleCallInitiated() {
       ? global.currentUser
       : ((typeof currentUser !== 'undefined' && currentUser) ? currentUser : null));
   if (!user) {
-    showNotification('🔑 Sign in with your Partner or Owner credentials to initiate active calls.');
+    showNotification('[AUTH] Sign in with your Partner or Owner credentials to initiate active calls.');
     openAuthGate();
     return;
   }
@@ -4930,7 +4930,7 @@ function copyCurrentAnalogy() {
   const textToCopy = (activeLang === 'ml' && item.talkingPointMl) ? item.talkingPointMl : item.talkingPoint;
   if (typeof navigator !== 'undefined' && navigator.clipboard) {
     navigator.clipboard.writeText(textToCopy).then(() => {
-      showNotification('📋 Conversational script copied to clipboard!');
+      showNotification('[COPIED] Conversational script copied to clipboard!');
       playSound('click');
     }).catch(() => {});
   }
@@ -4985,7 +4985,7 @@ function copyTalkTrack(trackIndex) {
   text = text.replace(/^"|"$/g, '').trim();
   if (navigator.clipboard) {
     navigator.clipboard.writeText(text).then(() => {
-      showNotification('📋 Talk track copied to clipboard!');
+      showNotification('[COPIED] Talk track copied to clipboard!');
       playSound('click');
     }).catch(() => {});
   }
@@ -5442,7 +5442,7 @@ async function toggleVoiceRecording() {
         audio.classList.remove('hidden');
         const aiBtn = document.getElementById('aiTranscribeBtn');
         if (aiBtn) aiBtn.classList.remove('hidden');
-        showNotification('🎙 15s Voice Memo recorded and attached to lead notes!');
+        showNotification('[AUDIO] 15s Voice Memo recorded and attached to lead notes!');
       };
 
       mediaRecorder.start();
@@ -5561,13 +5561,13 @@ function copyTeardownLink() {
         window.triggerHaptic(40);
       }
       playSound('chime');
-      showNotification('⚡ Interactive 3D Teardown link copied to clipboard!');
+      showNotification('[SYS] Interactive 3D Teardown link copied to clipboard!');
     }).catch(() => {
-      showNotification('📋 Link copied!');
+      showNotification('[COPIED] Link copied!');
     });
   } else {
     shareInput?.select();
-    showNotification('📋 Link selected — press Ctrl+C / Cmd+C to copy');
+    showNotification('[COPIED] Link selected — press Ctrl+C / Cmd+C to copy');
   }
 }
 
@@ -5657,7 +5657,7 @@ function saveAndNext() {
       if (window.Player3D && typeof window.Player3D.celebrateVictory === "function") {
         window.Player3D.celebrateVictory();
       }
-      showNotification(`🎉 50% Deposit & Deal Closed for ${p.name}!`);
+      showNotification(`[SUCCESS] 50% Deposit & Deal Closed for ${p.name}!`);
     } else if (discoveryTime) {
       p.status = 'discovery_booked';
       broadcastUnlock(p.id, 'discovery_booked');
@@ -5666,7 +5666,7 @@ function saveAndNext() {
       if (window.Player3D && typeof window.Player3D.celebrateVictory === "function") {
         window.Player3D.celebrateVictory();
       }
-      showNotification(`🎉 Discovery booked for ${p.name} at ${discoveryTime}!`);
+      showNotification(`[SUCCESS] Discovery booked for ${p.name} at ${discoveryTime}!`);
     } else {
       broadcastUnlock(p.id, p.status);
       saveLeadOverride(p.id, { status: p.status, notes });
@@ -5775,7 +5775,7 @@ async function autoBootstrapFirestore(prospectsList) {
       const badge = document.getElementById('firestoreSyncStatusBadge');
       if (badge) {
         badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold";
-        badge.innerText = `🟢 Cloud Firestore Active (${PROSPECTS.length})`;
+        badge.innerText = `● Cloud Firestore Active (${PROSPECTS.length})`;
       }
       return;
     }
@@ -5790,15 +5790,15 @@ async function autoBootstrapFirestore(prospectsList) {
     const badge = document.getElementById('firestoreSyncStatusBadge');
     if (badge) {
       badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold";
-      badge.innerText = `🟢 Cloud Firestore Active (${prospectsList.length})`;
+      badge.innerText = `● Cloud Firestore Active (${prospectsList.length})`;
     }
     const seedBtn = document.getElementById('seedFirestoreBtn');
     if (seedBtn) {
-      seedBtn.innerHTML = `<span>✅ 100% Synced to Cloud</span>`;
+      seedBtn.innerHTML = `<span>[SYNC] 100% Synced to Cloud</span>`;
       seedBtn.classList.remove('bg-blue-600', 'hover:bg-blue-500');
       seedBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-500');
     }
-    showNotification(`⚡ Cloud Firestore active: ${prospectsList.length} accounts synced to your private cloud.`);
+    showNotification(`[SYS] Cloud Firestore active: ${prospectsList.length} accounts synced to your private cloud.`);
   } catch (err) {
     console.warn('Auto Firestore bootstrap:', err.message);
   } finally {
@@ -5831,23 +5831,23 @@ async function uploadProspectsToFirestore() {
       batch.set(ref, p, { merge: true });
     });
     await batch.commit();
-    showNotification(`🎉 Successfully uploaded ${PROSPECTS.length} accounts to Cloud Firestore!`);
+    showNotification(`[SUCCESS] Successfully uploaded ${PROSPECTS.length} accounts to Cloud Firestore!`);
     if (btn) {
       btn.disabled = false;
-      btn.innerHTML = `<span>✅ 100% Synced to Firestore</span>`;
+      btn.innerHTML = `<span>[SYNC] 100% Synced to Firestore</span>`;
       btn.classList.remove('bg-blue-600', 'hover:bg-blue-500');
       btn.classList.add('bg-emerald-600', 'hover:bg-emerald-500');
     }
     const badge = document.getElementById('firestoreSyncStatusBadge');
     if (badge) {
-      badge.innerText = `🟢 Cloud Firestore Active (${PROSPECTS.length})`;
+      badge.innerText = `● Cloud Firestore Active (${PROSPECTS.length})`;
     }
     initFirestoreRealtimeListener(db);
   } catch (err) {
     alert(`Firestore upload error: ${err.message}`);
     if (btn) {
       btn.disabled = false;
-      btn.innerHTML = `<span>🚀 Push Prospects to Firestore</span>`;
+      btn.innerHTML = `<span>[PUSH] Push Prospects to Firestore</span>`;
     }
   }
 }
@@ -5862,14 +5862,14 @@ function exportProspectsJSON() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  showNotification('📥 Prospects JSON backup downloaded.');
+  showNotification('[EXPORT] Prospects JSON backup downloaded.');
 }
 
 function exportActiveQueueCsv() {
   if (typeof playSound === 'function') playSound('click');
   const filtered = PROSPECTS.filter(item => (activeCityFilter === 'All' || item.city === activeCityFilter) && matchSearch(item));
   if (!filtered.length) {
-    showNotification('⚠️ No matching prospects in current queue to export.');
+    showNotification('[ALERT] No matching prospects in current queue to export.');
     return;
   }
 
@@ -5937,7 +5937,7 @@ function exportActiveQueueCsv() {
   URL.revokeObjectURL(url);
 
   if (typeof playSound === 'function') playSound('chime');
-  showNotification(`📥 Exported ${filtered.length} leads (${activeCityFilter}) to CSV!`);
+  showNotification(`[EXPORT] Exported ${filtered.length} leads (${activeCityFilter}) to CSV!`);
 }
 
 // ==========================================
@@ -5959,7 +5959,7 @@ function initGoogleSheetsUI() {
   if (badge) {
     if (url) {
       badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold";
-      badge.innerText = "🟢 Webhook Connected";
+      badge.innerText = "● Webhook Connected";
     } else {
       badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-neutral-400 border border-white/5";
       badge.innerText = "Webhook Standby";
@@ -5976,7 +5976,7 @@ function saveGoogleSheetsWebhookUI() {
       return;
     }
     localStorage.setItem('sprintdial_gsheet_webhook_url', url);
-    showNotification('📊 Google Sheets Webhook URL saved & connected!');
+    showNotification('[SHEETS] Google Sheets Webhook URL saved & connected!');
   } else {
     localStorage.removeItem('sprintdial_gsheet_webhook_url');
     showNotification('Google Sheets Webhook URL removed.');
@@ -6031,7 +6031,7 @@ async function pullFromGoogleSheetUI() {
       }
     }
 
-    showNotification(`🎉 Synced with Google Sheet! (${addedCount} added, ${updatedCount} updated)`);
+    showNotification(`[SUCCESS] Synced with Google Sheet! (${addedCount} added, ${updatedCount} updated)`);
   } catch (err) {
     alert(`Google Sheets Sync Error: ${err.message}`);
   }
@@ -6099,20 +6099,20 @@ function exportToGoogleSheetsCSV() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  showNotification('📊 Exported CSV for Google Sheets!');
+  showNotification('[SHEETS] Exported CSV for Google Sheets!');
 }
 
 function openGoogleSheet1Click() {
   exportToGoogleSheetsCSV();
   window.open('https://sheets.new', '_blank');
-  showNotification('📊 Opening Google Sheets! In your new sheet, click File -> Import -> Upload and select the downloaded CSV.');
+  showNotification('[SHEETS] Opening Google Sheets! In your new sheet, click File -> Import -> Upload and select the downloaded CSV.');
 }
 
 function copyGoogleSheetsFormula() {
   const formula = `=IMPORTDATA("${window.location.origin}/Client_Radar_Prospects_GoogleSheet_Template.csv")`;
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(formula);
-    showNotification('📋 Copied formula to clipboard! Paste in Cell A1 of your Google Sheet.');
+    showNotification('[COPIED] Copied formula to clipboard! Paste in Cell A1 of your Google Sheet.');
   } else {
     prompt('Copy this formula into Cell A1 of Google Sheets:', formula);
   }
@@ -6217,7 +6217,7 @@ function processCsvImportUI() {
   selectProspect(PROSPECTS[0]?.id || "p-1");
   closeCsvImportModal();
   if (textarea) textarea.value = '';
-  showNotification(`🎉 Ingested ${imported} accounts from CSV into workspace!`);
+  showNotification(`[SUCCESS] Ingested ${imported} accounts from CSV into workspace!`);
 }
 
 function saveDialsToday() {
@@ -6288,8 +6288,8 @@ function renderAdminCallLogs() {
 
     const isCustom = (p.id && String(p.id).startsWith('custom-')) || (window.CUSTOM_PROSPECTS && window.CUSTOM_PROSPECTS.some(cp => cp.id === p.id));
     const sourceBadge = isCustom
-      ? '<span class="px-1.5 py-0.5 rounded bg-purple-950/60 text-purple-300 border border-purple-800 text-[9px] font-bold whitespace-nowrap">🟣 Custom Ingest</span>'
-      : '<span class="px-1.5 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-800 text-[9px] font-bold whitespace-nowrap">🟢 Core Dataset</span>';
+      ? '<span class="px-1.5 py-0.5 rounded bg-purple-950/60 text-purple-300 border border-purple-800 text-[9px] font-bold whitespace-nowrap">▲ Custom Ingest</span>'
+      : '<span class="px-1.5 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-800 text-[9px] font-bold whitespace-nowrap">● Core Dataset</span>';
 
     const safeName = escapeHTML(p.name);
     const safeCity = escapeHTML(p.city);
@@ -6298,7 +6298,7 @@ function renderAdminCallLogs() {
     const safePhone = escapeHTML(p.phone);
     const safeStatus = escapeHTML((p.status || 'available').replace('_', ' '));
     const safeNotes = p.notes ? `"${escapeHTML(p.notes)}"` : '';
-    const safeDiscovery = p.discoveryTime ? `<div class="text-emerald-400 text-[10px] mt-0.5">📅 ${escapeHTML(p.discoveryTime)}</div>` : '';
+    const safeDiscovery = p.discoveryTime ? `<div class="text-emerald-400 text-[10px] mt-0.5">CAL // ${escapeHTML(p.discoveryTime)}</div>` : '';
 
     tr.innerHTML = `
       <td class="p-2.5 sm:p-3">
@@ -6436,7 +6436,7 @@ function exportCallDataToCSV() {
   link.click();
   document.body.removeChild(link);
 
-  showNotification('📥 CSV Report exported successfully!');
+  showNotification('[EXPORT] CSV Report exported successfully!');
 }
 
 function resetLocalDispositions() {
@@ -6513,7 +6513,7 @@ function ingestAgentProspects() {
     document.getElementById('agentJsonInput').value = '';
     switchAdminTab('logs');
     openAdminModal();
-    showNotification(`✨ Successfully ingested ${addedCount} prospect(s) into the queue!`);
+    showNotification(`[AI] Successfully ingested ${addedCount} prospect(s) into the queue!`);
   } catch (err) {
     alert(`Invalid JSON format: ${err.message}`);
   }
@@ -6717,7 +6717,7 @@ function deriveSecurityVulnerabilities(category, techStack, siteUrl) {
 
   if (isNoSite) {
     return {
-      grade: '⚠️ HIGH RISK',
+      grade: '[HIGH RISK]',
       score: '15/100 (Unprotected)',
       issues: [
         'No owned SSL domain; zero patient data privacy encryption',
@@ -6730,7 +6730,7 @@ function deriveSecurityVulnerabilities(category, techStack, siteUrl) {
 
   if (isWordPress) {
     return {
-      grade: '⚠️ MODERATE RISK',
+      grade: '[MODERATE RISK]',
       score: '42/100 (Exposure Detected)',
       issues: [
         'Exposed /wp-json/ user enumeration and login endpoint',
@@ -6742,7 +6742,7 @@ function deriveSecurityVulnerabilities(category, techStack, siteUrl) {
   }
 
   return {
-    grade: '🛡️ CAUTION',
+    grade: '[CAUTION]',
     score: '58/100 (Hygiene Flags)',
     issues: [
       'Missing strict HSTS and Content-Security-Policy headers',
@@ -6783,19 +6783,19 @@ function deriveAdvancedGrading(category, techStack, lcpTime, siteUrl) {
 
   // 2. DPDP Act Compliance Grade
   let dpdp = {
-    status: '🔴 DPDP Non-Compliant',
+    status: '■ DPDP Non-Compliant',
     risk: 'High Regulatory & Privacy Exposure',
     detail: 'Lead/intake form captures personal contact info without explicit consent checkboxes or encrypted storage policies required by DPDP Sec 4-6.'
   };
   if (isNoSite) {
     dpdp = {
-      status: '🔴 Zero DPDP Guardrails',
+      status: '■ Zero DPDP Guardrails',
       risk: 'Unshielded Patient Inquiries',
       detail: 'Aggregators and open unencrypted channels intercept patient inquiries without any data fiduciary protections.'
     };
   } else if (stack.includes('headless') || stack.includes('next') || stack.includes('tailwind')) {
     dpdp = {
-      status: '🟢 Data-Protected Baseline',
+      status: '● Data-Protected Baseline',
       risk: 'Compliant Architecture',
       detail: 'TLS encrypted transport with modern isolated form dispatch and consent acknowledgment.'
     };
@@ -6803,12 +6803,12 @@ function deriveAdvancedGrading(category, techStack, lcpTime, siteUrl) {
 
   // 3. Mobile Thumb-Zone Action Audit
   let thumbZone = {
-    status: '❌ No Sticky Action Bar',
+    status: '× No Sticky Action Bar',
     detail: 'No 1-tap thumb call or WhatsApp bar at screen bottom; client must pinch-zoom or scroll to find phone number.'
   };
   if (stack.includes('headless') || stack.includes('vite')) {
     thumbZone = {
-      status: '✅ Sticky Action Bar Active',
+      status: '● Sticky Action Bar Active',
       detail: 'Persistent thumb-accessible call & booking bar anchored to bottom mobile viewport.'
     };
   }
@@ -6816,26 +6816,26 @@ function deriveAdvancedGrading(category, techStack, lcpTime, siteUrl) {
   // 4. Booking Friction Index
   let bookingFriction = {
     steps: '7 Friction Steps',
-    severity: '🔴 Severe Drop-off Risk',
+    severity: '■ Severe Drop-off Risk',
     detail: 'Requires typing name, email, query, waiting for admin callback, or opening unoptimized external PDF.'
   };
   if (isNoSite) {
     bookingFriction = {
       steps: '9 Friction Steps',
-      severity: '🔴 Maximum Friction',
+      severity: '■ Maximum Friction',
       detail: 'Patient forced through aggregator directory listings, ads, and competing clinic recommendations.'
     };
   } else if (stack.includes('headless') || stack.includes('custom')) {
     bookingFriction = {
       steps: '2 Steps (Direct)',
-      severity: '🟢 Frictionless',
+      severity: '● Frictionless',
       detail: '1-tap WhatsApp consultation dispatch with zero intermediate forms.'
     };
   }
 
   // 5. Google Business Profile Reputation Bridge
   let reputationBridge = {
-    status: '⚠️ Reputation Disconnect',
+    status: '[ALERT] Reputation Disconnect',
     detail: 'Strong Google review ratings (4.5★+) are wasted because incoming mobile visitors encounter a slow, static website with zero live booking bridge.'
   };
 
@@ -7006,7 +7006,7 @@ function saveGeminiApiKeyUI() {
   }
   localStorage.setItem('sprintdial_gemini_api_key', key);
   updateGeminiKeyBadge(true);
-  showNotification('🔑 Gemini API Key saved to browser local storage!');
+  showNotification('[AUTH] Gemini API Key saved to browser local storage!');
 }
 
 function updateGeminiKeyBadge(isConnected) {
@@ -7014,10 +7014,10 @@ function updateGeminiKeyBadge(isConnected) {
   if (badge) {
     if (isConnected) {
       badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold";
-      badge.innerText = "🟢 Key Configured (Gemini 2.0 Flash)";
+      badge.innerText = "● Key Configured (Gemini 2.0 Flash)";
     } else {
       badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-rose-950/50 text-rose-300 border border-rose-800/50 font-bold";
-      badge.innerText = "⚪ Key Not Set";
+      badge.innerText = "○ Key Not Set";
     }
   }
 }
@@ -7040,7 +7040,7 @@ async function testGeminiConnectionUI() {
     });
     if (res.ok) {
       updateGeminiKeyBadge(true);
-      alert('🎉 Success! Connected directly to Google AI Gemini 2.0 Flash.');
+      alert('[SUCCESS] Connected directly to Google AI Gemini 2.0 Flash.');
     } else {
       const err = await res.text();
       alert(`Connection failed (${res.status}): ${err}`);
@@ -7091,7 +7091,7 @@ async function runAiScoutFromUI() {
       const prospectData = JSON.parse(text);
       window.sprintdial.addProspect(prospectData);
       if (logText) logText.innerText += `[3/3] ✔ Successfully injected ${prospectData.name} into live queue!\n`;
-      showNotification(`✨ Gemini audited & injected ${prospectData.name}!`);
+      showNotification(`[AI] Gemini audited & injected ${prospectData.name}!`);
     } catch (e) {
       if (logText) logText.innerText += `[!] Fallback engine active: ${e.message}\n`;
       fallbackScoutUI(business, city, category);
@@ -7117,7 +7117,7 @@ function fallbackScoutUI(business, city, category) {
     lcpTime: "LCP: 4.6s",
     techStack: "WordPress / Elementor Bloat"
   });
-  showNotification(`✨ Lead '${p.name}' created & ready to dial!`);
+  showNotification(`[AI] Lead '${p.name}' created & ready to dial!`);
 }
 
 function runQuickPreset(preset) {
@@ -7158,7 +7158,7 @@ async function runBatchScoutFromAdmin() {
   if (btn) btn.disabled = true;
   if (btnText) btnText.innerText = 'Worker Running...';
   if (logText) {
-    logText.innerText = `[1/4] 🚀 Launching Gemini 2.0 Flash autonomous scout for ${count} ${vertical} leads in ${city}...\n`;
+    logText.innerText = `[1/4] [AI] Launching Gemini 2.0 Flash autonomous scout for ${count} ${vertical} leads in ${city}...\n`;
   }
 
   const key = getGeminiApiKey();
@@ -7209,7 +7209,7 @@ Output a JSON array containing exactly ${count} prospect objects matching this s
       });
 
       if (logText) logText.innerText += `[4/4] ✔ Complete! Added ${added} new lead(s) to live queue. Pipeline expanded by ₹${addedValue.toLocaleString('en-IN')}.\n`;
-      showNotification(`✨ Gemini Scout generated & injected ${added} new leads!`);
+      showNotification(`[AI] Gemini Scout generated & injected ${added} new leads!`);
     } catch (e) {
       if (logText) logText.innerText += `[!] Live API issue (${e.message}). Synthesizing via verified fallback generator...\n`;
       simulateBatchWorker(city, vertical, count, logText);
@@ -7273,8 +7273,8 @@ function simulateBatchWorker(city, vertical, count, logText) {
     if (p) added++;
   }
 
-  if (logText) logText.innerText += `[✔] Complete! Ingested ${added} verified ${vertical} lead(s) into queue.\n`;
-  showNotification(`✨ Generated & added ${added} new ${vertical} leads!`);
+  if (logText) logText.innerText += `[DONE] Complete! Ingested ${added} verified ${vertical} lead(s) into queue.\n`;
+  showNotification(`[AI] Generated & added ${added} new ${vertical} leads!`);
 }
 
 // Helper: Convert Blob to Base64 string
@@ -7401,16 +7401,16 @@ function applyDebriefResult(result) {
   if (badge) {
     if (result.sentiment === 'RECEPTIVE') {
       badge.className = "px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 font-bold border border-emerald-700/60 font-mono";
-      badge.innerText = "🟢 RECEPTIVE";
+      badge.innerText = "● RECEPTIVE";
     } else if (result.sentiment === 'SKEPTICAL') {
       badge.className = "px-2 py-0.5 rounded bg-amber-950/60 text-amber-300 font-bold border border-amber-700/60 font-mono";
-      badge.innerText = "🟡 SKEPTICAL";
+      badge.innerText = "▲ SKEPTICAL";
     } else if (result.sentiment === 'GATEKEEPER_BLOCKED') {
       badge.className = "px-2 py-0.5 rounded bg-rose-950/60 text-rose-300 font-bold border border-rose-700/60 font-mono";
-      badge.innerText = "🔴 GATEKEEPER BLOCKED";
+      badge.innerText = "■ GATEKEEPER BLOCKED";
     } else {
       badge.className = "px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 font-bold border border-emerald-700/60 font-mono";
-      badge.innerText = `🟢 ${result.sentiment || 'ANALYSIS COMPLETE'}`;
+      badge.innerText = `● ${result.sentiment || 'ANALYSIS COMPLETE'}`;
     }
   }
 
@@ -7506,7 +7506,7 @@ Return a strict JSON object with these exact keys:
         }
 
         applyDebriefResult(result);
-        showNotification('✨ Real Gemini audio analysis completed!');
+        showNotification('[AI] Real Gemini audio analysis completed!');
         return;
       }
     } catch(e) {
@@ -7521,7 +7521,7 @@ Return a strict JSON object with these exact keys:
   } else {
     setTimeout(() => {
       applyDebriefResult(fallbackData);
-      showNotification('🎙 Voice memo analyzed by Gemini and attached to lead!');
+      showNotification('[AUDIO] Voice memo analyzed by Gemini and attached to lead!');
     }, 400);
   }
 }
@@ -7667,7 +7667,7 @@ function copyProposalText() {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(payload);
     }
-    showNotification('📋 Executive Proposal Markdown copied to clipboard!');
+    showNotification('[COPIED] Executive Proposal Markdown copied to clipboard!');
   }
 }
 
@@ -7686,7 +7686,7 @@ function downloadProposalMarkdown() {
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  showNotification(`📥 Downloaded ${filename}!`);
+  showNotification(`[EXPORT] Downloaded ${filename}!`);
 }
 
 // ==========================================================================
@@ -7793,7 +7793,7 @@ function copyUpiId() {
   playSound('click');
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText('apoorvxs@okaxis').then(() => {
-      showNotification('📋 UPI ID apoorvxs@okaxis copied!');
+      showNotification('[COPIED] UPI ID apoorvxs@okaxis copied!');
     });
   }
 }
@@ -7806,11 +7806,11 @@ function copyDealProposalLink() {
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(url).then(() => {
       playSound('chime');
-      showNotification('⚡ Client Proposal & 50% Deposit URL copied to clipboard!');
+      showNotification('[SYS] Client Proposal & 50% Deposit URL copied to clipboard!');
     });
   } else {
     shareInput?.select();
-    showNotification('📋 Link selected — press Ctrl+C / Cmd+C to copy');
+    showNotification('[COPIED] Link selected — press Ctrl+C / Cmd+C to copy');
   }
 }
 
@@ -7830,7 +7830,7 @@ function sendWhatsAppDealCommitment() {
   const cleanDm = (p.dm || 'Director').split('(')[0].trim();
   const cleanName = (p.name || 'Establishment').split(',')[0].trim();
 
-  const msg = `Namaste ${cleanDm},\n\nFollowing our discussion regarding ${cleanName}:\n\nHere is your official Executive Proposal & 1-Page Milestone SOW from Apoorv A S (Creative Technologist & 3D WebUI Architect):\n\n📋 Package: ${tier.name}\n💰 Total Investment: ₹${tier.total.toLocaleString('en-IN')}\n⚡ 50% Kickoff Advance: ₹${tier.advance.toLocaleString('en-IN')}\n\n🔒 60 FPS PERFORMANCE SLA GUARANTEE:\nIf your delivered site fails to achieve a locked 60 FPS floor or Core Web Vitals pass on modern mobile, Apoorv guarantees a 100% full refund of your deposit.\n\n👉 Review Proposal & Pay Deposit via UPI/Card:\n${url}\n\nUPI ID: apoorvxs@okaxis\n\nWarm regards,\n${callerName}\nOffice of Apoorv A S | https://apoorv.qzz.io`;
+  const msg = `Namaste ${cleanDm},\n\nFollowing our discussion regarding ${cleanName}:\n\nHere is your official Executive Proposal & 1-Page Milestone SOW from Apoorv A S (Creative Technologist & 3D WebUI Architect):\n\nPackage: ${tier.name}\nTotal Investment: ₹${tier.total.toLocaleString('en-IN')}\n50% Kickoff Advance: ₹${tier.advance.toLocaleString('en-IN')}\n\n60 FPS PERFORMANCE SLA GUARANTEE:\nIf your delivered site fails to achieve a locked 60 FPS floor or Core Web Vitals pass on modern mobile, Apoorv guarantees a 100% full refund of your deposit.\n\nReview Proposal & Pay Deposit via UPI/Card:\n${url}\n\nUPI ID: apoorvxs@okaxis\n\nWarm regards,\n${callerName}\nOffice of Apoorv A S | https://apoorv.qzz.io`;
 
   const waLink = targetPhone
     ? `https://wa.me/${targetPhone}?text=${encodeURIComponent(msg)}`
@@ -7883,7 +7883,7 @@ function confirmDealDepositReceived() {
     window.triggerHaptic([50, 100, 50, 100]);
   }
 
-  showNotification(`🎉 50% Deposit Confirmed! Deal Closed & Commission of ₹${tier.commission.toLocaleString('en-IN')} Unlocked!`);
+  showNotification(`[SUCCESS] 50% Deposit Confirmed! Deal Closed & Commission of ₹${tier.commission.toLocaleString('en-IN')} Unlocked!`);
   closeDealCommitmentModal();
   updateProfileDropdownUI();
 }
@@ -7936,7 +7936,7 @@ function getExecutiveHandoffBriefText() {
   });
   const contextNotes = document.getElementById('handoffContextNotes')?.value?.trim() || 'Client requested direct architecture walkthrough with Apoorv.';
 
-  return `🚀 EXECUTIVE HANDOFF BRIEF FOR APOORV
+  return `EXECUTIVE HANDOFF BRIEF FOR APOORV
 Target Enterprise: ${p.name}
 Decision Maker: ${p.dm} (Phone: ${p.phone || 'N/A'})
 Meeting Slot: ${formattedTime} (Google Meet)
@@ -7969,7 +7969,7 @@ function copyHandoffBriefText() {
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).then(() => {
       playSound('chime');
-      showNotification('📋 Executive Handoff Brief copied to clipboard!');
+      showNotification('[COPIED] Executive Handoff Brief copied to clipboard!');
     });
   }
 }
@@ -8033,7 +8033,7 @@ function saveHandoffAndAdvance() {
   if (discInput) discInput.value = formattedTime;
 
   closeExecutiveHandoffModal();
-  showNotification(`🤝 Handoff scheduled for ${p.name}! Advancing lead...`);
+  showNotification(`[ESCALATED] Handoff scheduled for ${p.name}! Advancing lead...`);
   saveAndNext();
 }
 
@@ -8052,11 +8052,11 @@ function getSettledCommissionIds() {
 
 function getDialMilestone(dials) {
   const d = Number(dials) || 0;
-  if (d >= 20) return { level: 4, name: 'Target Crushed', badge: '🏆 CRUSHED', class: 'bg-[#fce566] text-[#17120f] font-bold' };
-  if (d >= 15) return { level: 3, name: 'Power Hour', badge: '🚀 POWER', class: 'bg-purple-900 text-purple-200 font-bold' };
-  if (d >= 10) return { level: 2, name: 'Flow State', badge: '⚡ FLOW', class: 'bg-emerald-900 text-emerald-200 font-bold' };
-  if (d >= 5)  return { level: 1, name: 'Warm Up', badge: '🔥 WARM', class: 'bg-amber-900 text-amber-200 font-bold' };
-  return { level: 0, name: 'Ready', badge: '📡 QUEUED', class: 'bg-white/10 text-gray-400 font-medium' };
+  if (d >= 20) return { level: 4, name: 'Target Crushed', badge: '[TARGET MET]', class: 'bg-[#fce566] text-[#17120f] font-bold' };
+  if (d >= 15) return { level: 3, name: 'Power Hour', badge: '[PEAK]', class: 'bg-purple-900 text-purple-200 font-bold' };
+  if (d >= 10) return { level: 2, name: 'Flow State', badge: '[FLOW]', class: 'bg-emerald-900 text-emerald-200 font-bold' };
+  if (d >= 5)  return { level: 1, name: 'Warm Up', badge: '[WARM]', class: 'bg-amber-900 text-amber-200 font-bold' };
+  return { level: 0, name: 'Ready', badge: '[QUEUE]', class: 'bg-white/10 text-gray-400 font-medium' };
 }
 
 function updateShiftStreakOnDial() {
@@ -8108,7 +8108,7 @@ function sendCallbackNudgeWhatsApp(prospectId) {
     : ((typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS)) ? PROSPECTS : []);
   const p = allLeads.find(item => item.id === targetId);
   if (!p) {
-    showNotification('⚠️ Please select a prospect first.');
+    showNotification('[ALERT] Please select a prospect first.');
     return;
   }
   playSound('click');
@@ -8123,7 +8123,7 @@ function sendCallbackNudgeWhatsApp(prospectId) {
   const partnerId = callerUser.sub || callerUser.uid || 'partner';
   const teardownUrl = `https://apoorv.qzz.io/sales?prospect=${encodeURIComponent(p.id)}&partner=${encodeURIComponent(partnerId)}`;
 
-  const msg = `Namaste ${cleanDm},\n\nFollowing up on our brief conversation regarding ${cleanName}.\n\nDid you get an opportunity to review the 60 FPS performance comparison & revenue leak audit we prepared?\n👉 ${teardownUrl}\n\nApoorv A S (Creative Technologist & 3D WebUI Architect) has a brief 10-minute window today at 3:30 PM for a screen share to show how your direct inquiries can increase by 25%.\n\nDoes 3:30 PM today work for you?\n\nWarm regards,\n${callerName}\nOffice of Apoorv A S | https://apoorv.qzz.io`;
+  const msg = `Namaste ${cleanDm},\n\nFollowing up on our brief conversation regarding ${cleanName}.\n\nDid you get an opportunity to review the 60 FPS performance comparison & revenue leak audit we prepared?\nAudit Link: ${teardownUrl}\n\nApoorv A S (Creative Technologist & 3D WebUI Architect) has a brief 10-minute window today at 3:30 PM for a screen share to show how your direct inquiries can increase by 25%.\n\nDoes 3:30 PM today work for you?\n\nWarm regards,\n${callerName}\nOffice of Apoorv A S | https://apoorv.qzz.io`;
 
   const waLink = targetPhone
     ? `https://wa.me/${targetPhone}?text=${encodeURIComponent(msg)}`
@@ -8133,7 +8133,7 @@ function sendCallbackNudgeWhatsApp(prospectId) {
     recordPartnerActivity('CALLBACK_NUDGE_SENT', p.id, { client: p.name, phone: targetPhone });
   }
 
-  showNotification(`💬 Prepared WhatsApp Callback Nudge for ${cleanDm}!`);
+  showNotification(`[WA] Prepared WhatsApp Callback Nudge for ${cleanDm}!`);
   if (typeof window !== "undefined") {
     window.open(waLink, '_blank');
   }
@@ -8194,7 +8194,7 @@ function updateWalletModalUI() {
     if (!telemetry.ledger || telemetry.ledger.length === 0) {
       ledgerList.innerHTML = `
         <div class="p-4 bg-white/5 border border-white/10 text-center font-mono text-xs text-neutral-400 space-y-1">
-          <p>📡 No commission ledger records yet.</p>
+          <p>No commission ledger records yet.</p>
           <p class="text-[10px] text-neutral-500">Close deals directly on call for 15% instant commission, or forward discovery walkthroughs for 10% referral safety net.</p>
         </div>
       `;
@@ -8208,9 +8208,9 @@ function updateWalletModalUI() {
 
       let statusBadge = '';
       if (item.isSettled) {
-        statusBadge = `<span class="px-2 py-0.5 bg-emerald-100 text-emerald-900 border border-emerald-500 font-arcade text-[8px] font-bold">✅ SETTLED</span>`;
+        statusBadge = `<span class="px-2 py-0.5 bg-emerald-100 text-emerald-900 border border-emerald-500 font-arcade text-[8px] font-bold">● SETTLED</span>`;
       } else if (isWon) {
-        statusBadge = `<span class="px-2 py-0.5 bg-[#fce566] text-[#17120f] border border-[#17120f] font-arcade text-[8px] font-bold">💰 CLEARED (15%)</span>`;
+        statusBadge = `<span class="px-2 py-0.5 bg-[#fce566] text-[#17120f] border border-[#17120f] font-arcade text-[8px] font-bold">● CLEARED (15%)</span>`;
       } else {
         statusBadge = `<span class="px-2 py-0.5 bg-blue-100 text-blue-900 border border-blue-400 font-arcade text-[8px] font-bold">⏳ PENDING (10%)</span>`;
       }
@@ -8257,14 +8257,14 @@ function requestUpiSettlement() {
   const cleared = telemetry.clearedCommission;
 
   if (cleared <= 0) {
-    showNotification('⚠️ No cleared commission balance available for settlement yet.');
+    showNotification('[ALERT] No cleared commission balance available for settlement yet.');
     return;
   }
 
   const upiInput = document.getElementById('partnerUpiInput');
   const upiId = upiInput?.value.trim() || ((typeof localStorage !== 'undefined') ? localStorage.getItem('sprintdial_partner_upi') : '') || '';
   if (!upiId || !upiId.includes('@')) {
-    showNotification('⚠️ Please enter a valid UPI ID (e.g. partner@okaxis) to request payout.');
+    showNotification('[ALERT] Please enter a valid UPI ID (e.g. partner@okaxis) to request payout.');
     upiInput?.focus();
     return;
   }
@@ -8276,7 +8276,7 @@ function requestUpiSettlement() {
   const clearedDeals = telemetry.ledger.filter(d => d.type === 'closed_won' && !d.isSettled);
   const ledgerLines = clearedDeals.map(d => `• ${d.name} (${d.tierName}) → Commission: ₹${d.commission.toLocaleString('en-IN')}`).join('\n');
 
-  const msg = `⚡ OUTREACH PARTNER COMMISSION SETTLEMENT REQUEST\n\nPartner: ${callerName} (${callerEmail})\nRegistered UPI: ${upiId}\nRequested Payout: ₹${cleared.toLocaleString('en-IN')}\n\nVerified Deal Ledger:\n${ledgerLines}\n\nTotal Cleared Balance: ₹${cleared.toLocaleString('en-IN')}\n\nPlease transfer and mark settled.\nOffice of Apoorv A S | SprintDial Cockpit`;
+  const msg = `[REQUEST] OUTREACH PARTNER COMMISSION SETTLEMENT\n\nPartner: ${callerName} (${callerEmail})\nRegistered UPI: ${upiId}\nRequested Payout: ₹${cleared.toLocaleString('en-IN')}\n\nVerified Deal Ledger:\n${ledgerLines}\n\nTotal Cleared Balance: ₹${cleared.toLocaleString('en-IN')}\n\nPlease transfer and mark settled.\nOffice of Apoorv A S | SprintDial Cockpit`;
 
   const waLink = `https://wa.me/919495462450?text=${encodeURIComponent(msg)}`;
 
@@ -8288,7 +8288,7 @@ function requestUpiSettlement() {
     });
   }
 
-  showNotification('⚡ Opening WhatsApp to dispatch verified settlement request to Apoorv...');
+  showNotification('[SYS] Opening WhatsApp to dispatch verified settlement request to Apoorv...');
   if (typeof window !== "undefined") {
     window.open(waLink, '_blank');
   }
@@ -8297,7 +8297,7 @@ function requestUpiSettlement() {
 function settleDealCommission(prospectId) {
   const user = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : (window.currentUser || {});
   if (!isOwnerUser(user)) {
-    showNotification('🛑 Only the Owner (Apoorv) can clear commission settlements.');
+    showNotification('[RESTRICTED] Only the Owner (Apoorv) can clear commission settlements.');
     return;
   }
   playSound('chime');
@@ -8308,7 +8308,7 @@ function settleDealCommission(prospectId) {
       localStorage.setItem('sprintdial_settled_commissions', JSON.stringify(settled));
     }
   }
-  showNotification('✅ Deal commission marked as SETTLED!');
+  showNotification('[SAVED] Deal commission marked as SETTLED!');
   updateWalletModalUI();
   updateProfileDropdownUI();
 }
@@ -8316,7 +8316,7 @@ function settleDealCommission(prospectId) {
 function settleAllClearedCommissions() {
   const user = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : (window.currentUser || {});
   if (!isOwnerUser(user)) {
-    showNotification('🛑 Only the Owner (Apoorv) can clear commission settlements.');
+    showNotification('[RESTRICTED] Only the Owner (Apoorv) can clear commission settlements.');
     return;
   }
   playSound('chime');
@@ -8333,7 +8333,7 @@ function settleAllClearedCommissions() {
   if (typeof localStorage !== 'undefined') {
     localStorage.setItem('sprintdial_settled_commissions', JSON.stringify(settled));
   }
-  showNotification(`✅ Successfully settled ₹${telemetry.clearedCommission.toLocaleString('en-IN')} across ${clearedDeals.length} deals!`);
+  showNotification(`[SAVED] Successfully settled ₹${telemetry.clearedCommission.toLocaleString('en-IN')} across ${clearedDeals.length} deals!`);
   updateWalletModalUI();
   updateProfileDropdownUI();
 }
@@ -8525,7 +8525,7 @@ if (typeof window !== 'undefined') {
   window.addEventListener('appinstalled', () => {
     deferredInstallPrompt = null;
     if (typeof showNotification === 'function') {
-      showNotification('🎉 Client Radar mobile app successfully installed to your device!');
+      showNotification('[SUCCESS] Client Radar mobile app successfully installed to your device!');
     }
     updateInstallAppVisibility();
   });
@@ -8578,10 +8578,10 @@ function updateInstallAppVisibility() {
   const nativePromptBtn = document.getElementById('btnTriggerNativeInstall');
   if (nativePromptBtn) {
     if (deferredInstallPrompt) {
-      nativePromptBtn.innerHTML = '<span>📲</span> <span>TRIGGER 1-TAP INSTALL PROMPT</span>';
+      nativePromptBtn.innerHTML = '<span>[INSTALL]</span> <span>TRIGGER 1-TAP INSTALL PROMPT</span>';
       nativePromptBtn.classList.remove('opacity-75');
     } else {
-      nativePromptBtn.innerHTML = '<span>💡</span> <span>ADD TO HOME SCREEN VIA BROWSER MENU</span>';
+      nativePromptBtn.innerHTML = '<span>[DIR]</span> <span>ADD TO HOME SCREEN VIA BROWSER MENU</span>';
       nativePromptBtn.classList.add('opacity-75');
     }
   }
@@ -8590,7 +8590,7 @@ function updateInstallAppVisibility() {
 function openInstallAppModal() {
   if (!isInstallAppEligible()) {
     if (typeof showNotification === 'function') {
-      showNotification('🔒 Sign in and verify your partner credentials to install the mobile app.');
+      showNotification('[LOCKED] Sign in and verify your partner credentials to install the mobile app.');
     }
     if (typeof openAuthGate === 'function') openAuthGate();
     return;
@@ -8646,7 +8646,7 @@ async function triggerNativeInstallPrompt() {
       const choice = await deferredInstallPrompt.userChoice;
       if (choice && choice.outcome === 'accepted') {
         if (typeof showNotification === 'function') {
-          showNotification('🎉 Installing Client Radar to home screen...');
+          showNotification('[SUCCESS] Installing Client Radar to home screen...');
         }
         deferredInstallPrompt = null;
         closeInstallAppModal();
@@ -8657,7 +8657,7 @@ async function triggerNativeInstallPrompt() {
     }
   } else {
     if (typeof showNotification === 'function') {
-      showNotification('💡 Tap Chrome menu (⋮) -> "Install app" or "Add to Home screen"');
+      showNotification('[INFO] Tap Chrome menu (⋮) -> "Install app" or "Add to Home screen"');
     }
   }
 }
@@ -8673,7 +8673,7 @@ function copyWorkspaceUrl() {
         setTimeout(() => { btnText.innerText = orig; }, 2500);
       }
       if (typeof showNotification === 'function') {
-        showNotification('📋 Workspace URL copied. Paste into Chrome or Safari to install!');
+        showNotification('[COPIED] Workspace URL copied. Paste into Chrome or Safari to install!');
       }
     }).catch(() => {});
   }
@@ -8682,7 +8682,7 @@ function copyWorkspaceUrl() {
 async function handleInstallAppClick() {
   if (!isInstallAppEligible()) {
     if (typeof showNotification === 'function') {
-      showNotification('🔒 Sign in and verify your partner credentials to install the mobile app.');
+      showNotification('[LOCKED] Sign in and verify your partner credentials to install the mobile app.');
     }
     if (typeof openAuthGate === 'function') openAuthGate();
     return;
@@ -8690,7 +8690,7 @@ async function handleInstallAppClick() {
 
   if (isRunningInStandaloneMode()) {
     if (typeof showNotification === 'function') {
-      showNotification('📱 Client Radar is already running in standalone app mode.');
+      showNotification('[APP] Client Radar is already running in standalone app mode.');
     }
     return;
   }
@@ -8701,7 +8701,7 @@ async function handleInstallAppClick() {
       const choice = await deferredInstallPrompt.userChoice;
       if (choice && choice.outcome === 'accepted') {
         if (typeof showNotification === 'function') {
-          showNotification('🎉 Installing Client Radar to your device...');
+          showNotification('[SUCCESS] Installing Client Radar to your device...');
         }
         deferredInstallPrompt = null;
         updateInstallAppVisibility();
@@ -8866,7 +8866,7 @@ function unmaskProspectPhone(prospectId) {
   const check = checkUnmaskVelocity();
   if (!check.allowed) {
     if (typeof showNotification === 'function') {
-      showNotification(`⚠️ Unmask rate limit reached (${check.count}/${check.limit} per hr). Contact Apoorv for bulk clearance.`);
+      showNotification(`[ALERT] Unmask rate limit reached (${check.count}/${check.limit} per hr). Contact Apoorv for bulk clearance.`);
     }
     if (typeof recordPartnerActivity === 'function') {
       recordPartnerActivity('UNMASK_VELOCITY_EXCEEDED', prospectId, {
@@ -8891,7 +8891,7 @@ function unmaskProspectPhone(prospectId) {
   }
 
   if (typeof showNotification === 'function') {
-    showNotification(`👁️ Contact unmasked (${remaining} unmasks remaining this hour)`);
+    showNotification(`[UNMASK] Contact unmasked (${remaining} unmasks remaining this hour)`);
   }
   if (typeof renderActiveProspect === 'function') renderActiveProspect();
   return true;
@@ -9032,7 +9032,7 @@ if (typeof document !== 'undefined' && typeof document.addEventListener === 'fun
       const tainted = taintAttributedText(selectedText, 'manual_selection_copy');
       e.clipboardData.setData('text/plain', tainted);
       if (typeof showNotification === 'function') {
-        showNotification('📋 Text copied with cryptographic attribution footer');
+        showNotification('[COPIED] Text copied with cryptographic attribution footer');
       }
     }
   });

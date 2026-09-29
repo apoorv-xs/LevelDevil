@@ -46,14 +46,14 @@ async function dispatchWebhook(values) {
         username: "Apoorv Client Radar",
         avatar_url: "https://apoorv.qzz.io/favicon.ico",
         embeds: [{
-          title: "🚀 New Project Inquiry Received!",
+          title: "[INQUIRY] New Project Inquiry Received",
           color: 0xfce566,
           fields: [
-            { name: "👤 Client / Name", value: values.name || "N/A", inline: true },
-            { name: "✉️ Email", value: values.email || "N/A", inline: true },
-            { name: "🎯 Scope", value: values.scope || "N/A", inline: true },
-            { name: "💰 Budget Tier", value: values.budget || "N/A", inline: true },
-            { name: "📝 Message", value: values.message || "No message provided" }
+            { name: "Client / Name", value: values.name || "N/A", inline: true },
+            { name: "Email", value: values.email || "N/A", inline: true },
+            { name: "Scope", value: values.scope || "N/A", inline: true },
+            { name: "Budget Tier", value: values.budget || "N/A", inline: true },
+            { name: "Message", value: values.message || "No message provided" }
           ],
           footer: { text: "Apoorv Client Radar • apoorv.qzz.io" },
           timestamp: new Date().toISOString()
@@ -164,7 +164,7 @@ async function submitPublicForm(event, path, successMessage) {
         fallbackBox.textContent = "";
         const titleDiv = document.createElement("div");
         titleDiv.style.cssText = "font-weight:bold; color:var(--ink); margin-bottom:6px;";
-        titleDiv.textContent = "⚡ Direct Dispatch Fallback:";
+        titleDiv.textContent = "Direct Dispatch Fallback:";
         const descDiv = document.createElement("div");
         descDiv.style.cssText = "margin-bottom:10px; color:var(--ink); font-size:12px;";
         descDiv.textContent = "Network endpoint was unreachable, but your details are safely stored. Tap below to dispatch directly:";
@@ -173,7 +173,7 @@ async function submitPublicForm(event, path, successMessage) {
         const emailLink = document.createElement("a");
         emailLink.href = mailto;
         emailLink.style.cssText = "padding:6px 14px; background:var(--accent-yellow); border:2px solid var(--ink); color:var(--ink); text-decoration:none; font-weight:bold; font-size:12px; display:inline-flex; align-items:center; gap:6px;";
-        emailLink.textContent = "✉️ Dispatch via Email";
+        emailLink.textContent = "Dispatch via Email";
         wrapDiv.appendChild(emailLink);
         fallbackBox.appendChild(titleDiv);
         fallbackBox.appendChild(descDiv);
@@ -372,47 +372,47 @@ function updateDeliverablesChecklist(scope = "Performance Sprint", budget = "$5k
   let badgeText = "FLAGSHIP 3D BUILD";
   let turnaroundText = "2–3 Weeks Turnaround";
   let items = [
-    { title: "⚡ Rapid Response", desc: "Direct feedback & detailed architecture scoping within 24 hours." },
-    { title: "🎯 60 FPS Guarantee", desc: "Strict 16.6ms frame budget, DPR clamp, and zero GPU memory leaks." },
-    { title: "📦 Featherweight Delivery", desc: "Sub-5MB Draco/KTX2 payloads designed for instant mobile 4G loads." },
-    { title: "🛡 Milestone Security", desc: "Structured 50/25/25 milestone terms with staged preview environments." }
+    { title: "[SLA] Rapid Response", desc: "Direct feedback & detailed architecture scoping within 24 hours." },
+    { title: "[60FPS] Engine Guarantee", desc: "Strict 16.6ms frame budget, DPR clamp, and zero GPU memory leaks." },
+    { title: "[KTX2] Featherweight Delivery", desc: "Sub-5MB Draco/KTX2 payloads designed for instant mobile 4G loads." },
+    { title: "[ESCROW] Milestone Terms", desc: "Structured 50/25/25 milestone terms with staged preview environments." }
   ];
 
   if (isSprint) {
     badgeText = "60 FPS PERFORMANCE SPRINT";
     turnaroundText = "3–5 Business Days";
     items = [
-      { title: "⚡ Frame Budget Lock", desc: "Full render loop profiling to eliminate dropped frames and stutter." },
-      { title: "🎯 Core Web Vitals", desc: "Mobile LCP reduced under 1.2s and layout shifts (CLS) eradicated." },
-      { title: "📦 Zero Memory Leaks", desc: "Full dispose() lifecycle hooks on all WebGL textures and buffers." },
-      { title: "🛡 Empirical Verification", desc: "Side-by-side 24 FPS vs 60 FPS benchmarks delivered before handoff." }
+      { title: "[SLA] Frame Budget Lock", desc: "Full render loop profiling to eliminate dropped frames and stutter." },
+      { title: "[CWV] Core Web Vitals", desc: "Mobile LCP reduced under 1.2s and layout shifts (CLS) eradicated." },
+      { title: "[MEM] Zero Memory Leaks", desc: "Full dispose() lifecycle hooks on all WebGL textures and buffers." },
+      { title: "[BENCH] Empirical Verification", desc: "Side-by-side 24 FPS vs 60 FPS benchmarks delivered before handoff." }
     ];
   } else if (isFeature) {
     badgeText = "3D WEBUI & SHADER FEATURE";
     turnaroundText = "1–2 Weeks Turnaround";
     items = [
-      { title: "⚡ Custom GLSL Shaders", desc: "Branchless procedural fragment math and custom post-processing." },
-      { title: "🎯 Interactive Choreography", desc: "Camera lerp damping and tactile scroll-linked spatial transitions." },
-      { title: "📦 Mobile Touch Optimization", desc: "Touch-safe gestures and adaptive DPR clamping across all devices." },
-      { title: "🛡 Turnkey Delivery", desc: "Drop-in Three.js / WebGL component with clean API contracts." }
+      { title: "[GLSL] Custom Shaders", desc: "Branchless procedural fragment math and custom post-processing." },
+      { title: "[R3F] Interactive Choreography", desc: "Camera lerp damping and tactile scroll-linked spatial transitions." },
+      { title: "[UI] Touch Optimization", desc: "Touch-safe gestures and adaptive DPR clamping across all devices." },
+      { title: "[SPEC] Turnkey Delivery", desc: "Drop-in Three.js / WebGL component with clean API contracts." }
     ];
   } else if (isConfigurator) {
     badgeText = "3D PRODUCT CONFIGURATOR";
     turnaroundText = "2–3 Weeks Turnaround";
     items = [
-      { title: "⚡ Real-Time Material Switcher", desc: "Physically-based rendering (PBR) with instant variant swaps." },
-      { title: "🎯 Orbit & Momentum Damping", desc: "Fluid 3D manipulation with smooth inertia and limits." },
-      { title: "📦 Featherweight Asset Pipeline", desc: "Meshopt + Draco geometry compression with KTX2 textures (< 5MB)." },
-      { title: "🛡 Milestone Security", desc: "Structured 50/25/25 milestone terms with staged preview environments." }
+      { title: "[PBR] Material Switcher", desc: "Physically-based rendering (PBR) with instant variant swaps." },
+      { title: "[CAM] Orbit & Momentum", desc: "Fluid 3D manipulation with smooth inertia and limits." },
+      { title: "[ASSET] Asset Pipeline", desc: "Meshopt + Draco geometry compression with KTX2 textures (< 5MB)." },
+      { title: "[ESCROW] Milestone Terms", desc: "Structured 50/25/25 milestone terms with staged preview environments." }
     ];
   } else if (isEnterprise) {
     badgeText = "ENTERPRISE SPATIAL ECOSYSTEM";
     turnaroundText = "4–6 Weeks Sprint";
     items = [
-      { title: "⚡ Ground-Up WebGPU Pipeline", desc: "Next-generation compute shaders and high-density particle systems." },
-      { title: "🎯 Bespoke Spatial Experience", desc: "Multi-scene architectural narrative with sound design integration." },
-      { title: "📦 Sub-5MB Enterprise Payload", desc: "Maximum compression and streaming asset chunking." },
-      { title: "🛡 Sovereign Engineering Allocation", desc: "Direct 1-on-1 architecture sprints with guaranteed 16.6ms SLA." }
+      { title: "[WGSL] WebGPU Pipeline", desc: "Next-generation compute shaders and high-density particle systems." },
+      { title: "[SPATIAL] Spatial Experience", desc: "Multi-scene architectural narrative with sound design integration." },
+      { title: "[LOAD] Sub-5MB Payload", desc: "Maximum compression and streaming asset chunking." },
+      { title: "[ALLOC] Engineering Allocation", desc: "Direct 1-on-1 architecture sprints with guaranteed 16.6ms SLA." }
     ];
   }
 
@@ -757,15 +757,15 @@ async function handleConsultationSubmit(event) {
         username: "Apoorv Client Radar",
         avatar_url: "https://apoorv.qzz.io/favicon.ico",
         embeds: [{
-          title: "📅 15-Minute Strategy Walkthrough Requested!",
+          title: "[MEETING] Strategy Walkthrough Requested",
           color: 0x6d3bb8,
           fields: [
-            { name: "👤 Client", value: name || "N/A", inline: true },
-            { name: "✉️ Email", value: email || "N/A", inline: true },
-            { name: "🎯 Focus", value: focus || "N/A", inline: true },
+            { name: "Client", value: name || "N/A", inline: true },
+            { name: "Email", value: email || "N/A", inline: true },
+            { name: "Focus", value: focus || "N/A", inline: true },
             { name: "⏰ Preferred Time", value: `${datetime} (${timezone})`, inline: true },
-            { name: "🔗 Target URL", value: url || "None provided", inline: true },
-            { name: "📝 Notes", value: notes || "None provided" }
+            { name: "Target URL", value: url || "None provided", inline: true },
+            { name: "Notes", value: notes || "None provided" }
           ],
           footer: { text: "Direct Strategy Engine • apoorv.qzz.io/sales" },
           timestamp: new Date().toISOString()
@@ -805,7 +805,7 @@ async function handleConsultationSubmit(event) {
 
   // Companion celebration thought if active
   if (window.System1Brain?.emitThought) {
-    window.System1Brain.emitThought("⚡ Strategy walkthrough confirmed!");
+    window.System1Brain.emitThought("[SYS] Strategy walkthrough confirmed!");
   }
 }
 
@@ -904,7 +904,7 @@ function mountTrojanTeardown(data) {
 
   // Let BB-8 celebrate and emit diagnostic thought
   if (window.System1Brain?.emitThought) {
-    window.System1Brain.emitThought(`⚡ Diagnostic ready for ${data.prospect}!`);
+    window.System1Brain.emitThought(`[SYS] Diagnostic ready for ${data.prospect}!`);
   }
   if (window.Player3D && typeof window.Player3D.celebrateVictory === "function") {
     setTimeout(() => {
@@ -1020,7 +1020,7 @@ function selectPublicDealTier(tierNum) {
   const whatsAppBtn = document.getElementById("btnPublicWhatsAppProof");
   if (whatsAppBtn) {
     const message = 
-      `🚀 50% ADVANCE DEPOSIT CONFIRMATION\n` +
+      `50% ADVANCE DEPOSIT CONFIRMATION\n` +
       `Client: ${prospectName}\n` +
       `Tier: ${tierConfig.name}\n` +
       `Total Scope: ${tierConfig.totalStr}\n` +
@@ -1040,7 +1040,7 @@ function copyPublicUpiId() {
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(upiId).then(() => {
       if (typeof window.triggerHaptic === "function") window.triggerHaptic([30, 20, 30]);
-      alert("✅ UPI ID 'apoorvxs@okaxis' copied to clipboard!");
+      alert("[COPIED] UPI ID 'apoorvxs@okaxis' copied to clipboard");
     }).catch(() => {
       prompt("Copy UPI ID:", upiId);
     });
@@ -1065,7 +1065,7 @@ function toggleTrojanFps(targetFps) {
       btnOpt.setAttribute("aria-checked", "false");
     }
     if (feedback) {
-      feedback.textContent = "⚠️ 24 FPS Throttle: Sluggish touch drag, dropped frames on 4G, and high visitor drop-off.";
+      feedback.textContent = "[UNOPTIMIZED] 24 FPS Throttle: Sluggish touch drag, dropped frames on 4G, and high visitor drop-off.";
       feedback.style.color = "#dc2626";
     }
     if (liveFps) liveFps.textContent = "22.4";
@@ -1082,7 +1082,7 @@ function toggleTrojanFps(targetFps) {
       btnUnopt.setAttribute("aria-checked", "false");
     }
     if (feedback) {
-      feedback.textContent = "⚡ 60 FPS Locked: Silky smooth response, zero frame drops, 0.8s instant mobile paint.";
+      feedback.textContent = "[LOCKED] 60 FPS Verified: Silky smooth response, zero frame drops, 0.8s instant mobile paint.";
       feedback.style.color = "var(--purple-dark)";
     }
     if (liveFps) liveFps.textContent = "60.0";

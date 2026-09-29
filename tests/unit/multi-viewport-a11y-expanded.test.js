@@ -390,13 +390,13 @@ describe('Subsystem 7: Multi-Viewport Ergonomics & WCAG 2.1 AA Accessibility (Ex
     it('ensures status badges combine icons and text rather than color alone', () => {
       // Redundant multi-modal indicators (Color + Symbol + Text)
       const badges = [
-        { status: 'speed', text: '🔴 32/100 (Mobile)' },
-        { status: 'verified', text: '🟢 Verified Outreach Partner' },
-        { status: 'warning', text: '⚠️ Reputation Disconnect' }
+        { status: 'speed', text: '■ 32/100 (Mobile)' },
+        { status: 'verified', text: '● Verified Outreach Partner' },
+        { status: 'warning', text: '[ALERT] Reputation Disconnect' }
       ];
 
       badges.forEach(b => {
-        expect(b.text).toMatch(/[🔴🟢⚠️]/); // Icon indicator
+        expect(b.text).toMatch(/([■●▲]|\[ALERT\])/); // Icon indicator
         expect(b.text.length).toBeGreaterThan(3); // Text description
       });
     });

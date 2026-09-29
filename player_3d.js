@@ -1326,7 +1326,7 @@
                 Player3D.nod();
             }
             if (typeof window !== "undefined" && window.System1Brain && typeof window.System1Brain.emitThought === "function") {
-                window.System1Brain.emitThought("⚡ HARD-LIGHT RAIL DEPLOYED", 3000);
+                window.System1Brain.emitThought("[SYS] HARD-LIGHT RAIL DEPLOYED", 3000);
             }
 
             return rail;

@@ -38,7 +38,7 @@
   const LAYMAN_ANALOGIES = {
     lcp: {
       title: "LCP (Largest Contentful Paint / Mobile Loading Speed)",
-      icon: "⚡",
+      icon: "[LCP]",
       category: "Mobile Speed & Drop-off Bottleneck",
       metaphor: "Like a clinic entrance with a jammed, rusty door latch that takes 4+ seconds to open. Patients get impatient waiting outside and simply walk to the clinic next door.",
       metaphorMl: "ക്ലിനിക്കിന്റെ മുൻവാതിൽ തുറക്കാൻ 4 സെക്കൻഡ് കുടുങ്ങി കിടക്കുന്നത് പോലെയാണ്. ആളുകൾ ക്ഷമകെട്ട് അടുത്ത ക്ലിനിക്കിലേക്ക് പോകും.",
@@ -47,7 +47,7 @@
     },
     dom: {
       title: "DOM Nodes (Bloated WordPress / Elementor Plugin Drag)",
-      icon: "📦",
+      icon: "[DOM]",
       category: "Code Clutter & Memory Weight",
       metaphor: "Like cramming 3,000 extra plastic chairs, filing cabinets, and boxes into a small consultation room. The doctor has to push through clutter just to greet one patient, slowing everything down.",
       metaphorMl: "ഒരു ചെറിയ റിസപ്ഷൻ റൂമിൽ 3000 പ്ലാസ്റ്റിക് കസേരകൾ കുത്തിനിറച്ചതുപോലെ. ഒരാൾക്ക് നടക്കാൻ പോലും സ്ഥലമില്ലാതെ എല്ലാം സ്ലോ ആകുന്നു.",
@@ -56,7 +56,7 @@
     },
     dpdp: {
       title: "DPDP Act 2023 (Digital Personal Data Protection Law)",
-      icon: "⚖️",
+      icon: "[LAW]",
       category: "Indian Legal & Regulatory Risk",
       metaphor: "Like leaving patient medical files and phone numbers in an open binder on the front reception counter where anyone can copy them. India's new law requires explicit consent checkboxes and encrypted storage.",
       metaphorMl: "രോഗികളുടെ ഫോൺ നമ്പറുകളും വിവരങ്ങളും റിസപ്ഷൻ കൗണ്ടറിൽ തുറന്നുവെച്ചിരിക്കുന്നത് പോലെയാണ്. പുതിയ ഡാറ്റാ പ്രൊട്ടക്ഷൻ നിയമപ്രകാരം വലിയ ഫൈൻ വരാം.",
@@ -65,7 +65,7 @@
     },
     tls: {
       title: "TLS / SSL (Data Encryption & Browser Security Badges)",
-      icon: "🔒",
+      icon: "[SEC]",
       category: "Security & Patient Trust Protection",
       metaphor: "Like sending private medical prescriptions on an open postcard that any delivery courier or competitor can read, instead of a stamped, tamper-proof sealed envelope.",
       metaphorMl: "രോഗിയുടെ പ്രൈവറ്റ് വിവരങ്ങൾ ഒരു തുറന്ന പോസ്റ്റ്കാർഡിൽ എഴുതി അയക്കുന്നത് പോലെയാണ്, സീൽ ചെയ്ത കവറിൽ അയക്കുന്നതിന് പകരം.",
@@ -74,7 +74,7 @@
     },
     ssl: {
       title: "TLS / SSL (Data Encryption & Browser Security Badges)",
-      icon: "🔒",
+      icon: "[SEC]",
       category: "Security & Patient Trust Protection",
       metaphor: "Like sending private medical prescriptions on an open postcard that any delivery courier or competitor can read, instead of a stamped, tamper-proof sealed envelope.",
       metaphorMl: "രോഗിയുടെ പ്രൈവറ്റ് വിവരങ്ങൾ ഒരു തുറന്ന പോസ്റ്റ്കാർഡിൽ എഴുതി അയക്കുന്നത് പോലെയാണ്, സീൽ ചെയ്ത കവറിൽ അയക്കുന്നതിന് പകരം.",
@@ -83,7 +83,7 @@
     },
     webgl: {
       title: "WebGL / 3D (Interactive Visual Showcase Architecture)",
-      icon: "✨",
+      icon: "[3D]",
       category: "Visual Prestige & High-Ticket Authority",
       metaphor: "Instead of handing a patient a flat paper brochure, it's like putting an interactive, touchable glass miniature in their hands to spin and inspect.",
       metaphorMl: "ഒരു സാധാരണ കടലാസ് നോട്ടീസ് കൊടുക്കുന്നതിന് പകരം, പേഷ്യന്റിന്റെ കയ്യിൽ തിരിച്ചുനോക്കാവുന്ന ഒരു 3D മോഡൽ കൊടുക്കുന്നത് പോലെ.",
@@ -96,7 +96,7 @@
     },
     thumb: {
       title: "Thumb-Zone UX (Mobile Ergonomics & Sticky CTA)",
-      icon: "📱",
+      icon: "[UI]",
       category: "Mobile Conversion & One-Handed Ease",
       metaphor: "A physical department store where the billing counter is only at the front door. When shoppers walk down aisle 4, they have to hike all the way back just to ask a question.",
       metaphorMl: "ഒരു കടയിൽ കസ്റ്റമർ അകത്തേക്ക് നടക്കുമ്പോൾ കാഷ് കൗണ്ടർ മുൻവശത്ത് മാത്രം ഉള്ളതുപോലെ. ഒരു ചോദ്യം ചോദിക്കാൻ പോലും അവർ വീണ്ടും നടന്നു വരണം.",
@@ -109,7 +109,7 @@
     },
     aggregator: {
       title: "Aggregator Bleed (Practo / Zomato Commission Bleed)",
-      icon: "💸",
+      icon: "[AGG]",
       category: "Direct Revenue Protection & Middleman Fees",
       metaphor: "Paying an auto or cab driver a 25% commission to bring your regular existing family members to your house.",
       metaphorMl: "നിങ്ങളെ വർഷങ്ങളായി അറിയാവുന്ന സ്ഥിരം രോഗികൾ ക്ലിനിക്കിൽ വരുമ്പോൾ പോലും ഒരു ഇടനിലക്കാരന് 20% കമ്മീഷൻ കൊടുക്കുന്നത് പോലെ.",
@@ -122,7 +122,7 @@
     },
     friction: {
       title: "Booking Friction (Multi-Step Form Drop-off Risk)",
-      icon: "⏳",
+      icon: "[UX]",
       category: "Form Abandonment & Instant Booking",
       metaphor: "An airport reception that demands your blood group, shoe size, and college degree just to print your boarding pass.",
       metaphorMl: "ഒരു ഡോക്ടറോട് ഒരു സംശയം ചോദിക്കാൻ വേണ്ടി 5 കോളങ്ങൾ ഉള്ള വലിയൊരു ഫോറം പൂരിപ്പിക്കാൻ പറയുന്നതുപോലെ. ആളുകൾ പാതിവഴിയിൽ ഉപേക്ഷിച്ചു പോകും.",
@@ -135,7 +135,7 @@
     },
     headless: {
       title: "Apoorv 60 FPS Headless Architecture (Zero-Plugin Pure Code)",
-      icon: "⚡",
+      icon: "[SLA]",
       category: "Engine Superiority & Enterprise Speed",
       metaphor: "A Formula 1 car engineered from pure carbon fiber versus a standard family sedan loaded with 40 heavy roof racks and spare tires.",
       metaphorMl: "40 ചാക്ക് ഭാരവും ചുമന്നുകൊണ്ട് ഓടുന്ന പഴയ കാറും, ഭാരമില്ലാത്ത പുതിയ സ്പോർട്സ് കാറും തമ്മിലുള്ള വ്യത്യാസം പോലെ.",
@@ -191,7 +191,7 @@
     const item = LAYMAN_ANALOGIES[activeAnalogyKey];
     if (!item || !modal) return;
 
-    if (icon) icon.innerText = item.icon || '⚡';
+    if (icon) icon.innerText = item.icon || '[OBJ]';
     if (title) title.innerText = item.title || 'Technical Concept';
     if (cat) cat.innerText = item.category || 'ARCHITECTURE';
 
@@ -265,7 +265,7 @@
         utterance.pitch = 1.0;
         window.speechSynthesis.speak(utterance);
         if (typeof showNotification === 'function') {
-          showNotification('🔊 Playing spoken conversational audio...');
+          showNotification('[AUDIO] Playing spoken conversational audio...');
         }
       } catch (e) {
         if (typeof playSound === 'function') playSound('chime');
@@ -284,7 +284,7 @@
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText(textToCopy).then(() => {
         if (typeof showNotification === 'function') {
-          showNotification('📋 Conversational script copied to clipboard!');
+          showNotification('[COPY] Conversational script copied to clipboard');
         }
         if (typeof playSound === 'function') playSound('click');
       }).catch(() => {});
@@ -316,7 +316,7 @@
     notesInput.value = (notesInput.value ? notesInput.value.trim() : '') + entry;
     if (typeof saveNotesLocally === 'function') saveNotesLocally();
     if (typeof showNotification === 'function') {
-      showNotification(`📝 Appended objection to call notes!`);
+      showNotification(`[SAVED] Appended objection to call notes`);
     }
     if (typeof playSound === 'function') playSound('click');
   }

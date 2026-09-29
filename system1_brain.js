@@ -581,7 +581,7 @@
             if (typeof document === "undefined") return;
             if (!this.bubbleElement) this.setupBubble();
             const now = (typeof performance !== "undefined") ? performance.now() : Date.now();
-            const isPriority = text.includes("dispatched") || text.includes("TOUCHDOWN") || text.includes("Terra Firma") || text.includes("HARD-LIGHT") || text.includes("⚡") || text.includes("Missing") || text.includes("Scope:") || text.includes("Tier unlocked");
+            const isPriority = text.includes("dispatched") || text.includes("TOUCHDOWN") || text.includes("Terra Firma") || text.includes("HARD-LIGHT") || text.includes("[SYS]") || text.includes("Missing") || text.includes("Scope:") || text.includes("Tier unlocked");
 
             if (this.bubbleElement && this.bubbleElement.classList.contains("hud-active")) {
                 if (isPriority) {
@@ -636,36 +636,36 @@
                 : (window.location.pathname || "").includes("sales") || document.body?.classList?.contains("sales-page") ? "sales" : "home")
                 : "home";
 
-            let title = "⚡ BB-8 CO-PILOT";
+            let title = "BB-8 // CO-PILOT";
             let buttonsHtml = "";
 
             if (page === "workspace") {
-                title = "⚡ BB-8 TACTICAL CO-PILOT";
+                title = "BB-8 // TACTICAL CO-PILOT";
                 buttonsHtml = `
                     <div class="bb8-hud-buttons">
-                        <button onclick="window.System1Brain.startMission('deals')" class="bb8-hud-btn">🎯 Hunt $15k+ Deals</button>
-                        <button onclick="window.System1Brain.startMission('flaws')" class="bb8-hud-btn">⚡ Inspect Latency Flaws</button>
-                        <button onclick="window.System1Brain.startMission('call')" class="bb8-hud-btn">🎯 Discovery Briefing</button>
-                        <button onclick="window.Player3D?.celebrateVictory?.(); window.System1Brain.closeHUD();" class="bb8-hud-btn">🤖 Droid 360° Spin</button>
+                        <button onclick="window.System1Brain.startMission('deals')" class="bb8-hud-btn">[RADAR] Hunt $15k+ Deals</button>
+                        <button onclick="window.System1Brain.startMission('flaws')" class="bb8-hud-btn">[AUDIT] Inspect Latency</button>
+                        <button onclick="window.System1Brain.startMission('call')" class="bb8-hud-btn">[DIAL] Discovery Briefing</button>
+                        <button onclick="window.Player3D?.celebrateVictory?.(); window.System1Brain.closeHUD();" class="bb8-hud-btn">[SYS] Droid 360° Spin</button>
                     </div>
                 `;
             } else if (page === "sales") {
-                title = "⚡ BB-8 BRIEF CO-PILOT";
+                title = "BB-8 // BRIEF CO-PILOT";
                 buttonsHtml = `
                     <div class="bb8-hud-buttons">
-                        <button onclick="window.System1Brain.startMission('fill')" class="bb8-hud-btn">📝 Focus Brief</button>
-                        <button onclick="window.System1Brain.startMission('scope')" class="bb8-hud-btn">💰 View Pricing Tiers</button>
-                        <button onclick="window.Player3D?.celebrateVictory?.(); window.System1Brain.closeHUD();" class="bb8-hud-btn">🤖 Droid 360° Spin</button>
+                        <button onclick="window.System1Brain.startMission('fill')" class="bb8-hud-btn">[DOC] Focus Brief</button>
+                        <button onclick="window.System1Brain.startMission('scope')" class="bb8-hud-btn">[SOW] View Pricing Tiers</button>
+                        <button onclick="window.Player3D?.celebrateVictory?.(); window.System1Brain.closeHUD();" class="bb8-hud-btn">[SYS] Droid 360° Spin</button>
                     </div>
                 `;
             } else {
-                title = "⚡ BB-8 NAVIGATOR";
+                title = "BB-8 // NAVIGATOR";
                 buttonsHtml = `
                     <div class="bb8-hud-buttons">
-                        <button onclick="window.System1Brain.startMission('work')" class="bb8-hud-btn">🚀 Flagship Case Studies</button>
-                        <button onclick="window.System1Brain.startMission('capabilities')" class="bb8-hud-btn">⚡ 60 FPS Standards</button>
-                        <button onclick="window.System1Brain.startMission('contact')" class="bb8-hud-btn">💼 Initiate Contract</button>
-                        <button onclick="window.Player3D?.celebrateVictory?.(); window.System1Brain.closeHUD();" class="bb8-hud-btn">🤖 Droid 360° Spin</button>
+                        <button onclick="window.System1Brain.startMission('work')" class="bb8-hud-btn">[WORK] Flagship Case Studies</button>
+                        <button onclick="window.System1Brain.startMission('capabilities')" class="bb8-hud-btn">[TECH] 60 FPS Standards</button>
+                        <button onclick="window.System1Brain.startMission('contact')" class="bb8-hud-btn">[INIT] Initiate Contract</button>
+                        <button onclick="window.Player3D?.celebrateVictory?.(); window.System1Brain.closeHUD();" class="bb8-hud-btn">[SYS] Droid 360° Spin</button>
                     </div>
                 `;
             }

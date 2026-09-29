@@ -231,7 +231,7 @@ describe("Subsystem 20: Partner Gamification, Commission Wallet & Lead Retention
     expect(global.window.open).toHaveBeenCalled();
     const calledUrl = global.window.open.mock.calls[0][0];
     expect(calledUrl).toContain("https://wa.me/919495462450");
-    expect(calledUrl).toContain(encodeURIComponent("⚡ OUTREACH PARTNER COMMISSION SETTLEMENT REQUEST"));
+    expect(calledUrl).toContain(encodeURIComponent("[REQUEST] OUTREACH PARTNER COMMISSION SETTLEMENT"));
     expect(calledUrl).toContain(encodeURIComponent("Registered UPI: caller@okhdfcbank"));
     expect(calledUrl).toContain(encodeURIComponent("Requested Payout: ₹22,500"));
     expect(calledUrl).toContain(encodeURIComponent("Lakeshore Multispecialty Dental"));
@@ -249,19 +249,19 @@ describe("Subsystem 20: Partner Gamification, Commission Wallet & Lead Retention
     expect(freshAging.isDueToday).toBe(true);
     expect(freshAging.isOverdue).toBe(false);
     expect(freshAging.isZombie).toBe(false);
-    expect(freshAging.badgeText).toBe("⏰ DUE TODAY");
+    expect(freshAging.badgeText).toBe("[DUE TODAY]");
 
     const overdueAging = getCallbackAging(overdueLead);
     expect(overdueAging.isDueToday).toBe(false);
     expect(overdueAging.isOverdue).toBe(true);
     expect(overdueAging.isZombie).toBe(false);
-    expect(overdueAging.badgeText).toContain("⚠️ OVERDUE");
+    expect(overdueAging.badgeText).toContain("[OVERDUE]");
 
     const zombieAging = getCallbackAging(zombieLead);
     expect(zombieAging.isDueToday).toBe(false);
     expect(zombieAging.isOverdue).toBe(false);
     expect(zombieAging.isZombie).toBe(true);
-    expect(zombieAging.badgeText).toContain("🚨 ZOMBIE");
+    expect(zombieAging.badgeText).toContain("[STALE // >48H]");
   });
 
   it("20.5 Sorts callbacks queue with Zombie (>48h) and Overdue (24-48h) prioritized at the top", async () => {
@@ -305,11 +305,11 @@ describe("Subsystem 20: Partner Gamification, Commission Wallet & Lead Retention
     await import("../../workspace/app.js");
     const { getDialMilestone, updateShiftStreakOnDial, getShiftStreak } = global;
 
-    expect(getDialMilestone(0).badge).toBe("📡 QUEUED");
-    expect(getDialMilestone(5).badge).toBe("🔥 WARM");
-    expect(getDialMilestone(10).badge).toBe("⚡ FLOW");
-    expect(getDialMilestone(15).badge).toBe("🚀 POWER");
-    expect(getDialMilestone(20).badge).toBe("🏆 CRUSHED");
+    expect(getDialMilestone(0).badge).toBe("[QUEUE]");
+    expect(getDialMilestone(5).badge).toBe("[WARM]");
+    expect(getDialMilestone(10).badge).toBe("[FLOW]");
+    expect(getDialMilestone(15).badge).toBe("[PEAK]");
+    expect(getDialMilestone(20).badge).toBe("[TARGET MET]");
 
     // Streak initialization
     expect(getShiftStreak()).toBe(1);

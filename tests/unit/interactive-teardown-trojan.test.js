@@ -27,7 +27,7 @@ describe('Interactive 3D Deal Teardown & Trojan Pitch Engine', () => {
 
     it('contains the upgraded Interactive Client Teardown Modal in workspace/index.html', () => {
       expect(workspaceHtml).toContain('id="clientTeardownModal"');
-      expect(workspaceHtml).toContain('⚡ TROJAN 3D PITCH');
+      expect(workspaceHtml).toContain('TROJAN 3D PITCH');
       expect(workspaceHtml).toContain('id="modalClientName"');
       expect(workspaceHtml).toContain('id="modalCurrentLcp"');
       expect(workspaceHtml).toContain('id="modalSpeedScore"');

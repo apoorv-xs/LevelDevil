@@ -155,9 +155,9 @@ describe("Subsystem 16: Partner Anti-Theft Surveillance Radar & Owner Fleet Tele
     updateProfileDropdownUI();
 
     // Verify Owner cockpit title & titles
-    expect(mockDom.profileCockpitTitle.textContent).toBe("🛡️ FLEET SURVEILLANCE & LEAK RADAR");
-    expect(mockDom.profileCard1Title.textContent).toBe("📡 FLEET OUTREACH");
-    expect(mockDom.profileCard2Title.textContent).toBe("💰 FLEET PIPELINE");
+    expect(mockDom.profileCockpitTitle.textContent).toBe("RADAR // PARTNER AUDIT TRAIL");
+    expect(mockDom.profileCard1Title.textContent).toBe("OUTREACH // FLEET DIALS");
+    expect(mockDom.profileCard2Title.textContent).toBe("PIPELINE // FLEET VALUE");
     expect(mockDom.dropdownRolePill.textContent).toBe("OWNER");
 
     // Verify Owner summary strip and surveillance container are shown
@@ -180,9 +180,9 @@ describe("Subsystem 16: Partner Anti-Theft Surveillance Radar & Owner Fleet Tele
     global.currentUser = { email: "partner@firm.com", name: "Partner Caller", role: "caller" };
     updateProfileDropdownUI();
 
-    expect(mockDom.profileCockpitTitle.textContent).toBe("📊 SALES TELEMETRY");
-    expect(mockDom.profileCard1Title.textContent).toBe("📡 OUTREACH");
-    expect(mockDom.profileCard2Title.textContent).toBe("🎉 BOOKED");
+    expect(mockDom.profileCockpitTitle.textContent).toBe("TELEMETRY // REVENUE RADAR");
+    expect(mockDom.profileCard1Title.textContent).toBe("OUTREACH // DIALS");
+    expect(mockDom.profileCard2Title.textContent).toBe("CONVERTED // BOOKED");
     expect(mockDom.dropdownRolePill.textContent).toBe("PARTNER");
 
     // Verify owner surveillance elements are hidden for caller
@@ -210,7 +210,7 @@ describe("Subsystem 16: Partner Anti-Theft Surveillance Radar & Owner Fleet Tele
         prospectId: null,
         prospectName: "Active Queue",
         isRisk: true,
-        riskBadge: "⚠️ CSV EXPORT",
+        riskBadge: "[ALERT] CSV EXPORT",
         description: "External Partner exported 60 leads to CSV"
       }
     };

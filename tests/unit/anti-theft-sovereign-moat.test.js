@@ -147,7 +147,7 @@ describe("Subsystem 17: Sovereign Anti-Theft Moat & Cryptographic Data Shield", 
     const breachEvent = logs.find(l => l.actionType === "UNMASK_VELOCITY_EXCEEDED");
     expect(breachEvent).toBeDefined();
     expect(breachEvent.isRisk).toBe(true);
-    expect(breachEvent.riskBadge).toBe("🚨 RATE LIMIT");
+    expect(breachEvent.riskBadge).toBe("[ALERT] RATE LIMIT");
   });
 
   it("17.4 Encodes and decodes zero-width steganographic signatures flawlessly", async () => {

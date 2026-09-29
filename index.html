@@ -572,8 +572,8 @@
                 <span class="topbar-dot"></span>
                 <span><span id="live-fps">60.0</span> FPS</span>
             </div>
-            <button id="bb8-guide-btn" class="topbar-btn guide-btn" onclick="window.System1Brain?.showGuidanceHUD?.()" aria-label="Summon BB-8 Guide" title="Summon BB-8 Guide">[ 🤖<span class="guide-label"> GUIDE</span> ]</button>
-            <button id="sfx-toggle-btn" class="topbar-btn sfx-btn" aria-label="Toggle Sound Effects" title="Toggle Sound Effects">[ 🔊<span class="sfx-label"> SFX</span> ]</button>
+            <button id="bb8-guide-btn" class="topbar-btn guide-btn" onclick="window.System1Brain?.showGuidanceHUD?.()" aria-label="Summon BB-8 Guide" title="Summon BB-8 Guide">[ ◈<span class="guide-label"> GUIDE</span> ]</button>
+            <button id="sfx-toggle-btn" class="topbar-btn sfx-btn" aria-label="Toggle Sound Effects" title="Toggle Sound Effects">[ AUDIO<span class="sfx-label"> // ON</span> ]</button>
             <a href="/sales" id="topbar-inquire-btn" class="topbar-btn topbar-btn-primary hide-mobile" title="Inquire for Contracts">
                 <span>INQUIRE</span>
                 <span>↗</span>
@@ -615,10 +615,10 @@
                         </div>
                         <div class="dropdown-quick-links">
                             <a href="/workspace/" class="dropdown-action-btn" title="Open Client Workspace Cockpit">
-                                <span>💼</span> <span>CLIENT WORKSPACE</span> <span>↗</span>
+                                <span>›</span> <span>CLIENT WORKSPACE</span> <span>↗</span>
                             </a>
                             <a href="/sales" class="dropdown-action-btn" title="Open Project Brief & Inquiries">
-                                <span>📝</span> <span>PROJECT INQUIRIES</span> <span>↗</span>
+                                <span>›</span> <span>PROJECT INQUIRIES</span> <span>↗</span>
                             </a>
                             <button id="dropdownAdminBtn" type="button" onclick="window.APP_SHELL?.openAdmin?.()" class="dropdown-action-btn hidden" title="Open Admin Console">
                                 <span class="topbar-dot" style="background:#10b981;"></span> <span>OPEN ADMIN CONSOLE</span>
@@ -635,14 +635,14 @@
                     </div>
                 </div>
             </div>
-            <button id="mobile-menu-btn" class="topbar-btn mobile-menu-btn" aria-label="Open Navigation Menu" title="Open Navigation Menu" aria-expanded="false" aria-controls="mobile-menu-drawer" onclick="window.toggleMobileMenu?.()">[ ☰<span class="menu-label"> MENU</span> ]</button>
+            <button id="mobile-menu-btn" class="topbar-btn mobile-menu-btn" aria-label="Open Navigation Menu" title="Open Navigation Menu" aria-expanded="false" aria-controls="mobile-menu-drawer" onclick="window.toggleMobileMenu?.()">[ =<span class="menu-label"> MENU</span> ]</button>
         </div>
     </header>
 
     <!-- Sticky Mobile Aviation Flight Tape (Real-Time Descent Telemetry) -->
     <div id="mobile-flight-tape" class="mobile-flight-tape" aria-label="Aviation Descent Telemetry">
         <div class="flight-tape-track">
-            <span class="flight-tape-icon">✈</span>
+            <span class="flight-tape-icon">►</span>
             <span id="flight-tape-stratum" class="flight-tape-stratum">STRATOSPHERE</span>
             <span class="flight-tape-divider">•</span>
             <span id="flight-tape-alt" class="flight-tape-alt">ALT: 10,000 FT</span>

@@ -142,13 +142,13 @@ describe("Procedural Droid Synth Sound Engine (0 KB Audio Payload)", () => {
     const engine = new DroidSynthEngine();
     engine.setMuted(false);
     engine.updateUI();
-    expect(btn.textContent).toBe("[ 🔊 SFX ]");
+    expect(btn.textContent).toBe("[ AUDIO // ON ]");
     expect(btn.classList.contains("sfx-muted")).toBe(false);
     expect(btn.getAttribute("aria-pressed")).toBe("true");
 
     engine.setMuted(true);
     engine.updateUI();
-    expect(btn.textContent).toBe("[ 🔇 SFX ]");
+    expect(btn.textContent).toBe("[ AUDIO // OFF ]");
     expect(btn.classList.contains("sfx-muted")).toBe(true);
     expect(btn.getAttribute("aria-pressed")).toBe("false");
 

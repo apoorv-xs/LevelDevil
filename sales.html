@@ -74,8 +74,8 @@
         <span class="topbar-dot"></span>
         <span><span id="live-fps">60.0</span> FPS</span>
       </div>
-      <button id="bb8-guide-btn" class="topbar-btn guide-btn" onclick="window.System1Brain?.showGuidanceHUD?.()" aria-label="Summon BB-8 Guide" title="Summon BB-8 Guide">[ 🤖<span class="guide-label"> GUIDE</span> ]</button>
-      <button id="sfx-toggle-btn" class="topbar-btn sfx-btn" aria-label="Toggle Sound Effects" title="Toggle Sound Effects">[ 🔊<span class="sfx-label"> SFX</span> ]</button>
+      <button id="bb8-guide-btn" class="topbar-btn guide-btn" onclick="window.System1Brain?.showGuidanceHUD?.()" aria-label="Summon BB-8 Guide" title="Summon BB-8 Guide">[ ◈<span class="guide-label"> GUIDE</span> ]</button>
+      <button id="sfx-toggle-btn" class="topbar-btn sfx-btn" aria-label="Toggle Sound Effects" title="Toggle Sound Effects">[ AUDIO<span class="sfx-label"> // ON</span> ]</button>
       <!-- Auth State (Universal across routes) -->
       <div id="topbar-auth-state" class="topbar-auth-state">
         <button id="topbar-sign-in" type="button" class="topbar-btn topbar-btn-primary" title="Sign in with Google" onclick="window.APP_SHELL?.openAuth?.()" style="display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
@@ -112,10 +112,10 @@
             </div>
             <div class="dropdown-quick-links">
               <a href="/workspace/" class="dropdown-action-btn" title="Open Client Workspace Cockpit">
-                <span>💼</span> <span>CLIENT WORKSPACE</span> <span>↗</span>
+                <span>›</span> <span>CLIENT WORKSPACE</span> <span>↗</span>
               </a>
               <a href="/" class="dropdown-action-btn" title="Return to Home Portfolio">
-                <span>🏠</span> <span>HOME PORTFOLIO</span> <span>↗</span>
+                <span>›</span> <span>HOME PORTFOLIO</span> <span>↗</span>
               </a>
               <button id="dropdownAdminBtn" type="button" onclick="window.APP_SHELL?.openAdmin?.()" class="dropdown-action-btn hidden" title="Open Admin Console">
                 <span class="topbar-dot" style="background:#10b981;"></span> <span>OPEN ADMIN CONSOLE</span>
@@ -132,7 +132,7 @@
           </div>
         </div>
       </div>
-      <button id="mobile-menu-btn" class="topbar-btn mobile-menu-btn" aria-label="Open Navigation Menu" title="Open Navigation Menu" aria-expanded="false" aria-controls="mobile-menu-drawer" onclick="window.toggleMobileMenu?.()">[ ☰<span class="menu-label"> MENU</span> ]</button>
+      <button id="mobile-menu-btn" class="topbar-btn mobile-menu-btn" aria-label="Open Navigation Menu" title="Open Navigation Menu" aria-expanded="false" aria-controls="mobile-menu-drawer" onclick="window.toggleMobileMenu?.()">[ =<span class="menu-label"> MENU</span> ]</button>
     </div>
   </header>
 
@@ -161,7 +161,7 @@
     <nav class="action-rail" aria-label="Sales actions">
       <a href="#inquiry-card" data-kaboom-body="true">Project inquiry</a>
       <a href="#engagement-card" data-kaboom-body="true">Direct engagement</a>
-      <a href="#booking-box" onclick="openConsultationModal(); return false;" data-kaboom-body="true" style="color:var(--purple-dark); font-weight:700;">📅 15-Min Strategy Walkthrough</a>
+      <a href="#booking-box" onclick="openConsultationModal(); return false;" data-kaboom-body="true" style="color:var(--purple-dark); font-weight:700;">[CAL] 15-Min Strategy Walkthrough</a>
     </nav>
 
     <p id="status" class="status" role="status" aria-live="polite"></p>
@@ -170,14 +170,14 @@
     <section id="trojan-teardown-section" class="trojan-teardown-section hidden" data-kaboom-body="true" aria-label="Personalized 3D Performance Teardown">
       <!-- Verified Architectural Credentials Banner -->
       <div id="trojan-credentials-banner" class="trojan-credentials-banner" data-kaboom-body="true">
-        <span class="trojan-badge-pill" data-kaboom-body="true">🛡️ VERIFIED ARCHITECTURAL DOSSIER</span>
+        <span class="trojan-badge-pill" data-kaboom-body="true">[VERIFIED] ARCHITECTURAL DOSSIER</span>
         <span class="trojan-dossier-meta font-mono text-xs" data-kaboom-body="true">
           REF: <strong id="trojan-dossier-id">RADAR-CLIENT</strong> • PRINCIPAL: <strong>APOORV A S</strong> (CREATIVE TECHNOLOGIST &amp; 3D ARCHITECT) • ATTRIBUTED PARTNER: <strong id="trojan-partner-id">CORE-STUDIO</strong>
         </span>
       </div>
 
       <div class="trojan-badge-bar" data-kaboom-body="true">
-        <span class="trojan-badge-pill" data-kaboom-body="true">⚡ CONFIDENTIAL ARCHITECTURAL TEARDOWN</span>
+        <span class="trojan-badge-pill" data-kaboom-body="true">[CONFIDENTIAL] ARCHITECTURAL TEARDOWN</span>
         <span id="trojan-target-badge" class="trojan-target-badge" data-kaboom-body="true">PREPARED FOR: <strong id="trojan-client-name">--</strong></span>
       </div>
       <div class="trojan-hero-content" data-kaboom-body="true">
@@ -245,19 +245,19 @@
         <div class="trojan-fps-toggle" data-kaboom-body="true">
           <span class="toggle-label" data-kaboom-body="true">SIMULATE FRAME RATE:</span>
           <div class="toggle-buttons" role="radiogroup" aria-label="Simulate Mobile Frame Rate" data-kaboom-body="true">
-            <button type="button" id="btn-fps-unopt" class="fps-toggle-btn" role="radio" aria-checked="false" onclick="toggleTrojanFps(24)" data-kaboom-body="true">🔴 24 FPS (Throttle)</button>
-            <button type="button" id="btn-fps-opt" class="fps-toggle-btn active" role="radio" aria-checked="true" onclick="toggleTrojanFps(60)" data-kaboom-body="true">🟢 60 FPS (Apoorv Engine)</button>
+            <button type="button" id="btn-fps-unopt" class="fps-toggle-btn" role="radio" aria-checked="false" onclick="toggleTrojanFps(24)" data-kaboom-body="true">■ 24 FPS (Throttle)</button>
+            <button type="button" id="btn-fps-opt" class="fps-toggle-btn active" role="radio" aria-checked="true" onclick="toggleTrojanFps(60)" data-kaboom-body="true">● 60 FPS (Apoorv Engine)</button>
           </div>
         </div>
         <div id="trojan-fps-feedback" class="trojan-fps-feedback font-mono text-xs" data-kaboom-body="true">
-          ⚡ 60 FPS Locked: Silky smooth response, zero frame drops, 0.8s instant mobile paint.
+          [SLA] 60 FPS Locked: Silky smooth response, zero frame drops, 0.8s instant mobile paint.
         </div>
       </div>
 
       <!-- Interactive Revenue Recovery Simulator -->
       <div id="trojan-simulator-card" class="trojan-simulator-card" data-kaboom-body="true">
         <div class="simulator-header" data-kaboom-body="true">
-          <span class="font-arcade text-xs">📊 REVENUE RECOVERY SIMULATOR</span>
+          <span class="font-arcade text-xs">REVENUE RECOVERY SIMULATOR</span>
           <span class="font-mono text-xs text-muted">AGGREGATOR BLEED VS 60 FPS DIRECT</span>
         </div>
         <div class="simulator-sliders-grid" data-kaboom-body="true">
@@ -299,10 +299,10 @@
       <div class="trojan-cta-row" data-kaboom-body="true">
         <div class="trojan-dual-actions" data-kaboom-body="true">
           <button type="button" id="trojan-cta-btn" onclick="claimTrojanConsultation()" class="trojan-claim-btn font-arcade" data-kaboom-body="true">
-            [ 📅 BOOK 15-MIN STRATEGY WALKTHROUGH WITH APOORV ]
+            [ BOOK 15-MIN STRATEGY WALKTHROUGH WITH APOORV ]
           </button>
           <button type="button" id="trojan-fasttrack-btn" onclick="toggleTrojanPaymentView()" class="trojan-fasttrack-btn font-arcade" data-kaboom-body="true">
-            [ ⚡ FAST-TRACK: REVIEW SOW &amp; LOCK 50% DEPOSIT ]
+            [ FAST-TRACK: REVIEW SOW &amp; LOCK 50% DEPOSIT ]
           </button>
         </div>
         <span class="trojan-guarantee font-mono text-xs" data-kaboom-body="true">100% Mathematical SLA Guarantee: Full refund if architecture fails 60 FPS or Core Web Vitals on mobile • Direct screen share with Apoorv</span>
@@ -312,7 +312,7 @@
       <div id="trojan-payment-view" class="trojan-payment-view hidden" data-kaboom-body="true">
         <div class="trojan-payment-header">
           <div>
-            <span class="trojan-badge-pill" style="background:#047857; color:#fff;">⚡ FAST-TRACK CLOSING TERMINAL</span>
+            <span class="trojan-badge-pill" style="background:#047857; color:#fff;">FAST-TRACK CLOSING TERMINAL</span>
             <h3 class="font-arcade text-sm mt-1">Sovereign 1-Page Milestone SOW &amp; Deposit Terminal</h3>
             <p class="font-mono text-xs text-muted">Direct Escrow • Zero Intermediary Markups • 50/25/25 Structured Release</p>
           </div>
@@ -352,7 +352,7 @@
             <div class="upi-id-box font-mono text-xs">
               <span>UPI ID:</span>
               <code id="publicUpiIdText" class="font-bold">apoorvxs@okaxis</code>
-              <button type="button" onclick="copyPublicUpiId()" class="copy-upi-btn" title="Copy UPI ID">📋</button>
+              <button type="button" onclick="copyPublicUpiId()" class="copy-upi-btn" title="Copy UPI ID">[COPY]</button>
             </div>
             <span class="font-mono text-[10px] text-muted text-center">All UPI Apps: GPay • PhonePe • Paytm • BHIM • Cred</span>
           </div>
@@ -373,12 +373,12 @@
               <div>• <strong>Phase 2 (25% Staging):</strong> Mobile QA review, client feedback integration, and 60 FPS compliance audit.</div>
               <div>• <strong>Phase 3 (25% Cutover):</strong> Domain switch, production deployment, and full source code IP release.</div>
               <div class="sla-badge font-bold text-bad">
-                🛡️ 60 FPS MATHEMATICAL SLA GUARANTEE: If the deployed production build fails to maintain locked 60 FPS or pass Core Web Vitals on mobile, 100% of the advance deposit is immediately refunded.
+                SLA GUARANTEE // 60 FPS MATHEMATICAL VERIFICATION: If the deployed production build fails to maintain locked 60 FPS or pass Core Web Vitals on mobile, 100% of the advance deposit is immediately refunded.
               </div>
             </div>
             <div class="trojan-payment-actions">
               <a id="btnPublicWhatsAppProof" href="#" target="_blank" rel="noopener noreferrer" class="whatsapp-proof-btn font-arcade text-xs">
-                💬 NOTIFY APOORV ON WHATSAPP (+91 94954 62450)
+                [ WA ] NOTIFY APOORV (+91 94954 62450)
               </a>
             </div>
           </div>
@@ -419,10 +419,10 @@
           <label data-kaboom-body="true">
             <span class="field-header"><span>Project Scope</span><span class="field-hint">Quick Select:</span></span>
             <div class="chip-group" id="scope-chips" role="radiogroup" aria-label="Project Scope quick select" data-kaboom-body="true">
-              <button type="button" class="tier-chip active" role="radio" aria-checked="true" data-val="Performance Sprint">⚡ 60 FPS Sprint</button>
-              <button type="button" class="tier-chip" role="radio" aria-checked="false" data-val="3D Web Feature">✨ 3D / Shaders</button>
-              <button type="button" class="tier-chip" role="radio" aria-checked="false" data-val="Product Configurator">📦 Configurator</button>
-              <button type="button" class="tier-chip" role="radio" aria-checked="false" data-val="Full Interactive Site">🌐 WebGPU Site</button>
+              <button type="button" class="tier-chip active" role="radio" aria-checked="true" data-val="Performance Sprint">[SLA] 60 FPS Sprint</button>
+              <button type="button" class="tier-chip" role="radio" aria-checked="false" data-val="3D Web Feature">[3D] 3D / Shaders</button>
+              <button type="button" class="tier-chip" role="radio" aria-checked="false" data-val="Product Configurator">[CFG] Configurator</button>
+              <button type="button" class="tier-chip" role="radio" aria-checked="false" data-val="Full Interactive Site">[GPU] WebGPU Site</button>
             </div>
             <select name="scope" id="inquiry-scope" data-kaboom-body="true" style="width:100%; padding:8px 10px; background:var(--white); border:2px solid var(--ink); font-family:'Courier Prime', monospace; font-size:14px; margin-top:2px;">
               <option value="Performance Sprint">Performance Optimization / 60 FPS Sprint</option>
@@ -460,7 +460,7 @@
           </label>
           <button type="submit" id="inquiry-submit-btn" data-kaboom-body="true" data-trap="cta">Send inquiry</button>
           <p class="privacy-note" style="font-family:'Courier Prime', monospace; font-size:11px; opacity:0.8; margin-top:10px; margin-bottom:0; line-height:1.4;">
-            🔒 PRIVACY // Coordinates provided are used exclusively to evaluate and respond to your inquiry under strict confidentiality. Zero commercial tracking, zero third-party data brokering.
+            PRIVACY // Coordinates provided are used exclusively to evaluate and respond to your inquiry under strict confidentiality. Zero commercial tracking, zero third-party data brokering.
           </p>
         </form>
       </article>
@@ -480,16 +480,16 @@
 
         <div id="engagement-deliverables-list" style="display:flex; flex-direction:column; gap:12px; font-family:'Courier Prime', monospace; font-size:13px; line-height:1.6;">
           <div data-kaboom-body="true" style="padding:10px 12px; background:var(--cream); border:2px solid var(--ink);">
-            <strong>⚡ Rapid Response:</strong> Direct feedback &amp; scoping within 24 hours.
+            <strong>[SLA] Rapid Response:</strong> Direct feedback &amp; scoping within 24 hours.
           </div>
           <div data-kaboom-body="true" style="padding:10px 12px; background:var(--cream); border:2px solid var(--ink);">
-            <strong>🎯 60 FPS Guarantee:</strong> Strict 16.6ms frame budget, DPR clamp, and zero memory leaks.
+            <strong>[60FPS] Engine Guarantee:</strong> Strict 16.6ms frame budget, DPR clamp, and zero memory leaks.
           </div>
           <div data-kaboom-body="true" style="padding:10px 12px; background:var(--cream); border:2px solid var(--ink);">
-            <strong>📦 Featherweight Delivery:</strong> Sub-5MB Draco/KTX2 payloads designed for instant mobile loads.
+            <strong>[KTX2] Featherweight Delivery:</strong> Sub-5MB Draco/KTX2 payloads designed for instant mobile loads.
           </div>
           <div data-kaboom-body="true" style="padding:10px 12px; background:var(--cream); border:2px solid var(--ink);">
-            <strong>🛡 Milestone Security:</strong> Structured 50/25/25 milestone terms with staged preview environments.
+            <strong>[ESCROW] Milestone Terms:</strong> Structured 50/25/25 milestone terms with staged preview environments.
           </div>
         </div>
 
@@ -497,17 +497,17 @@
         <div id="booking-box" data-kaboom-body="true" style="margin-top:1.25rem; padding:14px; background:var(--white); border:2px solid var(--ink); box-shadow:3px 3px 0 var(--purple);">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
             <span style="font-family:'Press Start 2P', monospace; font-size:9px; color:var(--purple-dark); letter-spacing:0.04em;">
-              📅 1-ON-1 STRATEGY WALKTHROUGH
+              CONSULTATION // 1-ON-1 STRATEGY
             </span>
             <span style="font-family:'Courier Prime', monospace; font-size:11px; color:var(--ink); font-weight:700; background:var(--cream); padding:2px 6px; border:1px solid var(--ink);">
-              ⚡ Direct Screen Share
+              › Direct Screen Share
             </span>
           </div>
           <p style="margin:8px 0 12px 0; font-family:'Courier Prime', monospace; font-size:13px; line-height:1.5; color:var(--ink);">
             Need a direct 15-minute screen walkthrough of your site's 60 FPS bottlenecks, WebGL spatial architecture, or high-margin project specs before submitting?
           </p>
           <button type="button" id="btn-open-consultation" onclick="openConsultationModal()" data-kaboom-body="true" style="width:100%; display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:11px 14px; background:var(--purple); color:var(--white); font-family:'Press Start 2P', monospace; font-size:10px; font-weight:700; border:2px solid var(--ink); box-shadow:3px 3px 0 var(--ink); cursor:pointer; transition:transform 0.1s, box-shadow 0.1s;">
-            [ 📅 BOOK 15-MIN STRATEGY WALKTHROUGH ]
+            [ BOOK 15-MIN STRATEGY WALKTHROUGH ]
           </button>
         </div>
 
@@ -601,10 +601,10 @@
             <label style="display:flex; flex-direction:column; gap:4px;">
               <span class="field-header"><span>Meeting Focus</span></span>
               <div class="chip-group" id="consult-focus-chips" role="radiogroup" aria-label="Meeting Focus quick select" style="display:flex; flex-wrap:wrap; gap:6px;">
-                <button type="button" class="tier-chip active" role="radio" aria-checked="true" data-val="60 FPS Performance Audit">⚡ 60 FPS Audit</button>
-                <button type="button" class="tier-chip" role="radio" aria-checked="false" data-val="3D WebGL Spatial Feature">✨ 3D Feature</button>
-                <button type="button" class="tier-chip" role="radio" aria-checked="false" data-val="Product Configurator">📦 Configurator</button>
-                <button type="button" class="tier-chip" role="radio" aria-checked="false" data-val="Full WebGPU Architecture">🌐 WebGPU Build</button>
+                <button type="button" class="tier-chip active" role="radio" aria-checked="true" data-val="60 FPS Performance Audit">[SLA] 60 FPS Audit</button>
+                <button type="button" class="tier-chip" role="radio" aria-checked="false" data-val="3D WebGL Spatial Feature">[3D] 3D Feature</button>
+                <button type="button" class="tier-chip" role="radio" aria-checked="false" data-val="Product Configurator">[CFG] Configurator</button>
+                <button type="button" class="tier-chip" role="radio" aria-checked="false" data-val="Full WebGPU Architecture">[GPU] WebGPU Build</button>
               </div>
               <input type="hidden" id="consult-focus" value="60 FPS Performance Audit">
             </label>
@@ -639,10 +639,10 @@
                 </span>
               </label>
               <button type="submit" id="consult-submit-btn" style="width:100%; padding:12px; background:var(--purple); color:var(--white); font-family:'Press Start 2P', monospace; font-size:10px; font-weight:700; border:2px solid var(--ink); box-shadow:3px 3px 0 var(--ink); cursor:pointer;">
-                [ ⚡ CONFIRM & OPEN GOOGLE MEET INVITE ]
+                [ CONFIRM & OPEN GOOGLE MEET INVITE ]
               </button>
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; font-family:'Courier Prime', monospace; font-size:11px; opacity:0.8;">
-                <span>🔒 Privacy: Direct email & calendar invite only.</span>
+                <span>[PRIVACY] Direct email &amp; calendar invite only.</span>
                 <a href="mailto:apoorvxs@gmail.com?subject=Direct%2015-Min%20Consultation%20Request" style="color:var(--purple-dark); font-weight:700;">Or Email Directly ↗</a>
               </div>
             </div>
@@ -652,7 +652,7 @@
 
       <!-- Confirmation view once booked -->
       <div id="consult-confirmation" class="hidden" style="text-align:center; padding:16px 0;">
-        <div style="font-size:36px; margin-bottom:8px;">🎉</div>
+        <div style="font-size:24px; margin-bottom:8px; font-family:monospace; color:var(--retro-teal); font-weight:bold;">[CONFIRMED]</div>
         <h4 style="font-family:'Press Start 2P', monospace; font-size:12px; color:var(--ink); margin:0 0 8px 0;">
           CONSULTATION FORMATTED!
         </h4>
@@ -661,7 +661,7 @@
         </p>
         <div style="display:flex; flex-direction:column; gap:10px; max-width:420px; margin:0 auto;">
           <a id="consult-calendar-link" href="#" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px 16px; background:var(--purple); color:var(--white); text-decoration:none; font-family:'Press Start 2P', monospace; font-size:10px; font-weight:700; border:2px solid var(--ink); box-shadow:3px 3px 0 var(--ink);">
-            [ 📅 OPEN IN GOOGLE CALENDAR ↗ ]
+            [ OPEN IN GOOGLE CALENDAR ↗ ]
           </a>
           <button type="button" onclick="closeConsultationModal()" style="padding:8px 12px; background:var(--white); color:var(--ink); border:2px solid var(--ink); font-family:'Courier Prime', monospace; font-size:12px; font-weight:700; cursor:pointer;">
             Close Window

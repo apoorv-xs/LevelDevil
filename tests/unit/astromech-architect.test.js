@@ -57,7 +57,7 @@ describe("Astromech Architect Engine", () => {
       expect(landingRails.length).toBe(1);
     });
 
-    it("displays retro thought bubble '⚡ HARD-LIGHT RAIL DEPLOYED'", () => {
+    it("displays retro thought bubble '[SYS] HARD-LIGHT RAIL DEPLOYED'", () => {
       let emittedText = null;
       global.window = global.window || {};
       global.window.System1Brain = {
@@ -67,7 +67,7 @@ describe("Astromech Architect Engine", () => {
       const mockPlayer = { pos: { x: 400, y: 600 }, vy: 0, grounded: true, currentRail: null };
       AstromechArchitect.constructPlatform(mockPlayer, []);
 
-      expect(emittedText).toBe("⚡ HARD-LIGHT RAIL DEPLOYED");
+      expect(emittedText).toBe("[SYS] HARD-LIGHT RAIL DEPLOYED");
     });
 
     it("triggers player.triggerGround callback when landing on constructed platform", () => {
