@@ -202,6 +202,10 @@ function handleIncomingRealtimeEvent(data) {
       renderQueue();
       if (selectedProspectId === p.id) renderActiveProspect();
     }
+  } else if (data.type === 'PARTNER_AUDIT_ACTIVITY' && data.entry) {
+    if (typeof handleIncomingAuditEntry === 'function') {
+      handleIncomingAuditEntry(data.entry);
+    }
   }
 }
 
@@ -1777,6 +1781,196 @@ function onAuthVerified() {
 }
 
 // -------------------------------------------------------------
+// PARTNER ANTI-THEFT SURVEILLANCE & ACTIVITY AUDIT ENGINE
+// -------------------------------------------------------------
+const AUDIT_LOG_KEY = 'sprintdial_audit_log';
+
+function getAuditLogs() {
+  try {
+    const raw = localStorage.getItem(AUDIT_LOG_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    console.warn('[Surveillance] Failed to read audit logs:', e);
+    return [];
+  }
+}
+
+function saveAuditLogs(logs) {
+  try {
+    localStorage.setItem(AUDIT_LOG_KEY, JSON.stringify(logs));
+  } catch (e) {
+    console.warn('[Surveillance] Failed to persist audit logs:', e);
+  }
+}
+
+function formatTimeAgo(timestamp) {
+  if (!timestamp) return 'just now';
+  const diffSec = Math.floor((Date.now() - timestamp) / 1000);
+  if (diffSec < 60) return `${Math.max(1, diffSec)}s ago`;
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffHours = Math.floor(diffMin / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  return `${Math.floor(diffHours / 24)}d ago`;
+}
+
+function recordPartnerActivity(actionType, prospectId, details = {}) {
+  try {
+    const user = (typeof currentUser !== 'undefined' && currentUser)
+      ? currentUser
+      : ((typeof window !== 'undefined' && window.currentUser)
+        ? window.currentUser
+        : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+    const isOwner = isOwnerUser(user);
+    const callerEmail = user?.email || 'guest-caller@internal';
+    const callerName = user?.name || user?.displayName || 'Partner Rep';
+
+    const p = prospectId ? (typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS) ? PROSPECTS.find(item => item.id === prospectId) : null) : null;
+    const prospectName = p?.name || details?.client || details?.prospectName || 'Workspace Queue';
+    const city = p?.city || details?.city || 'All';
+
+    let isRisk = false;
+    let riskLabel = 'ACTIVITY';
+    let riskBadge = '📋 LOGGED';
+    let description = `${callerName} executed ${actionType} on ${prospectName}`;
+
+    switch (actionType) {
+      case 'CSV_EXPORT':
+        isRisk = true;
+        riskLabel = 'CRITICAL LEAK ALERT';
+        riskBadge = '⚠️ CSV EXPORT';
+        description = `${callerName} exported ${details.count || 'leads'} records to CSV (${details.territory || city})`;
+        break;
+      case 'TEARDOWN_PITCH':
+        isRisk = !isOwner;
+        riskLabel = isRisk ? 'UNAUTHORIZED PITCH' : '3D PITCH CREATED';
+        riskBadge = '🔗 TEARDOWN LINK';
+        description = `${callerName} generated 3D teardown pitch link for ${prospectName}`;
+        break;
+      case 'CALL_INITIATED':
+        isRisk = false;
+        riskLabel = 'OUTREACH TOUCH';
+        riskBadge = '📞 CALL STARTED';
+        description = `${callerName} dialed ${prospectName} (${p?.dm || 'DM'})`;
+        break;
+      case 'DOSSIER_VIEW':
+        isRisk = false;
+        riskLabel = 'DOSSIER RECON';
+        riskBadge = '👁️ VIEWED LEAD';
+        description = `${callerName} viewed dossier for ${prospectName} (${city})`;
+        break;
+      case 'OUTCOME_LOGGED':
+        isRisk = false;
+        riskLabel = 'STATUS MUTATION';
+        riskBadge = `📝 ${(details.status || 'outcome').toUpperCase().replace('_', ' ')}`;
+        description = `${callerName} marked ${prospectName} as ${details.status || 'updated'}`;
+        break;
+      case 'NOTE_SAVED':
+        isRisk = false;
+        riskLabel = 'NOTE APPENDED';
+        riskBadge = '💾 NOTE SAVED';
+        description = `${callerName} updated notes on ${prospectName}`;
+        break;
+      case 'DISCOVERY_BOOKED':
+        isRisk = false;
+        riskLabel = 'CALENDAR INVITE';
+        riskBadge = '📅 DISCOVERY SET';
+        description = `${callerName} booked discovery invite for ${prospectName}`;
+        break;
+      default:
+        description = `${callerName} performed ${actionType} on ${prospectName}`;
+    }
+
+    const entry = {
+      id: 'aud_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+      timestamp: Date.now(),
+      callerEmail,
+      callerName,
+      isOwner,
+      actionType,
+      prospectId: p?.id || prospectId || null,
+      prospectName,
+      city,
+      isRisk,
+      riskLabel,
+      riskBadge,
+      description,
+      details
+    };
+
+    const logs = getAuditLogs();
+    logs.unshift(entry);
+    if (logs.length > 200) logs.length = 200;
+    saveAuditLogs(logs);
+
+    // Concurrency Broadcast across tabs
+    try {
+      if (typeof syncChannel !== 'undefined' && syncChannel && typeof syncChannel.postMessage === 'function') {
+        syncChannel.postMessage({ type: 'PARTNER_AUDIT_ACTIVITY', entry });
+      }
+    } catch (bcErr) {
+      console.warn('[Surveillance] Broadcast error:', bcErr);
+    }
+
+    // Backup to Cloud Firestore if active
+    if (window.SALES_PLATFORM_AUTH?.getFirestore && !isOwner) {
+      window.SALES_PLATFORM_AUTH.getFirestore().then(db => {
+        db.collection('partner_activity_logs').add(entry).catch(() => {});
+      }).catch(() => {});
+    }
+
+    // Real-time update of Owner Profile Dropdown or Admin surveillance table
+    if (isOwner) {
+      const dropdown = document.getElementById('userProfileDropdown');
+      if (dropdown && !dropdown.classList.contains('hidden')) {
+        updateProfileDropdownUI();
+      }
+      const adminModal = document.getElementById('adminModal');
+      const tabLogs = document.getElementById('adminTabLogs');
+      if (adminModal && !adminModal.classList.contains('hidden') && tabLogs && !tabLogs.classList.contains('hidden')) {
+        renderAdminAuditTable();
+      }
+    }
+
+    return entry;
+  } catch (err) {
+    console.warn('[Surveillance] Failed to record partner activity:', err);
+    return null;
+  }
+}
+
+function handleIncomingAuditEntry(entry) {
+  if (!entry || !entry.id) return;
+  const logs = getAuditLogs();
+  if (logs.some(l => l.id === entry.id)) return;
+  logs.unshift(entry);
+  if (logs.length > 200) logs.length = 200;
+  saveAuditLogs(logs);
+
+  const user = (typeof currentUser !== 'undefined' && currentUser)
+    ? currentUser
+    : ((typeof window !== 'undefined' && window.currentUser)
+      ? window.currentUser
+      : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+
+  if (isOwnerUser(user)) {
+    if (entry.isRisk && !entry.isOwner) {
+      showNotification(`🚨 SURVEILLANCE RADAR: ${entry.callerName} (${entry.callerEmail}) triggered ${entry.riskBadge}!`);
+      if (typeof playSound === 'function') playSound('chime');
+    }
+    const dropdown = document.getElementById('userProfileDropdown');
+    if (dropdown && !dropdown.classList.contains('hidden')) {
+      updateProfileDropdownUI();
+    }
+    const adminModal = document.getElementById('adminModal');
+    const tabLogs = document.getElementById('adminTabLogs');
+    if (adminModal && !adminModal.classList.contains('hidden') && tabLogs && !tabLogs.classList.contains('hidden')) {
+      renderAdminAuditTable();
+    }
+  }
+}
+
+// -------------------------------------------------------------
 // PROFILE TELEMETRY & DROPDOWN ENGINE
 // -------------------------------------------------------------
 function getProfileTelemetry() {
@@ -1826,7 +2020,12 @@ function getProfileTelemetry() {
 }
 
 function updateProfileDropdownUI() {
-  if (!currentUser) return;
+  const user = (typeof currentUser !== 'undefined' && currentUser)
+    ? currentUser
+    : ((typeof window !== 'undefined' && window.currentUser)
+      ? window.currentUser
+      : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
+  if (!user) return;
   const telemetry = getProfileTelemetry();
 
   // Profile Identity info
@@ -1838,13 +2037,13 @@ function updateProfileDropdownUI() {
   const roleBadge = document.getElementById('userRoleBadge');
   const adminBtn = document.getElementById('dropdownAdminBtn');
 
-  if (nameEl) nameEl.textContent = currentUser.name || 'Operator';
-  if (emailEl) emailEl.textContent = currentUser.email || '';
-  if (imgEl && currentUser.picture) imgEl.src = currentUser.picture;
-  if (triggerImg && currentUser.picture) triggerImg.src = currentUser.picture;
+  if (nameEl) nameEl.textContent = user.name || 'Operator';
+  if (emailEl) emailEl.textContent = user.email || '';
+  if (imgEl && user.picture) imgEl.src = user.picture;
+  if (triggerImg && user.picture) triggerImg.src = user.picture;
 
-  const isOwner = isOwnerUser(currentUser);
-  const roleText = isOwner ? 'OWNER' : (currentUser.role === 'caller' ? 'PARTNER' : 'USER');
+  const isOwner = isOwnerUser(user);
+  const roleText = isOwner ? 'OWNER' : (user.role === 'caller' ? 'PARTNER' : 'USER');
   if (rolePill) {
     rolePill.textContent = roleText;
     rolePill.className = isOwner
@@ -1855,43 +2054,156 @@ function updateProfileDropdownUI() {
     roleBadge.textContent = roleText;
     roleBadge.className = 'topbar-user-badge';
   }
-  if (adminBtn) {
-    if (isOwner) {
-      adminBtn.classList.remove('hidden');
-      adminBtn.classList.add('flex');
-    } else {
-      adminBtn.classList.add('hidden');
-      adminBtn.classList.remove('flex');
-    }
-  }
+
+  // Telemetry View Labels & Containers
+  const cockpitTitleEl = document.getElementById('profileCockpitTitle');
+  const card1TitleEl = document.getElementById('profileCard1Title');
+  const card2TitleEl = document.getElementById('profileCard2Title');
+  const card3TitleEl = document.getElementById('profileCard3Title');
+  const card4TitleEl = document.getElementById('profileCard4Title');
+  const callbackSubtitleEl = document.getElementById('profileCallbackSubtitle');
+  const ownerSummaryStrip = document.getElementById('ownerFleetSummaryStrip');
+  const ownerStreamContainer = document.getElementById('ownerSurveillanceStreamContainer');
+  const ownerActionButtons = document.getElementById('ownerActionButtons');
+  const callerActionButtons = document.getElementById('callerActionButtons');
 
   // Telemetry: Dials
   const dialsTodayEl = document.getElementById('profileDialsToday');
   const dialsGoalTextEl = document.getElementById('profileDialsGoalText');
   const dialProgressBar = document.getElementById('profileDialProgressBar');
-  if (dialsTodayEl) dialsTodayEl.textContent = telemetry.dialsToday;
-  if (dialsGoalTextEl) dialsGoalTextEl.textContent = `${telemetry.dialsToday}/${telemetry.maxGoal}`;
-  if (dialProgressBar) dialProgressBar.style.width = `${telemetry.dialPct}%`;
 
   // Telemetry: Booked & Successes
   const successCountEl = document.getElementById('profileSuccessCount');
   const winRateBadgeEl = document.getElementById('profileWinRateBadge');
   const bookedValEl = document.getElementById('profileBookedValue');
-  if (successCountEl) successCountEl.textContent = telemetry.totalSuccess;
-  if (winRateBadgeEl) winRateBadgeEl.textContent = `${telemetry.winRate}% WIN`;
-  if (bookedValEl) bookedValEl.textContent = `₹${telemetry.bookedVal.toLocaleString('en-IN')} Value`;
 
   // Telemetry: Rejections
   const rejectionCountEl = document.getElementById('profileRejectionCount');
   const rejectionBreakdownEl = document.getElementById('profileRejectionBreakdown');
-  if (rejectionCountEl) rejectionCountEl.textContent = telemetry.totalRejections;
-  if (rejectionBreakdownEl) {
-    rejectionBreakdownEl.textContent = `${telemetry.notInterestedCount} Disq • ${telemetry.gatekeeperCount} GK`;
-  }
 
   // Telemetry: Callbacks
   const callbackCountEl = document.getElementById('profileCallbackCount');
-  if (callbackCountEl) callbackCountEl.textContent = telemetry.callbackCount;
+
+  if (isOwner) {
+    // Owner Executive Fleet Radar & Anti-Theft Surveillance Mode
+    if (cockpitTitleEl) cockpitTitleEl.textContent = '🛡️ FLEET SURVEILLANCE & LEAK RADAR';
+    if (card1TitleEl) card1TitleEl.textContent = '📡 FLEET OUTREACH';
+    if (card2TitleEl) card2TitleEl.textContent = '💰 FLEET PIPELINE';
+    if (card3TitleEl) card3TitleEl.textContent = '🛑 DISQUALIFIED';
+    if (card4TitleEl) card4TitleEl.textContent = '⏱️ FOLLOW-UPS';
+    if (callbackSubtitleEl) callbackSubtitleEl.textContent = 'Active Queued';
+
+    if (ownerSummaryStrip) ownerSummaryStrip.classList.remove('hidden');
+    if (ownerStreamContainer) ownerStreamContainer.classList.remove('hidden');
+    if (ownerActionButtons) ownerActionButtons.classList.remove('hidden');
+    if (callerActionButtons) callerActionButtons.classList.add('hidden');
+    if (adminBtn) {
+      // Redundant with topbar Admin console button - keep hidden in dropdown for Owner
+      adminBtn.classList.add('hidden');
+      adminBtn.classList.remove('flex');
+    }
+
+    const logs = getAuditLogs();
+    const auditTouches = logs.filter(l => l.actionType === 'CALL_INITIATED' || l.actionType === 'OUTCOME_LOGGED').length;
+    const allTouchedLeads = (typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS))
+      ? PROSPECTS.filter(p => p.status && p.status !== 'available').length
+      : 0;
+    const fleetTotalDials = Math.max(telemetry.dialsToday, auditTouches, allTouchedLeads);
+
+    if (dialsTodayEl) dialsTodayEl.textContent = fleetTotalDials;
+    if (dialsGoalTextEl) dialsGoalTextEl.textContent = `${fleetTotalDials} Touches`;
+    if (dialProgressBar) dialProgressBar.style.width = '100%';
+
+    if (successCountEl) successCountEl.textContent = telemetry.totalSuccess;
+    if (winRateBadgeEl) winRateBadgeEl.textContent = `${telemetry.winRate}% WIN`;
+    if (bookedValEl) bookedValEl.textContent = `₹${telemetry.bookedVal.toLocaleString('en-IN')} Pipeline`;
+
+    if (rejectionCountEl) rejectionCountEl.textContent = telemetry.totalRejections;
+    if (rejectionBreakdownEl) {
+      rejectionBreakdownEl.textContent = `${telemetry.notInterestedCount} Disq • ${telemetry.gatekeeperCount} GK`;
+    }
+
+    if (callbackCountEl) callbackCountEl.textContent = telemetry.callbackCount;
+
+    // Unique partner count (non-owner callers)
+    const uniquePartnerEmails = new Set(logs.filter(l => !l.isOwner && l.callerEmail && !l.callerEmail.includes('apoorv')).map(l => l.callerEmail));
+    const activePartnersCount = uniquePartnerEmails.size || (window.SALES_REP_INVITATIONS ? Object.keys(window.SALES_REP_INVITATIONS).length : 0);
+    const activePartnersEl = document.getElementById('ownerActivePartnersCount');
+    if (activePartnersEl) activePartnersEl.textContent = activePartnersCount;
+
+    // Leak Radar Count
+    const leakCount = logs.filter(l => l.isRisk).length;
+    const leakBadgeEl = document.getElementById('ownerLeakRadarBadge');
+    if (leakBadgeEl) {
+      if (leakCount > 0) {
+        leakBadgeEl.className = 'px-1.5 py-0.5 bg-rose-950 text-rose-300 border border-rose-500 font-mono text-[8px] font-bold animate-pulse';
+        leakBadgeEl.textContent = `🚨 ${leakCount} LEAK ALERT${leakCount > 1 ? 'S' : ''}`;
+      } else {
+        leakBadgeEl.className = 'px-1.5 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 font-mono text-[8px] font-bold';
+        leakBadgeEl.textContent = '🟢 0 LEAK ALERTS';
+      }
+    }
+
+    // Render Recent Audit Trail Stream (Top 5)
+    const trailListEl = document.getElementById('ownerAuditTrailList');
+    if (trailListEl) {
+      trailListEl.innerHTML = '';
+      if (!logs || logs.length === 0) {
+        trailListEl.innerHTML = `<div class="p-1.5 bg-[#17120f]/5 border border-[#17120f]/10 text-neutral-500 text-[9px] italic">🟢 All clear. Real-time surveillance radar active — tracking partner lead recon & pitch activity.</div>`;
+      } else {
+        const recent = logs.slice(0, 5);
+        recent.forEach(item => {
+          const div = document.createElement('div');
+          div.className = item.isRisk
+            ? 'p-1.5 bg-[#f8d7da] border border-[#721c24] text-[#721c24] space-y-0.5'
+            : 'p-1.5 bg-[#fffdf1] border border-[#17120f]/30 text-[#17120f] space-y-0.5';
+
+          const timeAgo = formatTimeAgo(item.timestamp);
+          const callerDisplay = item.callerEmail || item.callerName || 'Partner';
+
+          div.innerHTML = `
+            <div class="flex items-center justify-between text-[8px] font-bold">
+              <span class="truncate max-w-[170px]">${item.isRisk ? '🚨 ' : ''}${escapeHTML(callerDisplay)}</span>
+              <span class="font-mono text-neutral-500">${timeAgo}</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="text-[7px] font-arcade px-1 py-0.2 ${item.isRisk ? 'bg-[#721c24] text-white' : 'bg-[#17120f] text-[#fce566]'}">${escapeHTML(item.riskBadge || item.actionType)}</span>
+              <span class="text-[9px] font-mono truncate font-semibold text-[#17120f]">${escapeHTML(item.prospectName || 'Queue')}</span>
+            </div>
+          `;
+          trailListEl.appendChild(div);
+        });
+      }
+    }
+  } else {
+    // Partner Caller Telemetry View
+    if (cockpitTitleEl) cockpitTitleEl.textContent = '📊 SALES TELEMETRY';
+    if (card1TitleEl) card1TitleEl.textContent = '📡 OUTREACH';
+    if (card2TitleEl) card2TitleEl.textContent = '🎉 BOOKED';
+    if (card3TitleEl) card3TitleEl.textContent = '🛑 REJECTIONS';
+    if (card4TitleEl) card4TitleEl.textContent = '⏱️ FOLLOW-UPS';
+    if (callbackSubtitleEl) callbackSubtitleEl.textContent = 'Follow-ups';
+
+    if (ownerSummaryStrip) ownerSummaryStrip.classList.add('hidden');
+    if (ownerStreamContainer) ownerStreamContainer.classList.add('hidden');
+    if (ownerActionButtons) ownerActionButtons.classList.add('hidden');
+    if (callerActionButtons) callerActionButtons.classList.remove('hidden');
+
+    if (dialsTodayEl) dialsTodayEl.textContent = telemetry.dialsToday;
+    if (dialsGoalTextEl) dialsGoalTextEl.textContent = `${telemetry.dialsToday}/${telemetry.maxGoal}`;
+    if (dialProgressBar) dialProgressBar.style.width = `${telemetry.dialPct}%`;
+
+    if (successCountEl) successCountEl.textContent = telemetry.totalSuccess;
+    if (winRateBadgeEl) winRateBadgeEl.textContent = `${telemetry.winRate}% WIN`;
+    if (bookedValEl) bookedValEl.textContent = `₹${telemetry.bookedVal.toLocaleString('en-IN')} Value`;
+
+    if (rejectionCountEl) rejectionCountEl.textContent = telemetry.totalRejections;
+    if (rejectionBreakdownEl) {
+      rejectionBreakdownEl.textContent = `${telemetry.notInterestedCount} Disq • ${telemetry.gatekeeperCount} GK`;
+    }
+
+    if (callbackCountEl) callbackCountEl.textContent = telemetry.callbackCount;
+  }
 
   // Shift date
   const dateEl = document.getElementById('profileShiftDate');
@@ -1941,6 +2253,168 @@ function resetShiftDials() {
   }
 }
 
+function openAdminSurveillanceLogs() {
+  closeProfileDropdown();
+  openAdminModal();
+  switchAdminTab('logs');
+  const section = document.getElementById('adminSurveillanceLogsSection');
+  if (section) {
+    section.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+function exportAuditLogsToCSV() {
+  if (typeof playSound === 'function') playSound('click');
+  const logs = getAuditLogs();
+  if (!logs || !logs.length) {
+    showNotification('⚠️ No partner activity logged yet to export.');
+    return;
+  }
+
+  const headers = [
+    'Log ID',
+    'Timestamp (ISO)',
+    'Date Time (Local)',
+    'Caller Name',
+    'Caller Email',
+    'Role',
+    'Action Type',
+    'Risk Flag',
+    'Risk Label',
+    'Prospect ID',
+    'Prospect Name',
+    'City',
+    'Description',
+    'Payload Details'
+  ];
+
+  const escapeCsv = (str) => {
+    if (str === null || str === undefined) return '""';
+    const text = String(str).replace(/"/g, '""');
+    return `"${text}"`;
+  };
+
+  const rows = logs.map(entry => [
+    escapeCsv(entry.id),
+    escapeCsv(new Date(entry.timestamp).toISOString()),
+    escapeCsv(new Date(entry.timestamp).toLocaleString()),
+    escapeCsv(entry.callerName),
+    escapeCsv(entry.callerEmail),
+    escapeCsv(entry.isOwner ? 'OWNER' : 'PARTNER'),
+    escapeCsv(entry.actionType),
+    escapeCsv(entry.isRisk ? 'HIGH_RISK' : 'NORMAL'),
+    escapeCsv(entry.riskLabel),
+    escapeCsv(entry.prospectId),
+    escapeCsv(entry.prospectName),
+    escapeCsv(entry.city),
+    escapeCsv(entry.description),
+    escapeCsv(JSON.stringify(entry.details || {}))
+  ]);
+
+  const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement('a');
+  link.setAttribute('href', encodedUri);
+  link.setAttribute('download', `surveillance_audit_trail_${new Date().toISOString().slice(0, 10)}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  showNotification('📥 Partner Surveillance Audit CSV exported successfully!');
+}
+
+function clearAuditLogs() {
+  if (!isOwnerUser(currentUser)) {
+    showNotification('🔒 Only Owner (Apoorv) can clear surveillance audit logs.');
+    return;
+  }
+  if (confirm('Permanently clear all partner activity and surveillance logs?')) {
+    localStorage.removeItem(AUDIT_LOG_KEY);
+    renderAdminAuditTable();
+    updateProfileDropdownUI();
+    showNotification('🧹 Surveillance audit trail cleared.');
+  }
+}
+
+function renderAdminAuditTable() {
+  const tbody = document.getElementById('adminSurveillanceLogsBody');
+  const totalTouchesEl = document.getElementById('adminSurveillanceTotalTouches');
+  const activeCallersEl = document.getElementById('adminSurveillanceActiveCallers');
+  const teardownCountEl = document.getElementById('adminSurveillanceTeardownCount');
+  const leakCountEl = document.getElementById('adminSurveillanceLeakCount');
+
+  const logs = getAuditLogs();
+
+  const teardownCount = logs.filter(l => l.actionType === 'TEARDOWN_PITCH').length;
+  const leakCount = logs.filter(l => l.isRisk).length;
+  const uniqueCallers = new Set(logs.filter(l => !l.isOwner && l.callerEmail).map(l => l.callerEmail)).size;
+
+  if (totalTouchesEl) totalTouchesEl.textContent = logs.length;
+  if (activeCallersEl) activeCallersEl.textContent = uniqueCallers;
+  if (teardownCountEl) teardownCountEl.textContent = teardownCount;
+  if (leakCountEl) leakCountEl.textContent = leakCount;
+
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  if (logs.length === 0) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td colspan="5" class="p-4 text-center text-neutral-400 italic font-mono text-xs">🟢 No partner activities recorded yet. All surveillance systems operational.</td>`;
+    tbody.appendChild(tr);
+    return;
+  }
+
+  logs.forEach(item => {
+    const tr = document.createElement('tr');
+    tr.className = item.isRisk ? 'bg-rose-950/20 hover:bg-rose-950/30 transition' : 'hover:bg-white/[0.04] transition';
+
+    const timeStr = new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const dateStr = new Date(item.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' });
+
+    let riskBadgeHtml = `<span class="px-1.5 py-0.5 rounded bg-white/5 text-neutral-300 border border-white/10 text-[9px] font-bold">${escapeHTML(item.riskBadge || item.actionType)}</span>`;
+    if (item.actionType === 'CSV_EXPORT') {
+      riskBadgeHtml = `<span class="px-1.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-600 text-[9px] font-bold">⚠️ EXPORTED CSV</span>`;
+    } else if (item.actionType === 'TEARDOWN_PITCH') {
+      riskBadgeHtml = `<span class="px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-600 text-[9px] font-bold">🔗 TEARDOWN LINK</span>`;
+    } else if (item.actionType === 'CALL_INITIATED') {
+      riskBadgeHtml = `<span class="px-1.5 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-600 text-[9px] font-bold">📞 CALLED</span>`;
+    } else if (item.actionType === 'DOSSIER_VIEW') {
+      riskBadgeHtml = `<span class="px-1.5 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-600 text-[9px] font-bold">👁️ DOSSIER</span>`;
+    } else if (item.actionType === 'OUTCOME_LOGGED') {
+      riskBadgeHtml = `<span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-600 text-[9px] font-bold">📝 OUTCOME</span>`;
+    }
+
+    const callerBadge = item.isOwner
+      ? `<span class="px-1.5 py-0.2 bg-[#fce566] text-[#17120f] font-bold text-[8px] border border-[#17120f] rounded">OWNER</span>`
+      : `<span class="px-1.5 py-0.2 bg-blue-950 text-blue-300 font-bold text-[8px] border border-blue-700 rounded">PARTNER</span>`;
+
+    tr.innerHTML = `
+      <td class="p-2 sm:p-2.5 whitespace-nowrap text-neutral-400">
+        <div>${timeStr}</div>
+        <div class="text-[9px] text-neutral-500">${dateStr}</div>
+      </td>
+      <td class="p-2 sm:p-2.5">
+        <div class="flex items-center gap-1.5">
+          <span class="font-bold text-white">${escapeHTML(item.callerName || 'Partner')}</span>
+          ${callerBadge}
+        </div>
+        <div class="text-[10px] text-neutral-400 font-mono truncate max-w-[180px]">${escapeHTML(item.callerEmail || '')}</div>
+      </td>
+      <td class="p-2 sm:p-2.5 whitespace-nowrap">
+        ${riskBadgeHtml}
+      </td>
+      <td class="p-2 sm:p-2.5">
+        <div class="font-bold text-neutral-200 text-xs truncate max-w-[200px]">${escapeHTML(item.prospectName || 'Workspace')}</div>
+        <div class="text-[10px] text-neutral-500">${escapeHTML(item.city || 'All')}</div>
+      </td>
+      <td class="p-2 sm:p-2.5 text-neutral-400">
+        <div class="text-[11px]">${escapeHTML(item.description || '')}</div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
 // Global outside-click listener to dismiss profile dropdown
 window.addEventListener('click', (e) => {
   const trigger = document.getElementById('userProfileTrigger');
@@ -1960,6 +2434,12 @@ if (typeof window !== 'undefined') {
   window.resetShiftDials = resetShiftDials;
   window.getProfileTelemetry = getProfileTelemetry;
   window.updateProfileDropdownUI = updateProfileDropdownUI;
+  window.recordPartnerActivity = recordPartnerActivity;
+  window.getAuditLogs = getAuditLogs;
+  window.exportAuditLogsToCSV = exportAuditLogsToCSV;
+  window.clearAuditLogs = clearAuditLogs;
+  window.openAdminSurveillanceLogs = openAdminSurveillanceLogs;
+  window.renderAdminAuditTable = renderAdminAuditTable;
 }
 
 // -------------------------------------------------------------
@@ -2313,6 +2793,9 @@ function selectProspect(id, playSoundEffect = false) {
   }
   if (playSoundEffect && typeof window !== 'undefined' && window.innerWidth < 768) {
     showMobilePane('cockpit');
+  }
+  if (p && typeof recordPartnerActivity === 'function') {
+    recordPartnerActivity('DOSSIER_VIEW', id, { client: p.name, city: p.city, ptype: p.ptype });
   }
 }
 
@@ -2713,6 +3196,9 @@ function handleCallInitiated() {
   renderActiveProspect();
 
   startCallTimer();
+  if (typeof recordPartnerActivity === 'function') {
+    recordPartnerActivity('CALL_INITIATED', p.id, { client: p.name, phone: p.phone || p.tel, dm: p.dm });
+  }
 }
 
 function startCallTimer() {
@@ -3146,6 +3632,9 @@ function saveNotesLocally() {
     p.notes = notesInput.value;
     saveLeadOverride(p.id, { notes: p.notes });
     showNotesSaveIndicator();
+    if (typeof recordPartnerActivity === 'function') {
+      recordPartnerActivity('NOTE_SAVED', p.id, { client: p.name, notesLength: p.notes.length });
+    }
   }
 }
 
@@ -3161,6 +3650,10 @@ function logOutcome(status) {
   p.lockedBy = null;
   p.lockedEmail = null;
   broadcastUnlock(p.id, status);
+
+  if (typeof recordPartnerActivity === 'function') {
+    recordPartnerActivity('OUTCOME_LOGGED', selectedProspectId, { client: p.name, status });
+  }
 
   // Update Daily Dial Progress
   dialsToday++;
@@ -3220,6 +3713,10 @@ function generateGoogleCalendarInvite() {
   const p = PROSPECTS.find(item => item.id === selectedProspectId);
   const dateInput = document.getElementById('discoveryInput').value;
   if (!p) return;
+
+  if (typeof recordPartnerActivity === 'function') {
+    recordPartnerActivity('DISCOVERY_BOOKED', selectedProspectId, { client: p.name, discoveryTime: dateInput || 'tomorrow' });
+  }
 
   let startTime = '';
   let endTime = '';
@@ -3377,6 +3874,10 @@ function copyTeardownLink() {
   const url = shareInput?.value || (p ? getTeardownUrl(p) : "");
   if (!url) return;
 
+  if (typeof recordPartnerActivity === 'function') {
+    recordPartnerActivity('TEARDOWN_PITCH', selectedProspectId, { client: p?.name, mode: 'clipboard_copy', url });
+  }
+
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(url).then(() => {
       if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
@@ -3397,6 +3898,10 @@ function previewTeardownPage() {
   playSound('click');
   const shareInput = document.getElementById('teardownShareUrl');
   const url = shareInput?.value;
+  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  if (p && typeof recordPartnerActivity === 'function') {
+    recordPartnerActivity('TEARDOWN_PITCH', selectedProspectId, { client: p.name, mode: 'preview_tab', url });
+  }
   if (url && typeof window !== "undefined") {
     window.open(url, '_blank');
   }
@@ -3407,6 +3912,10 @@ function sendWhatsAppTeardown() {
   const p = PROSPECTS.find(item => item.id === selectedProspectId);
   if (!p) return;
   const url = getTeardownUrl(p);
+
+  if (typeof recordPartnerActivity === 'function') {
+    recordPartnerActivity('TEARDOWN_PITCH', selectedProspectId, { client: p.name, mode: 'whatsapp_dispatch', url });
+  }
   const cleanPhone = (p.phone || '').replace(/[^0-9]/g, '');
   const targetPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
   const isNoSite = !p.site || p.site === '#' || p.ptype === 'STARTER';
@@ -3652,6 +4161,10 @@ function exportActiveQueueCsv() {
   if (!filtered.length) {
     showNotification('⚠️ No matching prospects in current queue to export.');
     return;
+  }
+
+  if (typeof recordPartnerActivity === 'function') {
+    recordPartnerActivity('CSV_EXPORT', null, { count: filtered.length, territory: activeCityFilter });
   }
 
   const headers = [
@@ -4178,12 +4691,16 @@ function switchAdminTab(tab) {
   } else {
     if (tabLogs) tabLogs.classList.remove('hidden');
     if (btnLogs) btnLogs.className = activeBtnClass;
+    if (typeof renderAdminAuditTable === 'function') renderAdminAuditTable();
     renderAdminCallLogs();
   }
 }
 
 function exportCallDataToCSV() {
   playSound('click');
+  if (typeof recordPartnerActivity === 'function') {
+    recordPartnerActivity('CSV_EXPORT', null, { count: (PROSPECTS || []).length, territory: 'Admin All Leads' });
+  }
   const headers = ['ID', 'City', 'Name', 'Decision Maker', 'Phone', 'Website', 'Category', 'Project Type', 'Status', 'Call Notes', 'Discovery Meeting Time', 'Fee'];
   const rows = PROSPECTS.map(p => [
     `"${p.id}"`,
@@ -5549,6 +6066,15 @@ if (typeof window !== 'undefined') {
   window.matchStatus = matchStatus;
   window.showLaymanAnalogy = showLaymanAnalogy;
   window.closeLaymanAnalogy = closeLaymanAnalogy;
+  window.recordPartnerActivity = recordPartnerActivity;
+  window.getAuditLogs = getAuditLogs;
+  window.saveAuditLogs = saveAuditLogs;
+  window.exportAuditLogsToCSV = exportAuditLogsToCSV;
+  window.clearAuditLogs = clearAuditLogs;
+  window.openAdminSurveillanceLogs = openAdminSurveillanceLogs;
+  window.renderAdminAuditTable = renderAdminAuditTable;
+  window.formatTimeAgo = formatTimeAgo;
+  window.handleIncomingRealtimeEvent = handleIncomingRealtimeEvent;
 }
 if (typeof global !== 'undefined') {
   global.advanceLead = advanceLead;
@@ -5562,6 +6088,15 @@ if (typeof global !== 'undefined') {
   global.matchStatus = matchStatus;
   global.showLaymanAnalogy = showLaymanAnalogy;
   global.closeLaymanAnalogy = closeLaymanAnalogy;
+  global.recordPartnerActivity = recordPartnerActivity;
+  global.getAuditLogs = getAuditLogs;
+  global.saveAuditLogs = saveAuditLogs;
+  global.exportAuditLogsToCSV = exportAuditLogsToCSV;
+  global.clearAuditLogs = clearAuditLogs;
+  global.openAdminSurveillanceLogs = openAdminSurveillanceLogs;
+  global.renderAdminAuditTable = renderAdminAuditTable;
+  global.formatTimeAgo = formatTimeAgo;
+  global.handleIncomingRealtimeEvent = handleIncomingRealtimeEvent;
 }
 
 if (typeof window !== 'undefined') {

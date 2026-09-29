@@ -797,9 +797,10 @@
           </div>
 
           <!-- 2. Real-Time Sales Telemetry Cockpit -->
+          <!-- 2. Real-Time Sales Telemetry Cockpit -->
           <div class="space-y-2">
             <div class="flex items-center justify-between">
-              <span class="font-arcade text-[9px] text-[#17120f] font-bold uppercase tracking-wider">📊 SALES TELEMETRY</span>
+              <span id="profileCockpitTitle" class="font-arcade text-[9px] text-[#17120f] font-bold uppercase tracking-wider">📊 SALES TELEMETRY</span>
               <span class="font-mono text-[9px] text-[#17120f]/70" id="profileShiftDate">Live Session</span>
             </div>
 
@@ -808,11 +809,11 @@
               <!-- Card 1: Total Calls / Dials -->
               <div class="p-2 bg-[#fff4c9] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1">
                 <div class="flex items-center justify-between text-[9px] font-arcade">
-                  <span>📡 OUTREACH</span>
+                  <span id="profileCard1Title">📡 OUTREACH</span>
                   <span id="profileDialsGoalText" class="font-mono text-[9px]">0/20</span>
                 </div>
                 <div class="font-arcade text-base font-black text-[#17120f]" id="profileDialsToday">0</div>
-                <div class="w-full bg-[#fffdf1] border border-[#17120f] h-2 overflow-hidden">
+                <div id="profileProgressBarContainer" class="w-full bg-[#fffdf1] border border-[#17120f] h-2 overflow-hidden">
                   <div id="profileDialProgressBar" class="bg-[#fce566] h-full transition-all duration-300" style="width: 0%;"></div>
                 </div>
               </div>
@@ -820,7 +821,7 @@
               <!-- Card 2: Successful / Booked -->
               <div class="p-2 bg-[#d4edda] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1">
                 <div class="flex items-center justify-between text-[9px] font-arcade text-[#155724]">
-                  <span>🎉 BOOKED</span>
+                  <span id="profileCard2Title">🎉 BOOKED</span>
                   <span id="profileWinRateBadge" class="font-mono text-[9px] font-bold">0% WIN</span>
                 </div>
                 <div class="font-arcade text-base font-black text-[#155724]" id="profileSuccessCount">0</div>
@@ -830,7 +831,7 @@
               <!-- Card 3: Rejections -->
               <div class="p-2 bg-[#f8d7da] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1">
                 <div class="flex items-center justify-between text-[9px] font-arcade text-[#721c24]">
-                  <span>🛑 REJECTIONS</span>
+                  <span id="profileCard3Title">🛑 REJECTIONS</span>
                 </div>
                 <div class="font-arcade text-base font-black text-[#721c24]" id="profileRejectionCount">0</div>
                 <p class="font-mono text-[9px] text-[#721c24] truncate" id="profileRejectionBreakdown">0 Disq • 0 Ineligible</p>
@@ -839,30 +840,58 @@
               <!-- Card 4: Callbacks / In-Flight -->
               <div class="p-2 bg-[#fff3cd] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1">
                 <div class="flex items-center justify-between text-[9px] font-arcade text-[#856404]">
-                  <span>⏱️ FOLLOW-UPS</span>
+                  <span id="profileCard4Title">⏱️ FOLLOW-UPS</span>
                 </div>
                 <div class="font-arcade text-base font-black text-[#856404]" id="profileCallbackCount">0</div>
-                <p class="font-mono text-[9px] text-[#856404] truncate">Follow-ups</p>
+                <p class="font-mono text-[9px] text-[#856404] truncate" id="profileCallbackSubtitle">Follow-ups</p>
+              </div>
+            </div>
+
+            <!-- Owner Fleet Intelligence & Leak Radar Summary Strip (Strictly for Owner) -->
+            <div id="ownerFleetSummaryStrip" class="hidden p-2 bg-[#17120f] text-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-1">
+              <div class="flex items-center justify-between text-[9px] font-arcade">
+                <span class="text-[#fce566] flex items-center gap-1"><span>👥</span><span>ACTIVE PARTNERS:</span> <span id="ownerActivePartnersCount" class="font-mono font-bold text-white">0</span></span>
+                <span id="ownerLeakRadarBadge" class="px-1.5 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 font-mono text-[8px] font-bold">0 LEAK ALERTS</span>
+              </div>
+            </div>
+
+            <!-- Real-Time Partner Anti-Theft Activity Stream (Strictly for Owner) -->
+            <div id="ownerSurveillanceStreamContainer" class="hidden space-y-1 pt-1 border-t-2 border-[#17120f]">
+              <div class="flex items-center justify-between">
+                <span class="font-arcade text-[9px] text-[#17120f] font-bold flex items-center gap-1">
+                  <span>🚨</span><span>LIVE PARTNER SURVEILLANCE</span>
+                </span>
+                <span class="font-mono text-[8px] text-[#17120f]/70 animate-pulse">● LIVE</span>
+              </div>
+              <div id="ownerAuditTrailList" class="space-y-1 max-h-36 overflow-y-auto pr-0.5 custom-scrollbar text-[10px] font-mono">
+                <!-- Dynamically populated entries -->
               </div>
             </div>
           </div>
 
           <!-- 3. Quick Action Controls -->
           <div class="space-y-1.5 pt-2 border-t-2 border-[#17120f]">
-            <div class="grid grid-cols-2 gap-1.5">
+            <!-- Partner Controls (Visible for non-owner callers) -->
+            <div id="callerActionButtons" class="grid grid-cols-2 gap-1.5">
               <button type="button" onclick="exportActiveQueueCsv()" title="Export current prospect radar queue to CSV spreadsheet" class="px-2 py-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-mono text-[10px] font-bold flex items-center justify-center gap-1 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
                 <span>📥</span> <span>Export CSV</span>
               </button>
-              <button type="button" onclick="resetShiftDials()" title="Reset shift counter to zero" class="px-2 py-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-mono text-[10px] font-bold flex items-center justify-center gap-1 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
+              <button id="btnResetShiftDials" type="button" onclick="resetShiftDials()" title="Reset shift counter to zero" class="px-2 py-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-mono text-[10px] font-bold flex items-center justify-center gap-1 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
                 <span>🔄</span> <span>Reset Counter</span>
               </button>
             </div>
 
-            <!-- Owner Admin Console Jump (Strictly for Owner) -->
-            <button id="dropdownAdminBtn" type="button" onclick="closeProfileDropdown(); openAdminModal();" class="hidden w-full px-2 py-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[10px] items-center justify-center gap-2 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
-              <span class="w-2 h-2 rounded-full bg-emerald-500 border border-[#17120f]" style="width:8px;height:8px;border-radius:9999px;display:inline-block;"></span>
-              <span>OPEN ADMIN CONSOLE</span>
-            </button>
+            <!-- Owner Surveillance Controls (Strictly for Owner: eliminates topbar redundancy, jumps directly to surveillance audit trails!) -->
+            <div id="ownerActionButtons" class="hidden space-y-1.5">
+              <div class="grid grid-cols-2 gap-1.5">
+                <button type="button" onclick="openAdminSurveillanceLogs();" title="Jump directly to full partner surveillance logs in Admin Console" class="px-2 py-1.5 bg-[#fce566] hover:bg-[#ffe040] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[9px] font-bold flex items-center justify-center gap-1 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
+                  <span>🛡️</span> <span>AUDIT LOGS</span>
+                </button>
+                <button type="button" onclick="exportAuditLogsToCSV()" title="Export full partner activity & leak audit trail to CSV" class="px-2 py-1.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-mono text-[10px] font-bold flex items-center justify-center gap-1 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
+                  <span>📥</span> <span>Export Audit</span>
+                </button>
+              </div>
+            </div>
 
             <!-- Install Mobile App in Dropdown (Visible when verified) -->
             <button id="dropdownInstallAppBtn" type="button" onclick="closeProfileDropdown(); handleInstallAppClick();" class="hidden w-full px-2 py-1.5 bg-[#fce566] hover:bg-[#ffe040] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[10px] items-center justify-center gap-2 transition cursor-pointer active:translate-x-[1px] active:translate-y-[1px]">
@@ -2084,7 +2113,7 @@
       <div class="flex border-b border-white/10 gap-1.5 sm:gap-2 font-mono text-[11px] sm:text-xs overflow-x-auto pb-1.5 shrink-0 custom-scrollbar">
         <button id="btnAdminTabGemini" onclick="switchAdminTab('gemini')" class="admin-tab-btn active px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white text-neutral-950 font-semibold transition shrink-0 shadow-sm">Gemini AI & Scout</button>
         <button id="btnAdminTabIngest" onclick="switchAdminTab('ingest')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Bulk Ingestion</button>
-        <button id="btnAdminTabLogs" onclick="switchAdminTab('logs')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>📡</span><span>Leads & Logs</span></button>
+        <button id="btnAdminTabLogs" onclick="switchAdminTab('logs')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>🛡️</span><span>Surveillance & Logs</span></button>
         <button id="btnAdminTabSync" onclick="switchAdminTab('sync')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Cloud Sync</button>
         <button id="btnAdminTabUsers" onclick="switchAdminTab('users')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>👥</span><span>Partners &amp; Invites</span></button>
         <button id="btnAdminTabBrain" onclick="switchAdminTab('brain')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>🧠</span><span>Brain Studio</span></button>
@@ -2164,8 +2193,67 @@
         </div>
       </div>
 
-      <!-- Tab 3: Lead Pipeline & Data Sources Explorer -->
-      <div id="adminTabLogs" class="hidden flex-1 overflow-y-auto space-y-3 custom-scrollbar">
+      <!-- Tab 3: Lead Pipeline & Data Sources Explorer + Partner Anti-Theft Surveillance -->
+      <div id="adminTabLogs" class="hidden flex-1 overflow-y-auto space-y-4 custom-scrollbar">
+        <!-- 🛡️ REAL-TIME PARTNER ANTI-THEFT SURVEILLANCE & LEAK RADAR -->
+        <div id="adminSurveillanceLogsSection" class="bg-[#101114] border-2 border-amber-500/40 rounded-xl p-3 sm:p-4 space-y-3 shadow-lg">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-arcade text-amber-300 font-bold flex items-center gap-1.5">
+                <span>🛡️</span>
+                <span>PARTNER ANTI-THEFT SURVEILLANCE RADAR</span>
+              </span>
+              <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono text-[9px] font-bold animate-pulse">● LIVE MONITORING</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="exportAuditLogsToCSV()" class="px-2.5 py-1 rounded bg-[#fce566] hover:bg-[#ffe040] text-[#17120f] border border-[#17120f] font-arcade text-[9px] font-bold transition cursor-pointer flex items-center gap-1">
+                <span>⬇️</span><span>EXPORT AUDIT CSV</span>
+              </button>
+              <button onclick="clearAuditLogs()" class="px-2 py-1 rounded bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 border border-rose-800/40 font-mono text-[9px] transition cursor-pointer flex items-center gap-1">
+                <span>🗑️</span><span>Clear</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Radar KPI Badges -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
+            <div class="bg-[#15161B] border border-white/5 rounded-lg p-2 space-y-0.5">
+              <span class="text-neutral-400 text-[10px]">TOTAL FLEET TOUCHES</span>
+              <div id="adminSurveillanceTotalTouches" class="text-base font-black text-white">0</div>
+            </div>
+            <div class="bg-[#15161B] border border-white/5 rounded-lg p-2 space-y-0.5">
+              <span class="text-neutral-400 text-[10px]">ACTIVE PARTNERS</span>
+              <div id="adminSurveillanceActiveCallers" class="text-base font-black text-blue-400">0</div>
+            </div>
+            <div class="bg-[#15161B] border border-white/5 rounded-lg p-2 space-y-0.5">
+              <span class="text-neutral-400 text-[10px]">PITCH LINKS GENERATED</span>
+              <div id="adminSurveillanceTeardownCount" class="text-base font-black text-purple-400">0</div>
+            </div>
+            <div class="bg-[#15161B] border border-white/5 rounded-lg p-2 space-y-0.5">
+              <span class="text-neutral-400 text-[10px]">LEAK & EXPORT ALERTS</span>
+              <div id="adminSurveillanceLeakCount" class="text-base font-black text-rose-400">0</div>
+            </div>
+          </div>
+
+          <!-- Live Activity Table -->
+          <div class="overflow-x-auto border border-white/10 rounded-lg custom-scrollbar">
+            <table class="w-full text-left text-xs font-mono min-w-[700px]">
+              <thead class="bg-black/80 text-neutral-400 border-b border-white/10 text-[10px] uppercase">
+                <tr>
+                  <th class="p-2 sm:p-2.5">Time</th>
+                  <th class="p-2 sm:p-2.5">Operator / Caller</th>
+                  <th class="p-2 sm:p-2.5">Action & Risk Level</th>
+                  <th class="p-2 sm:p-2.5">Target Prospect / City</th>
+                  <th class="p-2 sm:p-2.5">Details & Payload</th>
+                </tr>
+              </thead>
+              <tbody id="adminSurveillanceLogsBody" class="divide-y divide-white/5 text-[11px]">
+                <!-- Dynamically rendered -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <!-- Lead Data Source Architecture & Summary Strip -->
         <div class="bg-[#101114] border border-white/5 rounded-xl p-3 sm:p-4 space-y-2.5">
           <div class="flex flex-wrap items-center justify-between gap-2">
