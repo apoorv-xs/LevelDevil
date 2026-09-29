@@ -177,7 +177,11 @@
             localStorage.removeItem("apoorv_custom_rails_v3");
         } catch (e) {}
 
-        // Toggle Button in bottom-right corner
+        // Toggle Button in bottom-right corner (omitted on /workspace/ to eliminate UI collision & clutter)
+        if (typeof window !== "undefined" && window.location && window.location.pathname.includes("/workspace/")) {
+            return;
+        }
+
         const toggleBtn = document.createElement("button");
         toggleBtn.id = "collision-editor-toggle-btn";
         toggleBtn.innerHTML = "🛠 MAP (E / \\)";

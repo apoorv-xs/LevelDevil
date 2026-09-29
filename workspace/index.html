@@ -665,6 +665,47 @@
       display: inline-block !important;
     }
 
+    /* Decluttering & Progressive Disclosure Invariants */
+    #collision-editor-toggle-btn {
+      display: none !important;
+    }
+    .site-nav {
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
+    }
+    .site-nav a {
+      white-space: nowrap !important;
+    }
+    #callWrapCard.cockpit-pre-call:not(.hud-manually-expanded) #hudStepsContainer {
+      display: none !important;
+    }
+    #callWrapCard.cockpit-pre-call {
+      background: #fffdf1 !important;
+      border-style: dashed !important;
+      padding: 8px 12px !important;
+    }
+    #callWrapCard.cockpit-pre-call .hud-precall-note {
+      display: inline !important;
+    }
+    #callWrapCard:not(.cockpit-pre-call) .hud-precall-note {
+      display: none !important;
+    }
+    #dossierPane.dossier-pane-collapsed {
+      width: 48px !important;
+      min-width: 48px !important;
+      max-width: 48px !important;
+      padding: 12px 6px !important;
+      overflow: hidden !important;
+      transition: width 0.2s ease !important;
+    }
+    #dossierPane.dossier-pane-collapsed #dossierExpandedContent,
+    #dossierPane.dossier-pane-collapsed .dossier-header-strip {
+      display: none !important;
+    }
+    #dossierPane.dossier-pane-collapsed #dossierCollapsedIndicator {
+      display: flex !important;
+    }
+
     /* Fail-Safe Modal & Auth Gate Overlay Styling (z-index 1000 above Three.js canvas & Kaboom) */
     #authGateOverlay {
       position: fixed !important;
@@ -785,13 +826,13 @@
       </div>
 
       <!-- Interactive BB-8 Co-Pilot Tour Trigger -->
-      <button id="btnBB8Guide" class="topbar-btn guide-btn" onclick="window.System1Brain?.showGuidanceHUD?.()" aria-label="Summon BB-8 Guide" title="Summon BB-8 Guide">[ 🤖<span class="guide-label"> GUIDE</span> ]</button>
+      <button id="btnBB8Guide" class="topbar-btn guide-btn" onclick="window.System1Brain?.showGuidanceHUD?.()" aria-label="Summon BB-8 Guide" title="Summon BB-8 Guide">[ 🤖<span class="guide-label hidden xl:inline"> GUIDE</span> ]</button>
 
       <!-- Workstation Guided Tour Trigger -->
-      <button id="btnWorkspaceTour" class="topbar-btn tour-btn hide-mobile" onclick="openWorkspaceTour(0)" aria-label="Workstation Guided Tour" title="Workstation Tour & Caller Flight Manual">[ 💡<span class="tour-label hide-mobile"> TOUR</span> ]</button>
+      <button id="btnWorkspaceTour" class="topbar-btn tour-btn hide-mobile" onclick="openWorkspaceTour(0)" aria-label="Workstation Guided Tour" title="Workstation Tour & Caller Flight Manual">[ 💡<span class="tour-label hidden lg:inline"> TOUR</span> ]</button>
 
       <!-- Audio SFX Toggle -->
-      <button id="sfx-toggle-btn" class="topbar-btn sfx-btn" aria-label="Toggle Sound Effects" title="Toggle Sound Effects">[ 🔊<span class="sfx-label"> SFX</span> ]</button>
+      <button id="sfx-toggle-btn" class="topbar-btn sfx-btn" aria-label="Toggle Sound Effects" title="Toggle Sound Effects">[ 🔊<span class="sfx-label hidden xl:inline"> SFX</span> ]</button>
 
       <!-- Sign In Trigger (Visible when unauthenticated / guest) -->
       <button id="workspaceSignInBtnHeader" onclick="openAuthGate()" class="topbar-btn topbar-btn-primary flex items-center gap-1.5 cursor-pointer" title="Sign in with Google">
@@ -1170,22 +1211,23 @@
           <span id="leadCountBadge" class="text-[9px] sm:text-[10px] font-arcade text-[#17120f] bg-[#fffdf1] px-1.5 py-1 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] shrink-0 whitespace-nowrap">60 Leads</span>
         </div>
 
-        <!-- Status / Disposition Filter Segmented Control -->
-        <div class="flex bg-[#fffdf1] p-0.5 text-[9px] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade">
-          <button id="statusTabAll" type="button" onclick="filterStatus('all')" class="status-tab active flex-1 py-1 font-bold text-[#17120f] bg-[#fce566] transition text-center" title="All Leads">ALL</button>
-          <button id="statusTabFresh" type="button" onclick="filterStatus('fresh')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center" title="Fresh / Untouched Leads">FRESH</button>
-          <button id="statusTabCallbacks" type="button" onclick="filterStatus('callbacks')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center" title="Scheduled Callbacks">CB</button>
-          <button id="statusTabInterested" type="button" onclick="filterStatus('interested')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center" title="Interested & Booked Leads">WINS</button>
+        <!-- Row 2: Status Tabs + Compact CSV Export Dock -->
+        <div class="flex items-center gap-1.5">
+          <div class="flex-1 flex bg-[#fffdf1] p-0.5 text-[9px] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade">
+            <button id="statusTabAll" type="button" onclick="filterStatus('all')" class="status-tab active flex-1 py-1 font-bold text-[#17120f] bg-[#fce566] transition text-center" title="All Leads">ALL</button>
+            <button id="statusTabFresh" type="button" onclick="filterStatus('fresh')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center" title="Fresh / Untouched Leads">FRESH</button>
+            <button id="statusTabCallbacks" type="button" onclick="filterStatus('callbacks')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center" title="Scheduled Callbacks">CB</button>
+            <button id="statusTabInterested" type="button" onclick="filterStatus('interested')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center" title="Interested & Booked Leads">WINS</button>
+          </div>
+          <button 
+            id="btnExportQueueCsv" 
+            type="button"
+            onclick="exportActiveQueueCsv()" 
+            title="Export current territory and filtered queue to CSV spreadsheet"
+            class="py-1 px-2 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[9px] font-bold flex items-center justify-center gap-1 transition shrink-0 whitespace-nowrap">
+            <span>📥</span> <span>CSV</span>
+          </button>
         </div>
-
-        <button 
-          id="btnExportQueueCsv" 
-          type="button"
-          onclick="exportActiveQueueCsv()" 
-          title="Export current territory and filtered queue to CSV spreadsheet"
-          class="w-full py-1 px-2 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[9px] font-bold flex items-center justify-center gap-1.5 transition">
-          <span>📥</span> <span>EXPORT ACTIVE QUEUE (CSV)</span>
-        </button>
       </div>
 
       <!-- Search Input -->
@@ -1238,21 +1280,23 @@
         <div class="studio-panel rounded-none p-4 sm:p-5 space-y-3 shrink-0 w-full">
           <!-- Top Row: Stepper & Status Strip -->
           <div class="flex items-center justify-between gap-2 flex-wrap border-b-2 border-[#17120f] pb-2.5">
-            <div class="flex items-center gap-2 flex-wrap">
-              <span id="leadQueuePosition" class="text-[10px] font-arcade text-[#17120f] bg-[#fff1bd] border-2 border-[#17120f] px-2.5 py-1 shadow-[1px_1px_0_#17120f]">Lead 1 of 65</span>
-              <span id="activeRating" class="text-[10px] bg-[#fff1bd] text-[#17120f] font-arcade px-2 py-1 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f]">★ --</span>
-              <span id="activeType" class="text-[10px] font-arcade px-2 py-1 bg-[#fffdf1] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f]">UPGRADE</span>
-              <span id="activeFee" data-kaboom-body="true" class="text-[10px] font-arcade px-2 py-1 bg-[#d4edda] text-[#155724] border-2 border-[#17120f] font-bold shadow-[1px_1px_0_#17120f]">Floor ₹50,000</span>
-              <span id="currentLockStatus" class="text-[10px] font-arcade px-2 py-1 bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f]">Ready</span>
+            <!-- Left: Stepper Controls & Queue Position -->
+            <div class="inline-flex items-center bg-[#fffdf1] border-2 border-[#17120f] p-0.5 shadow-[2px_2px_0_#17120f]">
+              <button id="btnPrevLeadHero" data-kaboom-body="true" onclick="advanceLead(-1)" title="Previous Prospect (K)" class="px-2.5 py-1 text-xs font-arcade text-[#17120f] hover:bg-[#fce566] transition flex items-center gap-1">
+                <span>◀</span>
+              </button>
+              <span id="leadQueuePosition" class="text-[10px] font-arcade text-[#17120f] px-2.5 py-1 border-x border-[#17120f]/30 whitespace-nowrap">Lead 1 of 60</span>
+              <button id="btnNextLeadHero" data-kaboom-body="true" onclick="advanceLead(1)" title="Next Prospect (J)" class="px-2.5 py-1 text-xs font-arcade text-[#17120f] hover:bg-[#fce566] transition flex items-center gap-1">
+                <span>▶</span>
+              </button>
             </div>
-            <!-- Stepper Controls -->
-            <div class="inline-flex bg-[#fffdf1] border-2 border-[#17120f] p-0.5 shadow-[2px_2px_0_#17120f]">
-              <button id="btnPrevLeadHero" data-kaboom-body="true" onclick="advanceLead(-1)" title="Previous Prospect (K)" class="px-3 py-1 text-xs font-arcade text-[#17120f] hover:bg-[#fce566] transition flex items-center gap-1">
-                <span>&larr; Prev</span>
-              </button>
-              <button id="btnNextLeadHero" data-kaboom-body="true" onclick="advanceLead(1)" title="Next Prospect (J)" class="px-3 py-1 text-xs font-arcade text-[#17120f] hover:bg-[#fce566] transition flex items-center gap-1">
-                <span>Next &rarr;</span>
-              </button>
+
+            <!-- Right: Priority Financial & Status Badges -->
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span id="activeFee" data-kaboom-body="true" class="text-[10px] font-arcade px-2 py-1 bg-[#d4edda] text-[#155724] border-2 border-[#17120f] font-bold shadow-[1px_1px_0_#17120f] whitespace-nowrap">Floor ₹50,000</span>
+              <span id="currentLockStatus" class="text-[10px] font-arcade px-2 py-1 bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] whitespace-nowrap">Ready</span>
+              <span id="activeRating" class="text-[10px] bg-[#fff1bd] text-[#17120f] font-arcade px-2 py-1 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] whitespace-nowrap">★ --</span>
+              <span id="activeType" class="text-[10px] font-arcade px-2 py-1 bg-[#fffdf1] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] whitespace-nowrap">UPGRADE</span>
             </div>
           </div>
 
@@ -1339,6 +1383,26 @@
           </div>
         </div>
 
+        <!-- PRE-CALL RECON & CONVERSATIONAL HOOK CARD -->
+        <div id="preCallIntelCard" class="studio-panel rounded-none p-3 sm:p-4 space-y-2 shrink-0 bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f]">
+          <div class="flex items-center justify-between border-b border-[#17120f]/20 pb-1.5">
+            <span class="font-arcade text-[10px] text-[#17120f] font-bold flex items-center gap-1.5">
+              <span>💡 PRE-CALL RECON & CONVERSATIONAL HOOK</span>
+            </span>
+            <span class="text-[9px] font-mono text-[#17120f]/60 font-bold uppercase">10s Opening Pitch</span>
+          </div>
+          <div class="space-y-1.5 font-mono text-xs text-[#17120f]">
+            <div class="flex items-start gap-2 bg-[#fff4c9] p-2 border border-[#17120f]/20">
+              <span class="text-emerald-700 font-bold shrink-0">🎯 TALKING ANGLE:</span>
+              <span id="preCallHookText" class="leading-relaxed">"Are most of your high-intent inquiries coming straight from your website or third-party aggregators?"</span>
+            </div>
+            <div class="flex items-start gap-2 bg-[#fffdf1] p-1.5 border border-[#17120f]/10 text-[11px] text-[#17120f]/80">
+              <span class="text-rose-700 font-bold shrink-0">⚡ REVENUE LEAK:</span>
+              <span id="preCallBleedText" class="leading-relaxed">Cellular 4G drop-off on slow mobile loading; high aggregator commissions.</span>
+            </div>
+          </div>
+        </div>
+
         <!-- 2. CLOSER SOUNDBOARD, REBUTTALS & CALL NOTES (ABOVE THE FOLD) -->
         <div class="studio-panel rounded-none p-4 sm:p-5 space-y-3 shrink-0">
           <div class="flex items-center justify-between border-b-2 border-[#17120f] pb-2">
@@ -1378,7 +1442,7 @@
             </div>
 
             <!-- IN-CALL FLIGHT & WRAP-UP HUD (MANDATORY DISPOSITION GATE) -->
-            <div id="callWrapCard" class="border-2 border-[#17120f] bg-[#fffdf1] p-2.5 shadow-[2px_2px_0_#17120f] space-y-2 transition-all">
+            <div id="callWrapCard" class="cockpit-pre-call border-2 border-[#17120f] bg-[#fffdf1] p-2.5 shadow-[2px_2px_0_#17120f] space-y-2 transition-all">
               
               <!-- Flight Status & Live Telemetry Banner -->
               <div class="flex items-center justify-between border-b border-[#17120f]/20 pb-1.5 flex-wrap gap-1.5">
@@ -1393,89 +1457,96 @@
                     <span id="callTimerDigits">00:00</span>
                   </div>
                 </div>
-                <button type="button" id="btnCancelDial" onclick="cancelActiveDial()" class="hidden px-2 py-0.5 text-[9px] font-mono font-bold text-rose-700 hover:text-white hover:bg-rose-700 border border-dashed border-rose-500 transition items-center gap-1 shrink-0" title="Cancel Dial (Misclick)">
-                  <span>↩</span> <span>Cancel Dial</span>
-                </button>
-              </div>
-
-              <!-- STEP 1: Reach Status (Who answered?) -->
-              <div class="space-y-1">
-                <div class="flex items-center justify-between">
-                  <span class="font-arcade text-[9px] font-bold text-[#17120f] flex items-center gap-1">
-                    <span>STEP 1:</span> <span class="text-[#17120f]/80">REACH STATUS</span>
-                  </span>
-                  <span id="reachValidationIndicator" class="text-[9px] font-mono text-rose-600 font-bold hidden">SELECT REACH *</span>
-                </div>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-1">
-                  <button type="button" id="btnReachDM" onclick="setCallReach('dm_connected')" class="reach-btn px-2 py-1.5 bg-[#fffdf1] hover:bg-[#d4edda] text-[#17120f] border border-[#17120f] font-mono text-[10px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Spoke to Decision Maker">
-                    <span>🟢</span> <span>Spoke to DM</span>
+                <div class="flex items-center gap-1.5">
+                  <button id="btnCallbackNudge" type="button" onclick="sendCallbackNudgeWhatsApp()" title="Send 1-Tap WhatsApp follow-up nudge to prospect" class="px-2 py-0.5 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center gap-1 cursor-pointer">
+                    <span>💬</span> <span>1-TAP NUDGE</span>
                   </button>
-                  <button type="button" id="btnReachGK" onclick="setCallReach('gatekeeper')" class="reach-btn px-2 py-1.5 bg-[#fffdf1] hover:bg-[#fff3cd] text-[#17120f] border border-[#17120f] font-mono text-[10px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Gatekeeper / Reception">
-                    <span>🟡</span> <span>Gatekeeper</span>
+                  <span class="hud-precall-note text-[9px] font-mono text-[#17120f]/70 hidden sm:inline">Tap 'Call' or press 'D' to activate HUD</span>
+                  <button type="button" id="btnToggleHUDSteps" onclick="toggleCallHUDSteps()" class="px-1.5 py-0.5 text-[9px] font-mono text-[#17120f] bg-[#fff1bd] hover:bg-[#fce566] border border-[#17120f] transition cursor-pointer" title="Toggle full HUD preview">
+                    <span id="hudToggleText">Expand ▼</span>
                   </button>
-                  <button type="button" id="btnReachNoAns" onclick="setCallReach('no_answer')" class="reach-btn px-2 py-1.5 bg-[#fffdf1] hover:bg-[#e2e3e5] text-[#17120f] border border-[#17120f] font-mono text-[10px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="No Answer / Busy">
-                    <span>⚪</span> <span>No Answer</span>
-                  </button>
-                  <button type="button" id="btnReachInvalid" onclick="setCallReach('invalid_number')" class="reach-btn px-2 py-1.5 bg-[#fffdf1] hover:bg-[#f8d7da] text-[#17120f] border border-[#17120f] font-mono text-[10px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Invalid / Disconnected #">
-                    <span>🔴</span> <span>Invalid #</span>
+                  <button type="button" id="btnCancelDial" onclick="cancelActiveDial()" class="hidden px-2 py-0.5 text-[9px] font-mono font-bold text-rose-700 hover:text-white hover:bg-rose-700 border border-dashed border-rose-500 transition items-center gap-1 shrink-0" title="Cancel Dial (Misclick)">
+                    <span>↩</span> <span>Cancel Dial</span>
                   </button>
                 </div>
               </div>
 
-              <!-- STEP 2: Call Outcome (Dynamically updated based on Reach) -->
-              <div class="space-y-1">
-                <div class="flex items-center justify-between">
-                  <span class="font-arcade text-[9px] font-bold text-[#17120f] flex items-center gap-1">
-                    <span>STEP 2:</span> <span id="outcomeStepTitle" class="text-[#17120f]/80">CALL OUTCOME</span>
-                  </span>
-                  <span id="outcomeValidationIndicator" class="text-[9px] font-mono text-rose-600 font-bold hidden">SELECT OUTCOME *</span>
-                </div>
-                <!-- Dynamic Outcome Buttons Container -->
-                <div id="outcomeOptionsContainer" class="grid grid-cols-2 sm:grid-cols-4 gap-1">
-                  <button type="button" id="btnOutcomeBooked" onclick="setCallOutcome('discovery_booked')" class="outcome-btn px-2 py-1.5 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Log Discovery Booked [Hotkey: 1]">
-                    <span>🏆</span> <span>[1] BOOKED</span>
-                  </button>
-                  <button type="button" id="btnOutcomeTeardown" onclick="setCallOutcome('teardown_sent')" class="outcome-btn px-2 py-1.5 bg-[#cce5ff] hover:bg-[#b8daff] text-[#004085] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Sent 3D Teardown">
-                    <span>🔗</span> <span>TEARDOWN</span>
-                  </button>
-                  <button type="button" id="btnOutcomeCallback" onclick="setCallOutcome('connected_callback')" class="outcome-btn px-2 py-1.5 bg-[#fff3cd] hover:bg-[#ffeeba] text-[#856404] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Log Callback Requested [Hotkey: 2]">
-                    <span>📅</span> <span>[2] CALLBACK</span>
-                  </button>
-                  <button type="button" id="btnOutcomeDisqualified" onclick="setCallOutcome('not_interested')" class="outcome-btn px-2 py-1.5 bg-[#f8d7da] hover:bg-[#f5c6cb] text-[#721c24] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Log Disqualified [Hotkey: 3]">
-                    <span>❌</span> <span>[3] DISQUAL</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- STEP 3: 1-Tap Quick-Tag Intel Chips -->
-              <div class="space-y-1 pt-0.5">
-                <div class="flex items-center justify-between">
-                  <span class="font-arcade text-[9px] font-bold text-[#17120f] flex items-center gap-1">
-                    <span>STEP 3:</span> <span class="text-[#17120f]/80">QUICK-TAG INTEL</span>
-                  </span>
-                  <div class="flex items-center gap-1.5">
-                    <button id="btnCallbackNudge" type="button" onclick="sendCallbackNudgeWhatsApp()" title="Send 1-Tap WhatsApp follow-up nudge to prospect" class="px-2 py-1 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center gap-1 cursor-pointer">
-                      <span>💬</span> <span>1-TAP NUDGE</span>
+              <!-- HUD Collapsible Steps Container -->
+              <div id="hudStepsContainer" class="hud-collapsible-steps space-y-2">
+                <!-- STEP 1: Reach Status (Who answered?) -->
+                <div class="space-y-1">
+                  <div class="flex items-center justify-between">
+                    <span class="font-arcade text-[9px] font-bold text-[#17120f] flex items-center gap-1">
+                      <span>STEP 1:</span> <span class="text-[#17120f]/80">REACH STATUS</span>
+                    </span>
+                    <span id="reachValidationIndicator" class="text-[9px] font-mono text-rose-600 font-bold hidden">SELECT REACH *</span>
+                  </div>
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-1">
+                    <button type="button" id="btnReachDM" onclick="setCallReach('dm_connected')" class="reach-btn px-2 py-1.5 bg-[#fffdf1] hover:bg-[#d4edda] text-[#17120f] border border-[#17120f] font-mono text-[10px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Spoke to Decision Maker">
+                      <span>🟢</span> <span>Spoke to DM</span>
                     </button>
-                    <span class="text-[9px] font-mono text-[#17120f]/60">1-tap tags</span>
+                    <button type="button" id="btnReachGK" onclick="setCallReach('gatekeeper')" class="reach-btn px-2 py-1.5 bg-[#fffdf1] hover:bg-[#fff3cd] text-[#17120f] border border-[#17120f] font-mono text-[10px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Gatekeeper / Reception">
+                      <span>🟡</span> <span>Gatekeeper</span>
+                    </button>
+                    <button type="button" id="btnReachNoAns" onclick="setCallReach('no_answer')" class="reach-btn px-2 py-1.5 bg-[#fffdf1] hover:bg-[#e2e3e5] text-[#17120f] border border-[#17120f] font-mono text-[10px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="No Answer / Busy">
+                      <span>⚪</span> <span>No Answer</span>
+                    </button>
+                    <button type="button" id="btnReachInvalid" onclick="setCallReach('invalid_number')" class="reach-btn px-2 py-1.5 bg-[#fffdf1] hover:bg-[#f8d7da] text-[#17120f] border border-[#17120f] font-mono text-[10px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Invalid / Disconnected #">
+                      <span>🔴</span> <span>Invalid #</span>
+                    </button>
                   </div>
                 </div>
-                <div class="flex flex-wrap gap-1">
-                  <button type="button" onclick="appendNoteTag('In Consultations')" class="quick-tag-chip px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
-                    + In Consultations
-                  </button>
-                  <button type="button" onclick="appendNoteTag('Asked for WhatsApp')" class="quick-tag-chip px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
-                    + Asked for WhatsApp
-                  </button>
-                  <button type="button" onclick="appendNoteTag('Uses WordPress')" class="quick-tag-chip px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
-                    + Uses WordPress
-                  </button>
-                  <button type="button" onclick="appendNoteTag('Decision Next Month')" class="quick-tag-chip px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
-                    + Decision Next Month
-                  </button>
-                  <button type="button" onclick="appendNoteTag('Follow Up Tomorrow')" class="quick-tag-chip px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
-                    + Follow Up Tomorrow
-                  </button>
+
+                <!-- STEP 2: Call Outcome (Dynamically updated based on Reach) -->
+                <div class="space-y-1">
+                  <div class="flex items-center justify-between">
+                    <span class="font-arcade text-[9px] font-bold text-[#17120f] flex items-center gap-1">
+                      <span>STEP 2:</span> <span id="outcomeStepTitle" class="text-[#17120f]/80">CALL OUTCOME</span>
+                    </span>
+                    <span id="outcomeValidationIndicator" class="text-[9px] font-mono text-rose-600 font-bold hidden">SELECT OUTCOME *</span>
+                  </div>
+                  <!-- Dynamic Outcome Buttons Container -->
+                  <div id="outcomeOptionsContainer" class="grid grid-cols-2 sm:grid-cols-4 gap-1">
+                    <button type="button" id="btnOutcomeBooked" onclick="setCallOutcome('discovery_booked')" class="outcome-btn px-2 py-1.5 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Log Discovery Booked [Hotkey: 1]">
+                      <span>🏆</span> <span>[1] BOOKED</span>
+                    </button>
+                    <button type="button" id="btnOutcomeTeardown" onclick="setCallOutcome('teardown_sent')" class="outcome-btn px-2 py-1.5 bg-[#cce5ff] hover:bg-[#b8daff] text-[#004085] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Sent 3D Teardown">
+                      <span>🔗</span> <span>TEARDOWN</span>
+                    </button>
+                    <button type="button" id="btnOutcomeCallback" onclick="setCallOutcome('connected_callback')" class="outcome-btn px-2 py-1.5 bg-[#fff3cd] hover:bg-[#ffeeba] text-[#856404] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Log Callback Requested [Hotkey: 2]">
+                      <span>📅</span> <span>[2] CALLBACK</span>
+                    </button>
+                    <button type="button" id="btnOutcomeDisqualified" onclick="setCallOutcome('not_interested')" class="outcome-btn px-2 py-1.5 bg-[#f8d7da] hover:bg-[#f5c6cb] text-[#721c24] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] transition flex items-center justify-center gap-1 truncate" title="Log Disqualified [Hotkey: 3]">
+                      <span>❌</span> <span>[3] DISQUAL</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- STEP 3: 1-Tap Quick-Tag Intel Chips -->
+                <div class="space-y-1 pt-0.5">
+                  <div class="flex items-center justify-between">
+                    <span class="font-arcade text-[9px] font-bold text-[#17120f] flex items-center gap-1">
+                      <span>STEP 3:</span> <span class="text-[#17120f]/80">QUICK-TAG INTEL</span>
+                    </span>
+                    <span class="text-[9px] font-mono text-[#17120f]/60">1-tap tags</span>
+                  </div>
+                  <div class="flex flex-wrap gap-1">
+                    <button type="button" onclick="appendNoteTag('In Consultations')" class="quick-tag-chip px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
+                      + In Consultations
+                    </button>
+                    <button type="button" onclick="appendNoteTag('Asked for WhatsApp')" class="quick-tag-chip px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
+                      + Asked for WhatsApp
+                    </button>
+                    <button type="button" onclick="appendNoteTag('Uses WordPress')" class="quick-tag-chip px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
+                      + Uses WordPress
+                    </button>
+                    <button type="button" onclick="appendNoteTag('Decision Next Month')" class="quick-tag-chip px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
+                      + Decision Next Month
+                    </button>
+                    <button type="button" onclick="appendNoteTag('Follow Up Tomorrow')" class="quick-tag-chip px-1.5 py-0.5 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] font-mono text-[9px] shadow-[1px_1px_0_#17120f] transition">
+                      + Follow Up Tomorrow
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -1625,154 +1696,180 @@
       <!-- =============================================================== -->
       <div id="dossierPane" class="shield-protected relative subtab-hidden xl:flex flex-col w-full xl:w-96 border-t xl:border-t-0 xl:border-l border-white/[0.06] bg-[#101114] overflow-y-auto p-4 sm:p-5 space-y-4 shrink-0 custom-scrollbar">
 
-        <div class="flex items-center justify-between font-mono text-[11px] text-neutral-400 border-b border-white/[0.06] pb-2">
-          <span class="uppercase font-bold tracking-wider text-neutral-300 flex items-center gap-1.5">
-            <svg class="w-3.5 h-3.5 text-neutral-400" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;">
-              <line x1="18" y1="20" x2="18" y2="10"></line>
-              <line x1="12" y1="20" x2="12" y2="4"></line>
-              <line x1="6" y1="20" x2="6" y2="14"></line>
-            </svg>
-            <span>Executive Audit Dossier</span>
-          </span>
-          <span class="text-[10px] text-neutral-400 font-mono">Verified Telemetry</span>
-        </div>
-
-        <!-- 1. THE 4 HERO TRIAGE SIGNALS (Unified Precision Studio Grid) -->
-        <div class="grid grid-cols-2 gap-2">
-          <!-- Revenue Leak -->
-          <div class="bg-[#15161B] border border-white/[0.06] rounded-xl p-3 space-y-1 hover:border-white/[0.12] transition">
-            <div class="text-[10px] font-mono text-neutral-400 flex items-center gap-1.5 uppercase font-medium">
-              <span class="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0"></span>
-              <span>Revenue Leak</span>
-            </div>
-            <div id="revenueLeakBadge" class="font-bold text-xs text-white leading-tight">₹1,80,000/mo Leak</div>
-            <div class="text-[10px] text-neutral-400">Cellular 4G drop-off</div>
+        <!-- Dossier Header Strip with Segmented Tabs and Collapse Toggle -->
+        <div class="dossier-header-strip flex items-center justify-between font-mono text-[11px] text-neutral-400 border-b border-white/[0.06] pb-2 gap-2 flex-wrap">
+          <div class="flex bg-[#15161B] p-0.5 border border-white/[0.1] rounded-lg text-[10px] font-mono">
+            <button id="dossierTabTalk" type="button" onclick="switchDossierTab('talk')" class="dossier-tab-btn active px-2.5 py-1 rounded font-bold text-white bg-white/[0.12] transition cursor-pointer">
+              🗣️ TALK ANGLES
+            </button>
+            <button id="dossierTabAudit" type="button" onclick="switchDossierTab('audit')" class="dossier-tab-btn px-2.5 py-1 rounded font-medium text-neutral-400 hover:text-white transition cursor-pointer">
+              📊 RAW AUDIT
+            </button>
           </div>
 
-          <!-- DPDP Act Status -->
-          <div class="bg-[#15161B] border border-white/[0.06] rounded-xl p-3 space-y-1 hover:border-white/[0.12] transition">
-            <div class="text-[10px] font-mono text-neutral-400 flex items-center gap-1.5 uppercase font-medium">
-              <span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span>
-              <span>DPDP Status</span>
-            </div>
-            <div id="dpdpComplianceBadge" class="font-bold text-xs text-white leading-tight">Non-Compliant</div>
-            <div id="dpdpRiskBadge" class="text-[10px] text-amber-400 font-medium">High Legal Risk</div>
-          </div>
-
-          <!-- Thumb Zone -->
-          <div class="bg-[#15161B] border border-white/[0.06] rounded-xl p-3 space-y-1 hover:border-white/[0.12] transition">
-            <div class="text-[10px] font-mono text-neutral-400 flex items-center gap-1.5 uppercase font-medium">
-              <span class="w-1.5 h-1.5 rounded-full bg-neutral-400 shrink-0"></span>
-              <span>Thumb-Zone</span>
-            </div>
-            <div id="thumbZoneBadge" class="font-bold text-xs text-white leading-tight">No Sticky Bar</div>
-            <div class="text-[10px] text-neutral-400">Mobile Web UX</div>
-          </div>
-
-          <!-- Friction Index -->
-          <div class="bg-[#15161B] border border-white/[0.06] rounded-xl p-3 space-y-1 hover:border-white/[0.12] transition">
-            <div class="text-[10px] font-mono text-neutral-400 flex items-center gap-1.5 uppercase font-medium">
-              <span class="w-1.5 h-1.5 rounded-full bg-neutral-400 shrink-0"></span>
-              <span>Friction</span>
-            </div>
-            <div id="bookingFrictionBadge" class="font-bold text-xs text-white leading-tight">7 Steps</div>
-            <div id="bookingSeverityBadge" class="text-[9.5px] text-amber-400 font-medium leading-tight truncate">Severe Drop-off</div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-[9.5px] text-neutral-400 font-mono hidden sm:inline">Telemetry</span>
+            <button id="btnToggleDossierCollapse" type="button" onclick="toggleDossierCollapse()" class="text-neutral-400 hover:text-white text-xs px-2 py-0.5 border border-white/[0.1] rounded transition cursor-pointer" title="Collapse / Expand Dossier Pane">
+              <span id="dossierCollapseIcon">◀</span>
+            </button>
           </div>
         </div>
 
-        <!-- 2. TECHNICAL TELEMETRY (Structured Property Sheet) -->
-        <div class="bg-[#15161B] border border-white/[0.06] rounded-xl divide-y divide-white/[0.04] text-xs">
-          <div class="p-2.5 flex items-center justify-between">
-            <span class="text-[11px] font-mono text-neutral-400">Availability:</span>
-            <span id="timingBadge" class="font-mono text-[11px] font-semibold text-amber-300">Moderate Availability</span>
-          </div>
-          <div class="p-2.5 flex items-center justify-between">
-            <span class="text-[11px] font-mono text-neutral-400">Mobile Speed & LCP:</span>
-            <span class="font-mono text-[11px] text-white">
-              <strong id="speedScore" class="text-rose-400">32/100</strong> • <span id="lcpTime" class="text-neutral-300">4.1s</span>
-            </span>
-          </div>
-          <div class="p-2.5 flex items-center justify-between">
-            <span class="text-[11px] font-mono text-neutral-400">Detected CMS:</span>
-            <span id="techStackBadge" class="font-mono text-[11px] text-neutral-200 truncate max-w-[160px]">WordPress / Elementor</span>
-          </div>
-          <div class="p-2.5 flex items-center justify-between">
-            <span class="text-[11px] font-mono text-neutral-400">Security Audit:</span>
-            <span class="font-mono text-[11px] text-amber-300 flex items-center gap-1">
-              <span id="securityAuditGrade">MODERATE</span>
-              <span id="securityAuditScore" class="text-neutral-500 text-[10px]">(--/100)</span>
-            </span>
-          </div>
+        <!-- Collapsed Strip Indicator (Shown only when .dossier-pane-collapsed) -->
+        <div id="dossierCollapsedIndicator" class="hidden flex-col items-center justify-center h-full py-8 cursor-pointer select-none" onclick="toggleDossierCollapse()" title="Click to Expand Dossier">
+          <span class="text-xs text-neutral-400 hover:text-white font-arcade transform rotate-90 whitespace-nowrap tracking-widest">▶ DOSSIER</span>
         </div>
 
-        <!-- 3. BASELESS TECH SPEND & COMMISSION BLEED -->
-        <div class="bg-[#15161B] border border-amber-500/20 rounded-xl p-3 space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] font-mono text-amber-300 font-bold flex items-center gap-1.5">
-              <span>Wasted Tech Spend:</span>
-            </span>
-            <span id="wastedSpendBadge" class="text-[10px] font-mono bg-amber-500/10 text-amber-300 px-2 py-0.5 rounded border border-amber-500/20 font-semibold">
-              ₹42,000/yr on Practo
-            </span>
-          </div>
-          <div id="wastedBreakdownList" class="space-y-1 text-xs text-neutral-300"></div>
-        </div>
+        <!-- Expanded Dossier Content Area -->
+        <div id="dossierExpandedContent" class="space-y-4 flex-1 flex flex-col">
 
-        <!-- 4. ARCHITECTURAL RECOMMENDATIONS -->
-        <div class="space-y-2">
-          <div class="text-[11px] font-arcade text-[#17120f] uppercase font-bold">Architectural Recommendations:</div>
+          <!-- TAB 1: TALK ANGLES (Default for Callers) -->
+          <div id="dossierTabContentTalk" class="space-y-4">
+            <!-- 4. ARCHITECTURAL RECOMMENDATIONS -->
+            <div class="space-y-2">
+              <div class="text-[11px] font-arcade text-white uppercase font-bold flex items-center justify-between">
+                <span>Conversational Cheat Sheet:</span>
+                <span class="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">NO TECH JARGON</span>
+              </div>
 
-          <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1">
-            <div class="text-[10px] font-mono text-neutral-300 font-semibold flex items-center gap-1.5">
-              <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">01</span>
-              <span>HEADLESS EDGE CACHING & SPEED</span>
+              <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1">
+                <div class="text-[10px] font-mono text-neutral-300 font-semibold flex items-center gap-1.5">
+                  <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">01</span>
+                  <span>HEADLESS EDGE CACHING & SPEED</span>
+                </div>
+                <p id="callerIcebreakerText" class="text-xs text-neutral-200 leading-relaxed font-sans">
+                  "How many of your monthly inquiries come straight from your site versus paying 15-25% to aggregators?"
+                </p>
+              </div>
+
+              <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1">
+                <div class="text-[10px] font-mono text-neutral-300 font-semibold flex items-center gap-1.5">
+                  <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">02</span>
+                  <span>CELLULAR CONVERSION BOTTLENECK</span>
+                </div>
+                <p id="callerLaymanAnalogy" class="text-xs text-neutral-200 leading-relaxed font-sans">
+                  "Your website is like having a clinic door with a rusty latch taking 4.1 seconds to open..."
+                </p>
+              </div>
+
+              <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1">
+                <div class="text-[10px] font-mono text-neutral-300 font-semibold flex items-center gap-1.5">
+                  <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">03</span>
+                  <span>PRIVACY & DPDP FORM SHIELDING</span>
+                </div>
+                <p id="callerSecurityHook" class="text-xs text-neutral-200 leading-relaxed font-sans">
+                  "Their intake form lacks anti-bot security, risking Chrome trust warnings."
+                </p>
+              </div>
+
+              <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1">
+                <div class="text-[10px] font-mono text-neutral-300 font-semibold flex items-center gap-1.5">
+                  <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">04</span>
+                  <span>DIRECT INTAKE & 60 FPS WEBGL ADVANTAGE</span>
+                </div>
+                <p id="callerCompetitorEdge" class="text-xs text-neutral-200 leading-relaxed font-sans">
+                  "Top clinics use zero-latency WhatsApp direct booking to capture consultations with zero commissions."
+                </p>
+              </div>
             </div>
-            <p id="callerIcebreakerText" class="text-xs text-neutral-200 leading-relaxed font-sans">
-              "How many of your monthly inquiries come straight from your site versus paying 15-25% to aggregators?"
-            </p>
-          </div>
 
-          <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1">
-            <div class="text-[10px] font-mono text-neutral-300 font-semibold flex items-center gap-1.5">
-              <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">02</span>
-              <span>CELLULAR CONVERSION BOTTLENECK</span>
+            <!-- 5. ARCHITECTURAL DEEP DIVES -->
+            <div class="pt-1 border-t border-white/[0.06]">
+              <div class="text-[10px] font-arcade text-neutral-300 uppercase mb-1.5">Layman Analogy Explanations:</div>
+              <div class="flex flex-wrap gap-1">
+                <button onclick="showLaymanAnalogy('lcp')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">LCP (Speed)</button>
+                <button onclick="showLaymanAnalogy('dom')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">DOM (Bloat)</button>
+                <button onclick="showLaymanAnalogy('dpdp')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">DPDP (Legal)</button>
+                <button onclick="showLaymanAnalogy('tls')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">TLS (Security)</button>
+                <button onclick="showLaymanAnalogy('webgl')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">WebGL (3D)</button>
+              </div>
             </div>
-            <p id="callerLaymanAnalogy" class="text-xs text-neutral-200 leading-relaxed font-sans">
-              "Your website is like having a clinic door with a rusty latch taking 4.1 seconds to open..."
-            </p>
           </div>
 
-          <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1">
-            <div class="text-[10px] font-mono text-neutral-300 font-semibold flex items-center gap-1.5">
-              <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">03</span>
-              <span>PRIVACY & DPDP FORM SHIELDING</span>
+          <!-- TAB 2: RAW AUDIT (Technical Telemetry & Infrastructure) -->
+          <div id="dossierTabContentAudit" class="space-y-4 hidden">
+            <!-- 1. THE 4 HERO TRIAGE SIGNALS -->
+            <div class="grid grid-cols-2 gap-2">
+              <!-- Revenue Leak -->
+              <div class="bg-[#15161B] border border-white/[0.06] rounded-xl p-3 space-y-1 hover:border-white/[0.12] transition">
+                <div class="text-[10px] font-mono text-neutral-400 flex items-center gap-1.5 uppercase font-medium">
+                  <span class="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0"></span>
+                  <span>Revenue Leak</span>
+                </div>
+                <div id="revenueLeakBadge" class="font-bold text-xs text-white leading-tight">₹1,80,000/mo Leak</div>
+                <div class="text-[10px] text-neutral-400">Cellular 4G drop-off</div>
+              </div>
+
+              <!-- DPDP Act Status -->
+              <div class="bg-[#15161B] border border-white/[0.06] rounded-xl p-3 space-y-1 hover:border-white/[0.12] transition">
+                <div class="text-[10px] font-mono text-neutral-400 flex items-center gap-1.5 uppercase font-medium">
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span>
+                  <span>DPDP Status</span>
+                </div>
+                <div id="dpdpComplianceBadge" class="font-bold text-xs text-white leading-tight">Non-Compliant</div>
+                <div id="dpdpRiskBadge" class="text-[10px] text-amber-400 font-medium">High Legal Risk</div>
+              </div>
+
+              <!-- Thumb Zone -->
+              <div class="bg-[#15161B] border border-white/[0.06] rounded-xl p-3 space-y-1 hover:border-white/[0.12] transition">
+                <div class="text-[10px] font-mono text-neutral-400 flex items-center gap-1.5 uppercase font-medium">
+                  <span class="w-1.5 h-1.5 rounded-full bg-neutral-400 shrink-0"></span>
+                  <span>Thumb-Zone</span>
+                </div>
+                <div id="thumbZoneBadge" class="font-bold text-xs text-white leading-tight">No Sticky Bar</div>
+                <div class="text-[10px] text-neutral-400">Mobile Web UX</div>
+              </div>
+
+              <!-- Friction Index -->
+              <div class="bg-[#15161B] border border-white/[0.06] rounded-xl p-3 space-y-1 hover:border-white/[0.12] transition">
+                <div class="text-[10px] font-mono text-neutral-400 flex items-center gap-1.5 uppercase font-medium">
+                  <span class="w-1.5 h-1.5 rounded-full bg-neutral-400 shrink-0"></span>
+                  <span>Friction</span>
+                </div>
+                <div id="bookingFrictionBadge" class="font-bold text-xs text-white leading-tight">7 Steps</div>
+                <div id="bookingSeverityBadge" class="text-[9.5px] text-amber-400 font-medium leading-tight truncate">Severe Drop-off</div>
+              </div>
             </div>
-            <p id="callerSecurityHook" class="text-xs text-neutral-200 leading-relaxed font-sans">
-              "Their intake form lacks anti-bot security, risking Chrome trust warnings."
-            </p>
-          </div>
 
-          <div class="bg-[#15161B] border border-white/[0.06] rounded-lg p-2.5 space-y-1">
-            <div class="text-[10px] font-mono text-neutral-300 font-semibold flex items-center gap-1.5">
-              <span class="bg-white/[0.06] px-1.5 py-0.5 rounded text-neutral-400 text-[9px]">04</span>
-              <span>DIRECT INTAKE & 60 FPS WEBGL ADVANTAGE</span>
+            <!-- 2. TECHNICAL TELEMETRY -->
+            <div class="bg-[#15161B] border border-white/[0.06] rounded-xl divide-y divide-white/[0.04] text-xs">
+              <div class="p-2.5 flex items-center justify-between">
+                <span class="text-[11px] font-mono text-neutral-400">Availability:</span>
+                <span id="timingBadge" class="font-mono text-[11px] font-semibold text-amber-300">Moderate Availability</span>
+              </div>
+              <div class="p-2.5 flex items-center justify-between">
+                <span class="text-[11px] font-mono text-neutral-400">Mobile Speed & LCP:</span>
+                <span class="font-mono text-[11px] text-white">
+                  <strong id="speedScore" class="text-rose-400">32/100</strong> • <span id="lcpTime" class="text-neutral-300">4.1s</span>
+                </span>
+              </div>
+              <div class="p-2.5 flex items-center justify-between">
+                <span class="text-[11px] font-mono text-neutral-400">Detected CMS:</span>
+                <span id="techStackBadge" class="font-mono text-[11px] text-neutral-200 truncate max-w-[160px]">WordPress / Elementor</span>
+              </div>
+              <div class="p-2.5 flex items-center justify-between">
+                <span class="text-[11px] font-mono text-neutral-400">Security Audit:</span>
+                <span class="font-mono text-[11px] text-amber-300 flex items-center gap-1">
+                  <span id="securityAuditGrade">MODERATE</span>
+                  <span id="securityAuditScore" class="text-neutral-500 text-[10px]">(--/100)</span>
+                </span>
+              </div>
             </div>
-            <p id="callerCompetitorEdge" class="text-xs text-neutral-200 leading-relaxed font-sans">
-              "Top clinics use zero-latency WhatsApp direct booking to capture consultations with zero commissions."
-            </p>
-          </div>
-        </div>
 
-        <!-- 5. ARCHITECTURAL DEEP DIVES -->
-        <div class="pt-1">
-          <div class="text-[10px] font-arcade text-[#17120f] uppercase mb-1.5">Architectural Deep Dives:</div>
-          <div class="flex flex-wrap gap-1">
-            <button onclick="showLaymanAnalogy('lcp')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">LCP (Speed)</button>
-            <button onclick="showLaymanAnalogy('dom')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">DOM (Bloat)</button>
-            <button onclick="showLaymanAnalogy('dpdp')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">DPDP (Legal)</button>
-            <button onclick="showLaymanAnalogy('tls')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">TLS (Security)</button>
-            <button onclick="showLaymanAnalogy('webgl')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border border-white/[0.06] text-[10px] font-mono transition">WebGL (3D)</button>
+            <!-- 3. BASELESS TECH SPEND & COMMISSION BLEED -->
+            <div class="bg-[#15161B] border border-amber-500/20 rounded-xl p-3 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-mono text-amber-300 font-bold flex items-center gap-1.5">
+                  <span>Wasted Tech Spend:</span>
+                </span>
+                <span id="wastedSpendBadge" class="text-[10px] font-mono bg-amber-500/10 text-amber-300 px-2 py-0.5 rounded border border-amber-500/20 font-semibold">
+                  ₹42,000/yr on Practo
+                </span>
+              </div>
+              <div id="wastedBreakdownList" class="space-y-1 text-xs text-neutral-300"></div>
+            </div>
           </div>
+
         </div>
 
       </div>

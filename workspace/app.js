@@ -3766,6 +3766,18 @@ function renderActiveProspect() {
   const discoveryInput = document.getElementById('discoveryInput');
   if (discoveryInput) discoveryInput.value = p.discoveryTime || '';
 
+  // Pre-Call Conversational Hook & Bleed Telemetry
+  const preCallHook = document.getElementById('preCallHookText');
+  if (preCallHook) {
+    preCallHook.innerText = `"${cheatSheet.icebreaker || 'Are most of your high-intent patient inquiries coming straight from your website or third-party aggregators?'}"`;
+  }
+  const preCallBleed = document.getElementById('preCallBleedText');
+  if (preCallBleed) {
+    preCallBleed.innerText = p.wastedSpend 
+      ? `${p.wastedSpend} on aggregators • Mobile LCP ${p.lcpTime || '4.1s'} cellular bounce risk.`
+      : `Mobile LCP ${p.lcpTime || '4.1s'} • High aggregator fee leak on mobile traffic.`;
+  }
+
   // 3D WebUI & High-Impact Conversion Moat Solutions
   updateMoatSolutions(p, isNoSite);
 
@@ -4104,6 +4116,77 @@ function updateCallHUDState() {
       handoffBtn.classList.remove('border-rose-600');
     }
   }
+
+  // Manage Progressive Disclosure Pre-Call state on #callWrapCard
+  const callCard = document.getElementById('callWrapCard');
+  const hudToggleText = document.getElementById('hudToggleText');
+  if (callCard) {
+    if (isCallActive || callPendingDisposition) {
+      callCard.classList.remove('cockpit-pre-call');
+      if (hudToggleText) hudToggleText.innerText = "Collapse ▲";
+    } else if (!callCard.classList.contains('hud-manually-expanded')) {
+      callCard.classList.add('cockpit-pre-call');
+      if (hudToggleText) hudToggleText.innerText = "Expand ▼";
+    }
+  }
+}
+
+function toggleCallHUDSteps() {
+  const card = document.getElementById('callWrapCard');
+  const toggleText = document.getElementById('hudToggleText');
+  if (!card) return;
+  if (card.classList.contains('cockpit-pre-call')) {
+    card.classList.toggle('hud-manually-expanded');
+    const isExpanded = card.classList.contains('hud-manually-expanded');
+    if (toggleText) toggleText.innerText = isExpanded ? "Collapse ▲" : "Expand ▼";
+  }
+}
+
+function switchDossierTab(tabName) {
+  const tabTalk = document.getElementById('dossierTabTalk');
+  const tabAudit = document.getElementById('dossierTabAudit');
+  const contentTalk = document.getElementById('dossierTabContentTalk');
+  const contentAudit = document.getElementById('dossierTabContentAudit');
+
+  if (tabName === 'audit') {
+    if (contentTalk) contentTalk.classList.add('hidden');
+    if (contentAudit) contentAudit.classList.remove('hidden');
+    if (tabTalk) {
+      tabTalk.className = "dossier-tab-btn px-2.5 py-1 rounded font-medium text-neutral-400 hover:text-white transition cursor-pointer";
+    }
+    if (tabAudit) {
+      tabAudit.className = "dossier-tab-btn active px-2.5 py-1 rounded font-bold text-white bg-white/[0.12] transition cursor-pointer";
+    }
+  } else {
+    if (contentTalk) contentTalk.classList.remove('hidden');
+    if (contentAudit) contentAudit.classList.add('hidden');
+    if (tabTalk) {
+      tabTalk.className = "dossier-tab-btn active px-2.5 py-1 rounded font-bold text-white bg-white/[0.12] transition cursor-pointer";
+    }
+    if (tabAudit) {
+      tabAudit.className = "dossier-tab-btn px-2.5 py-1 rounded font-medium text-neutral-400 hover:text-white transition cursor-pointer";
+    }
+  }
+
+  try {
+    localStorage.setItem('sprintdial_dossier_tab', tabName);
+  } catch (e) {}
+}
+
+function toggleDossierCollapse() {
+  const dossier = document.getElementById('dossierPane');
+  const icon = document.getElementById('dossierCollapseIcon');
+  if (!dossier) return;
+  const isCollapsed = dossier.classList.toggle('dossier-pane-collapsed');
+  if (icon) {
+    icon.innerText = isCollapsed ? "▶" : "◀";
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.switchDossierTab = switchDossierTab;
+  window.toggleDossierCollapse = toggleDossierCollapse;
+  window.toggleCallHUDSteps = toggleCallHUDSteps;
 }
 
 function updateReachUI() {

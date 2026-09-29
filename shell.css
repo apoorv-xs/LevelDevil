@@ -121,7 +121,8 @@
   background: var(--shell-paper);
   box-shadow: 3px 3px 0 var(--shell-line);
   font-family: "Press Start 2P", monospace;
-  white-space: nowrap;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
 }
 
 .site-nav a {
