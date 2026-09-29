@@ -451,6 +451,29 @@
     .retro-workspace label {
       color: var(--ink);
     }
+    /* Inverted & Dark Badges / Containers (Prevent Black-on-Black) */
+    .retro-workspace .bg-\[\#17120f\],
+    .retro-workspace span.bg-\[\#17120f\],
+    .retro-workspace .bg-black,
+    .retro-workspace span.bg-black {
+      color: #fffdf1 !important;
+    }
+    .retro-workspace .bg-\[\#17120f\] span,
+    .retro-workspace .bg-black span {
+      color: inherit !important;
+    }
+    .retro-workspace .text-\[\#fffdf1\],
+    .retro-workspace span.text-\[\#fffdf1\] {
+      color: #fffdf1 !important;
+    }
+    .retro-workspace .text-\[\#fce566\],
+    .retro-workspace span.text-\[\#fce566\] {
+      color: #fce566 !important;
+    }
+    .retro-workspace .text-white,
+    .retro-workspace span.text-white {
+      color: #ffffff !important;
+    }
     .retro-workspace input,
     .retro-workspace textarea,
     .retro-workspace select {
@@ -2886,15 +2909,15 @@
       <div id="installTabAndroid" class="space-y-3 bg-[#fffdf1] border-2 border-[#17120f] p-3 shadow-[2px_2px_0_#17120f]">
         <div class="text-[11px] font-mono leading-relaxed space-y-2">
           <div class="flex items-start gap-2">
-            <span class="font-arcade text-[10px] bg-[#17120f] text-[#fffdf1] px-1.5 py-0.5">STEP 1</span>
+            <span class="font-arcade text-[9px] bg-[#17120f] text-[#fffdf1] px-1.5 py-0.5 shrink-0 border border-[#17120f] shadow-[1px_1px_0_#17120f]">STEP 1</span>
             <span>Tap <strong>Trigger Install Prompt</strong> below.</span>
           </div>
           <div class="flex items-start gap-2">
-            <span class="font-arcade text-[10px] bg-[#17120f] text-[#fffdf1] px-1.5 py-0.5">STEP 2</span>
+            <span class="font-arcade text-[9px] bg-[#17120f] text-[#fffdf1] px-1.5 py-0.5 shrink-0 border border-[#17120f] shadow-[1px_1px_0_#17120f]">STEP 2</span>
             <span>If prompt does not fire automatically, tap Chrome menu <strong>(⋮)</strong> and select <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</span>
           </div>
           <div class="flex items-start gap-2">
-            <span class="font-arcade text-[10px] bg-[#17120f] text-[#fffdf1] px-1.5 py-0.5">STEP 3</span>
+            <span class="font-arcade text-[9px] bg-[#17120f] text-[#fffdf1] px-1.5 py-0.5 shrink-0 border border-[#17120f] shadow-[1px_1px_0_#17120f]">STEP 3</span>
             <span>Launch from your home screen. Enjoy zero browser bars, instant tel: dialing, and offline dossier caching.</span>
           </div>
         </div>
@@ -2908,15 +2931,15 @@
       <div id="installTabIOS" class="hidden space-y-3 bg-[#fffdf1] border-2 border-[#17120f] p-3 shadow-[2px_2px_0_#17120f]">
         <div class="text-[11px] font-mono leading-relaxed space-y-2">
           <div class="flex items-start gap-2">
-            <span class="font-arcade text-[10px] bg-[#17120f] text-[#fffdf1] px-1.5 py-0.5">STEP 1</span>
+            <span class="font-arcade text-[9px] bg-[#17120f] text-[#fffdf1] px-1.5 py-0.5 shrink-0 border border-[#17120f] shadow-[1px_1px_0_#17120f]">STEP 1</span>
             <span>In Safari, tap the <strong>Share button</strong> <span class="border border-[#17120f] px-1 py-0.5 bg-[#fce566] font-bold">⎋</span> on the bottom bar.</span>
           </div>
           <div class="flex items-start gap-2">
-            <span class="font-arcade text-[10px] bg-[#17120f] text-[#fffdf1] px-1.5 py-0.5">STEP 2</span>
+            <span class="font-arcade text-[9px] bg-[#17120f] text-[#fffdf1] px-1.5 py-0.5 shrink-0 border border-[#17120f] shadow-[1px_1px_0_#17120f]">STEP 2</span>
             <span>Scroll down the share sheet and tap <span class="border border-[#17120f] px-1 py-0.5 bg-[#fce566] font-bold">Add to Home Screen ⊕</span>.</span>
           </div>
           <div class="flex items-start gap-2">
-            <span class="font-arcade text-[10px] bg-[#17120f] text-[#fffdf1] px-1.5 py-0.5">STEP 3</span>
+            <span class="font-arcade text-[9px] bg-[#17120f] text-[#fffdf1] px-1.5 py-0.5 shrink-0 border border-[#17120f] shadow-[1px_1px_0_#17120f]">STEP 3</span>
             <span>Tap <strong>Add</strong> in the top-right corner. The Client Radar icon appears on your home screen with full-screen standalone execution!</span>
           </div>
         </div>
