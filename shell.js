@@ -87,29 +87,33 @@ async function loadPortfolio() {
         window.SkyEngine.dispose();
       }
     }
-    if (!document.getElementById("three-canvas")) {
-      const canvas = document.createElement("canvas");
-      canvas.id = "three-canvas";
-      canvas.setAttribute("aria-hidden", "true");
-      document.body.appendChild(canvas);
-    }
-    if (!document.getElementById("game-container")) {
-      const container = document.createElement("div");
-      container.id = "game-container";
-      const gCanvas = document.createElement("canvas");
-      gCanvas.id = "game-canvas";
-      gCanvas.setAttribute("aria-hidden", "true");
-      container.appendChild(gCanvas);
-      document.body.appendChild(container);
+    if (!isWorkspaceRoute()) {
+      if (!document.getElementById("three-canvas")) {
+        const canvas = document.createElement("canvas");
+        canvas.id = "three-canvas";
+        canvas.setAttribute("aria-hidden", "true");
+        document.body.appendChild(canvas);
+      }
+      if (!document.getElementById("game-container")) {
+        const container = document.createElement("div");
+        container.id = "game-container";
+        const gCanvas = document.createElement("canvas");
+        gCanvas.id = "game-canvas";
+        gCanvas.setAttribute("aria-hidden", "true");
+        container.appendChild(gCanvas);
+        document.body.appendChild(container);
+      }
     }
 
-    if (typeof THREE === "undefined") {
+    if (!isWorkspaceRoute() && typeof THREE === "undefined") {
       await loadScript(resolveScriptPath("three.min.js"));
     }
 
-    const scriptsToLoad = isHomeRoute()
-      ? portfolioScripts
-      : portfolioScripts.filter(s => !s.includes("sky_engine"));
+    const scriptsToLoad = isWorkspaceRoute()
+      ? []  // No 3D companion on workspace — BB-8 is exclusively Home & Sales
+      : isHomeRoute()
+        ? portfolioScripts
+        : portfolioScripts.filter(s => !s.includes("sky_engine"));
 
     for (const script of scriptsToLoad) {
       if (script.includes("collision_editor")) {

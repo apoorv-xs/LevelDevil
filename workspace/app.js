@@ -1920,65 +1920,9 @@ function onAuthVerified() {
   updateProfileDropdownUI();
   if (typeof updateInstallAppVisibility === 'function') updateInstallAppVisibility();
   maybeShowOnboardingDisclaimer();
-  initAstromechSentinel();
 }
 
-// -------------------------------------------------------------
-// ASTROMECH CO-PILOT SENTINEL & INTERACTION BUS
-// -------------------------------------------------------------
-let _astromechSentinelInitialized = false;
 
-function initAstromechSentinel() {
-  if (_astromechSentinelInitialized) return;
-  _astromechSentinelInitialized = true;
-
-  // Co-Pilot operates in passive telemetry standby mode without unsolicited popups.
-
-  // Form Focus Silence
-  if (typeof document !== 'undefined') {
-    document.addEventListener('focusin', (e) => {
-      if (e.target && (e.target.id === 'callNotesInput' || e.target.id === 'queueSearchInput')) {
-        const statusEl = document.getElementById('astromechStatusText');
-        if (statusEl) statusEl.textContent = 'LOGGING';
-        if (window.System1Brain && typeof window.System1Brain.closeHUD === 'function') {
-          window.System1Brain.closeHUD();
-        }
-      }
-    });
-
-    document.addEventListener('focusout', (e) => {
-      if (e.target && (e.target.id === 'callNotesInput' || e.target.id === 'queueSearchInput')) {
-        const statusEl = document.getElementById('astromechStatusText');
-        if (statusEl && statusEl.textContent === 'LOGGING') {
-          statusEl.textContent = 'STANDBY';
-        }
-      }
-    });
-  }
-
-  if (typeof window !== 'undefined') {
-    window.triggerAstromechInteract = function() {
-      if (typeof window.SFX !== 'undefined' && typeof window.SFX.playThought === 'function') {
-        try { window.SFX.playThought(); } catch(err) {}
-      }
-      if (window.Player3D && typeof window.Player3D.curiousInspect === 'function') {
-        window.Player3D.curiousInspect();
-      }
-      const statusEl = document.getElementById('astromechStatusText');
-      if (statusEl) statusEl.textContent = 'CO-PILOT';
-      if (window.System1Brain && typeof window.System1Brain.emitThought === 'function') {
-        const tips = [
-          "💡 Astromech tip: Lead with mobile LCP latency or aggregator bleed.",
-          "🎯 Need rebuttal? Tap any objection button below to reveal tactical counters.",
-          "⚡ High-speed caller: 15% commission credited directly on verified deposit.",
-          "🛡️ DPDP Act 2023: Remind clients of statutory customer data penalties."
-        ];
-        const tip = tips[Math.floor(Math.random() * tips.length)];
-        window.System1Brain.emitThought(tip, 3500);
-      }
-    };
-  }
-}
 
 // -------------------------------------------------------------
 // PARTNER ANTI-THEFT SURVEILLANCE & ACTIVITY AUDIT ENGINE

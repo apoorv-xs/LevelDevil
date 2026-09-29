@@ -91,7 +91,8 @@ test.describe("System 1 Decision Brain - Multi-Page Workflows", () => {
     await expect(adminBtn).toHaveClass(/hidden/);
   });
 
-  test("Workspace (/workspace/) classifies prospect audit, radar sweep, and call standby", async ({ page }) => {
+  // BB-8 and System1Brain removed from workspace route — brain classification tests N/A
+  test.skip("Workspace (/workspace/) classifies prospect audit, radar sweep, and call standby", async ({ page }) => {
     await page.addInitScript(() => {
       sessionStorage.setItem('sprintdial_test_mode', 'true');
       localStorage.setItem('sprintdial_user', JSON.stringify({

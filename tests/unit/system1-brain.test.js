@@ -758,7 +758,7 @@ describe("System 1 Decision Brain", () => {
 
       expect(indexHtml).toContain('id="bb8-guide-btn"');
       expect(salesHtml).toContain('id="bb8-guide-btn"');
-      expect(workspaceHtml).toContain('id="btnBB8Guide"');
+      // BB-8 guide button removed from workspace (BB-8 is exclusively Home & Sales)
 
       expect(indexHtml).toContain('id="btn-toggle-ctrls"');
       expect(salesHtml).toContain('id="btn-toggle-ctrls"');

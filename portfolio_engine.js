@@ -415,22 +415,6 @@ onLoad(() => {
                     surface: def.mode
                 });
             });
-        } else if (page === "workspace") {
-            // Astromech Perch Socket Mode: Single dedicated landing rail anchored in the topbar
-            const bayEl = document.querySelector('#astromechBay') || document.querySelector('#astromechSocket') || document.querySelector('header.topbar');
-            if (bayEl) {
-                const r = bayEl.getBoundingClientRect();
-                detected.push({
-                    xLeft: Math.round(r.left - 10),
-                    xRight: Math.round(r.right + 10),
-                    width: Math.round(r.width + 20),
-                    y: Math.round(r.bottom + 6),
-                    domElement: bayEl,
-                    trap: 'normal',
-                    name: 'ASTROMECH_SOCKET_RAIL',
-                    surface: 'bottom'
-                });
-            }
         }
         const uniqueRails = [];
         for (const r of detected) {
@@ -501,7 +485,7 @@ onLoad(() => {
         requestAnimationFrame(stepGlide);
     };
 
-    // Click-to-Summon on Card Elements & Panels across every page (disabled on workspace so BB-8 stays perched)
+    // Click-to-Summon on Card Elements & Panels across every page (disabled on workspace — no BB-8)
     function initClickToSummon() {
         document.addEventListener("click", (e) => {
             if (isTypingInForm() || getCurrentPage() === "workspace") return;
@@ -647,24 +631,6 @@ onLoad(() => {
             targetEl = document.querySelector('h1[data-kaboom-body="true"]') || document.querySelector('h1') || document.querySelector('.role-badge');
         } else if (page === "sales") {
             targetEl = document.querySelector('.hero h1') || document.querySelector('h1') || document.querySelector('#inquiry-card');
-        } else if (page === "workspace") {
-            targetEl = document.querySelector('#astromechSocket') || document.querySelector('header.topbar');
-        }
-
-        if (page === "workspace" && targetEl && player) {
-            const bayEl = document.querySelector('#astromechBay') || targetEl;
-            const r = bayEl.getBoundingClientRect();
-            player.pos.x = Math.round(r.left + r.width / 2);
-            player.pos.y = Math.round(r.bottom + 6);
-            player.vy = 0;
-            if (player.vel) {
-                player.vel.x = 0;
-                player.vel.y = 0;
-            }
-            player.grounded = true;
-            player.currentRail = landingRails[0] || null;
-            console.log("Placed BB-8 in Astromech Socket:", player.pos.x, player.pos.y);
-            return;
         }
 
         if (targetEl && player) {
@@ -675,9 +641,6 @@ onLoad(() => {
             const minX = 40;
             const maxX = Math.max(minX, screenW - 40);
             let desiredX = Math.round(r.left + Math.min(120, r.width / 2));
-            if (page === "workspace" && screenW <= 768) {
-                desiredX = Math.round(screenW - 48);
-            }
             player.pos.x = Math.max(minX, Math.min(maxX, desiredX));
             player.pos.y = targetY;
             player.vy = 0;
@@ -904,22 +867,7 @@ onLoad(() => {
             }
         }
 
-        // Astromech Perch Socket: On Workspace, keep BB-8 anchored cleanly in the topbar bay
-        if (getCurrentPage() === "workspace" && player && !window.isAirborneGlide) {
-            const bayEl = document.querySelector('#astromechBay') || document.querySelector('#astromechSocket') || document.querySelector('header.topbar');
-            if (bayEl) {
-                const r = bayEl.getBoundingClientRect();
-                player.pos.x = Math.round(r.left + r.width / 2);
-                player.pos.y = Math.round(r.bottom + 6);
-                player.vy = 0;
-                if (player.vel) {
-                    player.vel.x = 0;
-                    player.vel.y = 0;
-                }
-                player.grounded = true;
-                player.currentRail = landingRails[0] || null;
-            }
-        }
+
 
         // Pillar 1 & 2: 3-Sub-Step Vertical Integration with Swept Interval Collision
         if (isPhysicsActive && !isRespawning && !window.isAirborneGlide && !isTourActive && dtTotal > 0 && getCurrentPage() !== "workspace") {
