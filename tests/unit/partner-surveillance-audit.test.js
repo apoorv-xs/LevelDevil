@@ -121,11 +121,10 @@ describe("Subsystem 16: Partner Anti-Theft Surveillance Radar & Owner Fleet Tele
     expect(partnerEntry.isRisk).toBe(true);
     expect(partnerEntry.riskLabel).toBe("UNAUTHORIZED PITCH");
 
-    // Owner generates link
+    // Owner generates link — MUST be suppressed entirely (never recorded)
     global.currentUser = { email: "apoorvxs@gmail.com", name: "Apoorv A S", role: "owner" };
     const ownerEntry = recordPartnerActivity("TEARDOWN_PITCH", "p-1", { mode: "clipboard_copy" });
-    expect(ownerEntry.isRisk).toBe(false);
-    expect(ownerEntry.riskLabel).toBe("3D PITCH CREATED");
+    expect(ownerEntry).toBeUndefined();
   });
 
   it("16.3 Limits audit trail storage to 200 entries to prevent memory bloat", async () => {

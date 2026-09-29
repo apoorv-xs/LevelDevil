@@ -438,7 +438,11 @@
     .retro-workspace h3,
     .retro-workspace .font-arcade {
       font-family: "Press Start 2P", monospace !important;
-      color: var(--ink) !important;
+    }
+    .retro-workspace h1,
+    .retro-workspace h2,
+    .retro-workspace h3 {
+      color: var(--ink);
     }
     .retro-workspace p,
     .retro-workspace span,
@@ -486,6 +490,22 @@
       box-shadow: 8px 8px 0 var(--ink) !important;
       border-radius: 0 !important;
       color: var(--ink) !important;
+    }
+    /* Proposal Brief Dark Content Panel — escape retro ink override */
+    .retro-workspace #proposalModal #proposalContent {
+      background: #101114 !important;
+      color: #e2e8f0 !important;
+    }
+    .retro-workspace #proposalModal #proposalContent h1,
+    .retro-workspace #proposalModal #proposalContent h2,
+    .retro-workspace #proposalModal #proposalContent h3 {
+      color: #ffffff !important;
+    }
+    .retro-workspace #proposalModal #proposalContent strong {
+      color: #ffffff !important;
+    }
+    .retro-workspace #proposalModal #proposalContent li {
+      color: #cbd5e1 !important;
     }
     .retro-workspace #adminModal button,
     .retro-workspace #proposalModal button,
@@ -909,7 +929,7 @@
     </div>
 
     <!-- Center: Universal 3-Option Navigation -->
-    <div class="topbar-center md:absolute md:left-1/2 md:-translate-x-1/2 flex items-center gap-2 sm:gap-4">
+    <div class="topbar-center xl:absolute xl:left-1/2 xl:-translate-x-1/2 flex items-center gap-2 sm:gap-4">
       <nav class="site-nav" aria-label="Primary navigation">
         <a href="/">Home</a>
         <a href="/sales">Contact</a>
@@ -975,7 +995,7 @@
         </button>
 
         <!-- Retro Brutalist Profile & Sales Telemetry Dropdown -->
-        <div id="userProfileDropdown" class="hidden absolute right-0 top-[calc(100%+8px)] w-80 sm:w-96 max-w-[calc(100vw-24px)] bg-[#fffdf1] border-[3px] border-[#17120f] shadow-[6px_6px_0_#17120f] z-50 p-4 space-y-3.5 select-none" role="menu" aria-label="User Profile & Sales Telemetry">
+        <div id="userProfileDropdown" class="hidden absolute right-0 top-[calc(100%+8px)] w-80 sm:w-96 max-w-[calc(100vw-24px)] max-h-[calc(100vh-80px)] overflow-y-auto bg-[#fffdf1] border-[3px] border-[#17120f] shadow-[6px_6px_0_#17120f] z-50 p-4 pb-16 space-y-3.5 select-none custom-scrollbar" role="menu" aria-label="User Profile & Sales Telemetry">
           <!-- 1. Profile Identity Header -->
           <div class="flex items-center gap-3 pb-3 border-b-2 border-[#17120f]">
             <img id="dropdownUserImg" width="40" height="40" src="https://ui-avatars.com/api/?name=Apoorv&background=fff1bd&color=17120f" class="w-10 h-10 border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] object-cover" alt="User" referrerpolicy="no-referrer">

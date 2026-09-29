@@ -1979,6 +1979,8 @@ function recordPartnerActivity(actionType, prospectId, details = {}) {
         ? window.currentUser
         : ((typeof global !== 'undefined' && global.currentUser) ? global.currentUser : null));
     const isOwner = isOwnerUser(user);
+    // GUARD: Never record owner's own activity in partner surveillance
+    if (isOwner || isApoorvOwnerEmail(user?.email)) return;
     const callerEmail = user?.email || 'guest-caller@internal';
     const callerName = user?.displayName || user?.name || (user?.email && !user.email.includes('internal')
       ? user.email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
@@ -2420,7 +2422,7 @@ function updateProfileDropdownUI() {
       trailListEl.innerHTML = '';
       const partnerLogs = (logs || []).filter(l => !l.isOwner && !isApoorvOwnerEmail(l.callerEmail));
       if (!partnerLogs || partnerLogs.length === 0) {
-        trailListEl.innerHTML = `<div class="p-2 bg-[#fffdf1] border border-[#17120f]/20 text-neutral-600 text-[10px] font-mono leading-relaxed" style="color: #17120f !important;"><span class="font-bold text-emerald-800">🟢 Live Radar Active:</span> No external partner activity logged yet. All actions from partners will appear here in real-time.</div>`;
+        trailListEl.innerHTML = `<div class="p-2 bg-[#fffdf1] border border-[#17120f]/20 text-neutral-600 text-[10px] font-mono leading-relaxed" style="color: #17120f !important;"><span class="font-bold text-emerald-800">● Live Radar Active:</span> No external partner activity logged yet. All actions from partners will appear here in real-time.</div>`;
       } else {
         const recent = partnerLogs.slice(0, 5);
         recent.forEach(item => {
@@ -2439,7 +2441,7 @@ function updateProfileDropdownUI() {
 
           div.innerHTML = `
             <div class="flex items-center justify-between text-[10px] font-bold">
-              <span class="truncate max-w-[170px]" style="color: #17120f !important;">${item.isRisk ? '🚨 ' : '👤 '}${escapeHTML(callerDisplay)}</span>
+              <span class="truncate max-w-[170px]" style="color: #17120f !important;">${item.isRisk ? '■ ' : '› '}${escapeHTML(callerDisplay)}</span>
               <span class="font-mono text-neutral-600 text-[9px]">${timeAgo}</span>
             </div>
             <div class="flex items-center gap-1.5 mt-0.5">
@@ -7643,10 +7645,10 @@ ${wastedItemsMarkdown}
     content.innerHTML = safeProposal
       .replace(/^# (.*$)/gm, '<h1 class="text-lg font-black text-white">$1</h1>')
       .replace(/^## (.*$)/gm, '<h2 class="text-sm font-semibold text-white mt-3">$1</h2>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>')
-      .replace(/^  - (.*$)/gm, '<li class="ml-8 list-circle text-gray-400">$1</li>')
-      .replace(/^- (.*$)/gm, '<li class="ml-4 list-disc text-gray-300">$1</li>')
-      .replace(/\n\n/g, '<p class="mt-2 text-gray-300"></p>');
+      .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-bold">$1</strong>')
+      .replace(/^  - (.*$)/gm, '<li class="ml-8 list-circle text-slate-200">$1</li>')
+      .replace(/^- (.*$)/gm, '<li class="ml-4 list-disc text-slate-100">$1</li>')
+      .replace(/\n\n/g, '<p class="mt-2 text-slate-200"></p>');
   }
 
   if (modal) modal.classList.remove('hidden');
