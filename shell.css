@@ -1791,5 +1791,60 @@ body.has-session .admin-label-short {
   }
 }
 
+/* 7. Owner Exemption Overrides (When authenticated as apoorvxs@gmail.com) */
+.shield-owner-exempt .shield-protected,
+body.shield-owner-exempt .shield-protected,
+html.shield-owner-exempt .shield-protected {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+  -webkit-touch-callout: default !important;
+}
+
+.shield-owner-exempt .anti-snipping-blurred,
+body.shield-owner-exempt .anti-snipping-blurred,
+html.shield-owner-exempt .anti-snipping-blurred {
+  filter: none !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.shield-owner-exempt #antiSnippingShield,
+body.shield-owner-exempt #antiSnippingShield,
+html.shield-owner-exempt #antiSnippingShield {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.shield-owner-exempt .forensic-watermark-overlay,
+body.shield-owner-exempt .forensic-watermark-overlay,
+html.shield-owner-exempt .forensic-watermark-overlay {
+  display: none !important;
+}
+
+@media print {
+  html.shield-owner-exempt,
+  body.shield-owner-exempt {
+    background: transparent !important;
+    color: inherit !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  html.shield-owner-exempt body *,
+  body.shield-owner-exempt * {
+    visibility: visible !important;
+    display: revert !important;
+  }
+  html.shield-owner-exempt body::before,
+  body.shield-owner-exempt::before {
+    display: none !important;
+    content: "" !important;
+  }
+}
+
+
 
 

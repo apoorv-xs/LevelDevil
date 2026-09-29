@@ -224,6 +224,7 @@ window.APP_SHELL.session = {
         };
         localStorage.setItem("sprintdial_user", JSON.stringify(record));
         localStorage.setItem("sprintdial_google_user", JSON.stringify(record));
+        window.APP_SHELL?.syncShieldOwnerExemption?.();
       } catch (e) {}
     }
     return this.idToken;
@@ -267,12 +268,14 @@ window.APP_SHELL.session = {
     localStorage.removeItem("sprintdial_user");
     localStorage.removeItem("sprintdial_google_user");
     try { sessionStorage.removeItem("sprintdial_owner_unlocked"); } catch (e) {}
+    window.APP_SHELL?.syncShieldOwnerExemption?.();
   }
 };
 
 // --- UNIVERSAL TOPBAR & AUTH SYNCHRONIZATION ---
 window.APP_SHELL.initUniversalTopbar = function() {
   if (typeof document === "undefined") return;
+  window.APP_SHELL?.syncShieldOwnerExemption?.();
   const user = window.APP_SHELL.session.getUser();
   const signInBtns = document.querySelectorAll("#topbar-sign-in, #workspaceSignInBtnHeader");
   const userChips = document.querySelectorAll("#topbar-user, #userChipHeader");
@@ -497,6 +500,7 @@ window.addEventListener("click", (e) => {
 window.addEventListener("storage", (e) => {
   if (e.key === "sprintdial_user" || e.key === "sprintdial_google_user") {
     window.APP_SHELL.initUniversalTopbar();
+    window.APP_SHELL?.syncShieldOwnerExemption?.();
   }
 });
 
@@ -1030,12 +1034,45 @@ function triggerShieldStrobe() {
   }, 140);
 }
 
+function isShieldExempt() {
+  if (typeof window === "undefined") return false;
+  try {
+    const user = window.APP_SHELL?.session?.getUser?.();
+    if (user?.email && typeof window.isApoorvOwnerEmail === "function" && window.isApoorvOwnerEmail(user.email)) {
+      return true;
+    }
+    const saved = localStorage.getItem("sprintdial_user") || localStorage.getItem("sprintdial_google_user");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed?.email && typeof window.isApoorvOwnerEmail === "function" && window.isApoorvOwnerEmail(parsed.email)) {
+        return true;
+      }
+    }
+  } catch (e) {}
+  return false;
+}
+
+function syncShieldOwnerExemption() {
+  if (typeof document === "undefined") return;
+  const exempt = isShieldExempt();
+  if (document.body) document.body.classList.toggle("shield-owner-exempt", exempt);
+  if (document.documentElement) document.documentElement.classList.toggle("shield-owner-exempt", exempt);
+  if (exempt) {
+    const shieldEl = document.getElementById("antiSnippingShield");
+    if (shieldEl) shieldEl.classList.remove("active");
+    const cockpit = document.getElementById("workspaceCockpitContainer");
+    if (cockpit) cockpit.classList.remove("anti-snipping-blurred");
+  }
+}
+
 function initContentShield() {
   if (typeof window === "undefined" || window._contentShieldInitialized) return;
   window._contentShieldInitialized = true;
+  syncShieldOwnerExemption();
 
   // 1. Asset Drag Protection
   document.addEventListener("dragstart", (e) => {
+    if (isShieldExempt()) return;
     const target = e.target;
     if (!target) return;
     if (
@@ -1049,6 +1086,7 @@ function initContentShield() {
 
   // 2. Context Menu (Right Click) Guard
   document.addEventListener("contextmenu", (e) => {
+    if (isShieldExempt()) return;
     const target = e.target;
     // Allow standard right-click context menu within input and textarea elements
     if (
@@ -1074,6 +1112,7 @@ function initContentShield() {
 
   // 3. Selective Copy Event Interception & Attribution Poisoning
   document.addEventListener("copy", (e) => {
+    if (isShieldExempt()) return;
     const activeEl = document.activeElement;
     // Usability Invariant: Typing or editing inside inputs/textareas must copy freely
     if (
@@ -1110,6 +1149,7 @@ function initContentShield() {
 
   // 4. PrintScreen Key Detection & Clipboard Purge
   window.addEventListener("keyup", (e) => {
+    if (isShieldExempt()) return;
     if (e.key === "PrintScreen" || e.keyCode === 44) {
       if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
         navigator.clipboard.writeText("").catch(() => {});
@@ -1121,6 +1161,7 @@ function initContentShield() {
 
   // 5. Shortcut Traps (Print, Save Page, View Source, DevTools on Workspace)
   window.addEventListener("keydown", (e) => {
+    if (isShieldExempt()) return;
     const isCtrlOrCmd = e.ctrlKey || e.metaKey;
     const key = e.key ? e.key.toLowerCase() : "";
 
@@ -1164,7 +1205,13 @@ function initContentShield() {
 
   // 6. Anti-Snipping Window Focus-Loss Blur (Active on Workspace)
   function handleWindowBlur() {
-    if (!isWorkspaceRoute()) return;
+    if (isShieldExempt() || !isWorkspaceRoute()) {
+      const shieldEl = document.getElementById("antiSnippingShield");
+      if (shieldEl) shieldEl.classList.remove("active");
+      const cockpit = document.getElementById("workspaceCockpitContainer");
+      if (cockpit) cockpit.classList.remove("anti-snipping-blurred");
+      return;
+    }
     const shieldEl = document.getElementById("antiSnippingShield");
     if (shieldEl) shieldEl.classList.add("active");
     const cockpit = document.getElementById("workspaceCockpitContainer");
@@ -1172,7 +1219,13 @@ function initContentShield() {
   }
 
   function handleWindowFocus() {
-    if (!isWorkspaceRoute()) return;
+    if (!isWorkspaceRoute() || isShieldExempt()) {
+      const shieldEl = document.getElementById("antiSnippingShield");
+      if (shieldEl) shieldEl.classList.remove("active");
+      const cockpit = document.getElementById("workspaceCockpitContainer");
+      if (cockpit) cockpit.classList.remove("anti-snipping-blurred");
+      return;
+    }
     const shieldEl = document.getElementById("antiSnippingShield");
     if (shieldEl) shieldEl.classList.remove("active");
     const cockpit = document.getElementById("workspaceCockpitContainer");
@@ -1194,6 +1247,8 @@ if (window.APP_SHELL) {
   window.APP_SHELL.initContentShield = initContentShield;
   window.APP_SHELL.showShieldNotice = showShieldNotice;
   window.APP_SHELL.triggerShieldStrobe = triggerShieldStrobe;
+  window.APP_SHELL.isShieldExempt = isShieldExempt;
+  window.APP_SHELL.syncShieldOwnerExemption = syncShieldOwnerExemption;
 }
 
 if (document.readyState === "loading") {

@@ -115,5 +115,47 @@ describe('Subsystem 16: Asymmetric Alpha Content Shield & Anti-Extraction Defens
       expect(workspaceAppContent).toContain('window.initForensicWatermark = initForensicWatermark');
       expect(workspaceAppContent).toContain('global.initForensicWatermark = initForensicWatermark');
     });
+
+    it('exempts owner email apoorvxs@gmail.com from rendering forensic watermark', () => {
+      expect(workspaceAppContent).toContain('isApoorvOwnerEmail(email)');
+      expect(workspaceAppContent).toContain('canvas.style.display = \'none\'');
+    });
+  });
+
+  describe('16.5 Owner Exemption Mode (apoorvxs@gmail.com)', () => {
+    it('defines .shield-owner-exempt CSS overrides to restore text selection for owner', () => {
+      expect(shellCssContent).toContain('.shield-owner-exempt .shield-protected');
+      expect(shellCssContent).toContain('user-select: text !important');
+    });
+
+    it('defines .shield-owner-exempt CSS overrides to disable anti-snipping blur and hide shield overlay', () => {
+      expect(shellCssContent).toContain('.shield-owner-exempt .anti-snipping-blurred');
+      expect(shellCssContent).toContain('filter: none !important');
+      expect(shellCssContent).toContain('.shield-owner-exempt #antiSnippingShield');
+      expect(shellCssContent).toContain('display: none !important');
+    });
+
+    it('defines .shield-owner-exempt CSS overrides to restore normal printing without blackout', () => {
+      expect(shellCssContent).toContain('html.shield-owner-exempt,');
+      expect(shellCssContent).toContain('body.shield-owner-exempt');
+      expect(shellCssContent).toContain('display: revert !important');
+    });
+
+    it('implements isShieldExempt and syncShieldOwnerExemption in shell.js', () => {
+      expect(shellJsContent).toContain('function isShieldExempt()');
+      expect(shellJsContent).toContain('function syncShieldOwnerExemption()');
+      expect(shellJsContent).toContain('window.isApoorvOwnerEmail(user.email)');
+      expect(shellJsContent).toContain('document.body.classList.toggle("shield-owner-exempt", exempt)');
+    });
+
+    it('bypasses drag, contextmenu, copy poisoning, PrtScn purge, and shortcut traps when isShieldExempt() is true', () => {
+      expect(shellJsContent).toContain('if (isShieldExempt()) return;');
+    });
+
+    it('exports isShieldExempt and syncShieldOwnerExemption on window.APP_SHELL', () => {
+      expect(shellJsContent).toContain('window.APP_SHELL.isShieldExempt = isShieldExempt');
+      expect(shellJsContent).toContain('window.APP_SHELL.syncShieldOwnerExemption = syncShieldOwnerExemption');
+    });
   });
 });
+

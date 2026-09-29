@@ -5868,6 +5868,12 @@ function initForensicWatermark() {
     const email = (currentUser && currentUser.email) ||
       (typeof localStorage !== 'undefined' && JSON.parse(localStorage.getItem('sprintdial_user') || '{}').email) ||
       'CONFIDENTIAL';
+    if (typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(email)) {
+      if (canvas) canvas.style.display = 'none';
+      return;
+    } else {
+      if (canvas) canvas.style.display = '';
+    }
     const sessionId = (typeof window !== 'undefined' && window._shieldSessionId) ||
       (window._shieldSessionId = Math.random().toString(36).substring(2, 8).toUpperCase());
     const dateStr = new Date().toISOString().split('T')[0];
