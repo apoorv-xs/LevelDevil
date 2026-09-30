@@ -51,6 +51,8 @@
     return firestorePromise;
   }
 
+  let inFlightSignInPromise = null;
+
   window.SALES_PLATFORM_AUTH = {
     getAuth,
     getFirestore,
@@ -60,23 +62,37 @@
       return result.user ? result : null;
     },
     async signIn() {
-      const auth = await getAuth();
-      const provider = new window.firebase.auth.GoogleAuthProvider();
-      try {
-        const result = await auth.signInWithPopup(provider);
-        return result?.user ? result : null;
-      } catch (popupErr) {
-        if (["auth/popup-closed-by-user", "auth/cancelled-popup-request"].includes(popupErr.code)) {
-          throw new Error("Sign-in was cancelled. Please try again.");
-        }
-        console.warn("Popup sign-in encountered an issue, transitioning to redirect auth:", popupErr.code || popupErr.message);
-        try {
-          await auth.signInWithRedirect(provider);
-          return null;
-        } catch (redirectErr) {
-          throw new Error(redirectErr.message || "Unable to initiate Google sign-in.");
-        }
+      if (inFlightSignInPromise) {
+        return inFlightSignInPromise;
       }
+
+      inFlightSignInPromise = (async () => {
+        const auth = await getAuth();
+        const provider = new window.firebase.auth.GoogleAuthProvider();
+        try {
+          const result = await auth.signInWithPopup(provider);
+          return result?.user ? result : null;
+        } catch (popupErr) {
+          if (["auth/popup-closed-by-user", "auth/cancelled-popup-request"].includes(popupErr.code)) {
+            throw new Error("Sign-in was cancelled. Please try again.");
+          }
+          // Only transition to full redirect if the popup was explicitly blocked by the browser
+          if (popupErr.code === "auth/popup-blocked") {
+            console.warn("Popup sign-in was blocked by browser, transitioning to redirect auth:", popupErr.code);
+            try {
+              await auth.signInWithRedirect(provider);
+              return null;
+            } catch (redirectErr) {
+              throw new Error(redirectErr.message || "Unable to initiate Google sign-in.");
+            }
+          }
+          throw new Error(popupErr.message || "Unable to initiate Google sign-in.");
+        }
+      })().finally(() => {
+        inFlightSignInPromise = null;
+      });
+
+      return inFlightSignInPromise;
     },
   };
 })();

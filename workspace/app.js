@@ -1067,9 +1067,20 @@ function getAllAuthorizedAccounts() {
   return getCustomWorkers();
 }
 
+let isAuthenticatingGoogle = false;
 async function handleWorkspaceGoogleAuth() {
+  if (isAuthenticatingGoogle) return;
+  isAuthenticatingGoogle = true;
+
   const errEl = document.getElementById('loginErrorMsg');
+  const gateErrEl = document.getElementById('gateErrorMsg');
   if (errEl) errEl.classList.add('hidden');
+  if (gateErrEl) gateErrEl.classList.add('hidden');
+
+  const gateBtn = document.getElementById('gateGoogleSignInBtn');
+  const modalBtn = document.getElementById('googleSignInBtn');
+  if (gateBtn) gateBtn.disabled = true;
+  if (modalBtn) modalBtn.disabled = true;
 
   try {
     const auth = window.SALES_PLATFORM_AUTH;
@@ -1081,10 +1092,19 @@ async function handleWorkspaceGoogleAuth() {
       handleUserAuthResolved(result.user);
     }
   } catch (err) {
+    const msg = err.message || 'Authentication failed.';
     if (errEl) {
-      errEl.innerText = err.message || 'Authentication failed.';
+      errEl.innerText = msg;
       errEl.classList.remove('hidden');
     }
+    if (gateErrEl) {
+      gateErrEl.innerText = msg;
+      gateErrEl.classList.remove('hidden');
+    }
+  } finally {
+    isAuthenticatingGoogle = false;
+    if (gateBtn) gateBtn.disabled = false;
+    if (modalBtn) modalBtn.disabled = false;
   }
 }
 

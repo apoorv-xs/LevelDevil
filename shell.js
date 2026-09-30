@@ -234,13 +234,19 @@ window.APP_SHELL.session = {
     return this.idToken;
   },
   async signIn() {
-    const auth = window.SALES_PLATFORM_AUTH;
-    if (!auth?.signIn) throw new Error("Authenticated entry is not configured in this public build. Contact the owner for workspace access.");
-    const session = await auth.signIn();
-    if (session?.user) {
-      await this.setSession(session);
-    }
-    return session;
+    if (this._inFlightSignIn) return this._inFlightSignIn;
+    this._inFlightSignIn = (async () => {
+      const auth = window.SALES_PLATFORM_AUTH;
+      if (!auth?.signIn) throw new Error("Authenticated entry is not configured in this public build. Contact the owner for workspace access.");
+      const session = await auth.signIn();
+      if (session?.user) {
+        await this.setSession(session);
+      }
+      return session;
+    })().finally(() => {
+      this._inFlightSignIn = null;
+    });
+    return this._inFlightSignIn;
   },
   async resumeRedirect() {
     const auth = window.SALES_PLATFORM_AUTH;
@@ -461,9 +467,6 @@ window.APP_SHELL.openAuth = function() {
   } else if (isSalesRoute()) {
     if (typeof window.handleGoogleSignIn === "function") {
       window.handleGoogleSignIn();
-    } else {
-      const signInBtn = document.getElementById("topbar-sign-in");
-      if (signInBtn) signInBtn.click();
     }
   } else {
     window.location.href = "/sales#signin";

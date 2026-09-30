@@ -231,7 +231,10 @@ async function syncAuthState() {
   window.APP_SHELL?.initUniversalTopbar?.();
 }
 
+let isSigningInGoogle = false;
 async function handleGoogleSignIn() {
+  if (isSigningInGoogle) return;
+  isSigningInGoogle = true;
   try {
     setStatus("Opening Google sign-in...");
     if (topbarSignIn) topbarSignIn.disabled = true;
@@ -243,10 +246,12 @@ async function handleGoogleSignIn() {
   } catch (error) {
     setStatus(error instanceof Error ? error.message : "Sign-in was cancelled.", true);
   } finally {
+    isSigningInGoogle = false;
     if (topbarSignIn) topbarSignIn.disabled = false;
     if (formSignIn) formSignIn.disabled = false;
   }
 }
+window.handleGoogleSignIn = handleGoogleSignIn;
 
 async function loadWorkspace() {
   try {
