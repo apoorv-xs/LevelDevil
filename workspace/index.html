@@ -1460,11 +1460,11 @@
       <!-- Territory Filter Segmented Control & Queue CSV Export -->
       <div class="p-2 border-b-2 border-[#17120f] flex flex-col gap-1.5 bg-[#fff1bd]" data-kaboom-body="true">
         <div class="flex items-center gap-1.5">
-          <div class="flex-1 flex bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade overflow-hidden">
-            <button onclick="filterCity('All')" class="city-tab active flex-1 py-1 font-bold text-[#17120f] bg-[#fce566] transition text-center text-[8.5px] sm:text-[9px]" data-kaboom-body="true">All</button>
-            <button onclick="filterCity('Kochi')" class="city-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center text-[8.5px] sm:text-[9px]" data-kaboom-body="true">Kochi</button>
-            <button onclick="filterCity('Bangalore')" class="city-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center text-[8.5px] sm:text-[9px]" data-kaboom-body="true">BLR</button>
-            <button onclick="filterCity('Hyderabad')" class="city-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center text-[8.5px] sm:text-[9px]" data-kaboom-body="true">HYD</button>
+          <div id="cityFilterContainer" class="flex-1 flex bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade overflow-x-auto scrollbar-none">
+            <button data-city="All" onclick="filterCity('All')" class="city-tab active flex-1 py-1 font-bold text-[#17120f] bg-[#fce566] transition text-center text-[8.5px] sm:text-[9px] px-2 whitespace-nowrap" data-kaboom-body="true">All</button>
+            <button data-city="Kochi" onclick="filterCity('Kochi')" class="city-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center text-[8.5px] sm:text-[9px] px-2 whitespace-nowrap" data-kaboom-body="true">Kochi</button>
+            <button data-city="Bangalore" onclick="filterCity('Bangalore')" class="city-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center text-[8.5px] sm:text-[9px] px-2 whitespace-nowrap" data-kaboom-body="true">BLR</button>
+            <button data-city="Hyderabad" onclick="filterCity('Hyderabad')" class="city-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center text-[8.5px] sm:text-[9px] px-2 whitespace-nowrap" data-kaboom-body="true">HYD</button>
           </div>
           <span id="leadCountBadge" class="text-[8.5px] sm:text-[9px] font-arcade text-[#17120f] bg-[#fffdf1] px-2 py-1 border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] shrink-0 whitespace-nowrap font-bold h-[25px] flex items-center justify-center">RADAR ACTIVE</span>
         </div>
@@ -3499,6 +3499,22 @@
             </div>
             <p class="text-[11px] font-mono text-neutral-400 leading-relaxed">
               Monitors the Sheet and automatically drafts hyper-personalized cold outreach emails in Gmail from <code class="text-white">apoorvxs@gmail.com</code> with custom 60 FPS teardown demo links.
+            </p>
+          </div>
+
+          <!-- Playbook C: Master Skill for Gemini Spark Skills Tab -->
+          <div class="p-3 bg-[#15161B] border border-emerald-500/40 rounded-lg space-y-2">
+            <div class="flex items-center justify-between">
+              <div class="text-xs font-bold text-emerald-300 font-mono flex items-center gap-1.5">
+                <span>[SPARK SKILL]</span>
+                <span>Cognitive Swokei-IN Master Skill (Skills Tab)</span>
+              </div>
+              <button type="button" onclick="copySparkPlaybook('master_skill')" class="px-2.5 py-1 rounded bg-[#fce566] hover:bg-[#ffd700] text-[#17120f] border-2 border-[#17120f] text-[10px] font-mono font-bold transition cursor-pointer shadow-[2px_2px_0_#17120f]">
+                [COPY MASTER SKILL]
+              </button>
+            </div>
+            <p class="text-[11px] font-mono text-neutral-400 leading-relaxed">
+              Complete autonomous system instruction to save inside the Gemini Spark <b class="text-emerald-300">"Skills"</b> tab. Configures archetype detection (Architect/Doctor/Dining), salutation rules, and 4-touch drip logic.
             </p>
           </div>
         </div>

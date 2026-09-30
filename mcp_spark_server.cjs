@@ -136,6 +136,16 @@ try {
   };
 }
 
+// Load Swokei Engine (Persona-Adaptive Outreach Drip)
+let SwokeiEngine = null;
+try {
+  require(path.join(__dirname, 'workspace', 'swokei.js'));
+  // The IIFE exports to global in Node — read from global after require triggers execution
+  SwokeiEngine = global.SwokeiEngine || null;
+} catch (e) {
+  console.warn('[MCP Server] Warning loading swokei engine:', e.message);
+}
+
 // Standard Deal Tiers
 const DEAL_TIERS = {
   1: {
@@ -396,34 +406,51 @@ function generateOutreachSequence(prospectId, emailOverride) {
 
   const name = p.name || 'Establishment';
   const dm = (p.dm || 'Managing Director').split('(')[0].trim();
-  const site = p.site || 'your website';
-  const lcp = p.lcpTime ? p.lcpTime.replace('LCP: ', '') : '4.4s';
   const fee = p.fee || '₹1,00,000';
   const cleanId = p.id || 'p-1';
-  const email = emailOverride || p.email || 'dm@' + (p.site ? p.site.replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/.*$/, '') : 'company.com');
+  const cleanSite = (p.site || '').replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/.*$/, '').trim();
+  const email = emailOverride || p.email || (cleanSite && cleanSite !== '#' ? `contact@${cleanSite}` : 'contact@company.com');
   const teardownUrl = `https://apoorv.qzz.io/sales?teardown=${encodeURIComponent(cleanId)}`;
   const proposalUrl = `https://apoorv.qzz.io/sales?proposal=${encodeURIComponent(cleanId)}&fee=${parseInt(String(fee).replace(/[^0-9]/g, '')) || 50000}`;
 
-  // Touch 1 (Day 1: Problem Teardown)
+  if (SwokeiEngine && typeof SwokeiEngine.getOutreachSequenceForLead === 'function') {
+    const dripTouches = SwokeiEngine.getOutreachSequenceForLead(p);
+    const archetype = typeof SwokeiEngine.detectProspectArchetype === 'function' ? SwokeiEngine.detectProspectArchetype(p) : 'GENERAL';
+    const salutation = typeof SwokeiEngine.getPersonaSalutation === 'function' ? SwokeiEngine.getPersonaSalutation(p, archetype) : `Hi ${dm}`;
+
+    if (Array.isArray(dripTouches) && dripTouches.length >= 4) {
+      return {
+        prospect_id: cleanId,
+        clientName: name,
+        decisionMaker: dm,
+        salutation,
+        archetype,
+        recipientEmail: email,
+        teardownUrl,
+        proposalUrl,
+        sequence: dripTouches.map((t, idx) => ({
+          touchNumber: t.touchNumber || (idx + 1),
+          day: t.day || (idx === 0 ? 1 : idx === 1 ? 3 : idx === 2 ? 6 : 9),
+          title: t.label || `Touch ${idx + 1}`,
+          subject: t.subject,
+          body: t.body,
+          gmailComposeUrl: `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(t.subject)}&body=${encodeURIComponent(t.body)}`,
+          whatsappText: t.whatsapp || ''
+        }))
+      };
+    }
+  }
+
+  // Fallback if engine is not loaded
   const t1Sub = `Executive Performance Teardown: ${name} (Direct Booking Leak)`;
-  const t1Body = `Namaste ${dm},\n\nI reviewed ${name}'s mobile portal (${site}) on modern mobile devices.\n\nTwo critical operational findings:\n1. Mobile Latency: Your site requires ${lcp} to load on cellular connections. Across premium sectors, load times exceeding 2.5s result in 40%+ drop-off to aggregators who charge 18%-25% commission.\n2. 60 FPS Spatial Architecture: High-ticket clients make decisions through interactive visual prestige.\n\nYou can inspect the live interactive diagnostic teardown here:\n${teardownUrl}\n\nWould you have 10 minutes this Thursday at 11:00 AM IST for a brief walkthrough?\n\nWarm regards,\nApoorv A S\napoorvxs@gmail.com | https://apoorv.qzz.io`;
-
-  // Touch 2 (Day 3: 60 FPS Visual Contrast & 3D Demo)
-  const t2Sub = `Re: ${name} - 24 FPS vs 60 FPS mobile simulation`;
-  const t2Body = `Namaste ${dm},\n\nFollowing up on the mobile audit for ${name}.\n\nI set up an interactive frame-rate comparison on your teardown page:\n${teardownUrl}\n\nOn that link, you can toggle between the standard 24 FPS mobile throttle and our locked 60 FPS spatial engine. Notice how the tactile smoothness immediately elevates the perceived quality of your establishment.\n\nAre you available for a 5-minute screen view tomorrow afternoon?\n\nWarm regards,\nApoorv A S\napoorvxs@gmail.com | https://apoorv.qzz.io`;
-
-  // Touch 3 (Day 6: Aggregator Margin Bleed & 14-Day Payback ROI)
-  const t3Sub = `Re: ${name} - 20% aggregator take-rate vs direct WhatsApp intake`;
-  const t3Body = `Namaste ${dm},\n\nA quick piece of financial math regarding ${name}'s digital revenue:\n\nIf your portal receives 3,00,000 monthly visitors, paying aggregators 18%-25% commission on repeat bookings burns roughly ₹60,000 to ₹1,50,000 every month in pure margin bleed.\n\nOur Tier 1 Speed & Direct Booking Engine recovers 100% of direct bookings through an ergonomic 1-tap WhatsApp conduit, paying for itself in under 14 days.\n\nYou can review the full deployment scope and SLA terms here:\n${proposalUrl}\n\nWould you like me to send over our 1-page milestone agreement?\n\nWarm regards,\nApoorv A S\napoorvxs@gmail.com | https://apoorv.qzz.io`;
-
-  // Touch 4 (Day 9: Permission to Close File & SLA Ultimatum)
-  const t4Sub = `Permission to close file: ${name}`;
-  const t4Body = `Namaste ${dm},\n\nI haven't heard back from you, so I assume upgrading ${name}'s mobile speed and spatial showcase is not an active priority this quarter.\n\nI will archive your interactive audit teardown (${teardownUrl}) by end of week.\n\nIf your priorities shift and you want to lock in our sovereign 60 FPS SLA guarantee (100% full refund if your mobile site fails 60 FPS or sub-1.5s load), you can access the proposal anytime here:\n${proposalUrl}\n\nWishing you continued success with ${name}.\n\nWarm regards,\nApoorv A S\nCreative Technologist & 3D WebUI Architect\napoorvxs@gmail.com | https://apoorv.qzz.io`;
+  const t1Body = `Hi ${dm},\n\nI reviewed ${name}'s mobile portal (${cleanSite}) on cellular data.\n\nYou can inspect the live interactive diagnostic teardown here:\n${teardownUrl}\n\nWould you have 10 minutes this Thursday for a brief walkthrough?\n\nWarm regards,\nApoorv A S\nCreative Technologist & 3D WebUI Architect\napoorvxs@gmail.com | https://apoorv.qzz.io`;
 
   return {
     prospect_id: cleanId,
     clientName: name,
     decisionMaker: dm,
+    salutation: `Hi ${dm}`,
+    archetype: 'GENERAL',
     recipientEmail: email,
     teardownUrl,
     proposalUrl,
@@ -435,34 +462,7 @@ function generateOutreachSequence(prospectId, emailOverride) {
         subject: t1Sub,
         body: t1Body,
         gmailComposeUrl: `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(t1Sub)}&body=${encodeURIComponent(t1Body)}`,
-        whatsappText: `Namaste ${dm}, I prepared a mobile performance teardown for ${name}. Your site takes ${lcp} to load, bleeding bookings to aggregators. You can inspect the live diagnostic here: ${teardownUrl}`
-      },
-      {
-        touchNumber: 2,
-        day: 3,
-        title: '24 FPS vs 60 FPS Visual Contrast & 3D Demo',
-        subject: t2Sub,
-        body: t2Body,
-        gmailComposeUrl: `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(t2Sub)}&body=${encodeURIComponent(t2Body)}`,
-        whatsappText: `Namaste ${dm}, on your teardown page (${teardownUrl}), you can now test our 24 FPS vs 60 FPS simulation to see how silky smooth mobile interaction converts high-ticket clients.`
-      },
-      {
-        touchNumber: 3,
-        day: 6,
-        title: '20% Aggregator Bleed & 14-Day Payback ROI',
-        subject: t3Sub,
-        body: t3Body,
-        gmailComposeUrl: `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(t3Sub)}&body=${encodeURIComponent(t3Body)}`,
-        whatsappText: `Namaste ${dm}, our direct intake architecture eliminates the 20% aggregator commission bleed for ${name}, achieving full break-even payback in ~14 days. Review terms: ${proposalUrl}`
-      },
-      {
-        touchNumber: 4,
-        day: 9,
-        title: 'Permission to Close File & Sovereign SLA Ultimatum',
-        subject: t4Sub,
-        body: t4Body,
-        gmailComposeUrl: `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(t4Sub)}&body=${encodeURIComponent(t4Body)}`,
-        whatsappText: `Namaste ${dm}, closing your file for ${name}. If you ever want to activate our 100% money-back 60 FPS performance SLA guarantee, review our scope here: ${proposalUrl}`
+        whatsappText: `Hi ${dm}, I prepared a mobile performance teardown for ${name}: ${teardownUrl}`
       }
     ]
   };

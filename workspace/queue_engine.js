@@ -538,15 +538,78 @@ function filterStatus(status) {
 }
 
 // Queue & Navigation
+function getCityShortCode(cityName) {
+  if (!cityName) return '';
+  const c = cityName.trim();
+  const known = {
+    'All': 'All',
+    'Kochi': 'Kochi',
+    'Bangalore': 'BLR',
+    'Hyderabad': 'HYD',
+    'Mumbai': 'BOM',
+    'Delhi': 'DEL',
+    'Delhi-NCR': 'NCR',
+    'Gurgaon': 'GGN',
+    'Noida': 'NOIDA',
+    'Pune': 'PUN',
+    'Ahmedabad': 'AMD',
+    'Chennai': 'MAA',
+    'Kolkata': 'CCU',
+    'Jaipur': 'JAI',
+    'Goa': 'GOA',
+    'Dubai': 'DXB',
+    'Abu Dhabi': 'AUH',
+    'Sharjah': 'SHJ',
+    'Doha': 'DOH'
+  };
+  if (known[c]) return known[c];
+  return c.length > 5 ? c.slice(0, 4).toUpperCase() : c;
+}
+
+function syncCityFilterTabs() {
+  if (typeof document === 'undefined') return;
+  const container = document.getElementById('cityFilterContainer');
+  if (!container) return;
+
+  const prospects = typeof getGlobalProspects === 'function' ? getGlobalProspects() : [];
+  const uniqueCities = new Set(['All', 'Kochi', 'Bangalore', 'Hyderabad']);
+  prospects.forEach(p => {
+    if (p && p.city && p.city.trim()) {
+      uniqueCities.add(p.city.trim());
+    }
+  });
+
+  const existingTabs = Array.from(container.querySelectorAll('.city-tab'));
+  const existingCities = new Set(existingTabs.map(t => t.getAttribute('data-city') || t.innerText.trim()));
+
+  let needsUpdate = false;
+  uniqueCities.forEach(c => {
+    if (!existingCities.has(c)) needsUpdate = true;
+  });
+
+  if (needsUpdate) {
+    const cityList = Array.from(uniqueCities);
+    container.innerHTML = cityList.map(c => {
+      const isAct = (c === activeCityFilter);
+      const shortLabel = getCityShortCode(c);
+      const actClass = isAct ? 'active font-bold bg-[#fce566]' : 'font-medium hover:bg-[#fff1bd]';
+      return `<button data-city="${c}" onclick="filterCity('${c}')" class="city-tab flex-1 py-1 text-[#17120f] transition text-center text-[8.5px] sm:text-[9px] px-2 whitespace-nowrap ${actClass}" data-kaboom-body="true">${shortLabel}</button>`;
+    }).join('');
+  }
+}
+
 function filterCity(city) {
   playSound('click');
   activeCityFilter = city;
   document.querySelectorAll('.city-tab').forEach(tab => {
+    const dataCity = tab.getAttribute('data-city');
     const text = tab.innerText.trim();
-    const match = (city === 'All' && text === 'All') ||
-                  (city === 'Kochi' && text === 'Kochi') ||
-                  (city === 'Bangalore' && text === 'BLR') ||
-                  (city === 'Hyderabad' && text === 'HYD');
+    const match = (dataCity ? dataCity === city : false) ||
+                  (city === 'All' && (text === 'All' || dataCity === 'All')) ||
+                  (city === 'Kochi' && (text === 'Kochi' || dataCity === 'Kochi')) ||
+                  (city === 'Bangalore' && (text === 'BLR' || dataCity === 'Bangalore')) ||
+                  (city === 'Hyderabad' && (text === 'HYD' || dataCity === 'Hyderabad')) ||
+                  (city === text);
     if (match) {
       tab.classList.add('active', 'bg-[#fce566]', 'font-bold');
       tab.classList.remove('font-medium');
@@ -649,6 +712,7 @@ function getCallbackAging(prospect) {
 
 function renderQueue() {
   if (typeof document === 'undefined') return;
+  syncCityFilterTabs();
   const listEl = document.getElementById('queueList');
   if (!listEl) return;
   listEl.innerHTML = '';
@@ -1459,6 +1523,8 @@ function updateMoatSolutions(p, isNoSite) {
     filterStatus,
     matchStatus,
     filterCity,
+    getCityShortCode,
+    syncCityFilterTabs,
     handleSearch,
     matchSearch,
     getCallbackAging,
@@ -1481,6 +1547,8 @@ function updateMoatSolutions(p, isNoSite) {
   root.filterStatus = filterStatus;
   root.matchStatus = matchStatus;
   root.filterCity = filterCity;
+  root.getCityShortCode = getCityShortCode;
+  root.syncCityFilterTabs = syncCityFilterTabs;
   root.handleSearch = handleSearch;
   root.matchSearch = matchSearch;
   root.getCallbackAging = getCallbackAging;
