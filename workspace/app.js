@@ -2816,29 +2816,30 @@ const WORKSPACE_TOUR_STEPS = [
     total: 8,
     badge: 'STEP 1 OF 8 // QUEUE',
     targetSelector: '#queuePane, #queueList, #queueListContainer',
-    targetLabel: 'COLUMN 1 // TERRITORY QUEUE & ZOMBIE RADAR',
+    targetLabel: 'COLUMN 1 // TERRITORY QUEUE & CALLBACK RADAR',
     targetSubtext: 'Priority dispatch algorithm with automated callback sorting',
     sectorBadge: '// QUEUE RADAR LOCKED',
-    title: '1. Territory Queue & Zombie Radar',
-    summary: 'The workstation prioritizes 65 curated enterprise prospects. Overdue callbacks and cold leads automatically float to the top so you never lose high-intent deals.',
+    title: '1. Territory Queue & Priority Dispatch',
+    summary: 'The workstation organizes your territory pipeline into actionable queues. Fresh leads, saved targets, and overdue callbacks automatically prioritize so you never lose high-intent deals.',
     visual: `┌── TERRITORY QUEUE ──────────────────────────────┐
-│ [ALL] [CB] [ZOMBIE] [OVERDUE] [★ SAVED] [WINS]  │
-│ ● READY TO DIAL     │ Paragon Luxury Grand Resort  │
+│ TABS  : [ALL]  [FRESH]  [CB]  [★ SAVED]  [WINS] │
+│ URGENT: [ZOMBIE >48H] & [OVERDUE] float to top  │
+│ ● READY TO DIAL │ Paragon Luxury Grand Resort   │
 └─────────────────────────────────────────────────┘`,
     laptop: [
-      "• <strong>Left Column:</strong> Browse all 65 enterprise leads with active status filters.",
-      "• <strong>Filter by Shortlist & Callbacks:</strong> Click <span class='font-bold text-neutral-900'>[★]</span> for saved leads, or <span class='font-bold text-neutral-900'>[CB]</span> for scheduled callbacks & overdue touches.",
-      "• <strong>Save for Later:</strong> Press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>B</kbd> anytime to bookmark a prospect into your private shortlist.",
+      "• <strong>Left Column:</strong> Browse your active enterprise territory pipeline with 1-click status and city filters.",
+      "• <strong>Callbacks & Zombie Recovery:</strong> Click <span class='font-bold text-neutral-900'>[CB]</span> for scheduled callbacks. Stale follow-ups ('Zombie' leads unattended >48h) automatically pin to the top so you can rescue slipping deals.",
+      "• <strong>Shortlist Bookmarks:</strong> Press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>B</kbd> or click <span class='font-bold text-neutral-900'>[★]</span> to filter your bookmarked targets.",
       "• <strong>Instant Search:</strong> Press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>/</kbd> or <kbd class='px-1 bg-[#17120f] text-[#fce566]'>Ctrl+K</kbd> to search by name, city, specialty, or phone.",
       "• <strong>Rapid Navigation:</strong> Press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>J</kbd> (Next Lead) and <kbd class='px-1 bg-[#17120f] text-[#fce566]'>K</kbd> (Prev Lead)."
     ],
     mobile: [
       "• <strong>Bottom Tab:</strong> Tap <span class='font-bold text-neutral-900'>[QUEUE]</span> to browse leads on mobile.",
-      "• <strong>Urgency Sorting:</strong> Pulsating [ZOMBIE >48H] (>48h) and [OVERDUE] (24-48h) badges float to the top.",
+      "• <strong>Urgency Sorting:</strong> In [CB], stale [ZOMBIE >48H] and [OVERDUE] callbacks float to the top.",
       "• <strong>Shortlist Filter:</strong> Tap <span class='font-bold text-neutral-900'>[★]</span> to focus exclusively on your saved leads.",
       "• <strong>Single Tap:</strong> Tap any prospect card to load their full dossier into active cockpit memory."
     ],
-    proTip: "Always clear Zombie (>48h) and Overdue (24-48h) callbacks first at the start of your shift to rescue slipping revenue!"
+    proTip: "Always clear stale Zombie (>48h) and Overdue (24-48h) callbacks first at the start of your shift to rescue slipping revenue!"
   },
   {
     step: 2,
