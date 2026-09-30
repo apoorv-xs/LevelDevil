@@ -7,7 +7,8 @@ describe('Caller Shortlist Bookmarks & Role-Gated Lead Count Protection', () => 
 
   it('role-gates total lead count and database size in workspace/index.html', () => {
     // Default fallback in HTML must not reveal total lead count to callers
-    expect(html).toContain('id="leadCountBadge" class="text-[9px] sm:text-[10px] font-arcade text-[#17120f] bg-[#fffdf1] px-1.5 py-1 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] shrink-0 whitespace-nowrap">RADAR ACTIVE</span>');
+    expect(html).toContain('id="leadCountBadge"');
+    expect(html).toMatch(/id="leadCountBadge"[^>]*>RADAR ACTIVE<\/span>/);
     expect(html).toContain('id="leadQueuePosition" class="text-[10px] font-arcade text-[#17120f] px-2.5 py-1 border-x border-[#17120f]/30 whitespace-nowrap">Account #1</span>');
     expect(html).toContain('id="mobileQueueCountWrapper" class="hidden"');
   });

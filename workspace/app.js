@@ -3801,9 +3801,11 @@ function filterCity(city) {
                   (city === 'Bangalore' && text === 'BLR') ||
                   (city === 'Hyderabad' && text === 'HYD');
     if (match) {
-      tab.className = "city-tab active px-2.5 py-1 rounded-md font-semibold text-neutral-950 bg-white shadow-sm transition";
+      tab.classList.add('active', 'bg-[#fce566]', 'font-bold');
+      tab.classList.remove('font-medium');
     } else {
-      tab.className = "city-tab px-2.5 py-1 rounded-md font-medium text-neutral-400 hover:text-white transition";
+      tab.classList.remove('active', 'bg-[#fce566]', 'font-bold');
+      tab.classList.add('font-medium');
     }
   });
 
@@ -3925,6 +3927,13 @@ function renderQueue() {
   const countBadge = document.getElementById('leadCountBadge');
   if (countBadge) {
     countBadge.innerText = isOwner ? `${filtered.length} Leads` : 'RADAR ACTIVE';
+    if (isOwner) {
+      countBadge.classList.add('w-[84px]');
+      countBadge.classList.remove('px-2');
+    } else {
+      countBadge.classList.remove('w-[84px]');
+      countBadge.classList.add('px-2');
+    }
   }
 
   const mobileQueueCount = document.getElementById('mobileQueueCount');

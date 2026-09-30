@@ -234,20 +234,30 @@
       color: rgba(23, 18, 15, 0.5) !important;
     }
 
-    /* City Filter Buttons */
-    .retro-workspace .city-tab {
+    /* Territory & Status Segmented Controls */
+    .retro-workspace .city-tab,
+    .retro-workspace .status-tab {
       background: var(--white) !important;
       color: var(--ink) !important;
-      border: 2px solid var(--ink) !important;
+      border: none !important;
+      border-right: 2px solid var(--ink) !important;
       border-radius: 0 !important;
-      box-shadow: 2px 2px 0 var(--ink) !important;
+      box-shadow: none !important;
       font-family: "Press Start 2P", monospace !important;
-      font-size: 9px !important;
+      font-size: 8.5px !important;
+      transform: none !important;
     }
-    .retro-workspace .city-tab.active {
+    .retro-workspace .city-tab:last-child,
+    .retro-workspace .status-tab:last-child {
+      border-right: none !important;
+    }
+    .retro-workspace .city-tab.active,
+    .retro-workspace .status-tab.active {
       background: var(--accent) !important;
-      box-shadow: 1px 1px 0 var(--ink) !important;
-      transform: translate(1px, 1px);
+      color: var(--ink) !important;
+      font-weight: bold !important;
+      box-shadow: none !important;
+      transform: none !important;
     }
 
     /* Queue Items Rendered by app.js */
@@ -1361,24 +1371,28 @@
     <div id="queuePane" class="shield-protected w-full md:w-80 lg:w-88 h-full md:h-auto flex-1 md:flex-initial border-r-2 border-[#17120f] bg-[#fff4c9] flex flex-col overflow-hidden" data-kaboom-body="true">
       <!-- Territory Filter Segmented Control & Queue CSV Export -->
       <div class="p-2 border-b-2 border-[#17120f] flex flex-col gap-1.5 bg-[#fff1bd]" data-kaboom-body="true">
-        <div class="flex items-center justify-between gap-1.5">
-          <div class="flex bg-[#fffdf1] p-0.5 text-xs border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade">
-            <button onclick="filterCity('All')" class="city-tab active px-1.5 sm:px-2 py-1 font-bold text-[#17120f] bg-[#fce566] transition" data-kaboom-body="true">All</button>
-            <button onclick="filterCity('Kochi')" class="city-tab px-1.5 sm:px-2 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition" data-kaboom-body="true">Kochi</button>
-            <button onclick="filterCity('Bangalore')" class="city-tab px-1.5 sm:px-2 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition" data-kaboom-body="true">BLR</button>
-            <button onclick="filterCity('Hyderabad')" class="city-tab px-1.5 sm:px-2 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition" data-kaboom-body="true">HYD</button>
+        <div class="flex items-center gap-1.5">
+          <div class="flex-1 flex bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade overflow-hidden">
+            <button onclick="filterCity('All')" class="city-tab active flex-1 py-1 font-bold text-[#17120f] bg-[#fce566] transition text-center text-[8.5px] sm:text-[9px]" data-kaboom-body="true">All</button>
+            <button onclick="filterCity('Kochi')" class="city-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center text-[8.5px] sm:text-[9px]" data-kaboom-body="true">Kochi</button>
+            <button onclick="filterCity('Bangalore')" class="city-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center text-[8.5px] sm:text-[9px]" data-kaboom-body="true">BLR</button>
+            <button onclick="filterCity('Hyderabad')" class="city-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center text-[8.5px] sm:text-[9px]" data-kaboom-body="true">HYD</button>
           </div>
-          <span id="leadCountBadge" class="text-[9px] sm:text-[10px] font-arcade text-[#17120f] bg-[#fffdf1] px-1.5 py-1 border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] shrink-0 whitespace-nowrap">RADAR ACTIVE</span>
+          <span id="leadCountBadge" class="text-[8.5px] sm:text-[9px] font-arcade text-[#17120f] bg-[#fffdf1] px-2 py-1 border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] shrink-0 whitespace-nowrap font-bold h-[25px] flex items-center justify-center">RADAR ACTIVE</span>
         </div>
 
         <!-- Row 2: Status Tabs + Compact CSV Export Dock -->
         <div class="flex items-center gap-1.5">
-          <div class="flex-1 flex bg-[#fffdf1] p-0.5 text-[9px] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade">
-            <button id="statusTabAll" type="button" onclick="filterStatus('all')" class="status-tab active flex-1 py-1 font-bold text-[#17120f] bg-[#fce566] transition text-center" title="All Leads">ALL</button>
-            <button id="statusTabFresh" type="button" onclick="filterStatus('fresh')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center" title="Fresh / Untouched Leads">FRESH</button>
-            <button id="statusTabCallbacks" type="button" onclick="filterStatus('callbacks')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center" title="Scheduled Callbacks">CB</button>
-            <button id="statusTabStarred" type="button" onclick="filterStatus('starred')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center" title="Bookmarked / Saved for Later">★</button>
-            <button id="statusTabInterested" type="button" onclick="filterStatus('interested')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center" title="Interested & Booked Leads">WINS</button>
+          <div class="flex-1 flex bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade overflow-hidden">
+            <button id="statusTabAll" type="button" onclick="filterStatus('all')" class="status-tab active flex-1 py-1 font-bold text-[#17120f] bg-[#fce566] transition text-center text-[8.5px] sm:text-[9px]" title="All Leads">ALL</button>
+            <button id="statusTabFresh" type="button" onclick="filterStatus('fresh')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center text-[8.5px] sm:text-[9px]" title="Fresh / Untouched Leads">FRESH</button>
+            <button id="statusTabCallbacks" type="button" onclick="filterStatus('callbacks')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center text-[8.5px] sm:text-[9px]" title="Scheduled Callbacks">CB</button>
+            <button id="statusTabStarred" type="button" onclick="filterStatus('starred')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition flex items-center justify-center text-[8.5px] sm:text-[9px]" title="Bookmarked / Saved for Later">
+              <svg class="w-2.5 h-2.5 inline-block pointer-events-none" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l7.1-1.01L12 2z"/>
+              </svg>
+            </button>
+            <button id="statusTabInterested" type="button" onclick="filterStatus('interested')" class="status-tab flex-1 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center text-[8.5px] sm:text-[9px]" title="Interested & Booked Leads">WINS</button>
           </div>
           <button 
             id="btnExportQueueCsv" 
@@ -1386,7 +1400,7 @@
             onclick="exportActiveQueueCsv()" 
             title="Export current territory and filtered queue to CSV spreadsheet"
             style="display:none;"
-            class="py-1 px-2 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] font-arcade text-[9px] font-bold flex items-center justify-center gap-1 transition shrink-0 whitespace-nowrap">
+            class="w-[84px] px-2 py-1 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-[8.5px] sm:text-[9px] font-bold flex items-center justify-center gap-1 transition shrink-0 whitespace-nowrap h-[25px]">
             <span>[CSV]</span>
           </button>
         </div>
