@@ -645,6 +645,7 @@ function getCallbackAging(prospect) {
 
 function renderQueue() {
   const listEl = document.getElementById('queueList');
+  if (!listEl) return;
   listEl.innerHTML = '';
   let filtered = getGlobalProspects().filter(p => (activeCityFilter === 'All' || p.city === activeCityFilter) && matchStatus(p) && matchSearch(p));
 
@@ -856,7 +857,8 @@ function renderActiveProspect() {
   const p = getGlobalProspects().find(item => item.id === selectedProspectId);
   if (!p) return;
 
-  document.getElementById('activeName').innerText = p.name;
+  const activeNameEl = document.getElementById('activeName');
+  if (activeNameEl) activeNameEl.innerText = p.name;
 
   // Dynamically update review rating badge (e.g. ★ 4.8)
   const ratingEl = document.getElementById('activeRating');

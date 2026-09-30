@@ -3,8 +3,17 @@
 
   let isAuthenticatingGoogle = false;
 
+  function isApoorvOwnerEmail(email) {
+    if (typeof root.isApoorvOwnerEmail === 'function') return root.isApoorvOwnerEmail(email);
+    if (typeof global !== 'undefined' && typeof global.isApoorvOwnerEmail === 'function') return global.isApoorvOwnerEmail(email);
+    if (!email || typeof email !== 'string') return false;
+    const n = email.toLowerCase().trim().replace(/\./g, '');
+    return n === 'apoorvxs@gmailcom';
+  }
+
   function initGuestMode() {
     root.currentUser = null;
+    if (typeof root.setCurrentUser === 'function') root.setCurrentUser(null);
     const overlay = document.getElementById('authGateOverlay');
     if (overlay) overlay.classList.add('hidden');
 
@@ -50,7 +59,7 @@
       return;
     }
     const email = (user.email || '').toLowerCase().trim();
-    const isOwner = root.isApoorvOwnerEmail(email);
+    const isOwner = isApoorvOwnerEmail(email);
     const customWorkers = getCustomWorkers();
     const isAuthorizedCaller = Object.values(customWorkers).some(w => (w.email || '').toLowerCase() === email);
 
@@ -68,6 +77,7 @@
         role: 'owner',
         sub: user.uid || Date.now().toString()
       };
+      if (typeof root.setCurrentUser === 'function') root.setCurrentUser(root.currentUser);
       localStorage.setItem('sprintdial_user', JSON.stringify(root.currentUser));
       localStorage.setItem('sprintdial_google_user', JSON.stringify(root.currentUser));
       if (typeof root.onAuthVerified === 'function') root.onAuthVerified();
@@ -728,9 +738,10 @@
             return;
           }
         }
-        const isOwnerEmail = (typeof root.isApoorvOwnerEmail === 'function') ? root.isApoorvOwnerEmail : () => false;
-        if (parsed && parsed.email && isOwnerEmail(parsed.email)) {
+        const isOwner = isApoorvOwnerEmail(parsed.email);
+        if (parsed && parsed.email && isOwner) {
           root.currentUser = parsed;
+          if (typeof root.setCurrentUser === 'function') root.setCurrentUser(parsed);
           if (typeof root.onAuthVerified === 'function') root.onAuthVerified();
           return;
         }

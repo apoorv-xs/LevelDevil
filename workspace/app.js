@@ -45,6 +45,17 @@ let PROSPECTS = (typeof window !== 'undefined' && Array.isArray(window.PROSPECTS
       ? window.DEFAULT_PROSPECTS 
       : (typeof DEFAULT_PROSPECTS !== 'undefined' ? DEFAULT_PROSPECTS : (typeof global !== 'undefined' && global.DEFAULT_PROSPECTS ? global.DEFAULT_PROSPECTS : []))));
 
+if (typeof window !== 'undefined') window.PROSPECTS = PROSPECTS;
+if (typeof global !== 'undefined') global.PROSPECTS = PROSPECTS;
+
+function startTour(step = 0) {
+  if (typeof openWorkspaceTour === 'function') return openWorkspaceTour(step);
+  if (typeof window !== 'undefined' && typeof window.openWorkspaceTour === 'function') return window.openWorkspaceTour(step);
+  if (typeof global !== 'undefined' && typeof global.openWorkspaceTour === 'function') return global.openWorkspaceTour(step);
+}
+if (typeof window !== 'undefined') window.startTour = startTour;
+if (typeof global !== 'undefined') global.startTour = startTour;
+
 function escapeHTML(str) {
   if (str === null || str === undefined) return '';
   return String(str).replace(/[&<>"']/g, m => ({
@@ -63,6 +74,8 @@ function isApoorvOwnerEmail(email) {
   return normalized === 'apoorvxs@gmail.com' ||
          withoutDots === 'apoorvxs@gmailcom';
 }
+if (typeof window !== 'undefined') window.isApoorvOwnerEmail = isApoorvOwnerEmail;
+if (typeof global !== 'undefined') global.isApoorvOwnerEmail = isApoorvOwnerEmail;
 
 const OBJECTIONS = (typeof window !== 'undefined' && window.OBJECTIONS) ||
   (typeof global !== 'undefined' && global.OBJECTIONS) || [];
@@ -73,7 +86,18 @@ const LAYMAN_ANALOGIES = (typeof window !== 'undefined' && window.LAYMAN_ANALOGI
 let activeAnalogyKey = "lcp";
 
 // Active State
-let currentUser = null;
+let currentUser = (typeof window !== 'undefined' && window.currentUser) ||
+  (typeof global !== 'undefined' && global.currentUser) ||
+  null;
+
+function setCurrentUser(u) {
+  currentUser = u;
+  if (typeof window !== 'undefined') window.currentUser = u;
+  if (typeof global !== 'undefined') global.currentUser = u;
+}
+if (typeof window !== 'undefined') window.setCurrentUser = setCurrentUser;
+if (typeof global !== 'undefined') global.setCurrentUser = setCurrentUser;
+
 let activeCityFilter = "All";
 let searchQuery = "";
 let selectedProspectId = "p-1";
@@ -483,9 +507,10 @@ function triggerDirectGoogleAuth() {
 }
 
 function isOwnerUser(user) {
-  if (!user) return false;
-  const email = (user.email || '').toLowerCase().trim();
-  const role = (user.role || '').toLowerCase().trim();
+  const target = user || currentUser || (typeof window !== 'undefined' && window.currentUser) || (typeof global !== 'undefined' && global.currentUser);
+  if (!target) return false;
+  const email = (target.email || '').toLowerCase().trim();
+  const role = (target.role || '').toLowerCase().trim();
   return isApoorvOwnerEmail(email) || (role === 'owner' && isApoorvOwnerEmail(email));
 }
 if (typeof window !== 'undefined') window.isOwnerUser = isOwnerUser;
@@ -519,6 +544,24 @@ async function ensureProspectsLoaded() {
 }
 
 function onAuthVerified() {
+  if (!currentUser) {
+    currentUser = (typeof window !== 'undefined' && window.currentUser) ||
+      (typeof global !== 'undefined' && global.currentUser) ||
+      null;
+  }
+  if (!currentUser) {
+    try {
+      const saved = localStorage.getItem('sprintdial_user') || localStorage.getItem('sprintdial_google_user');
+      if (saved) currentUser = JSON.parse(saved);
+    } catch(e) {}
+  }
+  if (!currentUser) {
+    console.warn('[AUTH] onAuthVerified called without valid currentUser');
+    return;
+  }
+  if (typeof window !== 'undefined') window.currentUser = currentUser;
+  if (typeof global !== 'undefined') global.currentUser = currentUser;
+
   const overlay = document.getElementById('authGateOverlay');
   if (overlay) overlay.classList.add('hidden');
 
@@ -590,11 +633,13 @@ function onAuthVerified() {
   if (applicant) applicant.classList.add('hidden');
 
   ensureProspectsLoaded();
-  showNotification(`Welcome, ${currentUser.name}! Workstation active on Apoorv's behalf.`);
+  showNotification(`Welcome, ${displayName}! Workstation active on Apoorv's behalf.`);
   updateProfileDropdownUI();
   if (typeof updateInstallAppVisibility === 'function') updateInstallAppVisibility();
   maybeShowOnboardingDisclaimer();
 }
+if (typeof window !== 'undefined') window.onAuthVerified = onAuthVerified;
+if (typeof global !== 'undefined') global.onAuthVerified = onAuthVerified;
 
 
 
