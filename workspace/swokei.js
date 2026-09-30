@@ -3,7 +3,7 @@
 // Subsystem: High-Deliverability Cold Outreach & Deliverability
 // =============================================================
 
-(function () {
+(function(root) {
   let activeOutreachTouch = 1;
   let activeOutreachSequence = null;
 
