@@ -612,13 +612,54 @@
     .retro-workspace .text-neutral-200,
     .retro-workspace .text-neutral-300,
     .retro-workspace .text-neutral-400,
-    .retro-workspace .text-slate-200 {
+    .retro-workspace .text-slate-200,
+    .retro-workspace .text-slate-300,
+    .retro-workspace .text-slate-400,
+    .retro-workspace .text-blue-300,
+    .retro-workspace .text-blue-400,
+    .retro-workspace .text-emerald-300,
+    .retro-workspace .text-emerald-400,
+    .retro-workspace .text-purple-400 {
       color: var(--ink) !important;
     }
     .retro-workspace .text-neutral-500,
     .retro-workspace .text-neutral-600,
-    .retro-workspace .text-neutral-700 {
-      color: rgba(23, 18, 15, 0.6) !important;
+    .retro-workspace .text-neutral-700,
+    .retro-workspace [class*="text-blue-300/"],
+    .retro-workspace [class*="text-white/"] {
+      color: rgba(23, 18, 15, 0.75) !important;
+    }
+
+    /* High-Contrast Badges & Cards inside Admin Console & Modals */
+    .retro-workspace #adminModal .bg-\[\#101114\],
+    .retro-workspace #adminModal .bg-\[\#15161B\] {
+      background: var(--cream) !important;
+      border: 2px solid var(--ink) !important;
+      box-shadow: 3px 3px 0 var(--ink) !important;
+      border-radius: 0 !important;
+    }
+    .retro-workspace #adminModal [class*="bg-blue-950"],
+    .retro-workspace #adminModal [class*="bg-emerald-950"],
+    .retro-workspace #adminModal [class*="bg-white/5"],
+    .retro-workspace #adminModal [class*="bg-white/10"] {
+      background: #fce566 !important;
+      color: #17120f !important;
+      border: 1px solid #17120f !important;
+      font-weight: bold !important;
+    }
+    .retro-workspace #adminModal input[type="text"],
+    .retro-workspace #adminModal input[type="password"],
+    .retro-workspace #adminModal textarea,
+    .retro-workspace #adminModal select {
+      background: #fffdf1 !important;
+      color: #17120f !important;
+      border: 2px solid #17120f !important;
+      box-shadow: 2px 2px 0 #17120f !important;
+      border-radius: 0 !important;
+    }
+    .retro-workspace #adminModal input::placeholder,
+    .retro-workspace #adminModal textarea::placeholder {
+      color: rgba(23, 18, 15, 0.45) !important;
     }
     .retro-workspace .border-white\/\[0\.08\],
     .retro-workspace .border-white\/\[0\.06\],

@@ -389,8 +389,14 @@
     if (!prospectsList || !prospectsList.length) return;
     isBootstrappingFirestore = true;
     try {
-      const db = await auth.getFirestore();
-      const existing = await db.collection('prospects').limit(1).get();
+      const db = await Promise.race([
+        auth.getFirestore(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Firestore init timeout')), 4000))
+      ]);
+      const existing = await Promise.race([
+        db.collection('prospects').limit(1).get(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Firestore query timeout')), 4000))
+      ]);
       if (!existing.empty) {
         initFirestoreRealtimeListener(db);
         if (typeof document !== 'undefined') {
@@ -408,7 +414,10 @@
         const ref = db.collection('prospects').doc(p.id);
         batch.set(ref, p, { merge: true });
       });
-      await batch.commit();
+      await Promise.race([
+        batch.commit(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Firestore batch commit timeout')), 5000))
+      ]);
       initFirestoreRealtimeListener(db);
       if (typeof document !== 'undefined') {
         const badge = document.getElementById('firestoreSyncStatusBadge');
@@ -452,13 +461,19 @@
     }
 
     try {
-      const db = await auth.getFirestore();
+      const db = await Promise.race([
+        auth.getFirestore(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Firestore initialization timed out (6s). Check project configuration.')), 6000))
+      ]);
       const batch = db.batch();
       prospects.forEach(p => {
         const ref = db.collection('prospects').doc(p.id);
         batch.set(ref, p, { merge: true });
       });
-      await batch.commit();
+      await Promise.race([
+        batch.commit(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Firestore write timed out (8s). Make sure Cloud Firestore database is created in the Firebase console and security rules allow write access.')), 8000))
+      ]);
       showNotificationHelper(`[SUCCESS] Successfully uploaded ${prospects.length} accounts to Cloud Firestore!`);
       if (btn) {
         btn.disabled = false;
@@ -474,10 +489,10 @@
       }
       initFirestoreRealtimeListener(db);
     } catch (err) {
-      if (typeof alert === 'function') alert(`Firestore upload error: ${err.message}`);
+      if (typeof alert === 'function') alert(`Firestore Sync Notice: ${err.message}\n\nNote: Your leads remain 100% safe locally and sync via Firebase Realtime Database.`);
       if (btn) {
         btn.disabled = false;
-        btn.innerHTML = `<span>[PUSH] Push Prospects to Firestore</span>`;
+        btn.innerHTML = `<span>[SYNC] Force Re-Sync to Firestore</span>`;
       }
     }
   }
