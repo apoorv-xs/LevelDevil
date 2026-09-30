@@ -488,6 +488,8 @@ function isOwnerUser(user) {
   const role = (user.role || '').toLowerCase().trim();
   return isApoorvOwnerEmail(email) || (role === 'owner' && isApoorvOwnerEmail(email));
 }
+if (typeof window !== 'undefined') window.isOwnerUser = isOwnerUser;
+if (typeof global !== 'undefined') global.isOwnerUser = isOwnerUser;
 
 let prospectsLoadPromise = null;
 let unsubscribeFirestore = null;
@@ -2443,6 +2445,7 @@ registerGlobalExports({
   closeOutreachDripModal, switchOutreachDripTouch, copyOutreachSubject, copyOutreachBody,
   launchGmailComposeUI, sendOutreachWhatsAppUI, verifyActiveLeadDeliverabilityUI,
   auditDomainDeliverabilityFromAdmin, getOutreachSequenceForLead,
+  openAdminModal, closeAdminModal, switchAdminTab, renderAdminCallLogs, saveDialsToday,
   setCurrentUser: (u) => { currentUser = u; if (typeof window !== 'undefined') window.currentUser = u; if (typeof global !== 'undefined') global.currentUser = u; },
   getCurrentUser: () => currentUser,
   setSelectedProspectId: (id) => { selectedProspectId = id; if (typeof window !== 'undefined') window.selectedProspectId = id; if (typeof global !== 'undefined') global.selectedProspectId = id; },

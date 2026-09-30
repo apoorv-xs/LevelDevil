@@ -113,34 +113,57 @@
     return {};
   }
 
+  function getDialsTodayHelper() {
+    if (typeof root.dialsToday !== 'undefined') return Number(root.dialsToday) || 0;
+    if (typeof global !== 'undefined' && typeof global.dialsToday !== 'undefined') return Number(global.dialsToday) || 0;
+    try {
+      return parseInt(localStorage.getItem('sprintdial_dials_today') || '0', 10) || 0;
+    } catch(e) {
+      return 0;
+    }
+  }
+
+  function setDialsTodayHelper(val) {
+    if (typeof root.dialsToday !== 'undefined') root.dialsToday = val;
+    if (typeof global !== 'undefined') global.dialsToday = val;
+    try {
+      const todayKey = `sprintdial_dials_${new Date().toISOString().slice(0, 10)}`;
+      localStorage.setItem(todayKey, String(val));
+      localStorage.setItem('sprintdial_dials_today', String(val));
+    } catch(e) {}
+  }
+
+  function initEmailWarmupUIHelper() {
+    if (typeof root.initEmailWarmupUI === 'function') return root.initEmailWarmupUI();
+    if (typeof global !== 'undefined' && typeof global.initEmailWarmupUI === 'function') return global.initEmailWarmupUI();
+  }
+
 function saveDialsToday() {
-  try {
-    const todayKey = `sprintdial_dials_${new Date().toISOString().slice(0, 10)}`;
-    localStorage.setItem(todayKey, dialsToday.toString());
-    localStorage.setItem('sprintdial_dials_today', dialsToday.toString());
-  } catch(e) {}
+  setDialsTodayHelper(getDialsTodayHelper());
 }
 
 function openAdminModal() {
-  playSound('click');
+  playSFX('click');
   const modal = document.getElementById('adminModal');
   if (!modal) return;
-  initGoogleSheetsUI();
+  initGoogleSheetsUIHelper();
 
   // Enforce executive access check
-  if (!isOwnerUser(currentUser)) {
-    showNotification('Access denied. Admin Console is restricted exclusively to Apoorv (Owner).', 'error');
+  const user = getCurrentUser();
+  if (!isOwnerUserHelper(user)) {
+    notify('Access denied. Admin Console is restricted exclusively to Apoorv (Owner).', 'error');
     return;
   }
 
   // Compute live metrics
-  const totalLeads = PROSPECTS.length;
-  const bookedLeads = PROSPECTS.filter(p => p.status === 'discovery_booked');
+  const prospects = getGlobalProspects();
+  const totalLeads = prospects.length;
+  const bookedLeads = prospects.filter(p => p.status === 'discovery_booked');
   const bookedCount = bookedLeads.length;
-  const callbackCount = PROSPECTS.filter(p => p.status === 'connected_callback').length;
-  const dncCount = PROSPECTS.filter(p => p.status === 'blacklisted').length;
+  const callbackCount = prospects.filter(p => p.status === 'connected_callback').length;
+  const dncCount = prospects.filter(p => p.status === 'blacklisted').length;
   
-  const pipelineVal = PROSPECTS.reduce((acc, p) => {
+  const pipelineVal = prospects.reduce((acc, p) => {
     const n = parseInt(String(p.fee || '50000').replace(/[^0-9]/g, ''), 10) || 50000;
     return acc + n;
   }, 0);
@@ -149,13 +172,20 @@ function openAdminModal() {
     return acc + n;
   }, 0);
 
-  document.getElementById('adminTotalLeads').innerText = totalLeads;
-  document.getElementById('adminPipelineVal').innerText = `₹${pipelineVal.toLocaleString('en-IN')} Pipeline`;
-  document.getElementById('adminDialsToday').innerText = dialsToday;
-  document.getElementById('adminBookedCount').innerText = bookedCount;
-  document.getElementById('adminBookedVal').innerText = `₹${bookedVal.toLocaleString('en-IN')} Booked Value`;
-  document.getElementById('adminCallbackCount').innerText = callbackCount;
-  document.getElementById('adminDncCount').innerText = `${dncCount} DNC Blacklisted`;
+  const elTotal = document.getElementById('adminTotalLeads');
+  if (elTotal) elTotal.innerText = totalLeads;
+  const elPipe = document.getElementById('adminPipelineVal');
+  if (elPipe) elPipe.innerText = `₹${pipelineVal.toLocaleString('en-IN')} Pipeline`;
+  const elDials = document.getElementById('adminDialsToday');
+  if (elDials) elDials.innerText = getDialsTodayHelper();
+  const elBooked = document.getElementById('adminBookedCount');
+  if (elBooked) elBooked.innerText = bookedCount;
+  const elBookedVal = document.getElementById('adminBookedVal');
+  if (elBookedVal) elBookedVal.innerText = `₹${bookedVal.toLocaleString('en-IN')} Booked Value`;
+  const elCb = document.getElementById('adminCallbackCount');
+  if (elCb) elCb.innerText = callbackCount;
+  const elDnc = document.getElementById('adminDncCount');
+  if (elDnc) elDnc.innerText = `${dncCount} DNC Blacklisted`;
 
   // Populate Call Logs & Lead Explorer Table
   renderAdminCallLogs();
@@ -167,7 +197,7 @@ function renderAdminCallLogs() {
   const tbody = document.getElementById('adminCallLogsBody');
   if (!tbody) return;
   tbody.innerHTML = '';
-  const displayLeads = PROSPECTS && PROSPECTS.length > 0 ? PROSPECTS : [];
+  const displayLeads = getGlobalProspects();
 
   displayLeads.forEach(p => {
     const tr = document.createElement('tr');
@@ -179,7 +209,7 @@ function renderAdminCallLogs() {
     else if (p.status === 'blacklisted') statusBadge = "bg-rose-950/60 text-rose-300 border border-rose-700";
     else if (p.status === 'gatekeeper_rejection') statusBadge = "bg-amber-950/60 text-amber-300 border border-amber-700";
 
-    const isCustom = (p.id && String(p.id).startsWith('custom-')) || (window.CUSTOM_PROSPECTS && window.CUSTOM_PROSPECTS.some(cp => cp.id === p.id));
+    const isCustom = (p.id && String(p.id).startsWith('custom-')) || (typeof window !== 'undefined' && window.CUSTOM_PROSPECTS && window.CUSTOM_PROSPECTS.some(cp => cp.id === p.id));
     const sourceBadge = isCustom
       ? '<span class="px-1.5 py-0.5 rounded bg-purple-950/60 text-purple-300 border border-purple-800 text-[9px] font-bold whitespace-nowrap">▲ Custom Ingest</span>'
       : '<span class="px-1.5 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-800 text-[9px] font-bold whitespace-nowrap">● Core Dataset</span>';
@@ -227,19 +257,19 @@ function renderAdminCallLogs() {
 }
 
 function closeAdminModal() {
-  playSound('click');
-  stopBrainTelemetryPolling();
+  playSFX('click');
+  stopBrainTelemetryPollingHelper();
   const modal = document.getElementById('adminModal');
   if (modal) modal.classList.add('hidden');
 }
 
 function selectProspectFromAdmin(id) {
   closeAdminModal();
-  selectProspect(id);
+  selectProspectHelper(id);
 }
 
 function switchAdminTab(tab) {
-  playSound('click');
+  playSFX('click');
   const tabLogs = document.getElementById('adminTabLogs');
   const tabIngest = document.getElementById('adminTabIngest');
   const tabGemini = document.getElementById('adminTabGemini');
@@ -279,40 +309,41 @@ function switchAdminTab(tab) {
   if (tab === 'gemini') {
     if (tabGemini) tabGemini.classList.remove('hidden');
     if (btnGemini) btnGemini.className = activeBtnClass;
-    initGeminiSettingsUI();
+    initGeminiSettingsUIHelper();
   } else if (tab === 'ingest') {
     if (tabIngest) tabIngest.classList.remove('hidden');
     if (btnIngest) btnIngest.className = activeBtnClass;
   } else if (tab === 'sync') {
     if (tabSync) tabSync.classList.remove('hidden');
     if (btnSync) btnSync.className = activeBtnClass;
-    initFirebaseSync();
+    initFirebaseSyncHelper();
   } else if (tab === 'users') {
     if (tabUsers) tabUsers.classList.remove('hidden');
     if (btnUsers) btnUsers.className = activeBtnClass;
-    renderAdminUsersList();
+    renderAdminUsersListHelper();
   } else if (tab === 'brain') {
     if (tabBrain) tabBrain.classList.remove('hidden');
     if (btnBrain) btnBrain.className = activeBtnClass;
-    renderBrainStudio();
+    renderBrainStudioHelper();
   } else if (tab === 'warmup') {
     if (tabWarmup) tabWarmup.classList.remove('hidden');
     if (btnWarmup) btnWarmup.className = activeBtnClass;
+    initEmailWarmupUIHelper();
   } else {
     if (tabLogs) tabLogs.classList.remove('hidden');
     if (btnLogs) btnLogs.className = activeBtnClass;
-    if (typeof renderAdminAuditTable === 'function') renderAdminAuditTable();
+    if (typeof root.renderAdminAuditTable === 'function') root.renderAdminAuditTable();
+    else if (typeof global !== 'undefined' && typeof global.renderAdminAuditTable === 'function') global.renderAdminAuditTable();
     renderAdminCallLogs();
   }
 }
 
 function exportCallDataToCSV() {
-  playSound('click');
-  if (typeof recordPartnerActivity === 'function') {
-    recordPartnerActivity('CSV_EXPORT', null, { count: (PROSPECTS || []).length, territory: 'Admin All Leads' });
-  }
+  playSFX('click');
+  const allLeads = getGlobalProspects();
+  recordPartnerActivityHelper('CSV_EXPORT', null, { count: allLeads.length, territory: 'Admin All Leads' });
   const headers = ['ID', 'City', 'Name', 'Decision Maker', 'Phone', 'Website', 'Category', 'Project Type', 'Status', 'Call Notes', 'Discovery Meeting Time', 'Fee'];
-  const rows = PROSPECTS.map(p => [
+  const rows = allLeads.map(p => [
     `"${p.id}"`,
     `"${p.city}"`,
     `"${(p.name || '').replace(/"/g, '""')}"`,
@@ -336,7 +367,7 @@ function exportCallDataToCSV() {
   link.click();
   document.body.removeChild(link);
 
-  showNotification('[EXPORT] CSV Report exported successfully!');
+  notify('[EXPORT] CSV Report exported successfully!');
 }
 
 function resetLocalDispositions() {
@@ -345,8 +376,9 @@ function resetLocalDispositions() {
     localStorage.removeItem('sprintdial_dials_today');
     const todayKey = `sprintdial_dials_${new Date().toISOString().slice(0, 10)}`;
     localStorage.removeItem(todayKey);
-    dialsToday = 0;
-    updateDialProgress();
+    setDialsTodayHelper(0);
+    if (typeof root.updateDialProgress === 'function') root.updateDialProgress();
+    else if (typeof global !== 'undefined' && typeof global.updateDialProgress === 'function') global.updateDialProgress();
     location.reload();
   }
 }
@@ -390,11 +422,13 @@ function insertSampleProspectTemplate() {
     "waMessage": "നമസ്കാരം Dr. Varghese Mathew, Aster Medcity Specialty Dental-ന്റെ വെബ്സൈറ്റ് പെർഫോമൻസിനെ കുറിച്ച് അപൂർവിന് വേണ്ടി വിളിച്ചിരുന്നു. മൊബൈൽ സ്പീഡും ഡയറക്ട് ബുക്കിംഗും വർദ്ധിപ്പിക്കാൻ അപൂർവ് തയ്യാറാക്കിയ എക്സിക്യൂട്ടീവ് പെർഫോമൻസ് ഓഡിറ്റ് (സാധാരണ ₹4,999 ചാർജ് ചെയ്യുന്നത്, കോംപ്ലിമെന്ററിയായി) ഷെയർ ചെയ്യാനാണ്. ഈ വ്യാഴാഴ്ച 10 മിനിറ്റ് ഡിസ്കവറി കോളിനായി എപ്പോഴാണ് സമയം ലഭിക്കുക? - അപൂർവിന് വേണ്ടി."
   };
 
-  document.getElementById('agentJsonInput').value = JSON.stringify(sample, null, 2);
+  const agentInput = document.getElementById('agentJsonInput');
+  if (agentInput) agentInput.value = JSON.stringify(sample, null, 2);
 }
 
 function ingestAgentProspects() {
-  const raw = document.getElementById('agentJsonInput').value.trim();
+  const agentInput = document.getElementById('agentJsonInput');
+  const raw = agentInput ? agentInput.value.trim() : '';
   if (!raw) {
     alert('Please enter or paste valid prospect JSON.');
     return;
@@ -406,14 +440,16 @@ function ingestAgentProspects() {
     let addedCount = 0;
 
     items.forEach(item => {
-      const added = window.sprintdial.addProspect(item);
+      const added = (typeof window !== 'undefined' && window.sprintdial?.addProspect)
+        ? window.sprintdial.addProspect(item)
+        : (typeof root.sprintdial?.addProspect ? root.sprintdial.addProspect(item) : null);
       if (added) addedCount++;
     });
 
-    document.getElementById('agentJsonInput').value = '';
+    if (agentInput) agentInput.value = '';
     switchAdminTab('logs');
     openAdminModal();
-    showNotification(`[AI] Successfully ingested ${addedCount} prospect(s) into the queue!`);
+    notify(`[AI] Successfully ingested ${addedCount} prospect(s) into the queue!`);
   } catch (err) {
     alert(`Invalid JSON format: ${err.message}`);
   }
@@ -542,7 +578,8 @@ window.sprintdial = {
         : `Hi ${(data.dm || 'Doctor / Owner').split('(')[0].trim()}, following up on our call on Apoorv's behalf regarding ${(data.name || 'Establishment').split(',')[0].trim()}. Apoorv noted your mobile LCP takes ${data.lcpTime || '4.5s'} on 4G (est. ${advGrading.revenueLeak || '₹1,80,000/mo'} drop-off) and ${wasteIntel.wastedSpend || '₹42,000/yr'} aggregator bleed. Apoorv prepared an executive audit covering DPDP Act compliance (${advGrading.dpdpCompliance?.status || 'Non-Compliant'}) and direct intake portals (${calculatedFee} scope, ₹4,999 audit waived). Would Thursday 4 PM suit you for a brief 10-min walkthrough with Apoorv?`))
     };
 
-    PROSPECTS.unshift(prospect);
+    const allLeads = getGlobalProspects();
+    allLeads.unshift(prospect);
 
     // Save to localStorage
     try {
@@ -551,13 +588,13 @@ window.sprintdial = {
       localStorage.setItem('sprintdial_custom_prospects', JSON.stringify(customList));
     } catch(e) {}
 
-    renderQueue();
-    selectProspect(prospect.id);
+    renderQueueHelper();
+    selectProspectHelper(prospect.id);
     return prospect;
   },
 
   getProspects: function() {
-    return PROSPECTS;
+    return getGlobalProspects();
   },
 
   exportCSV: function() {
@@ -565,13 +602,14 @@ window.sprintdial = {
   },
 
   getStats: function() {
+    const allLeads = getGlobalProspects();
     return {
-      total: PROSPECTS.length,
-      dialsToday: dialsToday,
-      booked: PROSPECTS.filter(p => p.status === 'discovery_booked').length,
-      callbacks: PROSPECTS.filter(p => p.status === 'connected_callback').length,
-      blacklisted: PROSPECTS.filter(p => p.status === 'blacklisted').length,
-      available: PROSPECTS.filter(p => p.status === 'available').length
+      total: allLeads.length,
+      dialsToday: getDialsTodayHelper(),
+      booked: allLeads.filter(p => p.status === 'discovery_booked').length,
+      callbacks: allLeads.filter(p => p.status === 'connected_callback').length,
+      blacklisted: allLeads.filter(p => p.status === 'blacklisted').length,
+      available: allLeads.filter(p => p.status === 'available').length
     };
   }
 };
