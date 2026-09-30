@@ -2954,7 +2954,7 @@ const WORKSPACE_TOUR_STEPS = [
     step: 6,
     total: 8,
     badge: 'STEP 6 OF 8 // REBUTTALS',
-    targetSelector: '#soundboardPanel, #objectionBox, #callNotesInput',
+    targetSelector: '#defenseNotesPanel, #soundboardPanel, #objectionBox, #callNotesInput',
     targetLabel: 'COLUMN 2 LOWER // OBJECTION DEFENSE & SMART NOTES',
     targetSubtext: 'Tactical objection soundboard with 1-tap note logging',
     sectorBadge: '// OBJECTION DEFENSE ARMED',
@@ -3046,11 +3046,11 @@ let tourListenersAttached = false;
 
 function onTourWindowChange() {
   if (currentWorkspaceTourStep >= 0 && currentWorkspaceTourStep < WORKSPACE_TOUR_STEPS.length) {
-    updateTourSpotlight(currentWorkspaceTourStep);
+    updateTourSpotlight(currentWorkspaceTourStep, false);
   }
 }
 
-function updateTourSpotlight(stepIndex) {
+function updateTourSpotlight(stepIndex, shouldScroll = false) {
   const step = WORKSPACE_TOUR_STEPS[stepIndex];
   if (!step) return;
 
@@ -3082,6 +3082,18 @@ function updateTourSpotlight(stepIndex) {
         }
       } catch (e) {}
     }
+  }
+
+  // Smoothly scroll target element into comfortable view if requested (step change / focus click)
+  if (shouldScroll && targetEl && typeof targetEl.scrollIntoView === 'function') {
+    try {
+      targetEl.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+      if (typeof setTimeout === 'function') {
+        setTimeout(() => {
+          updateTourSpotlight(stepIndex, false);
+        }, 380);
+      }
+    } catch (e) {}
   }
 
   const cutout = document.getElementById('tourSpotlightCutout');
@@ -3186,25 +3198,7 @@ function pingTourTarget() {
     try { window.SFX.playLaserConstruct(); } catch(e) {}
   }
 
-  let targetEl = null;
-  if (step.targetSelector && typeof document !== 'undefined' && typeof document.querySelector === 'function') {
-    const selectors = step.targetSelector.split(',').map(s => s.trim());
-    for (const sel of selectors) {
-      try {
-        const found = document.querySelector(sel);
-        if (found && found.offsetParent !== null) {
-          targetEl = found;
-          break;
-        }
-      } catch (e) {}
-    }
-  }
-
-  if (targetEl && typeof targetEl.scrollIntoView === 'function') {
-    targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
-
-  updateTourSpotlight(currentWorkspaceTourStep);
+  updateTourSpotlight(currentWorkspaceTourStep, true);
 
   const border = document.getElementById('tourTargetLaserBorder');
   if (border) {
@@ -3243,7 +3237,7 @@ function openWorkspaceTour(stepIndex = 0) {
     try { window.AstromechArchitect.dispose(); } catch(e) {}
   }
   renderWorkspaceTourStep(currentWorkspaceTourStep);
-  updateTourSpotlight(currentWorkspaceTourStep);
+  updateTourSpotlight(currentWorkspaceTourStep, true);
 
   // Attach dynamic repositioning listeners
   if (!tourListenersAttached && typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
@@ -3293,7 +3287,7 @@ function nextWorkspaceTourStep() {
   if (currentWorkspaceTourStep < WORKSPACE_TOUR_STEPS.length - 1) {
     currentWorkspaceTourStep++;
     renderWorkspaceTourStep(currentWorkspaceTourStep);
-    updateTourSpotlight(currentWorkspaceTourStep);
+    updateTourSpotlight(currentWorkspaceTourStep, true);
     if (typeof window.SFX !== 'undefined' && typeof window.SFX.playJump === 'function') {
       try { window.SFX.playJump(); } catch(e) {}
     }
@@ -3323,7 +3317,7 @@ function prevWorkspaceTourStep() {
   if (currentWorkspaceTourStep > 0) {
     currentWorkspaceTourStep--;
     renderWorkspaceTourStep(currentWorkspaceTourStep);
-    updateTourSpotlight(currentWorkspaceTourStep);
+    updateTourSpotlight(currentWorkspaceTourStep, true);
     if (typeof window.SFX !== 'undefined' && typeof window.SFX.playJump === 'function') {
       try { window.SFX.playJump(); } catch(e) {}
     }
