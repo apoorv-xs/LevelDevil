@@ -227,7 +227,7 @@ let recordedAudioBlob = null;
 // Audio Routing (Delegated to global zero-payload DroidSynthEngine window.SFX)
 function playSound(type) {
   if (typeof window !== 'undefined' && window.SFX) {
-    if (window.SFX.isMuted()) return;
+    if (typeof window.SFX.isMuted === 'function' && window.SFX.isMuted()) return;
     if (type === 'click') { window.SFX.playClick(); return; }
     if (type === 'chime' || type === 'celebrate') { window.SFX.playCelebrate(); return; }
     if (type === 'lock' || type === 'alert') { window.SFX.playAlert(); return; }
@@ -2822,18 +2822,20 @@ const WORKSPACE_TOUR_STEPS = [
     title: '1. Territory Queue & Zombie Radar',
     summary: 'The workstation prioritizes 65 curated enterprise prospects. Overdue callbacks and cold leads automatically float to the top so you never lose high-intent deals.',
     visual: `┌── TERRITORY QUEUE ──────────────────────────────┐
-│ [ALL (65)]  [CALLBACKS (4)]  [ZOMBIE] [OVERDUE] │
+│ [ALL] [CB] [ZOMBIE] [OVERDUE] [★ SAVED] [WINS]  │
 │ ● READY TO DIAL     │ Paragon Luxury Grand Resort  │
 └─────────────────────────────────────────────────┘`,
     laptop: [
       "• <strong>Left Column:</strong> Browse all 65 enterprise leads with active status filters.",
-      "• <strong>Filter by Callbacks:</strong> Instantly isolates scheduled callbacks, overdue touches, and zombie leads.",
+      "• <strong>Filter by Shortlist & Callbacks:</strong> Click <span class='font-bold text-neutral-900'>[★]</span> for saved leads, or <span class='font-bold text-neutral-900'>[CB]</span> for scheduled callbacks & overdue touches.",
+      "• <strong>Save for Later:</strong> Press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>B</kbd> anytime to bookmark a prospect into your private shortlist.",
       "• <strong>Instant Search:</strong> Press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>/</kbd> or <kbd class='px-1 bg-[#17120f] text-[#fce566]'>Ctrl+K</kbd> to search by name, city, specialty, or phone.",
       "• <strong>Rapid Navigation:</strong> Press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>J</kbd> (Next Lead) and <kbd class='px-1 bg-[#17120f] text-[#fce566]'>K</kbd> (Prev Lead)."
     ],
     mobile: [
       "• <strong>Bottom Tab:</strong> Tap <span class='font-bold text-neutral-900'>[QUEUE]</span> to browse leads on mobile.",
       "• <strong>Urgency Sorting:</strong> Pulsating [ZOMBIE >48H] (>48h) and [OVERDUE] (24-48h) badges float to the top.",
+      "• <strong>Shortlist Filter:</strong> Tap <span class='font-bold text-neutral-900'>[★]</span> to focus exclusively on your saved leads.",
       "• <strong>Single Tap:</strong> Tap any prospect card to load their full dossier into active cockpit memory."
     ],
     proTip: "Always clear Zombie (>48h) and Overdue (24-48h) callbacks first at the start of your shift to rescue slipping revenue!"
@@ -2856,6 +2858,7 @@ const WORKSPACE_TOUR_STEPS = [
 └─────────────────────────────────────────────────┘`,
     laptop: [
       "• <strong>Center Dossier:</strong> Inspect company name, geographic tier, verified DM contact, and website status.",
+      "• <strong>Save for Later:</strong> Click <span class='font-bold text-neutral-900'>[SAVE (B)]</span> or press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>B</kbd> to bookmark priority prospects into your Starred queue.",
       "• <strong>Phone Shield:</strong> Phone numbers start safely masked (`+91 94470 •••••`). Click <span class='font-bold text-neutral-900'>[Reveal]</span> to toggle digits under an hourly security velocity limit.",
       "• <strong>Layman Analogies:</strong> Click <span class='font-bold text-neutral-900'>[INTEL] LAYMAN ANALOGIES</span> for instant client-friendly metaphors that simplify WebGPU/60 FPS value.",
       "• <strong>Revenue Leak Hook:</strong> Quote their exact monthly aggregator bleed to anchor our ₹50k–₹2L package as self-funding."
@@ -3010,7 +3013,7 @@ const WORKSPACE_TOUR_STEPS = [
     step: 8,
     total: 8,
     badge: 'STEP 8 OF 8 // CLOSING & WALLET',
-    targetSelector: '#outcomeOptionsContainer, #topbarWalletPill, header.topbar',
+    targetSelector: '#partnerWalletModalBox, #partnerWalletModal, #topbarWalletPill, header.topbar',
     targetLabel: 'CLOSING // TWO-TRACK TERMINAL & COMMISSION WALLET',
     targetSubtext: '15% direct close UPI terminal, 10% founder handoff & instant payout request',
     sectorBadge: '// CLOSING TERMINAL ENGAGED',
@@ -3025,7 +3028,7 @@ const WORKSPACE_TOUR_STEPS = [
       "• <strong>Track 1 (Direct Close — 15% Cut):</strong> When DM agrees, click <span class='font-bold text-neutral-900'>[ ◈ CLOSE (15%) ]</span>. Select Tier (₹50k/₹100k/₹200k), show live 50% UPI deposit QR, and click 'Mark 50% Deposit Received'.",
       "• <strong>Track 2 (Founder Walkthrough — 10% Cut):</strong> For complex enterprise deals, click <span class='font-bold text-neutral-900'>[ ◈ FORWARD (10%) ]</span> to book a 15-min Google Meet with Apoorv with zero context loss.",
       "• <strong>Instant Commission:</strong> Track 1 pays ₹7,500 on ₹50k directly; Track 2 pays ₹5,000 on discovery handoff!",
-      "• <strong>Live Wallet Pill:</strong> Click <span class='font-bold text-neutral-900'>[ ₹X EARNED ]</span> in topbar to inspect Cleared, Pending, and Settled balances.",
+      "• <strong>Partner Wallet Terminal:</strong> Inspect your live Cleared, Pending, and Settled balances in real-time.",
       "• <strong>Instant UPI Payouts:</strong> Enter your UPI VPA and hit <span class='font-bold text-neutral-900'>[ REQUEST UPI PAYOUT ]</span> to send automated WhatsApp settlement to Apoorv.",
       "• <strong>Closer Hotkeys:</strong> <kbd class='px-1 bg-[#17120f] text-[#fce566]'>1</kbd> (Booked), <kbd class='px-1 bg-[#17120f] text-[#fce566]'>2</kbd> (Callback), <kbd class='px-1 bg-[#17120f] text-[#fce566]'>3</kbd> (Disqual), <kbd class='px-1 bg-[#17120f] text-[#fce566]'>Space</kbd> (Save/Next)."
     ],
@@ -3172,8 +3175,15 @@ function updateTourSpotlight(stepIndex, shouldScroll = false) {
       tourCard.style.width = '350px';
       tourCard.style.marginTop = 'auto';
       tourCard.style.marginBottom = 'auto';
+    } else if (stepIndex === 7) {
+      // Step 8: Centered Partner Wallet Modal. Dock tourCard on Left over Column 1 centered vertically!
+      tourCard.style.marginLeft = '0.5rem';
+      tourCard.style.marginRight = 'auto';
+      tourCard.style.width = '320px';
+      tourCard.style.marginTop = 'auto';
+      tourCard.style.marginBottom = 'auto';
     } else {
-      // Targets in Column 3 or Topbar (Cheat Sheet, Jargon Decoder, Closing & Wallet)
+      // Targets in Column 3 (Cheat Sheet, Jargon Decoder)
       // Docks on Left (over Column 1)
       tourCard.style.marginLeft = '0.5rem';
       tourCard.style.marginRight = 'auto';
@@ -3268,6 +3278,15 @@ function closeWorkspaceTour(markCompleted = true) {
   }
   if (markCompleted) {
     localStorage.setItem('sprintdial_tour_completed', 'true');
+  }
+
+  // Cleanup any contextual tour states
+  if (typeof closePartnerWalletModal === 'function') {
+    closePartnerWalletModal(false);
+  }
+  const card = document.getElementById('callWrapCard');
+  if (card && !activeCallProspectId) {
+    card.classList.remove('hud-manually-expanded');
   }
 
   // Detach listeners and reset spotlight
@@ -3385,6 +3404,41 @@ function updateTourInstructionsUI() {
 function renderWorkspaceTourStep(stepIndex) {
   const step = WORKSPACE_TOUR_STEPS[stepIndex];
   if (!step) return;
+
+  // Contextual UI state for interactive tour steps
+  const card = document.getElementById('callWrapCard');
+  if (stepIndex === 6) {
+    // Step 7: Flight HUD & Mandatory Dispositions
+    // Expand the flight HUD so Reach Status and Outcome options are fully visible
+    if (card) {
+      card.classList.add('hud-manually-expanded');
+    }
+    if (typeof updateReachUI === 'function' && typeof updateOutcomeOptionsUI === 'function') {
+      if (!currentCallReach) {
+        currentCallReach = 'dm_connected';
+      }
+      updateReachUI();
+      updateOutcomeOptionsUI();
+    }
+  } else {
+    // Collapse HUD if not in a live call
+    if (card && !activeCallProspectId) {
+      card.classList.remove('hud-manually-expanded');
+    }
+  }
+
+  if (stepIndex === 7) {
+    // Step 8: Two-Track Closing & Partner Wallet
+    // Automatically open the Partner Wallet modal to display the live ledger & UPI settlement field
+    if (typeof openPartnerWalletModal === 'function') {
+      openPartnerWalletModal(false);
+    }
+  } else {
+    // Close wallet modal when on any other step
+    if (typeof closePartnerWalletModal === 'function') {
+      closePartnerWalletModal(false);
+    }
+  }
 
   const badgeEl = document.getElementById('tourStepBadge');
   if (badgeEl) badgeEl.textContent = step.badge;
@@ -8427,8 +8481,8 @@ function sendCallbackNudgeWhatsApp(prospectId) {
   }
 }
 
-function openPartnerWalletModal() {
-  playSound('click');
+function openPartnerWalletModal(playSoundEffect = true) {
+  if (playSoundEffect) playSound('click');
   const modal = document.getElementById('partnerWalletModal');
   if (modal) {
     modal.classList.remove('hidden');
@@ -8436,8 +8490,8 @@ function openPartnerWalletModal() {
   }
 }
 
-function closePartnerWalletModal() {
-  playSound('click');
+function closePartnerWalletModal(playSoundEffect = true) {
+  if (playSoundEffect) playSound('click');
   const modal = document.getElementById('partnerWalletModal');
   if (modal) modal.classList.add('hidden');
 }
