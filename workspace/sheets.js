@@ -69,8 +69,19 @@
       let addedCount = 0;
       let updatedCount = 0;
       data.prospects.forEach(sheetP => {
-        const idx = list.findIndex(p => p.id === sheetP.id);
+        const idx = list.findIndex(p => p.id === sheetP.id || (p.site && sheetP.site && p.site === sheetP.site) || (p.phone && sheetP.phone && p.phone === sheetP.phone));
         if (idx !== -1) {
+          const localP = list[idx];
+          // Preserve ongoing caller lock and halt state to avoid overwriting human tele-dials
+          if (localP.lockedBy) {
+            sheetP.lockedBy = localP.lockedBy;
+            sheetP.lockedEmail = localP.lockedEmail;
+            sheetP.status = 'locked';
+          }
+          if (localP.aiHalted) {
+            sheetP.aiHalted = true;
+            sheetP.aiHaltedReason = localP.aiHaltedReason;
+          }
           Object.assign(list[idx], sheetP);
           updatedCount++;
         } else {

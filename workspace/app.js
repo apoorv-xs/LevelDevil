@@ -2474,6 +2474,52 @@ function initForensicWatermark() {
 if (typeof window !== 'undefined') window.initForensicWatermark = initForensicWatermark;
 if (typeof global !== 'undefined') global.initForensicWatermark = initForensicWatermark;
 
+function canSparkDispatchToLead(id) {
+  if (typeof window !== 'undefined' && window.WorkspaceRealtimeSyncEngine?.canSparkDispatchToLead) {
+    return window.WorkspaceRealtimeSyncEngine.canSparkDispatchToLead(id);
+  }
+  if (typeof global !== 'undefined' && global.WorkspaceRealtimeSyncEngine?.canSparkDispatchToLead) {
+    return global.WorkspaceRealtimeSyncEngine.canSparkDispatchToLead(id);
+  }
+  return { allowed: true, reason: 'FALLBACK_ALLOWED' };
+}
+
+function haltSparkOutreachForLead(id, reason) {
+  if (typeof window !== 'undefined' && window.WorkspaceRealtimeSyncEngine?.haltSparkOutreachForLead) {
+    return window.WorkspaceRealtimeSyncEngine.haltSparkOutreachForLead(id, reason);
+  }
+  if (typeof global !== 'undefined' && global.WorkspaceRealtimeSyncEngine?.haltSparkOutreachForLead) {
+    return global.WorkspaceRealtimeSyncEngine.haltSparkOutreachForLead(id, reason);
+  }
+}
+
+function resumeSparkOutreachForLead(id) {
+  if (typeof window !== 'undefined' && window.WorkspaceRealtimeSyncEngine?.resumeSparkOutreachForLead) {
+    return window.WorkspaceRealtimeSyncEngine.resumeSparkOutreachForLead(id);
+  }
+  if (typeof global !== 'undefined' && global.WorkspaceRealtimeSyncEngine?.resumeSparkOutreachForLead) {
+    return global.WorkspaceRealtimeSyncEngine.resumeSparkOutreachForLead(id);
+  }
+}
+
+function recordSparkOutreachEvent(id, stage, metadata) {
+  if (typeof window !== 'undefined' && window.WorkspaceRealtimeSyncEngine?.recordSparkOutreachEvent) {
+    return window.WorkspaceRealtimeSyncEngine.recordSparkOutreachEvent(id, stage, metadata);
+  }
+  if (typeof global !== 'undefined' && global.WorkspaceRealtimeSyncEngine?.recordSparkOutreachEvent) {
+    return global.WorkspaceRealtimeSyncEngine.recordSparkOutreachEvent(id, stage, metadata);
+  }
+}
+
+function toggleSparkHaltActiveLeadUI() {
+  if (typeof window !== 'undefined' && window.WorkspaceQueueEngine?.toggleSparkHaltActiveLeadUI) {
+    return window.WorkspaceQueueEngine.toggleSparkHaltActiveLeadUI();
+  }
+  if (typeof global !== 'undefined' && global.WorkspaceQueueEngine?.toggleSparkHaltActiveLeadUI) {
+    return global.WorkspaceQueueEngine.toggleSparkHaltActiveLeadUI();
+  }
+}
+
 registerGlobalExports({
   initForensicWatermark, maskPhoneNumber, isProspectPhoneUnmasked, checkUnmaskVelocity,
   recordUnmaskVelocity, unmaskProspectPhone, toggleUnmaskActiveProspectPhone, handleCallAction,
@@ -2494,6 +2540,8 @@ registerGlobalExports({
   launchGmailComposeUI, sendOutreachWhatsAppUI, verifyActiveLeadDeliverabilityUI,
   auditDomainDeliverabilityFromAdmin, getOutreachSequenceForLead,
   copySparkPlaybook, syncFromGeminiSparkSheetUI, openSparkGoogleSheetTab,
+  canSparkDispatchToLead, haltSparkOutreachForLead, resumeSparkOutreachForLead,
+  recordSparkOutreachEvent, toggleSparkHaltActiveLeadUI,
   openAdminModal, closeAdminModal, switchAdminTab, renderAdminCallLogs, saveDialsToday,
   setCurrentUser: (u) => { currentUser = u; if (typeof window !== 'undefined') window.currentUser = u; if (typeof global !== 'undefined') global.currentUser = u; },
   getCurrentUser: () => currentUser,

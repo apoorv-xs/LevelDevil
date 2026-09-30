@@ -1473,14 +1473,15 @@
         <div class="flex items-center gap-1.5">
           <div class="flex-1 flex bg-[#fffdf1] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade overflow-hidden">
             <button id="statusTabAll" type="button" onclick="filterStatus('all')" class="status-tab active flex-1 py-1 font-bold text-[#17120f] bg-[#fce566] transition text-center text-[8px] sm:text-[8.5px]" title="All Leads">ALL</button>
-            <button id="statusTabFresh" type="button" onclick="filterStatus('fresh')" class="status-tab flex-[1.35] py-1 px-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center text-[8px] sm:text-[8.5px]" title="Fresh / Untouched Leads">FRESH</button>
-            <button id="statusTabCallbacks" type="button" onclick="filterStatus('callbacks')" class="status-tab flex-[0.85] py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center text-[8px] sm:text-[8.5px]" title="Scheduled Callbacks">CB</button>
-            <button id="statusTabStarred" type="button" onclick="filterStatus('starred')" class="status-tab w-7 shrink-0 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition flex items-center justify-center text-[8px] sm:text-[8.5px]" title="Bookmarked / Saved for Later">
+            <button id="statusTabFresh" type="button" onclick="filterStatus('fresh')" class="status-tab flex-[1.1] py-1 px-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center text-[8px] sm:text-[8.5px]" title="Fresh / Untouched Leads">FRESH</button>
+            <button id="statusTabSpark" type="button" onclick="filterStatus('spark')" class="status-tab flex-[1.1] py-1 px-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center text-[8px] sm:text-[8.5px]" title="Gemini Spark AI Active Outreach">SPARK</button>
+            <button id="statusTabCallbacks" type="button" onclick="filterStatus('callbacks')" class="status-tab flex-[0.8] py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center text-[8px] sm:text-[8.5px]" title="Scheduled Callbacks">CB</button>
+            <button id="statusTabStarred" type="button" onclick="filterStatus('starred')" class="status-tab w-6 shrink-0 py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition flex items-center justify-center text-[8px] sm:text-[8.5px]" title="Bookmarked / Saved for Later">
               <svg class="w-2.5 h-2.5 inline-block pointer-events-none" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l7.1-1.01L12 2z"/>
               </svg>
             </button>
-            <button id="statusTabInterested" type="button" onclick="filterStatus('interested')" class="status-tab flex-[1.05] py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center text-[8px] sm:text-[8.5px]" title="Interested & Booked Leads">WINS</button>
+            <button id="statusTabInterested" type="button" onclick="filterStatus('interested')" class="status-tab flex-[0.9] py-1 font-medium text-[#17120f] hover:bg-[#fff1bd] transition text-center text-[8px] sm:text-[8.5px]" title="Interested & Booked Leads">WINS</button>
           </div>
           <button 
             id="btnExportQueueCsv" 
@@ -1571,6 +1572,17 @@
               <span id="activeRating" class="hidden">★ --</span>
               <span id="activeType" class="text-[10px] font-arcade px-2 py-1 bg-[#fffdf1] text-[#17120f] border-2 border-[#17120f] shadow-[1px_1px_0_#17120f] whitespace-nowrap">UPGRADE</span>
             </div>
+          </div>
+
+          <!-- Anti-Clash & Gemini Spark Real-Time Concurrency Banner -->
+          <div id="sparkAntiClashBanner" class="hidden p-2 border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] mb-2 font-mono text-xs flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+              <span id="sparkBannerBadge" class="px-1.5 py-0.5 text-[9px] font-bold uppercase border shrink-0"></span>
+              <span id="sparkBannerText" class="text-xs truncate"></span>
+            </div>
+            <button id="btnHaltSparkOutreach" type="button" onclick="toggleSparkHaltActiveLeadUI()" class="px-2 py-0.5 text-[9px] font-bold border border-[#17120f] bg-[#fffdf1] hover:bg-[#ffe040] shadow-[1px_1px_0_#17120f] cursor-pointer shrink-0">
+              Pause AI
+            </button>
           </div>
 
           <!-- Middle Row: Lead Title & Full Details -->

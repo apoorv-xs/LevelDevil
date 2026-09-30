@@ -495,6 +495,9 @@ function matchStatus(p) {
   if (activeStatusFilter === 'fresh') {
     return !p.status || p.status === 'ready' || p.status === 'available' || p.status === 'new';
   }
+  if (activeStatusFilter === 'spark') {
+    return Boolean(p.sparkActive || (p.outreachStage && p.outreachStage !== 'UNTOUCHED'));
+  }
   if (activeStatusFilter === 'callbacks') {
     return p.status === 'gatekeeper_rejection' || p.status === 'connected_callback' || p.status === 'callback';
   }
@@ -517,6 +520,7 @@ function filterStatus(status) {
   const map = {
     all: 'statusTabAll',
     fresh: 'statusTabFresh',
+    spark: 'statusTabSpark',
     callbacks: 'statusTabCallbacks',
     starred: 'statusTabStarred',
     interested: 'statusTabInterested'
@@ -644,6 +648,7 @@ function getCallbackAging(prospect) {
 }
 
 function renderQueue() {
+  if (typeof document === 'undefined') return;
   const listEl = document.getElementById('queueList');
   if (!listEl) return;
   listEl.innerHTML = '';
@@ -723,6 +728,24 @@ function renderQueue() {
     } else if (isBooked) {
       badgeClass = "bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold";
       badgeText = "Retained";
+    } else if (p.aiHalted) {
+      badgeClass = "bg-slate-900 text-slate-300 border border-slate-700 font-mono";
+      badgeText = "AI Halted";
+    } else if (p.outreachStage === 'TOUCH_1_SENT') {
+      badgeClass = "bg-purple-950/70 text-purple-300 border border-purple-600/70 font-bold";
+      badgeText = "Spark T1";
+    } else if (p.outreachStage === 'TOUCH_2_SENT') {
+      badgeClass = "bg-indigo-950/70 text-indigo-300 border border-indigo-600/70 font-bold";
+      badgeText = "Spark T2";
+    } else if (p.outreachStage === 'TOUCH_3_SENT') {
+      badgeClass = "bg-cyan-950/70 text-cyan-300 border border-cyan-600/70 font-bold";
+      badgeText = "Spark T3";
+    } else if (p.outreachStage === 'TOUCH_4_SENT') {
+      badgeClass = "bg-pink-950/70 text-pink-300 border border-pink-600/70 font-bold";
+      badgeText = "Spark T4";
+    } else if (p.outreachStage === 'REPLIED') {
+      badgeClass = "bg-emerald-900 text-emerald-200 border border-emerald-500 font-bold animate-pulse";
+      badgeText = "Spark Replied";
     } else if (p.status === 'gatekeeper_rejection' || p.status === 'connected_callback' || p.status === 'callback') {
       const aging = getCallbackAging(p);
       badgeClass = aging.badgeClass;
@@ -858,6 +881,7 @@ if (typeof window !== 'undefined') window.generateWhatsAppBrief = generateWhatsA
 if (typeof global !== 'undefined') global.generateWhatsAppBrief = generateWhatsAppBrief;
 
 function renderActiveProspect() {
+  if (typeof document === 'undefined') return;
   const p = getGlobalProspects().find(item => item.id === selectedProspectId);
   if (!p) return;
 
@@ -1051,6 +1075,54 @@ function renderActiveProspect() {
         mobileCallBtn.onclick = handleCallAction;
       }
       mobileCallBtn.classList.remove('opacity-40', 'opacity-30', 'pointer-events-none');
+    }
+  }
+
+  // Anti-Clash & Gemini Spark Real-Time Concurrency HUD Banner
+  const sparkBanner = document.getElementById('sparkAntiClashBanner');
+  const sparkBadge = document.getElementById('sparkBannerBadge');
+  const sparkText = document.getElementById('sparkBannerText');
+  const btnHaltSpark = document.getElementById('btnHaltSparkOutreach');
+
+  if (sparkBanner) {
+    if (p.status === 'blacklisted') {
+      sparkBanner.classList.remove('hidden');
+      sparkBanner.className = 'p-2 border-2 border-rose-800 bg-rose-950/40 text-rose-200 mb-2 font-mono text-xs flex items-center justify-between gap-2';
+      if (sparkBadge) { sparkBadge.className = 'px-1.5 py-0.5 text-[9px] font-bold uppercase bg-rose-900 border border-rose-700 text-rose-200'; sparkBadge.innerText = 'DNC EXCLUDED'; }
+      if (sparkText) sparkText.innerText = 'Account is blacklisted. AI and phone outreach permanently blocked.';
+      if (btnHaltSpark) btnHaltSpark.classList.add('hidden');
+    } else if (p.status === 'closed_won' || p.status === 'discovery_booked') {
+      sparkBanner.classList.remove('hidden');
+      sparkBanner.className = 'p-2 border-2 border-emerald-800 bg-emerald-950/40 text-emerald-200 mb-2 font-mono text-xs flex items-center justify-between gap-2';
+      if (sparkBadge) { sparkBadge.className = 'px-1.5 py-0.5 text-[9px] font-bold uppercase bg-emerald-900 border border-emerald-700 text-emerald-200'; sparkBadge.innerText = p.status === 'closed_won' ? 'DEAL WON' : 'MEETING BOOKED'; }
+      if (sparkText) sparkText.innerText = 'Deal converted! Automated cold email sequence permanently halted.';
+      if (btnHaltSpark) btnHaltSpark.classList.add('hidden');
+    } else if (p.lockedBy) {
+      sparkBanner.classList.remove('hidden');
+      sparkBanner.className = 'p-2 border-2 border-rose-700 bg-rose-950/30 text-rose-200 mb-2 font-mono text-xs flex items-center justify-between gap-2 animate-pulse';
+      if (sparkBadge) { sparkBadge.className = 'px-1.5 py-0.5 text-[9px] font-bold uppercase bg-rose-900 border border-rose-700 text-rose-200'; sparkBadge.innerText = 'CALLER ACTIVE'; }
+      if (sparkText) sparkText.innerText = `Locked by ${p.lockedBy}. Gemini Spark email dispatch is paused to prevent collision.`;
+      if (btnHaltSpark) btnHaltSpark.classList.add('hidden');
+    } else if (p.aiHalted) {
+      sparkBanner.classList.remove('hidden');
+      sparkBanner.className = 'p-2 border-2 border-slate-700 bg-slate-900 text-slate-200 mb-2 font-mono text-xs flex items-center justify-between gap-2';
+      if (sparkBadge) { sparkBadge.className = 'px-1.5 py-0.5 text-[9px] font-bold uppercase bg-slate-800 border border-slate-600 text-slate-300'; sparkBadge.innerText = 'AI HALTED'; }
+      if (sparkText) sparkText.innerText = `Automated outreach paused (${p.aiHaltedReason || 'Manual Pause'}).`;
+      if (btnHaltSpark) {
+        btnHaltSpark.classList.remove('hidden');
+        btnHaltSpark.innerText = 'Resume AI';
+      }
+    } else if (p.sparkActive || (p.outreachStage && p.outreachStage !== 'UNTOUCHED')) {
+      sparkBanner.classList.remove('hidden');
+      sparkBanner.className = 'p-2 border-2 border-purple-800 bg-purple-950/30 text-purple-200 mb-2 font-mono text-xs flex items-center justify-between gap-2';
+      if (sparkBadge) { sparkBadge.className = 'px-1.5 py-0.5 text-[9px] font-bold uppercase bg-purple-900 border border-purple-700 text-purple-200'; sparkBadge.innerText = p.outreachStage || 'SPARK ACTIVE'; }
+      if (sparkText) sparkText.innerText = `Gemini Spark outreach sequence active. Mention interactive 3D audit link during phone call!`;
+      if (btnHaltSpark) {
+        btnHaltSpark.classList.remove('hidden');
+        btnHaltSpark.innerText = 'Pause AI';
+      }
+    } else {
+      sparkBanner.classList.add('hidden');
     }
   }
 
@@ -1353,6 +1425,36 @@ function updateMoatSolutions(p, isNoSite) {
     }
   }
 
+  function toggleSparkHaltActiveLeadUI() {
+    const list = getGlobalProspects();
+    const curId = getSelectedId();
+    const p = list.find(item => item.id === curId);
+    if (!p) return;
+    if (p.aiHalted) {
+      if (typeof root.resumeSparkOutreachForLead === 'function') root.resumeSparkOutreachForLead(p.id);
+      else if (typeof window !== 'undefined' && window.resumeSparkOutreachForLead) window.resumeSparkOutreachForLead(p.id);
+      else if (typeof global !== 'undefined' && global.resumeSparkOutreachForLead) global.resumeSparkOutreachForLead(p.id);
+      else {
+        p.aiHalted = false;
+        p.aiHaltedReason = null;
+        renderQueue();
+        renderActiveProspect();
+      }
+      notify(`[SPARK] Resumed automated outreach for ${p.name}`);
+    } else {
+      if (typeof root.haltSparkOutreachForLead === 'function') root.haltSparkOutreachForLead(p.id, 'MANUAL_OPERATOR_PAUSE');
+      else if (typeof window !== 'undefined' && window.haltSparkOutreachForLead) window.haltSparkOutreachForLead(p.id, 'MANUAL_OPERATOR_PAUSE');
+      else if (typeof global !== 'undefined' && global.haltSparkOutreachForLead) global.haltSparkOutreachForLead(p.id, 'MANUAL_OPERATOR_PAUSE');
+      else {
+        p.aiHalted = true;
+        p.aiHaltedReason = 'MANUAL_OPERATOR_PAUSE';
+        renderQueue();
+        renderActiveProspect();
+      }
+      notify(`[SPARK] Paused automated outreach for ${p.name}`);
+    }
+  }
+
   const WorkspaceQueueEngine = {
     filterStatus,
     matchStatus,
@@ -1371,7 +1473,8 @@ function updateMoatSolutions(p, isNoSite) {
     deriveAdvancedGrading,
     showMobilePane,
     ensureDesktopPanesVisible,
-    switchCockpitSubTab
+    switchCockpitSubTab,
+    toggleSparkHaltActiveLeadUI
   };
 
   root.WorkspaceQueueEngine = WorkspaceQueueEngine;
@@ -1393,6 +1496,14 @@ function updateMoatSolutions(p, isNoSite) {
   root.showMobilePane = showMobilePane;
   root.ensureDesktopPanesVisible = ensureDesktopPanesVisible;
   root.switchCockpitSubTab = switchCockpitSubTab;
+  root.toggleSparkHaltActiveLeadUI = toggleSparkHaltActiveLeadUI;
+
+  if (typeof window !== 'undefined') {
+    window.toggleSparkHaltActiveLeadUI = toggleSparkHaltActiveLeadUI;
+  }
+  if (typeof global !== 'undefined') {
+    global.toggleSparkHaltActiveLeadUI = toggleSparkHaltActiveLeadUI;
+  }
 
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = WorkspaceQueueEngine;

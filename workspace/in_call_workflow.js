@@ -108,6 +108,12 @@
     if (typeof global !== 'undefined' && typeof global.broadcastDNC === 'function') return global.broadcastDNC(id);
   }
 
+  function haltSparkOutreachHelper(id, reason) {
+    if (typeof root.haltSparkOutreachForLead === 'function') return root.haltSparkOutreachForLead(id, reason);
+    if (typeof global !== 'undefined' && typeof global.haltSparkOutreachForLead === 'function') return global.haltSparkOutreachForLead(id, reason);
+    if (typeof window !== 'undefined' && typeof window.haltSparkOutreachForLead === 'function') return window.haltSparkOutreachForLead(id, reason);
+  }
+
   function renderActiveProspectHelper() {
     if (typeof root.renderActiveProspect === 'function') return root.renderActiveProspect();
     if (typeof global !== 'undefined' && typeof global.renderActiveProspect === 'function') return global.renderActiveProspect();
@@ -1163,6 +1169,10 @@ function logOutcome(status) {
 
   saveLeadOverrideHelper(p.id, { status });
 
+  if (status === 'discovery_booked' || status === 'closed_won') {
+    haltSparkOutreachHelper(p.id, 'HUMAN_CALLER_' + status.toUpperCase());
+  }
+
   if (status === 'discovery_booked') {
     playSound('chime');
     if (typeof window !== "undefined" && typeof window.triggerHaptic === "function") {
@@ -1198,6 +1208,7 @@ function markDNC() {
     p.status = 'blacklisted';
     saveLeadOverrideHelper(p.id, { status: 'blacklisted' });
     broadcastDNCHelper(p.id);
+    haltSparkOutreachHelper(p.id, 'DNC_BLACKLIST');
     renderQueueHelper();
     renderActiveProspectHelper();
     updateProfileDropdownUIHelper();
@@ -1351,6 +1362,7 @@ async function toggleVoiceRecording() {
         p.status = 'closed_won';
         broadcastUnlockHelper(p.id, 'closed_won');
         saveLeadOverrideHelper(p.id, { status: 'closed_won', notes, closedTier: p.closedTier || 1, depositPaid: p.depositPaid || 25000 });
+        haltSparkOutreachHelper(p.id, 'HUMAN_CALLER_CLOSED_WON');
         playSFX('chime');
         if (typeof root.SFX !== 'undefined' && typeof root.SFX.playCelebrate === 'function') {
           try { root.SFX.playCelebrate(); } catch(e) {}
@@ -1363,6 +1375,7 @@ async function toggleVoiceRecording() {
         p.status = 'discovery_booked';
         broadcastUnlockHelper(p.id, 'discovery_booked');
         saveLeadOverrideHelper(p.id, { status: 'discovery_booked', notes, discoveryTime });
+        haltSparkOutreachHelper(p.id, 'HUMAN_CALLER_DISCOVERY_BOOKED');
         playSFX('chime');
         if (typeof root.Player3D !== 'undefined' && typeof root.Player3D.celebrateVictory === "function") {
           root.Player3D.celebrateVictory();

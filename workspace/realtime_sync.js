@@ -181,6 +181,32 @@
       if (fnAudit) {
         fnAudit(data.entry);
       }
+    } else if (data.type === 'SPARK_OUTREACH_UPDATE') {
+      const p = prospects.find(item => item.id === data.prospectId);
+      if (p) {
+        p.sparkActive = true;
+        p.outreachStage = data.stage;
+        p.lastTouchSentAt = data.timestamp;
+        if (data.metadata?.touchNumber) p.lastTouchNumber = data.metadata.touchNumber;
+        triggerRenderQueue();
+        if (selectedId === p.id) triggerRenderActiveProspect();
+      }
+    } else if (data.type === 'SPARK_HALT') {
+      const p = prospects.find(item => item.id === data.prospectId);
+      if (p) {
+        p.aiHalted = true;
+        p.aiHaltedReason = data.reason;
+        triggerRenderQueue();
+        if (selectedId === p.id) triggerRenderActiveProspect();
+      }
+    } else if (data.type === 'SPARK_RESUME') {
+      const p = prospects.find(item => item.id === data.prospectId);
+      if (p) {
+        p.aiHalted = false;
+        p.aiHaltedReason = null;
+        triggerRenderQueue();
+        if (selectedId === p.id) triggerRenderActiveProspect();
+      }
     }
   }
 
@@ -361,6 +387,89 @@
     dispatchCloudEvent(event);
   }
 
+  // Gemini Spark Anti-Clash & Concurrency Engine
+  function canSparkDispatchToLead(prospectId) {
+    const prospects = getGlobalProspects();
+    const p = prospects.find(item => item.id === prospectId);
+    if (!p) return { allowed: false, reason: 'PROSPECT_NOT_FOUND' };
+    if (p.lockedBy) return { allowed: false, reason: `LOCKED_BY_CALLER: ${p.lockedBy}` };
+    if (p.status === 'blacklisted') return { allowed: false, reason: 'DNC_BLACKLISTED' };
+    if (p.status === 'closed_won') return { allowed: false, reason: 'CLOSED_WON' };
+    if (p.status === 'discovery_booked') return { allowed: false, reason: 'DISCOVERY_BOOKED' };
+    if (p.aiHalted) return { allowed: false, reason: p.aiHaltedReason || 'AI_HALTED_BY_OPERATOR' };
+    return { allowed: true, reason: 'READY_FOR_DISPATCH' };
+  }
+
+  function haltSparkOutreachForLead(prospectId, reason) {
+    const prospects = getGlobalProspects();
+    const p = prospects.find(item => item.id === prospectId);
+    if (!p) return;
+    p.aiHalted = true;
+    p.aiHaltedReason = reason || 'HALTED_BY_OPERATOR';
+    const event = {
+      type: 'SPARK_HALT',
+      prospectId,
+      reason: p.aiHaltedReason
+    };
+    const sc = getActiveSyncChannel();
+    if (sc && typeof sc.postMessage === 'function') {
+      sc.postMessage(event);
+    }
+    dispatchCloudEvent(event);
+    triggerRenderQueue();
+    if (getSelectedProspectId() === prospectId) triggerRenderActiveProspect();
+  }
+
+  function resumeSparkOutreachForLead(prospectId) {
+    const prospects = getGlobalProspects();
+    const p = prospects.find(item => item.id === prospectId);
+    if (!p) return;
+    p.aiHalted = false;
+    p.aiHaltedReason = null;
+    const event = {
+      type: 'SPARK_RESUME',
+      prospectId
+    };
+    const sc = getActiveSyncChannel();
+    if (sc && typeof sc.postMessage === 'function') {
+      sc.postMessage(event);
+    }
+    dispatchCloudEvent(event);
+    triggerRenderQueue();
+    if (getSelectedProspectId() === prospectId) triggerRenderActiveProspect();
+  }
+
+  function recordSparkOutreachEvent(prospectId, stage, metadata) {
+    const prospects = getGlobalProspects();
+    const p = prospects.find(item => item.id === prospectId);
+    if (!p) return false;
+    const canDispatch = canSparkDispatchToLead(prospectId);
+    if (!canDispatch.allowed) {
+      showNotification(`[SPARK BLOCKED] ${canDispatch.reason}`);
+      return false;
+    }
+    p.sparkActive = true;
+    p.outreachStage = stage;
+    p.lastTouchSentAt = (metadata && metadata.timestamp) || new Date().toISOString();
+    if (metadata && metadata.touchNumber) p.lastTouchNumber = metadata.touchNumber;
+
+    const event = {
+      type: 'SPARK_OUTREACH_UPDATE',
+      prospectId,
+      stage,
+      timestamp: p.lastTouchSentAt,
+      metadata
+    };
+    const sc = getActiveSyncChannel();
+    if (sc && typeof sc.postMessage === 'function') {
+      sc.postMessage(event);
+    }
+    dispatchCloudEvent(event);
+    triggerRenderQueue();
+    if (getSelectedProspectId() === prospectId) triggerRenderActiveProspect();
+    return true;
+  }
+
   // Business Timing Intelligence (Industry Calibrated)
   function calculateTiming(category) {
     const now = new Date();
@@ -418,7 +527,11 @@
     broadcastUnlock,
     broadcastDNC,
     showNotification,
-    calculateTiming
+    calculateTiming,
+    canSparkDispatchToLead,
+    haltSparkOutreachForLead,
+    resumeSparkOutreachForLead,
+    recordSparkOutreachEvent
   };
 
   root.WorkspaceRealtimeSyncEngine = WorkspaceRealtimeSyncEngine;
@@ -432,6 +545,10 @@
   root.broadcastLock = broadcastLock;
   root.broadcastUnlock = broadcastUnlock;
   root.broadcastDNC = broadcastDNC;
+  root.canSparkDispatchToLead = canSparkDispatchToLead;
+  root.haltSparkOutreachForLead = haltSparkOutreachForLead;
+  root.resumeSparkOutreachForLead = resumeSparkOutreachForLead;
+  root.recordSparkOutreachEvent = recordSparkOutreachEvent;
   if (!root.showNotification || !root.showNotification.mock) {
     root.showNotification = showNotification;
   }
@@ -449,6 +566,10 @@
     window.broadcastLock = broadcastLock;
     window.broadcastUnlock = broadcastUnlock;
     window.broadcastDNC = broadcastDNC;
+    window.canSparkDispatchToLead = canSparkDispatchToLead;
+    window.haltSparkOutreachForLead = haltSparkOutreachForLead;
+    window.resumeSparkOutreachForLead = resumeSparkOutreachForLead;
+    window.recordSparkOutreachEvent = recordSparkOutreachEvent;
     if (!window.showNotification || !window.showNotification.mock) {
       window.showNotification = showNotification;
     }
@@ -467,6 +588,10 @@
     global.broadcastLock = broadcastLock;
     global.broadcastUnlock = broadcastUnlock;
     global.broadcastDNC = broadcastDNC;
+    global.canSparkDispatchToLead = canSparkDispatchToLead;
+    global.haltSparkOutreachForLead = haltSparkOutreachForLead;
+    global.resumeSparkOutreachForLead = resumeSparkOutreachForLead;
+    global.recordSparkOutreachEvent = recordSparkOutreachEvent;
     if (!global.showNotification || !global.showNotification.mock) {
       global.showNotification = showNotification;
     }
