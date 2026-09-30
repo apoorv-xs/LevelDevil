@@ -27,7 +27,9 @@ const ASSETS_TO_CACHE = [
   "/shell.css",
   "/fonts.css",
   "/sfx_synth.js",
-  "/favicon.png"
+  "/favicon.png",
+  "/icon-192.png",
+  "/icon-512.png"
 ];
 
 self.addEventListener("install", (event) => {
