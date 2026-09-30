@@ -3363,9 +3363,8 @@ function updateTourInstructionsUI() {
     labelEl.textContent = isDesk ? 'DESKTOP / LAPTOP CONTROLS' : 'MOBILE TOUCH CONTROLS';
   }
 
-  const items = isDesk ? step.laptop : step.mobile;
   if (activeList) {
-    activeList.innerHTML = items.map(item => `<div>${item}</div>`).join('');
+    activeList.innerHTML = '';
   }
   if (laptopList) {
     laptopList.innerHTML = step.laptop.map(item => `<div>${item}</div>`).join('');
@@ -3373,12 +3372,18 @@ function updateTourInstructionsUI() {
       if (isDesk) laptopList.classList.remove('hidden');
       else laptopList.classList.add('hidden');
     }
+    if (laptopList.style) {
+      laptopList.style.display = isDesk ? '' : 'none';
+    }
   }
   if (mobileList) {
     mobileList.innerHTML = step.mobile.map(item => `<div>${item}</div>`).join('');
     if (mobileList.classList) {
       if (!isDesk) mobileList.classList.remove('hidden');
       else mobileList.classList.add('hidden');
+    }
+    if (mobileList.style) {
+      mobileList.style.display = !isDesk ? '' : 'none';
     }
   }
 }
@@ -3478,7 +3483,11 @@ function signOutGoogle() {
 }
 
 // Minimal Keyboard Helpers (Escape to dismiss, / or Ctrl+K to search, Closer Hotkeys: 1/2/3/Space/J/K/D)
+let _keyboardShortcutsInitialized = false;
 function setupKeyboardShortcuts() {
+  if (_keyboardShortcutsInitialized) return;
+  _keyboardShortcutsInitialized = true;
+
   window.addEventListener('keydown', (e) => {
     if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName) || e.target.isContentEditable) {
       if (e.key === 'Escape') {
@@ -3500,9 +3509,11 @@ function setupKeyboardShortcuts() {
         e.preventDefault();
         closeWorkspaceTour(true);
       } else if (e.key === 'ArrowRight' || e.key === 'Enter') {
+        if (e.repeat) return;
         e.preventDefault();
         nextWorkspaceTourStep();
       } else if (e.key === 'ArrowLeft') {
+        if (e.repeat) return;
         e.preventDefault();
         prevWorkspaceTourStep();
       }
