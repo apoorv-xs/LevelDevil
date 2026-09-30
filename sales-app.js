@@ -836,7 +836,7 @@ function initTrojanPitchFromUrl() {
   if (typeof window === "undefined" || !window.location) return;
   try {
     const params = new URLSearchParams(window.location.search);
-    const prospect = params.get("prospect") || params.get("client") || params.get("target") || params.get("proposal");
+    const prospect = params.get("prospect") || params.get("client") || params.get("target") || params.get("proposal") || params.get("teardown");
     if (!prospect) return;
 
     const dm = params.get("dm") || "";
