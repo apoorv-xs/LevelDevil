@@ -1700,6 +1700,9 @@ function generateProposalForActiveLead() {
 function closeProposalModal() { return _gAiScout()?.closeProposalModal(); }
 function copyProposalText() { return _gAiScout()?.copyProposalText(); }
 function downloadProposalMarkdown() { return _gAiScout()?.downloadProposalMarkdown(); }
+function copySparkPlaybook(type) { return _gAiScout()?.copySparkPlaybook(type); }
+function syncFromGeminiSparkSheetUI() { return _gAiScout()?.syncFromGeminiSparkSheetUI(); }
+function openSparkGoogleSheetTab() { return _gAiScout()?.openSparkGoogleSheetTab(); }
 
 // ==========================================================================
 // ==========================================================================
@@ -2490,6 +2493,7 @@ registerGlobalExports({
   closeOutreachDripModal, switchOutreachDripTouch, copyOutreachSubject, copyOutreachBody,
   launchGmailComposeUI, sendOutreachWhatsAppUI, verifyActiveLeadDeliverabilityUI,
   auditDomainDeliverabilityFromAdmin, getOutreachSequenceForLead,
+  copySparkPlaybook, syncFromGeminiSparkSheetUI, openSparkGoogleSheetTab,
   openAdminModal, closeAdminModal, switchAdminTab, renderAdminCallLogs, saveDialsToday,
   setCurrentUser: (u) => { currentUser = u; if (typeof window !== 'undefined') window.currentUser = u; if (typeof global !== 'undefined') global.currentUser = u; },
   getCurrentUser: () => currentUser,

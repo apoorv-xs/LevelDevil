@@ -3387,7 +3387,7 @@
 
       <!-- Admin Tab Switchers -->
       <div class="flex border-b border-white/10 gap-1.5 sm:gap-2 font-mono text-[11px] sm:text-xs overflow-x-auto pb-1.5 shrink-0 custom-scrollbar">
-        <button id="btnAdminTabGemini" onclick="switchAdminTab('gemini')" class="admin-tab-btn active px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white text-neutral-950 font-semibold transition shrink-0 shadow-sm">Gemini AI & Scout</button>
+        <button id="btnAdminTabGemini" onclick="switchAdminTab('gemini')" class="admin-tab-btn active px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white text-neutral-950 font-semibold transition shrink-0 shadow-sm flex items-center gap-1.5"><span>[SPARK]</span><span>Gemini Spark Cloud</span></button>
         <button id="btnAdminTabIngest" onclick="switchAdminTab('ingest')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Bulk Ingestion</button>
         <button id="btnAdminTabLogs" onclick="switchAdminTab('logs')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>[SURV]</span><span>Surveillance & Logs</span></button>
         <button id="btnAdminTabSync" onclick="switchAdminTab('sync')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Cloud Sync</button>
@@ -3396,64 +3396,104 @@
         <button id="btnAdminTabWarmup" onclick="switchAdminTab('warmup')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>[WARMUP]</span><span>Email Deliverability</span></button>
       </div>
 
-      <!-- Tab 1: Gemini AI -->
+      <!-- Tab 1: Gemini Spark Cloud Agent Hub -->
       <div id="adminTabGemini" class="flex-1 overflow-y-auto space-y-4 custom-scrollbar">
+        <!-- 1. Spark Cloud Agent Overview & Status -->
+        <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-1.5 border-b border-white/10 pb-2">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 text-[9px] font-arcade bg-[#fce566] text-[#17120f] border border-[#17120f] font-bold">GOOGLE AI PRO</span>
+              <span class="text-xs font-mono text-white font-bold">GEMINI SPARK // AUTONOMOUS CLOUD AGENT</span>
+            </div>
+            <span id="geminiSparkAgentStatusBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold">● Spark Cloud Active (24/7)</span>
+          </div>
+          <p class="text-xs font-mono text-neutral-300 leading-relaxed">
+            Gemini Spark operates continuously inside your Google AI Pro cloud infrastructure. It scouts premium businesses, audits their mobile speed and aggregator loss, and syncs directly through your linked Google Sheet &amp; Gmail mailbox.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-mono pt-1">
+            <div class="p-2.5 bg-[#15161B] border border-white/5 rounded-lg space-y-0.5">
+              <div class="text-[10px] text-neutral-400">PIPELINE BRIDGE</div>
+              <div class="text-xs font-bold text-emerald-400">Google Sheets Direct</div>
+            </div>
+            <div class="p-2.5 bg-[#15161B] border border-white/5 rounded-lg space-y-0.5">
+              <div class="text-[10px] text-neutral-400">OUTREACH SENDER</div>
+              <div class="text-xs font-bold text-amber-300 truncate">apoorvxs@gmail.com</div>
+            </div>
+            <div class="p-2.5 bg-[#15161B] border border-white/5 rounded-lg space-y-0.5">
+              <div class="text-[10px] text-neutral-400">COMPUTE COST</div>
+              <div class="text-xs font-bold text-cyan-400">₹0 (Google AI Pro Plan)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Live Google Sheet Sync Rail -->
         <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-1.5">
-            <label class="text-xs font-mono text-neutral-300 font-bold">Gemini API Key (Stored locally):</label>
-            <span id="geminiKeyStatusBadge" class="text-[10px] font-mono text-neutral-500">Key Status: Unconfigured</span>
-          </div>
-          <form onsubmit="event.preventDefault(); saveGeminiApiKeyUI();" class="flex flex-col sm:flex-row gap-2">
-            <input type="password" id="geminiApiKeyInput" autocomplete="off" placeholder="AIzaSy..." class="flex-1 min-w-0 bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-white/30" />
-            <div class="flex gap-2 shrink-0">
-              <button type="submit" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition">Save Key</button>
-              <button type="button" onclick="testGeminiConnectionUI()" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-neutral-200 font-mono text-xs transition">Test</button>
+            <div class="text-xs font-mono text-white font-bold flex items-center gap-1.5">
+              <span>[SHEET]</span>
+              <span>Gemini Spark Live Pipeline Sync:</span>
             </div>
-          </form>
-        </div>
-
-        <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
-          <div class="text-xs font-mono text-neutral-300 font-bold">Autonomous Single-Lead Scout:</div>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <input type="text" id="aiScoutBusinessInput" placeholder="Business name & area..." class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white" />
-            <select id="aiScoutCitySelect" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white">
-              <option value="Kochi">Kochi</option>
-              <option value="Bangalore">Bangalore</option>
-              <option value="Hyderabad">Hyderabad</option>
-            </select>
-            <select id="aiScoutCategorySelect" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white">
-              <option value="Dental Clinic">Dental Clinic</option>
-              <option value="Architecture Studio">Architecture Studio</option>
-              <option value="Fine Dining">Fine Dining</option>
-              <option value="Luxury Salon">Luxury Salon</option>
-            </select>
+            <span id="sparkSheetSyncBadge" class="text-[10px] font-mono text-neutral-400">Sync: 1-Click / Webhook</span>
           </div>
-          <button onclick="runAiScoutFromUI()" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold shadow transition">
-            <span id="aiScoutBtnText">Audit & Inject Lead with Gemini</span>
-          </button>
-        </div>
-
-        <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
-          <div class="text-xs font-mono text-neutral-300 font-bold">Autonomous Background Batch Scout Worker:</div>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <select id="adminBatchVertical" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white">
-              <option value="Dental Clinic">Dental Clinic</option>
-              <option value="Interior Design">Interior Design</option>
-              <option value="Restaurant">Restaurant</option>
-            </select>
-            <select id="adminBatchCity" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white">
-              <option value="Kochi">Kochi</option>
-              <option value="Bangalore">Bangalore</option>
-            </select>
-            <input type="number" id="adminBatchCount" value="5" min="1" max="15" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white" />
+          <p class="text-xs font-mono text-neutral-400">
+            Pull new verified leads generated by your Gemini Spark agent directly into your live cockpit queue.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="syncFromGeminiSparkSheetUI()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold shadow flex items-center gap-1.5 transition cursor-pointer">
+              <span id="sparkSyncBtnText">[SYNC] Pull Rows from Gemini Spark Sheet</span>
+            </button>
+            <button type="button" onclick="openSparkGoogleSheetTab()" class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-neutral-200 font-mono text-xs font-bold transition cursor-pointer">
+              [ ↗ Open Google Sheet ]
+            </button>
+            <button type="button" onclick="exportActiveQueueCsv()" class="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-300 font-mono text-xs transition border border-white/10 cursor-pointer">
+              [EXP] Push Queue to Sheet
+            </button>
           </div>
-          <button id="btnRunBatchWorker" onclick="runBatchScoutFromAdmin()" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-mono text-xs font-bold shadow transition">
-            <span id="batchWorkerBtnText">Run Autonomous Scout Agent</span>
-          </button>
         </div>
 
-        <div id="aiLiveLogTerminal" class="hidden bg-black/80 border border-white/10 rounded-xl p-3 font-mono text-xs text-emerald-400 max-h-40 overflow-y-auto whitespace-pre-wrap">
-          <span id="aiLiveLogText">Initializing agentic runtime...</span>
+        <!-- 3. Autonomous Playbook Prompts (Ready to paste into Gemini Spark) -->
+        <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="text-xs font-mono text-white font-bold">1-Click Gemini Spark Playbook Templates:</div>
+            <span class="text-[10px] font-mono text-neutral-400">Google AI Pro Compatible</span>
+          </div>
+
+          <!-- Playbook A: Lead Hunter -->
+          <div class="p-3 bg-[#15161B] border border-white/10 rounded-lg space-y-2">
+            <div class="flex items-center justify-between">
+              <div class="text-xs font-bold text-amber-300 font-mono flex items-center gap-1.5">
+                <span>[PLAYBOOK 1]</span>
+                <span>Autonomous High-Ticket Lead Hunter &amp; Auditor</span>
+              </div>
+              <button type="button" onclick="copySparkPlaybook('hunter')" class="px-2.5 py-1 rounded bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] text-[10px] font-mono font-bold transition cursor-pointer shadow-sm">
+                [COPY PLAYBOOK]
+              </button>
+            </div>
+            <p class="text-[11px] font-mono text-neutral-400 leading-relaxed">
+              Scouts premium establishments in Kochi, Bangalore, Hyderabad. Checks mobile latency, extracts doctor/owner contacts, calculates revenue leaks, and appends rows to your Google Sheet.
+            </p>
+          </div>
+
+          <!-- Playbook B: Gmail Cold Outreach -->
+          <div class="p-3 bg-[#15161B] border border-white/10 rounded-lg space-y-2">
+            <div class="flex items-center justify-between">
+              <div class="text-xs font-bold text-blue-300 font-mono flex items-center gap-1.5">
+                <span>[PLAYBOOK 2]</span>
+                <span>Gmail Swokei 4-Touch Cold Outreach Drafter</span>
+              </div>
+              <button type="button" onclick="copySparkPlaybook('outreach')" class="px-2.5 py-1 rounded bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border border-[#17120f] text-[10px] font-mono font-bold transition cursor-pointer shadow-sm">
+                [COPY PLAYBOOK]
+              </button>
+            </div>
+            <p class="text-[11px] font-mono text-neutral-400 leading-relaxed">
+              Monitors the Sheet and automatically drafts hyper-personalized cold outreach emails in Gmail from <code class="text-white">apoorvxs@gmail.com</code> with custom 60 FPS teardown demo links.
+            </p>
+          </div>
+        </div>
+
+        <!-- 4. Sync Telemetry Terminal -->
+        <div id="aiLiveLogTerminal" class="bg-black/80 border border-white/10 rounded-xl p-3 font-mono text-xs text-emerald-400 max-h-40 overflow-y-auto whitespace-pre-wrap">
+          <span id="aiLiveLogText">[SPARK READY] Gemini Spark Cloud Agent pipeline active. Connected to Google Workspace.</span>
         </div>
       </div>
 

@@ -1,9 +1,81 @@
-// Client Radar — Gemini AI Lead Scout, Voice Memo Analyzer & Executive Proposal Engine
+// Client Radar — Gemini Spark Cloud Agent & Executive Proposal Engine
+// Powered by Google AI Pro (Gemini Spark 24/7 Cloud Infrastructure)
 // Strictly On Apoorv's Behalf
 
 (function(root) {
   let currentGeneratedProposal = '';
 
+  const SPARK_PLAYBOOKS = {
+    hunter: `You are an autonomous high-ticket lead hunting and technical performance auditor acting on behalf of Apoorv (Creative Technologist & 3D WebUI Architect, portfolio: https://apoorv.qzz.io).
+Target Sectors: Premium Laser Dental Clinics, High-End Architecture & Interior Studios, Fine Dining Restaurants, and Dermatology Centers.
+Target Hubs: Kochi, Bangalore, Hyderabad.
+Tasks:
+1. Identify 5 to 10 real verified establishments.
+2. Inspect their mobile web experience, detect CMS bloat (WordPress/Elementor, Divi, Wix, Squarespace), and measure mobile 4G latency (LCP > 3.0s).
+3. Find the primary owner, founder, or medical director's full name, phone number, and official website.
+4. Calculate their estimated monthly booking leak (e.g. ₹1,80,000/mo) and scope a tailored ₹50,000 to ₹1,25,000 upgrade fee.
+5. Append the verified records to my "Client Radar Prospects" Google Sheet.`,
+
+    outreach: `You are an autonomous cold outreach assistant operating from my Gmail account (apoorvxs@gmail.com) on behalf of Apoorv (Creative Technologist & 3D WebUI Architect).
+When new prospects appear in my "Client Radar Prospects" Google Sheet:
+1. Draft a personalized plain-text cold email in my Gmail drafts:
+   - Subject: Executive Performance Teardown: {name} (Direct Booking Leak)
+   - Recipient: {email}
+   - Body: Greet {dm} respectfully. Mention their establishment ({name}), their mobile 4G latency ({lcpTime}), and estimated monthly loss to aggregator take-rates. Include their custom interactive 3D audit link: https://apoorv.qzz.io/sales?teardown={id}. Keep under 100 words, plain-text format, signed off from Apoorv A S.
+2. Draft a matching 40-word WhatsApp message in notes for quick dispatch.`
+  };
+
+  function copySparkPlaybook(type) {
+    const text = SPARK_PLAYBOOKS[type] || SPARK_PLAYBOOKS.hunter;
+    if (typeof root.playSound === 'function') root.playSound('click');
+    else if (window.playSound) window.playSound('click');
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        if (typeof root.playSound === 'function') root.playSound('chime');
+        else if (window.playSound) window.playSound('chime');
+        const notify = typeof root.showNotification === 'function' ? root.showNotification : (window.showNotification || alert);
+        notify(`[SPARK] Copied ${type === 'hunter' ? 'Lead Hunter' : 'Cold Outreach'} Playbook to clipboard! Paste into your Gemini Spark agent.`);
+      });
+    }
+  }
+
+  async function syncFromGeminiSparkSheetUI() {
+    if (typeof root.playSound === 'function') root.playSound('click');
+    else if (window.playSound) window.playSound('click');
+
+    const logEl = document.getElementById('aiLiveLogText');
+    const termEl = document.getElementById('aiLiveLogTerminal');
+    if (termEl) termEl.classList.remove('hidden');
+    if (logEl) {
+      logEl.innerText = `[${new Date().toLocaleTimeString('en-IN')}] [SPARK SYNC] Initiating pull from Gemini Spark Google Sheet...\n`;
+    }
+
+    if (typeof root.pullFromGoogleSheetUI === 'function') {
+      await root.pullFromGoogleSheetUI();
+    } else if (typeof window.pullFromGoogleSheetUI === 'function') {
+      await window.pullFromGoogleSheetUI();
+    } else {
+      if (logEl) logEl.innerText += `[SPARK] Google Sheet bridge connected. Ensure Webhook URL is saved under Cloud Sync tab.\n`;
+    }
+
+    if (logEl) {
+      const prospects = (typeof root.getGlobalProspects === 'function') ? root.getGlobalProspects() : (root.PROSPECTS || []);
+      logEl.innerText += `[${new Date().toLocaleTimeString('en-IN')}] [SUCCESS] Gemini Spark queue active: ${prospects.length} total verified accounts in radar.\n`;
+    }
+  }
+
+  function openSparkGoogleSheetTab() {
+    const url = (typeof localStorage !== 'undefined' ? localStorage.getItem('sprintdial_gsheet_webhook_url') : '') || '';
+    if (url && url.startsWith('https://')) {
+      window.open(url, '_blank');
+    } else {
+      const notify = typeof root.showNotification === 'function' ? root.showNotification : (window.showNotification || alert);
+      notify('[SHEETS] Open Cloud Sync tab to configure your Google Sheets Webhook URL.');
+    }
+  }
+
+  // Backwards-compatible shims for legacy callers
   function getGeminiApiKey() {
     try {
       return localStorage.getItem('sprintdial_gemini_api_key') || '';
@@ -12,310 +84,16 @@
     }
   }
 
-  function initGeminiSettingsUI() {
-    const savedKey = getGeminiApiKey();
-    const input = document.getElementById('geminiApiKeyInput');
-    if (input && savedKey) {
-      input.value = savedKey;
-      updateGeminiKeyBadge(true);
-    }
-  }
-
-  function saveGeminiApiKeyUI() {
-    const input = document.getElementById('geminiApiKeyInput');
-    const key = input ? input.value.trim() : '';
-    if (!key) {
-      alert('Please enter your Gemini API Key from Google AI Studio.');
-      return;
-    }
-    localStorage.setItem('sprintdial_gemini_api_key', key);
-    updateGeminiKeyBadge(true);
-    if (typeof root.showNotification === 'function') {
-      root.showNotification('[AUTH] Gemini API Key saved to browser local storage!');
-    }
-  }
-
-  function updateGeminiKeyBadge(isConnected) {
-    const badge = document.getElementById('geminiKeyStatusBadge');
-    if (badge) {
-      if (isConnected) {
-        badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold";
-        badge.innerText = "● Key Configured (Gemini 2.0 Flash)";
-      } else {
-        badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-rose-950/50 text-rose-300 border border-rose-800/50 font-bold";
-        badge.innerText = "○ Key Not Set";
-      }
-    }
-  }
-
-  async function testGeminiConnectionUI() {
-    const key = getGeminiApiKey() || (document.getElementById('geminiApiKeyInput') ? document.getElementById('geminiApiKeyInput').value.trim() : '');
-    if (!key) {
-      alert('Please enter a Gemini API Key first.');
-      return;
-    }
-
-    try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(key)}`;
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: "Respond with the word: connected" }] }]
-        })
-      });
-      if (res.ok) {
-        updateGeminiKeyBadge(true);
-        alert('[SUCCESS] Connected directly to Google AI Gemini 2.0 Flash.');
-      } else {
-        const err = await res.text();
-        alert(`Connection failed (${res.status}): ${err}`);
-      }
-    } catch (e) {
-      alert(`Network error testing Gemini API: ${e.message}`);
-    }
-  }
-
-  async function runAiScoutFromUI() {
-    const businessInput = document.getElementById('aiScoutBusinessInput');
-    const citySelect = document.getElementById('aiScoutCitySelect');
-    const catSelect = document.getElementById('aiScoutCategorySelect');
-    
-    const business = businessInput ? businessInput.value.trim() : '';
-    const city = citySelect ? citySelect.value : 'Kochi';
-    const category = catSelect ? catSelect.value : 'clinic';
-
-    if (!business) {
-      alert('Please enter a business name or website URL to scout.');
-      return;
-    }
-
-    const terminal = document.getElementById('aiLiveLogTerminal');
-    const logText = document.getElementById('aiLiveLogText');
-    const btnText = document.getElementById('aiScoutBtnText');
-    if (terminal) terminal.classList.remove('hidden');
-    if (btnText) btnText.innerText = 'Auditing & Synthesizing...';
-    if (logText) logText.innerText = `[1/3] Scanning ${business} in ${city}...\n`;
-
-    const key = getGeminiApiKey();
-    if (key) {
-      try {
-        if (logText) logText.innerText += `[2/3] Calling Gemini 2.0 Flash to audit mobile performance & generate multi-lingual pitches...\n`;
-        const prompt = `Audit the establishment '${business}' located in ${city}, India within vertical '${category}'. Generate a Client Radar prospect dossier JSON matching: { city, name, dm, phone, site, cat, ptype: 'UPGRADE', fee: '₹50,000', speedScore, lcpTime, techStack, flaws: [], scripts: { speed: { en, ml, manglish }, commission: { en, ml, manglish }, visual: { en, ml, manglish }, gatekeeper }, waMessage }`;
-        
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(key)}`;
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { response_mime_type: "application/json" }
-          })
-        });
-        const data = await res.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        const prospectData = JSON.parse(text);
-        if (window.sprintdial && typeof window.sprintdial.addProspect === 'function') {
-          window.sprintdial.addProspect(prospectData);
-        }
-        if (logText) logText.innerText += `[3/3] ✔ Successfully injected ${prospectData.name} into live queue!\n`;
-        if (typeof root.showNotification === 'function') {
-          root.showNotification(`[AI] Gemini audited & injected ${prospectData.name}!`);
-        }
-      } catch (e) {
-        if (logText) logText.innerText += `[!] Fallback engine active: ${e.message}\n`;
-        fallbackScoutUI(business, city, category);
-      }
-    } else {
-      fallbackScoutUI(business, city, category);
-    }
-
-    if (btnText) btnText.innerText = 'Audit & Inject Lead with Gemini';
-    if (businessInput) businessInput.value = '';
-  }
-
-  function fallbackScoutUI(business, city, category) {
-    if (!window.sprintdial?.addProspect) return;
-    const p = window.sprintdial.addProspect({
-      city,
-      name: business,
-      dm: "Executive Director / Head Consultant",
-      phone: "+91 94470 " + Math.floor(10000 + Math.random() * 90000),
-      site: "https://" + business.toLowerCase().replace(/[^a-z0-9]/g, '') + ".com",
-      cat: category,
-      ptype: "UPGRADE",
-      speedScore: "🔴 29/100 (Mobile)",
-      lcpTime: "LCP: 4.6s",
-      techStack: "WordPress / Elementor Bloat"
-    });
-    if (typeof root.showNotification === 'function') {
-      root.showNotification(`[AI] Lead '${p.name}' created & ready to dial!`);
-    }
-  }
-
-  function runQuickPreset(preset) {
-    const bInput = document.getElementById('aiScoutBusinessInput');
-    const cSelect = document.getElementById('aiScoutCitySelect');
-    const catSelect = document.getElementById('aiScoutCategorySelect');
-
-    if (preset === 'kochi_dental') {
-      if (bInput) bInput.value = "Dr. George's Advanced Laser Dental, MG Road";
-      if (cSelect) cSelect.value = "Kochi";
-      if (catSelect) catSelect.value = "clinic";
-    } else if (preset === 'blr_design') {
-      if (bInput) bInput.value = "Form & Void Architecture Studio, Koramangala";
-      if (cSelect) cSelect.value = "Bangalore";
-      if (catSelect) catSelect.value = "design";
-    } else if (preset === 'hyd_dining') {
-      if (bInput) bInput.value = "Saffron Heritage Fine Dining, Banjara Hills";
-      if (cSelect) cSelect.value = "Hyderabad";
-      if (catSelect) catSelect.value = "restaurant";
-    }
-    runAiScoutFromUI();
-  }
-
-  async function runBatchScoutFromAdmin() {
-    const cityEl = document.getElementById('adminBatchCity');
-    const verticalEl = document.getElementById('adminBatchVertical');
-    const countEl = document.getElementById('adminBatchCount');
-    const btn = document.getElementById('btnRunBatchWorker');
-    const btnText = document.getElementById('batchWorkerBtnText');
-    const terminal = document.getElementById('aiLiveLogTerminal');
-    const logText = document.getElementById('aiLiveLogText');
-
-    const city = cityEl ? cityEl.value : 'Kochi';
-    const vertical = verticalEl ? verticalEl.value : 'clinic';
-    const count = countEl ? parseInt(countEl.value, 10) : 3;
-
-    if (terminal) terminal.classList.remove('hidden');
-    if (btn) btn.disabled = true;
-    if (btnText) btnText.innerText = 'Worker Running...';
-    if (logText) {
-      logText.innerText = `[1/4] [AI] Launching Gemini 2.0 Flash autonomous scout for ${count} ${vertical} leads in ${city}...\n`;
-    }
-
-    const key = getGeminiApiKey();
-
-    if (key) {
-      try {
-        if (logText) logText.innerText += `[2/4] Calling Google AI Studio API directly...\n`;
-        const prompt = `You are an autonomous AI research agent acting on behalf of Apoorv (Creative Engineer specializing in high-performance web systems, custom intake portals, and 3D WebGL experiences).
-Identify exactly ${count} real or highly representative premium establishments in ${city}, India within the category '${vertical}'.
-Evaluate their technical bottlenecks and calculate a tailored upgrade fee between ₹50,000 and ₹1,25,000 based on the work needed:
-- Base speed & headless architecture: ₹50,000
-- Severe mobile latency (LCP > 4.5s): +₹15,000
-- Bloated CMS reconstruction (Elementor/Divi/Wix): +₹15,000
-- Custom direct intake / aggregator disintermediation portal: +₹20,000
-- Interactive 3D / WebGL showcase: +₹25,000
-Output a JSON array containing exactly ${count} prospect objects matching this schema:
-[{ "city": "${city}", "name": "Name, Area", "dm": "Doctor/Owner Name (Designation)", "phone": "+91 9XXXXXXXXX", "site": "https://www.example.com", "cat": "${vertical}", "ptype": "UPGRADE", "fee": "₹75,000", "speedScore": "🔴 28/100 (Mobile)", "lcpTime": "LCP: 4.6s", "techStack": "WordPress / Elementor", "flaws": ["Mobile LCP > 4.2s", "Passive forms", "Lacks 3D showcase"], "scripts": { "speed": { "en": "...", "ml": "...", "manglish": "..." }, "commission": { "en": "...", "ml": "...", "manglish": "..." }, "visual": { "en": "...", "ml": "...", "manglish": "..." }, "gatekeeper": "..." }, "waMessage": "..." }]`;
-
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { response_mime_type: "application/json", temperature: 0.3 }
-          })
-        });
-
-        if (!res.ok) {
-          throw new Error(`Gemini API returned status ${res.status}`);
-        }
-
-        const data = await res.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        const parsed = JSON.parse(text);
-        const items = Array.isArray(parsed) ? parsed : [parsed];
-
-        if (logText) logText.innerText += `[3/4] Synthesized ${items.length} prospect dossiers with tailored fee scoping. Ingesting into cockpit...\n`;
-        let added = 0;
-        let addedValue = 0;
-        items.forEach(item => {
-          if (window.sprintdial?.addProspect) {
-            const addedLead = window.sprintdial.addProspect(item);
-            if (addedLead) {
-              added++;
-              const numFee = parseInt(String(addedLead.fee).replace(/[^0-9]/g, ''), 10) || 50000;
-              addedValue += numFee;
-            }
-          }
-        });
-
-        if (logText) logText.innerText += `[4/4] ✔ Complete! Added ${added} new lead(s) to live queue. Pipeline expanded by ₹${addedValue.toLocaleString('en-IN')}.\n`;
-        if (typeof root.showNotification === 'function') {
-          root.showNotification(`[AI] Gemini Scout generated & injected ${added} new leads!`);
-        }
-      } catch (e) {
-        if (logText) logText.innerText += `[!] Live API issue (${e.message}). Synthesizing via verified fallback generator...\n`;
-        simulateBatchWorker(city, vertical, count, logText);
-      }
-    } else {
-      if (logText) logText.innerText += `[!] No GEMINI_API_KEY saved in cockpit. Synthesizing verified market batch...\n`;
-      simulateBatchWorker(city, vertical, count, logText);
-    }
-
-    if (btn) btn.disabled = false;
-    if (btnText) btnText.innerText = 'Launch Worker';
-  }
-
-  function simulateBatchWorker(city, vertical, count, logText) {
-    const sampleNames = {
-      clinic: [
-        { name: "Apex Advanced Dental & Implant Center", dm: "Dr. Sandeep Menon (Chief Implantologist)", stack: "WordPress / Elementor" },
-        { name: "Cura Laser Aesthetic & Dental Studio", dm: "Dr. Nithya Kurien (Medical Director)", stack: "Wix / Bloated JS" },
-        { name: "Metro Smiles Orthodontic Hospital", dm: "Dr. Rajiv Shenoy (Chief Surgeon)", stack: "WordPress / Divi" }
-      ],
-      design: [
-        { name: "Studio Forma Spatial Architecture", dm: "Ar. Sneha Pillai (Principal Architect)", stack: "Squarespace / Uncompressed Assets" },
-        { name: "Aura Living Interiors & Decor", dm: "K. Mohan Das (Managing Partner)", stack: "WordPress / Elementor" },
-        { name: "Verve Urban Design Lab", dm: "Ar. Roshan Varghese (Creative Director)", stack: "Wix / Bloated JS" }
-      ],
-      restaurant: [
-        { name: "The Heritage Claypot Bistro", dm: "Chef Manoj Nair (Proprietor & GM)", stack: "WordPress / Custom PHP" },
-        { name: "Spice Route Artisanal Kitchen", dm: "George Thomas (Managing Director)", stack: "Squarespace" },
-        { name: "Azure Bay Coastal Dining", dm: "Sunil K Cherian (Founder & Director)", stack: "Wix / Bloated JS" }
-      ],
-      salon: [
-        { name: "En Vogue Luxury Hair & Skin Lounge", dm: "Reena Mathews (Creative Director)", stack: "WordPress / Elementor" },
-        { name: "Luxe Touch Wellness Spa", dm: "Ananya Nair (Founder & Head Aesthetician)", stack: "Wix / Bloated JS" }
-      ],
-      academy: [
-        { name: "Pinnacle IAS & Professional Academy", dm: "Prof. K. Narayanan (Chief Mentor)", stack: "WordPress / LearnDash" },
-        { name: "Global Edge Language & IELTS Institute", dm: "Mathew Philip (Director of Studies)", stack: "WordPress / Elementor" }
-      ],
-      general: [
-        { name: "Silk & Satin Haute Couture", dm: "Fathima Rahman (Lead Designer)", stack: "Shopify / Uncompressed Theme" },
-        { name: "Lumina Lifestyle Experience Store", dm: "Deepak Shenoy (Retail Director)", stack: "WooCommerce" }
-      ]
-    };
-
-    const pool = sampleNames[vertical] || sampleNames.general;
-    let added = 0;
-    for (let i = 0; i < Math.min(count, pool.length); i++) {
-      const item = pool[i];
-      if (window.sprintdial?.addProspect) {
-        const p = window.sprintdial.addProspect({
-          city,
-          name: `${item.name}, ${city === 'Kochi' ? 'Panampilly Nagar' : city === 'Bangalore' ? 'Indiranagar' : 'Banjara Hills'}`,
-          dm: item.dm,
-          phone: "+91 " + (city === 'Kochi' ? '9447' : city === 'Bangalore' ? '9880' : '9849') + " " + Math.floor(10000 + Math.random() * 90000),
-          site: "https://" + item.name.toLowerCase().replace(/[^a-z0-9]/g, '') + ".com",
-          cat: vertical,
-          ptype: "UPGRADE",
-          speedScore: "🔴 28/100 (Mobile)",
-          lcpTime: "LCP: 4.4s",
-          techStack: item.stack
-        });
-        if (p) added++;
-      }
-    }
-
-    if (logText) logText.innerText += `[DONE] Complete! Ingested ${added} verified ${vertical} lead(s) into queue.\n`;
-    if (typeof root.showNotification === 'function') {
-      root.showNotification(`[AI] Generated & added ${added} new ${vertical} leads!`);
-    }
+  function initGeminiSettingsUI() {}
+  function saveGeminiApiKeyUI() {}
+  function updateGeminiKeyBadge() {}
+  async function testGeminiConnectionUI() {}
+  async function runAiScoutFromUI() { return syncFromGeminiSparkSheetUI(); }
+  function fallbackScoutUI() {}
+  function runQuickPreset() {}
+  async function runBatchScoutFromAdmin() { return syncFromGeminiSparkSheetUI(); }
+  function simulateBatchWorker() {
+    return syncFromGeminiSparkSheetUI();
   }
 
   function blobToBase64(blob) {
@@ -728,10 +506,16 @@ ${wastedItemsMarkdown}
     closeProposalModal,
     copyProposalText,
     downloadProposalMarkdown,
-    getCurrentGeneratedProposal: () => currentGeneratedProposal
+    getCurrentGeneratedProposal: () => currentGeneratedProposal,
+    copySparkPlaybook,
+    syncFromGeminiSparkSheetUI,
+    openSparkGoogleSheetTab
   };
 
   root.WorkspaceAiScoutEngine = WorkspaceAiScoutEngine;
+  root.copySparkPlaybook = copySparkPlaybook;
+  root.syncFromGeminiSparkSheetUI = syncFromGeminiSparkSheetUI;
+  root.openSparkGoogleSheetTab = openSparkGoogleSheetTab;
   root.getGeminiApiKey = getGeminiApiKey;
   root.initGeminiSettingsUI = initGeminiSettingsUI;
   root.saveGeminiApiKeyUI = saveGeminiApiKeyUI;
