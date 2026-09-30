@@ -2998,7 +2998,7 @@ const WORKSPACE_TOUR_STEPS = [
 │ STEP 2: [WIN: BOOKED] [TEARDOWN] [CALLBACK]     │
 └─────────────────────────────────────────────────┘`,
     laptop: [
-      "• <strong>Start Call:</strong> Click <span class='font-bold text-neutral-900'>[Call Prospect (D)]</span> or press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>D</kbd> to launch live flight HUD & stopwatch.",
+      "• <strong>Start Call:</strong> Click <span class='font-bold text-neutral-900'>[Call Prospect (D)]</span> (<kbd class='px-1 bg-[#17120f] text-[#fce566]'>D</kbd>) or scan via <span class='font-bold text-neutral-900'>[QR Call]</span> (<kbd class='px-1 bg-[#17120f] text-[#fce566]'>Q</kbd>) to dial from your phone without typing digits.",
       "• <strong>Misclick Safe:</strong> Accidental click? Hit <span class='font-bold text-rose-700'>[ ↩ Cancel Dial ]</span> to reset immediately.",
       "• <strong>Step 1 & Step 2 Gate:</strong> Pick Reach Status (DM / Gatekeeper / No Answer), then choose dynamic Outcome.",
       "• <strong>1-Tap Tags:</strong> Click quick tags to append notes without typing. Press <kbd class='px-1 bg-[#17120f] text-[#fce566]'>Space</kbd> to save & advance."
@@ -3569,8 +3569,18 @@ function setupKeyboardShortcuts() {
       return;
     }
 
+    // If QR Dial Modal is open, handle Q or Escape to close
+    const qrModal = document.getElementById('qrDialModal');
+    if (qrModal && !qrModal.classList.contains('hidden') && qrModal.style.display !== 'none') {
+      if (e.key === 'Escape' || e.key.toLowerCase() === 'q') {
+        e.preventDefault();
+        closeQrDialModal();
+        return;
+      }
+    }
+
     // When modal overlay is active, disable single-character workbench hotkeys
-    const hasActiveModal = Boolean(document.querySelector('#authGateOverlay:not(.hidden), #adminModal:not(.hidden), #proposalModal:not(.hidden), #dealCommitmentModal:not(.hidden), #executiveHandoffModal:not(.hidden), #partnerWalletModal:not(.hidden), #clientTeardownModal:not(.hidden), #customLeadModal:not(.hidden), #workspaceTourModal:not(.hidden)'));
+    const hasActiveModal = Boolean(document.querySelector('#authGateOverlay:not(.hidden), #adminModal:not(.hidden), #proposalModal:not(.hidden), #dealCommitmentModal:not(.hidden), #executiveHandoffModal:not(.hidden), #partnerWalletModal:not(.hidden), #qrDialModal:not(.hidden), #clientTeardownModal:not(.hidden), #customLeadModal:not(.hidden), #workspaceTourModal:not(.hidden)'));
     if (hasActiveModal) {
       if (e.key === 'Escape') {
         closeProfileDropdown();
@@ -3580,6 +3590,7 @@ function setupKeyboardShortcuts() {
         if (typeof closeDealCommitmentModal === 'function') closeDealCommitmentModal();
         if (typeof closeExecutiveHandoffModal === 'function') closeExecutiveHandoffModal();
         if (typeof closePartnerWalletModal === 'function') closePartnerWalletModal();
+        if (typeof closeQrDialModal === 'function') closeQrDialModal();
         if (typeof closeWorkspaceTour === 'function') closeWorkspaceTour();
         closeClientTeardownModal();
         closeLaymanAnalogy();
@@ -3603,6 +3614,7 @@ function setupKeyboardShortcuts() {
       if (typeof closeDealCommitmentModal === 'function') closeDealCommitmentModal();
       if (typeof closeExecutiveHandoffModal === 'function') closeExecutiveHandoffModal();
       if (typeof closePartnerWalletModal === 'function') closePartnerWalletModal();
+      if (typeof closeQrDialModal === 'function') closeQrDialModal();
       closeClientTeardownModal();
       closeLaymanAnalogy();
       if (typeof closeObjectionBox === 'function') closeObjectionBox();
@@ -3674,6 +3686,9 @@ function setupKeyboardShortcuts() {
           callBtn.click();
           handleCallInitiated();
         }
+      } else if (e.key.toLowerCase() === 'q') {
+        e.preventDefault();
+        openQrDialModal();
       } else if (e.key.toLowerCase() === 'b') {
         e.preventDefault();
         toggleBookmarkActiveLead();
@@ -8679,6 +8694,135 @@ function settleAllClearedCommissions() {
   showNotification(`[SAVED] Successfully settled ₹${telemetry.clearedCommission.toLocaleString('en-IN')} across ${clearedDeals.length} deals!`);
   updateWalletModalUI();
   updateProfileDropdownUI();
+}
+
+// -------------------------------------------------------------
+// DYNAMIC SMARTPHONE SCAN-TO-DIAL (QR PHONE LINK)
+// -------------------------------------------------------------
+let currentQrDialMode = 'call'; // 'call' or 'wa'
+
+function openQrDialModal(prospectId) {
+  const prospectsList = (typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS)) ? PROSPECTS : [];
+  const curSelected = (typeof selectedProspectId !== 'undefined') ? selectedProspectId : null;
+  const targetId = prospectId || curSelected;
+  const p = prospectsList.find(item => item.id === targetId) || prospectsList[0];
+  if (!p) return;
+
+  playSound('click');
+
+  // Auto-unmask contact phone if locked
+  if (typeof isProspectPhoneUnmasked === 'function' && !isProspectPhoneUnmasked(p.id)) {
+    if (typeof unmaskProspectPhone === 'function') unmaskProspectPhone(p.id);
+  }
+
+  const nameEl = document.getElementById('qrDialClientName');
+  const phoneEl = document.getElementById('qrDialPhoneDisplay');
+  const rawPhone = p.phone || p.tel || '';
+
+  if (nameEl) nameEl.innerText = p.name || 'Enterprise Prospect';
+  if (phoneEl) phoneEl.innerText = rawPhone || '--';
+
+  setQrDialMode(currentQrDialMode || 'call', p);
+
+  const modal = document.getElementById('qrDialModal');
+  if (modal) modal.classList.remove('hidden');
+
+  if (typeof recordPartnerActivity === 'function') {
+    recordPartnerActivity('QR_DIAL_OPENED', p.id, { client: p.name, mode: currentQrDialMode });
+  }
+}
+
+function closeQrDialModal() {
+  playSound('click');
+  const modal = document.getElementById('qrDialModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function setQrDialMode(mode, targetProspect = null) {
+  currentQrDialMode = mode;
+  const prospectsList = (typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS)) ? PROSPECTS : [];
+  const curSelected = (typeof selectedProspectId !== 'undefined') ? selectedProspectId : null;
+  const p = targetProspect || prospectsList.find(item => item.id === curSelected) || prospectsList[0];
+  if (!p) return;
+
+  const btnCall = document.getElementById('qrTabCall');
+  const btnWa = document.getElementById('qrTabWa');
+  const instructionsEl = document.getElementById('qrDialInstructions');
+  const qrImg = document.getElementById('qrDialCodeImg');
+
+  if (btnCall) {
+    if (mode === 'call') {
+      btnCall.className = 'flex-1 py-1.5 px-2 bg-[#fce566] text-[#17120f] border-2 border-[#17120f] font-arcade text-[9px] font-bold shadow-[2px_2px_0_#17120f] transition text-center cursor-pointer';
+      btnCall.setAttribute('aria-selected', 'true');
+    } else {
+      btnCall.className = 'flex-1 py-1.5 px-2 bg-[#fffdf1] text-[#17120f] border-2 border-[#17120f] font-arcade text-[9px] font-bold shadow-[2px_2px_0_#17120f] transition text-center hover:bg-[#fce566]/50 cursor-pointer';
+      btnCall.setAttribute('aria-selected', 'false');
+    }
+  }
+
+  if (btnWa) {
+    if (mode === 'wa') {
+      btnWa.className = 'flex-1 py-1.5 px-2 bg-[#fce566] text-[#17120f] border-2 border-[#17120f] font-arcade text-[9px] font-bold shadow-[2px_2px_0_#17120f] transition text-center cursor-pointer';
+      btnWa.setAttribute('aria-selected', 'true');
+    } else {
+      btnWa.className = 'flex-1 py-1.5 px-2 bg-[#fffdf1] text-[#17120f] border-2 border-[#17120f] font-arcade text-[9px] font-bold shadow-[2px_2px_0_#17120f] transition text-center hover:bg-[#fce566]/50 cursor-pointer';
+      btnWa.setAttribute('aria-selected', 'false');
+    }
+  }
+
+  const rawTel = p.tel || (p.phone ? p.phone.replace(/[^0-9]/g, '') : '');
+  const cleanDigits = String(rawTel).replace(/[^0-9]/g, '');
+  const formattedTel = cleanDigits.startsWith('91') ? `+${cleanDigits}` : `+91${cleanDigits}`;
+
+  if (mode === 'call') {
+    if (instructionsEl) {
+      instructionsEl.innerText = 'Point phone camera at code → Tap the yellow prompt on your screen to dial.';
+    }
+    const dialPayload = `tel:${formattedTel}`;
+    if (qrImg) {
+      qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=4&data=${encodeURIComponent(dialPayload)}`;
+    }
+  } else {
+    if (instructionsEl) {
+      instructionsEl.innerText = 'Point phone camera at code → Tap the link to open WhatsApp mobile chat.';
+    }
+    const waUrl = (typeof generateWhatsAppBrief === 'function') ? generateWhatsAppBrief(p) : `https://wa.me/${cleanDigits}`;
+    if (qrImg) {
+      qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=4&data=${encodeURIComponent(waUrl)}`;
+    }
+  }
+}
+
+function copyQrDialPhone() {
+  playSound('click');
+  const phoneEl = document.getElementById('qrDialPhoneDisplay');
+  const text = phoneEl ? phoneEl.innerText.trim() : '';
+  if (!text || text === '--') return;
+
+  if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      playSound('chime');
+      showNotification('[COPIED] Direct phone line copied to clipboard!');
+    });
+  } else if (typeof prompt === 'function') {
+    prompt('Copy phone number:', text);
+  }
+}
+
+function startCallHudFromQrModal() {
+  closeQrDialModal();
+  if (typeof handleCallInitiated === 'function') {
+    handleCallInitiated();
+  }
+  showNotification('[FLIGHT HUD ACTIVE] Call timer running on laptop. Log notes while you speak on phone!');
+}
+
+if (typeof window !== 'undefined') {
+  window.openQrDialModal = openQrDialModal;
+  window.closeQrDialModal = closeQrDialModal;
+  window.setQrDialMode = setQrDialMode;
+  window.copyQrDialPhone = copyQrDialPhone;
+  window.startCallHudFromQrModal = startCallHudFromQrModal;
 }
 
 // Responsive Mobile Cockpit / Queue Switcher

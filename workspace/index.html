@@ -890,6 +890,7 @@
     #dealCommitmentModal,
     #executiveHandoffModal,
     #partnerWalletModal,
+    #qrDialModal,
     #clientTeardownModal,
     #laymanAnalogyModal,
     #csvImportModal,
@@ -905,6 +906,7 @@
     #dealCommitmentModal.hidden,
     #executiveHandoffModal.hidden,
     #partnerWalletModal.hidden,
+    #qrDialModal.hidden,
     #clientTeardownModal.hidden,
     #laymanAnalogyModal.hidden,
     #csvImportModal.hidden,
@@ -1529,6 +1531,10 @@
                 <span class="text-[10px] uppercase font-bold text-[#17120f]/70 font-mono">PHONE:</span>
                 <span id="activePhoneDisplay" class="text-xs sm:text-sm font-bold font-mono text-[#17120f] tracking-wide">--</span>
                 <button id="btnToggleUnmaskPhone" onclick="toggleUnmaskActiveProspectPhone()" type="button" class="hidden text-[9px] font-arcade bg-[#fce566] hover:bg-[#ffe040] text-[#17120f] px-2 py-0.5 border border-[#17120f] shadow-[1px_1px_0_#17120f] cursor-pointer font-bold" title="Reveal Contact Phone">Reveal</button>
+                <button id="btnPhoneQrBadge" onclick="openQrDialModal()" type="button" class="text-[9px] font-arcade bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] px-1.5 py-0.5 border border-[#17120f] shadow-[1px_1px_0_#17120f] cursor-pointer font-bold flex items-center gap-1 transition" title="Scan QR Code to Dial on Smartphone [Hotkey: Q]">
+                  <svg class="w-2.5 h-2.5" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                  <span>QR</span>
+                </button>
               </span>
             </p>
           </div>
@@ -1549,6 +1555,24 @@
               </svg>
               <span id="callPhoneText">Schedule Call</span>
             </a>
+
+            <!-- Scan QR to Call from Mobile Handset -->
+            <button 
+              id="btnQrDialAction" 
+              type="button" 
+              onclick="openQrDialModal()" 
+              title="Scan QR Code to Dial on Smartphone [Hotkey: Q]" 
+              class="px-3 py-2 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] font-arcade text-[10px] sm:text-xs shadow-[2px_2px_0_#17120f] transition flex items-center justify-center gap-1.5 font-bold cursor-pointer active:translate-x-[1px] active:translate-y-[1px]"
+            >
+              <svg class="w-3.5 h-3.5 text-[#17120f] shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+              <span>QR Call</span>
+              <kbd class="hidden sm:inline px-1 py-0.2 bg-[#fce566] text-[#17120f] border border-[#17120f] text-[8px] font-mono">Q</kbd>
+            </button>
 
             <!-- WhatsApp Brief Button -->
             <a 
@@ -2565,6 +2589,86 @@
           Close
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- 4.5. SMARTPHONE SCAN-TO-DIAL MODAL (QR PHONE LINK) -->
+  <div id="qrDialModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-[1060]" role="dialog" aria-modal="true" aria-labelledby="qrDialModalTitle">
+    <div id="qrDialModalBox" class="studio-panel-elevated bg-[#fffdf1] border-[3px] border-[#17120f] shadow-[8px_8px_0_#17120f] max-w-md w-full p-4 sm:p-5 space-y-3.5 flex flex-col max-h-[92vh] font-mono text-[#17120f] overflow-y-auto">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b-2 border-[#17120f] pb-2.5">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 text-[9px] font-arcade bg-[#fce566] text-[#17120f] border border-[#17120f] shadow-[1px_1px_0_#17120f]">SMARTPHONE LINK</span>
+            <h3 id="qrDialModalTitle" class="font-arcade text-xs sm:text-sm font-bold text-[#17120f]">Scan to Call</h3>
+          </div>
+          <p class="text-[11px] font-mono text-[#17120f]/80 mt-1">
+            Target: <strong id="qrDialClientName" class="text-[#047857]">--</strong>
+          </p>
+        </div>
+        <button onclick="closeQrDialModal()" aria-label="Close QR Dial Modal" class="w-8 h-8 bg-[#fffdf1] hover:bg-[#fce566] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-sm font-bold flex items-center justify-center cursor-pointer transition active:translate-x-[1px] active:translate-y-[1px]">✕</button>
+      </div>
+
+      <!-- Prospect Phone Badge -->
+      <div class="p-2.5 bg-[#fbf8ef] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] flex items-center justify-between gap-2">
+        <div class="min-w-0">
+          <div class="text-[9px] uppercase font-bold text-[#17120f]/70 font-mono">DIRECT LINE:</div>
+          <div id="qrDialPhoneDisplay" class="text-sm sm:text-base font-bold font-mono text-[#17120f] tracking-wide truncate">--</div>
+        </div>
+        <button type="button" onclick="copyQrDialPhone()" class="px-2.5 py-1 bg-[#fffdf1] hover:bg-[#fce566] border border-[#17120f] font-arcade text-[9px] font-bold shadow-[1px_1px_0_#17120f] shrink-0 cursor-pointer transition active:translate-x-[1px] active:translate-y-[1px]">
+          [📋 Copy]
+        </button>
+      </div>
+
+      <!-- Action Mode Tabs (Cellular Call vs WhatsApp) -->
+      <div class="flex items-center gap-1.5 border-b-2 border-[#17120f] pb-1">
+        <button 
+          id="qrTabCall" 
+          type="button" 
+          onclick="setQrDialMode('call')" 
+          class="flex-1 py-1.5 px-2 bg-[#fce566] text-[#17120f] border-2 border-[#17120f] font-arcade text-[9px] font-bold shadow-[2px_2px_0_#17120f] transition text-center cursor-pointer"
+        >
+          📞 Cellular Call (tel:)
+        </button>
+        <button 
+          id="qrTabWa" 
+          type="button" 
+          onclick="setQrDialMode('wa')" 
+          class="flex-1 py-1.5 px-2 bg-[#fffdf1] text-[#17120f] border-2 border-[#17120f] font-arcade text-[9px] font-bold shadow-[2px_2px_0_#17120f] transition text-center hover:bg-[#fce566]/50 cursor-pointer"
+        >
+          💬 WhatsApp Chat
+        </button>
+      </div>
+
+      <!-- QR Code Stage -->
+      <div class="flex flex-col items-center justify-center p-3 bg-white border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] text-center space-y-2">
+        <div class="w-[200px] h-[200px] border-2 border-[#17120f] p-1 bg-white shadow-inner flex items-center justify-center">
+          <img id="qrDialCodeImg" src="" alt="Dynamic Phone Dialing QR Code" class="w-full h-full object-contain">
+        </div>
+        <p id="qrDialInstructions" class="text-[10px] font-mono text-[#17120f]/80 max-w-[260px] leading-tight">
+          Point phone camera at code → Tap the yellow prompt on your screen to dial.
+        </p>
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="flex items-center justify-between gap-2 pt-2 border-t-2 border-[#17120f]">
+        <button 
+          type="button" 
+          onclick="startCallHudFromQrModal()" 
+          class="flex-1 px-3 py-2 bg-[#2e7d32] hover:bg-[#1b5e20] text-white border-2 border-[#17120f] font-arcade text-[9px] sm:text-[10px] font-bold shadow-[2px_2px_0_#17120f] transition flex items-center justify-center gap-1.5 cursor-pointer active:translate-x-[1px] active:translate-y-[1px]"
+        >
+          <span>⏱️ Start In-Call HUD</span>
+        </button>
+        <button 
+          type="button" 
+          onclick="closeQrDialModal()" 
+          class="px-4 py-2 bg-[#fffdf1] hover:bg-neutral-200 border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-[10px] font-bold transition cursor-pointer"
+        >
+          Close [Esc]
+        </button>
+      </div>
+
     </div>
   </div>
 
