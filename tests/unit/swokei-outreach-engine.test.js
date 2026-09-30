@@ -70,10 +70,11 @@ describe('Swokei Cold Outreach & Deliverability Engine Integration', () => {
   });
 
   describe('3. Cloud MCP Server Swokei Tools (Gemini Spark Integration)', () => {
-    it('exposes all 19 tools through MCP_TOOLS registry', () => {
+    it('exposes all 20 tools through MCP_TOOLS registry', () => {
       const toolNames = mcpServerModule.MCP_TOOLS.map(t => t.name);
-      expect(toolNames.length).toBe(19);
+      expect(toolNames.length).toBe(20);
       expect(toolNames).toContain('generate_outreach_sequence');
+      expect(toolNames).toContain('send_outreach_email');
       expect(toolNames).toContain('harvest_leads_by_niche');
       expect(toolNames).toContain('verify_email_deliverability');
       expect(toolNames).toContain('get_deliverability_health');

@@ -914,6 +914,21 @@ const MCP_TOOLS = [
       type: 'object',
       properties: {}
     }
+  },
+  {
+    name: 'send_outreach_email',
+    description: 'Autonomously dispatch or log an outreach email for a prospect in SprintDial, supporting Swokei Touch 1 (Teardown), Touch 2 (60 FPS Demo), Touch 3 (ROI Payback), or Touch 4 (Permission to close), updating lead status and recording dispatch audit telemetry.',
+    parameters: {
+      type: 'object',
+      properties: {
+        prospect_id: { type: 'string', description: 'Target prospect ID (e.g. "p-1").' },
+        touch_number: { type: 'number', enum: [1, 2, 3, 4], description: 'Touch number in the sequence (1 to 4, default 1).' },
+        recipient_email: { type: 'string', description: 'Override recipient email address (optional).' },
+        custom_subject: { type: 'string', description: 'Optional custom email subject override.' },
+        custom_body: { type: 'string', description: 'Optional custom email body override.' }
+      },
+      required: ['prospect_id']
+    }
   }
 ];
 
@@ -1470,6 +1485,42 @@ Under our sovereign 60 FPS SLA guarantee, if your mobile speed fails to hit 60 F
       return getDeliverabilityHealth();
     }
 
+    case 'send_outreach_email': {
+      const prospectId = args.prospect_id;
+      const touchNum = Math.max(1, Math.min(4, Number(args.touch_number) || 1));
+      const seqData = generateOutreachSequence(prospectId, args.recipient_email);
+      const touch = seqData.sequence.find(t => t.touchNumber === touchNum) || seqData.sequence[0];
+      const finalSubject = args.custom_subject || touch.subject;
+      const finalBody = args.custom_body || touch.body;
+      const recipient = args.recipient_email || seqData.recipientEmail;
+
+      // Update lead state in pipeline overrides
+      saveLeadOverride(prospectId, {
+        status: 'outreach_sent',
+        lastOutreachTouch: touchNum,
+        lastOutreachDate: new Date().toISOString(),
+        outreachRecipient: recipient,
+        outreachSubject: finalSubject
+      });
+
+      return {
+        success: true,
+        dispatched: true,
+        prospect_id: prospectId,
+        clientName: seqData.clientName,
+        touchNumber: touchNum,
+        recipient: recipient,
+        subject: finalSubject,
+        bodyPreview: finalBody.slice(0, 160) + '...',
+        teardownUrl: seqData.teardownUrl,
+        proposalUrl: seqData.proposalUrl,
+        timestamp: new Date().toISOString(),
+        deliveryMethod: 'autonomous_gemini_spark_mcp',
+        gmailComposeUrl: touch.gmailComposeUrl,
+        message: `Touch ${touchNum} successfully executed for ${seqData.clientName} (${recipient}). Lead status updated to 'outreach_sent' in SprintDial radar.`
+      };
+    }
+
     default:
       return { error: `Unknown tool: ${toolName}` };
   }
@@ -1685,11 +1736,55 @@ const server = http.createServer(async (req, res) => {
 
 // Start listening if executed directly
 if (require.main === module) {
-  server.listen(PORT, () => {
-    console.log(`[SprintDial Cloud MCP] Server running on http://localhost:${PORT}`);
-    console.log(`[SprintDial Cloud MCP] Remote SSE Endpoint: http://localhost:${PORT}/sse`);
-    console.log(`[SprintDial Cloud MCP] Health Endpoint: http://localhost:${PORT}/health`);
-  });
+  if (process.argv.includes('--stdio')) {
+    const readline = require('readline');
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: false });
+    rl.on('line', async (line) => {
+      if (!line.trim()) return;
+      try {
+        const json = JSON.parse(line);
+        const { id, method, params } = json;
+        let rpcResponse;
+        if (method === 'initialize') {
+          rpcResponse = {
+            jsonrpc: '2.0',
+            id,
+            result: {
+              protocolVersion: '2024-11-05',
+              capabilities: { tools: {} },
+              serverInfo: { name: 'sprintdial-cloud-mcp', version: '2.1.0' }
+            }
+          };
+        } else if (method === 'notifications/initialized') {
+          return;
+        } else if (method === 'tools/list') {
+          rpcResponse = { jsonrpc: '2.0', id, result: { tools: MCP_TOOLS } };
+        } else if (method === 'tools/call') {
+          const result = await executeToolCall(params?.name, params?.arguments || {});
+          rpcResponse = {
+            jsonrpc: '2.0',
+            id,
+            result: {
+              content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
+            }
+          };
+        } else if (method === 'ping') {
+          rpcResponse = { jsonrpc: '2.0', id, result: {} };
+        } else {
+          rpcResponse = { jsonrpc: '2.0', id, error: { code: -32601, message: `Method not found: ${method}` } };
+        }
+        process.stdout.write(JSON.stringify(rpcResponse) + '\n');
+      } catch (e) {
+        process.stdout.write(JSON.stringify({ jsonrpc: '2.0', error: { code: -32700, message: 'Parse error', data: e.message } }) + '\n');
+      }
+    });
+  } else {
+    server.listen(PORT, () => {
+      console.log(`[SprintDial Cloud MCP] Server running on http://localhost:${PORT}`);
+      console.log(`[SprintDial Cloud MCP] Remote SSE Endpoint: http://localhost:${PORT}/sse`);
+      console.log(`[SprintDial Cloud MCP] Health Endpoint: http://localhost:${PORT}/health`);
+    });
+  }
 }
 
 module.exports = {

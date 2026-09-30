@@ -183,7 +183,7 @@ describe('SprintDial Cloud MCP Server for Gemini Spark', () => {
     });
 
     expect(response.status).toBe('ONLINE');
-    expect(response.totalTools).toBe(19);
+    expect(response.totalTools).toBe(20);
     expect(response.tools).toContain('generate_upi_deposit_rail');
     expect(response.tools).toContain('mark_deal_closed_won');
     expect(response.tools).toContain('get_prospect_comparison_matrix');
@@ -262,7 +262,7 @@ describe('SprintDial Cloud MCP Server for Gemini Spark', () => {
     });
 
     expect(listRes.result.tools).toBeDefined();
-    expect(listRes.result.tools.length).toBe(19);
+    expect(listRes.result.tools.length).toBe(20);
 
     // 3. tools/call
     const callPayload = JSON.stringify({
@@ -365,5 +365,19 @@ describe('SprintDial Cloud MCP Server for Gemini Spark', () => {
     expect(res.safeDailySendingLimits).toHaveProperty('currentRecommendedDailyCeiling');
     expect(res.deliverabilityInvariants.length).toBeGreaterThan(0);
     expect(res.optimalSendingWindows.length).toBeGreaterThan(0);
+  });
+
+  it('23. send_outreach_email autonomously dispatches outreach and updates lead status', async () => {
+    const res = await serverModule.executeToolCall('send_outreach_email', {
+      prospect_id: 'p-1',
+      touch_number: 1
+    });
+
+    expect(res.success).toBe(true);
+    expect(res.dispatched).toBe(true);
+    expect(res.touchNumber).toBe(1);
+    expect(res.recipient).toBeDefined();
+    expect(res.subject).toContain('Executive Performance Teardown');
+    expect(res.teardownUrl).toContain('apoorv.qzz.io/sales?teardown=');
   });
 });

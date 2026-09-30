@@ -12,7 +12,9 @@
     "test:e2e": "playwright test",
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit:watch": "vitest",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "mcp:spark": "node mcp_spark_server.cjs",
+    "mcp:spark:stdio": "node mcp_spark_server.cjs --stdio"
   },
   "keywords": [
     "creative-technologist",
