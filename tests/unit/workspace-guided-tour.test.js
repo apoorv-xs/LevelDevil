@@ -76,10 +76,10 @@ describe("Subsystem 21: Interactive Workstation Guided Walkthrough Overlay (Mobi
       playCelebrate: vi.fn()
     };
     global.addEventListener = global.window.addEventListener;
-    global.removeEventListener = global.window.removeEventListener;
-
+    await import("../../workspace/tour.js");
     appScope = await import("../../workspace/app.js");
   });
+
 
   it("21.1 WORKSPACE_TOUR_STEPS contains 8 comprehensive dual-device guided steps", () => {
     const steps = appScope.WORKSPACE_TOUR_STEPS || window.WORKSPACE_TOUR_STEPS;

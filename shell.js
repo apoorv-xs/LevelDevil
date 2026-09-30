@@ -29,9 +29,173 @@ function triggerHaptic(pattern = 15) {
     } catch (e) {}
   }
 }
+
+const APP_CONFIG = {
+  OWNER_EMAIL: "apoorvxs@gmail.com",
+  OWNER_UPI_VPA: "apoorvxs@okaxis",
+  OWNER_WHATSAPP: "919495462450",
+  PORTFOLIO_URL: "https://apoorv.qzz.io",
+  SLA_GUARANTEE_DAYS: 14
+};
+
+function escapeHTML(str) {
+  if (str === null || str === undefined) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+let activeToastTimeout = null;
+
+function showNotification(msg, options = {}) {
+  if (typeof document === "undefined") return;
+  const duration = typeof options === "number" ? options : (options.duration || 3500);
+
+  // If in workspace and lockNotificationBar exists, sync it
+  const bar = document.getElementById("lockNotificationBar");
+  const msgSpan = document.getElementById("liveStatusMsg");
+  if (msgSpan) msgSpan.innerText = msg;
+  if (bar) {
+    bar.classList.add("bg-rose-950/80", "text-rose-200");
+    setTimeout(() => {
+      bar.classList.remove("bg-rose-950/80", "text-rose-200");
+      if (msgSpan) msgSpan.innerText = "Real-Time Anti-Clash: Partners are synchronized live to prevent duplicate outreach.";
+    }, duration);
+  }
+
+  // Universal retro monospace toast notification
+  let toast = document.getElementById("universalToastNotification");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "universalToastNotification";
+    toast.style.cssText = "position: fixed; bottom: 20px; right: 20px; z-index: 99999; pointer-events: none; transition: transform 0.25s ease, opacity 0.25s ease; transform: translateY(20px); opacity: 0;";
+    toast.setAttribute("role", "status");
+    toast.setAttribute("aria-live", "polite");
+    document.body.appendChild(toast);
+  }
+
+  toast.innerHTML = `
+    <div style="background: #17120f; color: #fce566; border: 2px solid #fce566; box-shadow: 4px 4px 0 #000; padding: 10px 16px; font-family: monospace; font-size: 12px; font-weight: bold; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; max-width: 380px; pointer-events: auto;">
+      <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #4deeea; flex-shrink: 0;"></span>
+      <span style="line-height: 1.4; word-break: break-word;">${escapeHTML(msg)}</span>
+    </div>
+  `;
+
+  toast.style.transform = "translateY(0)";
+  toast.style.opacity = "1";
+
+  if (activeToastTimeout) clearTimeout(activeToastTimeout);
+  activeToastTimeout = setTimeout(() => {
+    toast.style.transform = "translateY(20px)";
+    toast.style.opacity = "0";
+  }, duration);
+}
+
+function copyToClipboard(text, successMsg = "[COPIED] Copied to clipboard!") {
+  if (!text) return Promise.resolve(false);
+  triggerHaptic(25);
+
+  if (typeof playSound === "function") {
+    try { playSound("chime"); } catch (e) {}
+  }
+
+  if (typeof navigator !== "undefined" && navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(text).then(() => {
+      showNotification(successMsg);
+      return true;
+    }).catch(() => fallbackCopy(text, successMsg));
+  }
+  return Promise.resolve(fallbackCopy(text, successMsg));
+}
+
+function fallbackCopy(text, successMsg) {
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    showNotification(successMsg);
+    return true;
+  } catch (e) {
+    showNotification("[ERROR] Unable to copy to clipboard");
+    return false;
+  }
+}
+
+function playSound(type) {
+  if (typeof window !== "undefined" && window.SFX) {
+    if (type === "click" && typeof window.SFX.playClick === "function") {
+      try { window.SFX.playClick(); return; } catch (e) {}
+    }
+    if ((type === "chime" || type === "thought") && typeof window.SFX.playThought === "function") {
+      try { window.SFX.playThought(); return; } catch (e) {}
+    }
+    if (type === "celebrate" && typeof window.SFX.playCelebrate === "function") {
+      try { window.SFX.playCelebrate(); return; } catch (e) {}
+    }
+    if (type === "laser" && typeof window.SFX.playLaserConstruct === "function") {
+      try { window.SFX.playLaserConstruct(); return; } catch (e) {}
+    }
+    if (type === "jump" && typeof window.SFX.playJump === "function") {
+      try { window.SFX.playJump(); return; } catch (e) {}
+    }
+  }
+}
+
+function isApoorvOwnerEmail(email) {
+  if (!email || typeof email !== "string") return false;
+  return email.trim().toLowerCase() === "apoorvxs@gmail.com";
+}
+
+function isOwnerUser(user) {
+  if (!user) return false;
+  return isApoorvOwnerEmail(user.email) || user.role === "owner";
+}
+
+const APP_UTILS = {
+  escapeHTML,
+  escapeHtml: escapeHTML,
+  showNotification,
+  copyToClipboard,
+  playSound,
+  triggerHaptic,
+  isApoorvOwnerEmail,
+  isOwnerUser
+};
+
 if (typeof window !== "undefined") {
   window.triggerHaptic = triggerHaptic;
+  window.APP_CONFIG = APP_CONFIG;
+  window.APP_UTILS = APP_UTILS;
+  window.escapeHTML = escapeHTML;
+  window.escapeHtml = escapeHTML;
+  window.showNotification = showNotification;
+  window.copyToClipboard = copyToClipboard;
+  window.playSound = playSound;
+  window.isApoorvOwnerEmail = isApoorvOwnerEmail;
+  window.isOwnerUser = isOwnerUser;
 }
+
+if (typeof global !== "undefined") {
+  global.triggerHaptic = triggerHaptic;
+  global.APP_CONFIG = APP_CONFIG;
+  global.APP_UTILS = APP_UTILS;
+  global.escapeHTML = escapeHTML;
+  global.escapeHtml = escapeHTML;
+  global.showNotification = showNotification;
+  global.copyToClipboard = copyToClipboard;
+  global.playSound = playSound;
+  global.isApoorvOwnerEmail = isApoorvOwnerEmail;
+  global.isOwnerUser = isOwnerUser;
+}
+
 
 function setActiveNavigation(root = document) {
   const sales = isSalesRoute();

@@ -730,15 +730,23 @@ async function handleConsultationSubmit(event) {
   const timezone = document.getElementById("consult-timezone")?.value || "UTC";
   const notes = document.getElementById("consult-notes")?.value?.trim() || "";
 
+  const notifyUser = (msg, type = "warning") => {
+    if (typeof window.showNotification === "function") {
+      window.showNotification(msg, type);
+    } else {
+      alert(msg);
+    }
+  };
+
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
-    alert("Please provide a valid email address so we can confirm the calendar invitation.");
+    notifyUser("Please provide a valid email address so we can confirm the calendar invitation.", "warning");
     return;
   }
 
   const consentBox = document.getElementById("consult-consent");
   if (consentBox && !consentBox.checked) {
-    alert("Please accept the Terms & DPDP Act consent before confirming your consultation.");
+    notifyUser("Please accept the Terms & DPDP Act consent before confirming your consultation.", "warning");
     consentBox.focus();
     return;
   }
@@ -786,7 +794,7 @@ async function handleConsultationSubmit(event) {
 
   const confirmText = document.getElementById("consult-confirm-text");
   if (confirmText) {
-    const escapeHtml = (str) => String(str || "").replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    const escapeHtml = window.escapeHTML || ((str) => String(str || "").replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])));
     const safeName = escapeHtml(name);
     const safeFocus = escapeHtml(focus);
     const safeDt = escapeHtml((datetime || "").replace('T', ' '));
@@ -1042,10 +1050,16 @@ function selectPublicDealTier(tierNum) {
 
 function copyPublicUpiId() {
   const upiId = "apoorvxs@okaxis";
-  if (navigator.clipboard && navigator.clipboard.writeText) {
+  if (typeof window.triggerHaptic === "function") window.triggerHaptic([30, 20, 30]);
+  if (typeof window.copyToClipboard === "function") {
+    window.copyToClipboard(upiId, "[COPIED] UPI ID 'apoorvxs@okaxis' copied to clipboard");
+  } else if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(upiId).then(() => {
-      if (typeof window.triggerHaptic === "function") window.triggerHaptic([30, 20, 30]);
-      alert("[COPIED] UPI ID 'apoorvxs@okaxis' copied to clipboard");
+      if (typeof window.showNotification === "function") {
+        window.showNotification("[COPIED] UPI ID 'apoorvxs@okaxis' copied to clipboard", "success");
+      } else {
+        alert("[COPIED] UPI ID 'apoorvxs@okaxis' copied to clipboard");
+      }
     }).catch(() => {
       prompt("Copy UPI ID:", upiId);
     });

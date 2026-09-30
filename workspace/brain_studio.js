@@ -4,15 +4,17 @@
 (function(root) {
   let brainTelemetryInterval = null;
 
-  function escapeHTML(str) {
-    return String(str || '').replace(/[&<>"']/g, m => ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#39;'
-    }[m]));
-  }
+  const escapeHTML = (root && typeof root.escapeHTML === 'function')
+    ? root.escapeHTML
+    : function(str) {
+      return String(str || '').replace(/[&<>"']/g, m => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[m]));
+    };
 
   function handleBrainCategoryChange() {
     const cat = document.getElementById('trainCategory')?.value;
