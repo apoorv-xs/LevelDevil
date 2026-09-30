@@ -184,10 +184,12 @@
     }
   }
 
+  const FIREBASE_RTDB_REGEX = /^https:\/\/[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.(firebaseio\.com|firebasedatabase\.app)$/i;
+
   function getFirebaseDbUrl() {
     const storage = getLocalStorage();
     const raw = storage ? storage.getItem('sprintdial_firebase_db_url') || '' : '';
-    if (raw && !/^https:\/\/[a-zA-Z0-9-]+\.firebaseio\.com$/i.test(raw)) {
+    if (raw && !FIREBASE_RTDB_REGEX.test(raw)) {
       if (storage) storage.removeItem('sprintdial_firebase_db_url');
       return '';
     }
@@ -198,13 +200,14 @@
     const doc = typeof document !== 'undefined' ? document : (typeof window !== 'undefined' && window.document ? window.document : (typeof global !== 'undefined' && global.document ? global.document : null));
     const storage = getLocalStorage();
     const input = doc && doc.getElementById ? doc.getElementById('firebaseDbUrlInput') : null;
-    const url = input ? input.value.trim().replace(/\/$/, '') : '';
+    const url = input ? input.value.trim().replace(/\/+$/, '') : '';
     if (url) {
-      if (!/^https:\/\/[a-zA-Z0-9-]+\.firebaseio\.com$/i.test(url)) {
+      if (!FIREBASE_RTDB_REGEX.test(url)) {
+        const errorMsg = 'Security Validation Error: Firebase URL must be a valid https://<project-id>.firebaseio.com or https://<project-id>.<region>.firebasedatabase.app endpoint.';
         if (typeof alert === 'function') {
-          alert('Security Validation Error: Firebase URL must be a valid https://<project-id>.firebaseio.com endpoint.');
+          alert(errorMsg);
         } else if (typeof window !== 'undefined' && typeof window.alert === 'function') {
-          window.alert('Security Validation Error: Firebase URL must be a valid https://<project-id>.firebaseio.com endpoint.');
+          window.alert(errorMsg);
         }
         return;
       }
@@ -213,6 +216,8 @@
       initFirebaseSync();
     } else {
       if (storage) storage.removeItem('sprintdial_firebase_db_url');
+      showNotification('[SYNC] Firebase Database disconnected. Running on local sync.');
+      initFirebaseSync();
     }
   }
 
