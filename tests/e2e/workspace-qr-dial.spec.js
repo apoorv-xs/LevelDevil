@@ -29,7 +29,8 @@ test.describe('Phase 1: Smartphone Scan-to-Dial QR Modal UI and Hotkey Q', () =>
 
   test('Verify Desktop Scan-to-Dial QR modal, tab switching, and keyboard hotkeys', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('http://localhost:5173/workspace/', { waitUntil: 'networkidle' });
+    await page.goto('http://localhost:5173/workspace/');
+    await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(400);
 
     // Dismiss disclaimer or tour if present

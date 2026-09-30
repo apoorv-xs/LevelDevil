@@ -40,6 +40,23 @@
       : ((typeof global !== 'undefined' && global.selectedProspectId) ? global.selectedProspectId : 'p-1');
   }
 
+  function getDialsToday() {
+    if (typeof root.dialsToday !== 'undefined') return Number(root.dialsToday) || 0;
+    if (typeof global !== 'undefined' && typeof global.dialsToday !== 'undefined') return Number(global.dialsToday) || 0;
+    return 0;
+  }
+
+  function setDialsToday(val) {
+    root.dialsToday = val;
+    if (typeof window !== 'undefined') window.dialsToday = val;
+    if (typeof global !== 'undefined') global.dialsToday = val;
+  }
+
+  function saveDialsTodayHelper() {
+    if (typeof root.saveDialsToday === 'function') root.saveDialsToday();
+    else if (typeof global !== 'undefined' && typeof global.saveDialsToday === 'function') global.saveDialsToday();
+  }
+
   function getCurrentUser() {
     return (typeof root.currentUser !== 'undefined' && root.currentUser)
       ? root.currentUser
@@ -184,17 +201,17 @@ function setCallOutcome(outcomeType) {
 
   if (outcomeType === 'discovery_booked') {
     if (typeof openExecutiveHandoffModal === 'function') {
-      openExecutiveHandoffModal(selectedProspectId);
+      openExecutiveHandoffModal(getSelectedId());
     } else {
       const discInput = document.getElementById('discoveryInput');
       if (discInput) discInput.focus();
     }
   } else if (outcomeType === 'closed_won' || outcomeType === 'deal_closed_direct') {
     if (typeof openDealCommitmentModal === 'function') {
-      openDealCommitmentModal(selectedProspectId);
+      openDealCommitmentModal(getSelectedId());
     }
   } else if (outcomeType === 'teardown_sent') {
-    const p = PROSPECTS.find(item => item.id === selectedProspectId);
+    const p = getGlobalProspects().find(item => item.id === getSelectedId());
     if (p) {
       showNotification(`🔗 Generated 3D teardown brief for ${p.name}`);
     }
@@ -216,12 +233,8 @@ function appendNoteTag(tagText) {
 function cancelActiveDial() {
   playSound('click');
   stopCallTimer();
-  const prospectId = activeCallProspectId || selectedProspectId;
-  const prospectsList = (typeof window !== 'undefined' && Array.isArray(window.PROSPECTS) && window.PROSPECTS.length > 0)
-    ? window.PROSPECTS
-    : ((typeof global !== 'undefined' && Array.isArray(global.PROSPECTS) && global.PROSPECTS.length > 0)
-      ? global.PROSPECTS
-      : ((typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS)) ? PROSPECTS : []));
+  const prospectId = activeCallProspectId || getSelectedId();
+  const prospectsList = getGlobalProspects();
   const p = prospectsList.find(item => item.id === prospectId);
   const user = (typeof currentUser !== 'undefined' && currentUser)
     ? currentUser
@@ -541,9 +554,7 @@ function canAdvanceLead() {
   const isOwner = (typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(user?.email)) || (user?.email === 'apoorvxs@gmail.com');
   if (isOwner) return true;
 
-  const curProspectId = (typeof window !== 'undefined' && window.selectedProspectId)
-    ? window.selectedProspectId
-    : ((typeof global !== 'undefined' && global.selectedProspectId) ? global.selectedProspectId : selectedProspectId);
+  const curProspectId = getSelectedId();
 
   if (callPendingDisposition && (activeCallProspectId === curProspectId || !activeCallProspectId)) {
     if (!validateCallDisposition()) {
@@ -568,7 +579,7 @@ function setAngle(angle) {
       }
     }
   });
-  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  const p = getGlobalProspects().find(item => item.id === getSelectedId());
   if (p) updateScriptUI(p);
 }
 
@@ -599,7 +610,7 @@ function setScriptMode(mode) {
     if (angleRow) angleRow.classList.remove('hidden');
   }
 
-  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  const p = getGlobalProspects().find(item => item.id === getSelectedId());
   if (p) updateScriptUI(p);
 }
 
@@ -647,7 +658,7 @@ function setLang(lang) {
     if (talkingPoint) talkingPoint.innerText = (lang === 'ml' && item.talkingPointMl) ? item.talkingPointMl : item.talkingPoint;
   }
 
-  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  const p = getGlobalProspects().find(item => item.id === getSelectedId());
   if (p) updateScriptUI(p);
 }
 
@@ -1102,7 +1113,7 @@ function showNotesSaveIndicator() {
 }
 
 function saveNotesLocally() {
-  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  const p = getGlobalProspects().find(item => item.id === getSelectedId());
   const notesInput = document.getElementById('callNotesInput');
   if (p && notesInput) {
     p.notes = notesInput.value;
@@ -1119,7 +1130,7 @@ function saveNotesLocally() {
 // Outcome Logging & Progress Bar
 function logOutcome(status) {
   stopCallTimer();
-  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  const p = getGlobalProspects().find(item => item.id === getSelectedId());
   if (!p) return;
 
   p.status = status;
@@ -1128,25 +1139,26 @@ function logOutcome(status) {
   broadcastUnlockHelper(p.id, status);
 
   if (typeof recordPartnerActivity === 'function') {
-    recordPartnerActivityHelper('OUTCOME_LOGGED', selectedProspectId, { client: p.name, status });
+    recordPartnerActivityHelper('OUTCOME_LOGGED', getSelectedId(), { client: p.name, status });
   }
 
   // Update Daily Dial Progress & Shift Streak
-  dialsToday++;
-  saveDialsToday();
+  const currentDials = getDialsToday() + 1;
+  setDialsToday(currentDials);
+  saveDialsTodayHelper();
   if (typeof updateShiftStreakOnDial === 'function') {
     updateShiftStreakOnDial();
   }
   updateDialProgress();
 
   // Dial Milestone Celebrations
-  if (dialsToday === 5 || dialsToday === 10 || dialsToday === 15 || dialsToday === 20) {
-    const ms = typeof getDialMilestone === 'function' ? getDialMilestone(dialsToday) : { name: `${dialsToday} Dials` };
+  if (currentDials === 5 || currentDials === 10 || currentDials === 15 || currentDials === 20) {
+    const ms = typeof getDialMilestone === 'function' ? getDialMilestone(currentDials) : { name: `${currentDials} Dials` };
     playSound('chime');
     if (window.SFX && typeof window.SFX.playCelebrate === 'function') {
       try { window.SFX.playCelebrate(); } catch(e) {}
     }
-    showNotification(`🔥 MILESTONE UNLOCKED: ${dialsToday} Dials — ${ms.name}!`);
+    showNotification(`🔥 MILESTONE UNLOCKED: ${currentDials} Dials — ${ms.name}!`);
   }
 
   saveLeadOverrideHelper(p.id, { status });
@@ -1168,16 +1180,17 @@ function logOutcome(status) {
       window.triggerHaptic([35, 40, 35]);
     }
     playSound('click');
-    showNotification(`Logged outcome '${status.replace('_', ' ')}' by ${currentUser?.name || 'Caller'}`);
+    const user = getCurrentUser();
+    showNotification(`Logged outcome '${status.replace('_', ' ')}' by ${user?.name || 'Caller'}`);
   }
   resetCallWorkflowState();
   renderQueueHelper();
   renderActiveProspectHelper();
-  updateProfileDropdownUI();
+  updateProfileDropdownUIHelper();
 }
 
 function markDNC() {
-  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  const p = getGlobalProspects().find(item => item.id === getSelectedId());
   if (!p) return;
   if (confirm(`Permanently exclude ${p.name} from active client radar outreach?`)) {
     stopCallTimer();
@@ -1187,26 +1200,29 @@ function markDNC() {
     broadcastDNCHelper(p.id);
     renderQueueHelper();
     renderActiveProspectHelper();
-    updateProfileDropdownUI();
+    updateProfileDropdownUIHelper();
   }
 }
 
 function updateDialProgress() {
+  const dials = getDialsToday();
   const maxGoal = 20;
-  const pct = Math.min(100, Math.round((dialsToday / maxGoal) * 100));
-  document.getElementById('dialProgressBar').style.width = `${pct}%`;
-  document.getElementById('dialCountText').innerText = `${dialsToday} / ${maxGoal}`;
+  const pct = Math.min(100, Math.round((dials / maxGoal) * 100));
+  const bar = document.getElementById('dialProgressBar');
+  if (bar) bar.style.width = `${pct}%`;
+  const countEl = document.getElementById('dialCountText');
+  if (countEl) countEl.innerText = `${dials} / ${maxGoal}`;
 }
 
 // 1-Click Google Calendar & Meet Invite Generator
 function generateGoogleCalendarInvite() {
   playSound('click');
-  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  const p = getGlobalProspects().find(item => item.id === getSelectedId());
   const dateInput = document.getElementById('discoveryInput').value;
   if (!p) return;
 
   if (typeof recordPartnerActivity === 'function') {
-    recordPartnerActivityHelper('DISCOVERY_BOOKED', selectedProspectId, { client: p.name, discoveryTime: dateInput || 'tomorrow' });
+    recordPartnerActivityHelper('DISCOVERY_BOOKED', getSelectedId(), { client: p.name, discoveryTime: dateInput || 'tomorrow' });
   }
 
   let startTime = '';

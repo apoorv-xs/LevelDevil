@@ -78,7 +78,7 @@ function showNotification(msg, options = {}) {
   }
 
   toast.innerHTML = `
-    <div style="background: #17120f; color: #fce566; border: 2px solid #fce566; box-shadow: 4px 4px 0 #000; padding: 10px 16px; font-family: monospace; font-size: 12px; font-weight: bold; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; max-width: 380px; pointer-events: auto;">
+    <div style="background: #17120f; color: #fce566; border: 2px solid #fce566; box-shadow: 4px 4px 0 #000; padding: 10px 16px; font-family: monospace; font-size: 12px; font-weight: bold; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; max-width: 380px; pointer-events: none;">
       <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #4deeea; flex-shrink: 0;"></span>
       <span style="line-height: 1.4; word-break: break-word;">${escapeHTML(msg)}</span>
     </div>

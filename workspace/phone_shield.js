@@ -72,11 +72,7 @@ function isProspectPhoneUnmasked(prospectId) {
 }
 
 function checkUnmaskVelocity() {
-  const user = (typeof window !== 'undefined' && window.currentUser)
-    ? window.currentUser
-    : ((typeof global !== 'undefined' && global.currentUser)
-      ? global.currentUser
-      : ((typeof currentUser !== 'undefined' && currentUser) ? currentUser : null));
+  const user = getCurrentUser();
   const email = user?.email || 'guest';
   if ((typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(email)) || (email === 'apoorvxs@gmail.com')) {
     return { allowed: true, count: 0, limit: UNMASK_LIMIT_PER_HOUR };
@@ -130,30 +126,22 @@ function recordUnmaskVelocity(prospectId) {
 }
 
 function unmaskProspectPhone(prospectId) {
-  if (!prospectId && typeof selectedProspectId !== 'undefined') {
-    prospectId = selectedProspectId;
+  if (!prospectId) {
+    prospectId = getSelectedId();
   }
   if (!prospectId) return false;
 
-  const prospectsList = (typeof window !== 'undefined' && Array.isArray(window.PROSPECTS) && window.PROSPECTS.length > 0)
-    ? window.PROSPECTS
-    : ((typeof global !== 'undefined' && Array.isArray(global.PROSPECTS) && global.PROSPECTS.length > 0)
-      ? global.PROSPECTS
-      : ((typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS)) ? PROSPECTS : []));
+  const prospectsList = getGlobalProspects();
   const p = prospectsList.find(item => item.id === prospectId);
   if (!p) return false;
 
-  const user = (typeof window !== 'undefined' && window.currentUser)
-    ? window.currentUser
-    : ((typeof global !== 'undefined' && global.currentUser)
-      ? global.currentUser
-      : ((typeof currentUser !== 'undefined' && currentUser) ? currentUser : null));
-  const email = user?.email || '';
-  const isOwner = (typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(email)) || (email === 'apoorvxs@gmail.com');
+  const user = getCurrentUser();
+  const isOwner = (typeof isApoorvOwnerEmail === 'function' && isApoorvOwnerEmail(user?.email)) || (user?.email === 'apoorvxs@gmail.com');
 
   if (isOwner || sessionUnmaskedProspects.has(prospectId)) {
     sessionUnmaskedProspects.add(prospectId);
     if (typeof renderActiveProspect === 'function') renderActiveProspect();
+    else if (typeof root.renderActiveProspect === 'function') root.renderActiveProspect();
     return true;
   }
 
@@ -188,28 +176,36 @@ function unmaskProspectPhone(prospectId) {
     showNotification(`[UNMASK] Contact unmasked (${remaining} unmasks remaining this hour)`);
   }
   if (typeof renderActiveProspect === 'function') renderActiveProspect();
+  else if (typeof root.renderActiveProspect === 'function') root.renderActiveProspect();
   return true;
 }
 
 function toggleUnmaskActiveProspectPhone() {
-  if (typeof selectedProspectId !== 'undefined' && selectedProspectId) {
-    if (sessionUnmaskedProspects.has(selectedProspectId)) {
-      sessionUnmaskedProspects.delete(selectedProspectId);
+  const curId = getSelectedId();
+  if (curId) {
+    if (sessionUnmaskedProspects.has(curId)) {
+      sessionUnmaskedProspects.delete(curId);
       if (typeof renderActiveProspect === 'function') renderActiveProspect();
+      else if (typeof root.renderActiveProspect === 'function') root.renderActiveProspect();
     } else {
-      unmaskProspectPhone(selectedProspectId);
+      unmaskProspectPhone(curId);
     }
   }
 }
 
 function handleCallAction(event) {
   if (event && event.preventDefault) event.preventDefault();
-  const prospectsList = (typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS)) ? PROSPECTS : [];
-  const p = prospectsList.find(item => item.id === selectedProspectId);
+  const prospectsList = getGlobalProspects();
+  const curId = getSelectedId();
+  const p = prospectsList.find(item => item.id === curId) || prospectsList[0];
   if (!p) return;
   const unmasked = unmaskProspectPhone(p.id);
   if (unmasked) {
-    handleCallInitiated();
+    if (typeof root.handleCallInitiated === 'function') {
+      root.handleCallInitiated();
+    } else if (typeof global !== 'undefined' && typeof global.handleCallInitiated === 'function') {
+      global.handleCallInitiated();
+    }
     if (p.tel && typeof window !== 'undefined') {
       window.location.href = `tel:${p.tel}`;
     }
@@ -218,16 +214,18 @@ function handleCallAction(event) {
 
 function handleWhatsAppAction(event) {
   if (event && event.preventDefault) event.preventDefault();
-  const prospectsList = (typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS)) ? PROSPECTS : [];
-  const p = prospectsList.find(item => item.id === selectedProspectId);
+  const prospectsList = getGlobalProspects();
+  const curId = getSelectedId();
+  const p = prospectsList.find(item => item.id === curId) || prospectsList[0];
   if (!p) return;
   const unmasked = unmaskProspectPhone(p.id);
   if (unmasked) {
     if (typeof recordPartnerActivity === 'function') {
       recordPartnerActivity('TEARDOWN_PITCH', p.id, { client: p.name, mode: 'whatsapp_brief' });
     }
-    const waUrl = generateWhatsAppBrief(p);
-    if (typeof window !== 'undefined') {
+    const generateFn = (typeof root.generateWhatsAppBrief === 'function') ? root.generateWhatsAppBrief : ((typeof global !== 'undefined' && typeof global.generateWhatsAppBrief === 'function') ? global.generateWhatsAppBrief : null);
+    const waUrl = generateFn ? generateFn(p) : '#';
+    if (typeof window !== 'undefined' && waUrl !== '#') {
       window.open(waUrl, '_blank');
     }
   }

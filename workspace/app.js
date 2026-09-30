@@ -303,7 +303,7 @@ window.addEventListener('DOMContentLoaded', () => {
     try {
       const parsed = JSON.parse(savedUser);
       if (parsed && parsed.name && parsed.role) {
-        currentUser = parsed;
+        setCurrentUser(parsed);
         if (parsed.role === 'applicant') {
           renderApplicantView(parsed);
         } else {
@@ -323,7 +323,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const customWorkers = getCustomWorkers();
         const username = (parsed.username || parsed.name || '').toLowerCase();
         if (customWorkers[username] && parsed.tokenExp && parsed.tokenExp > Date.now()) {
-          currentUser = parsed;
+          setCurrentUser(parsed);
           onAuthVerified();
           setupKeyboardShortcuts();
           return;
@@ -331,7 +331,7 @@ window.addEventListener('DOMContentLoaded', () => {
       }
       // 3. Fast Owner Session Restore (Zero auth gate flash for Owner)
       if (parsed && parsed.email && isApoorvOwnerEmail(parsed.email)) {
-        currentUser = parsed;
+        setCurrentUser(parsed);
         onAuthVerified();
         setupKeyboardShortcuts();
       }
@@ -1217,7 +1217,7 @@ function handleCallInitiated() {
     openAuthGate();
     return;
   }
-  currentUser = user;
+  setCurrentUser(user);
 
   const curProspectId = (typeof window !== 'undefined' && window.selectedProspectId)
     ? window.selectedProspectId
@@ -2494,14 +2494,16 @@ registerGlobalExports({
   setCurrentUser: (u) => { currentUser = u; if (typeof window !== 'undefined') window.currentUser = u; if (typeof global !== 'undefined') global.currentUser = u; },
   getCurrentUser: () => currentUser,
   setSelectedProspectId: (id) => { selectedProspectId = id; if (typeof window !== 'undefined') window.selectedProspectId = id; if (typeof global !== 'undefined') global.selectedProspectId = id; },
-  getSelectedProspectId: () => selectedProspectId,
-  getCallWorkflowState: () => ({ isCallActive, callPendingDisposition, activeCallProspectId, currentCallReach, currentCallOutcome }),
+  getCallWorkflowState: () => _gInCall()?.getCallWorkflowState() || ({ isCallActive, callPendingDisposition, activeCallProspectId, currentCallReach, currentCallOutcome }),
   setCallWorkflowState: (s) => {
-    if (s.isCallActive !== undefined) isCallActive = s.isCallActive;
-    if (s.callPendingDisposition !== undefined) callPendingDisposition = s.callPendingDisposition;
-    if (s.activeCallProspectId !== undefined) { activeCallProspectId = s.activeCallProspectId; selectedProspectId = s.activeCallProspectId; }
-    if (s.currentCallReach !== undefined) currentCallReach = s.currentCallReach;
-    if (s.currentCallOutcome !== undefined) currentCallOutcome = s.currentCallOutcome;
+    if (s) {
+      if (s.isCallActive !== undefined) isCallActive = s.isCallActive;
+      if (s.callPendingDisposition !== undefined) callPendingDisposition = s.callPendingDisposition;
+      if (s.activeCallProspectId !== undefined) { activeCallProspectId = s.activeCallProspectId; selectedProspectId = s.activeCallProspectId; }
+      if (s.currentCallReach !== undefined) currentCallReach = s.currentCallReach;
+      if (s.currentCallOutcome !== undefined) currentCallOutcome = s.currentCallOutcome;
+    }
+    _gInCall()?.setCallWorkflowState(s);
   }
 });
 

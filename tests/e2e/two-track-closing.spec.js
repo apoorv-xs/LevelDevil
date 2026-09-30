@@ -25,6 +25,8 @@ test.describe("Two-Track Deal Closing Engine & Sovereign Payment Terminal E2E", 
       localStorage.setItem("sprintdial_user", JSON.stringify(user));
       localStorage.setItem("sprintdial_google_user", JSON.stringify(user));
       localStorage.setItem("sprintdial_test_mode", "true");
+      localStorage.setItem("sprintdial_onboarding_ack_" + (user.sub || user.email || "caller"), new Date().toISOString());
+      localStorage.setItem("sprintdial_tour_completed", "true");
       window.__TEST_MODE__ = true;
     }, mockCaller);
   });

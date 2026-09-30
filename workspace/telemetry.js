@@ -132,7 +132,7 @@ function recordPartnerActivity(actionType, prospectId, details = {}) {
       ? user.email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
       : 'Partner Rep');
 
-    const p = prospectId ? (typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS) ? PROSPECTS.find(item => item.id === prospectId) : null) : null;
+    const p = prospectId ? (getGlobalProspects().find(item => item.id === prospectId) || null) : null;
     const prospectName = p?.name || details?.client || details?.prospectName || 'Workspace Queue';
     const city = p?.city || details?.city || 'All';
 
@@ -301,7 +301,7 @@ function handleIncomingAuditEntry(entry) {
 // PROFILE TELEMETRY & DROPDOWN ENGINE
 // -------------------------------------------------------------
 function getProfileTelemetry() {
-  const allLeads = (typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS)) ? PROSPECTS : [];
+  const allLeads = getGlobalProspects();
 
   // 1. Successes: closed_won, discovery_booked, interested
   const closedWon = allLeads.filter(p => p.status === 'closed_won');
@@ -319,7 +319,7 @@ function getProfileTelemetry() {
   const callbacks = allLeads.filter(p => p.status === 'connected_callback' || p.status === 'callback');
 
   // 4. Dials today vs daily target
-  const currentDials = typeof dialsToday !== 'undefined' ? dialsToday : 0;
+  const currentDials = getDialsToday();
   const maxGoal = 20;
   const dialPct = Math.min(100, Math.round((currentDials / maxGoal) * 100));
 
@@ -523,9 +523,7 @@ function updateProfileDropdownUI() {
 
     const logs = getAuditLogs();
     const auditTouches = logs.filter(l => l.actionType === 'CALL_INITIATED' || l.actionType === 'OUTCOME_LOGGED').length;
-    const allTouchedLeads = (typeof PROSPECTS !== 'undefined' && Array.isArray(PROSPECTS))
-      ? PROSPECTS.filter(p => p.status && p.status !== 'available').length
-      : 0;
+    const allTouchedLeads = getGlobalProspects().filter(p => p.status && p.status !== 'available').length;
     const fleetTotalDials = Math.max(telemetry.dialsToday, auditTouches, allTouchedLeads);
 
     if (dialsTodayEl) dialsTodayEl.textContent = fleetTotalDials;
@@ -692,7 +690,9 @@ function closeProfileDropdown() {
 
 function resetShiftDials() {
   if (confirm("Reset today's dial counter back to 0?")) {
-    dialsToday = 0;
+    root.dialsToday = 0;
+    if (typeof window !== 'undefined') window.dialsToday = 0;
+    if (typeof global !== 'undefined') global.dialsToday = 0;
     saveDialsToday();
     updateDialProgress();
     updateProfileDropdownUI();

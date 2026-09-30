@@ -92,6 +92,7 @@
         role: 'caller',
         sub: user.uid || Date.now().toString()
       };
+      if (typeof root.setCurrentUser === 'function') root.setCurrentUser(root.currentUser);
       localStorage.setItem('sprintdial_user', JSON.stringify(root.currentUser));
       localStorage.setItem('sprintdial_google_user', JSON.stringify(root.currentUser));
       if (typeof root.onAuthVerified === 'function') root.onAuthVerified();
@@ -132,6 +133,7 @@
           commissionTier: matchedInvite.commissionRate || '15%',
           sub: user.uid || Date.now().toString()
         };
+        if (typeof root.setCurrentUser === 'function') root.setCurrentUser(root.currentUser);
         localStorage.setItem('sprintdial_user', JSON.stringify(root.currentUser));
         localStorage.setItem('sprintdial_google_user', JSON.stringify(root.currentUser));
         if (typeof root.onAuthVerified === 'function') root.onAuthVerified();
@@ -149,6 +151,7 @@
         role: 'applicant',
         sub: user.uid || Date.now().toString()
       };
+      if (typeof root.setCurrentUser === 'function') root.setCurrentUser(root.currentUser);
       localStorage.setItem('sprintdial_user', JSON.stringify(root.currentUser));
       localStorage.setItem('sprintdial_google_user', JSON.stringify(root.currentUser));
       renderApplicantView(root.currentUser);
@@ -504,6 +507,7 @@
           tokenExp: Date.now() + (24 * 60 * 60 * 1000), // 24 hours
           sub: Date.now().toString()
         };
+        if (typeof root.setCurrentUser === 'function') root.setCurrentUser(root.currentUser);
         localStorage.setItem('sprintdial_user', JSON.stringify(root.currentUser));
         localStorage.setItem('sprintdial_google_user', JSON.stringify(root.currentUser));
         if (typeof root.onAuthVerified === 'function') root.onAuthVerified();
@@ -730,10 +734,12 @@
           const isCustomWorker = customWorkers[username] || Object.values(customWorkers).some(w => (w.email || '').toLowerCase() === email);
           if (parsed.callerToken && parsed.tokenExp && parsed.tokenExp > Date.now()) {
             root.currentUser = parsed;
+            if (typeof root.setCurrentUser === 'function') root.setCurrentUser(parsed);
             if (typeof root.onAuthVerified === 'function') root.onAuthVerified();
             return;
           } else if (isCustomWorker || parsed.email) {
             root.currentUser = parsed;
+            if (typeof root.setCurrentUser === 'function') root.setCurrentUser(parsed);
             if (typeof root.onAuthVerified === 'function') root.onAuthVerified();
             return;
           }
@@ -747,6 +753,7 @@
         }
         if (parsed && parsed.role === 'applicant' && parsed.email) {
           root.currentUser = parsed;
+          if (typeof root.setCurrentUser === 'function') root.setCurrentUser(parsed);
           renderApplicantView(parsed);
           return;
         }
@@ -757,11 +764,13 @@
       localStorage.removeItem('sprintdial_google_user');
     }
     root.currentUser = null;
+    if (typeof root.setCurrentUser === 'function') root.setCurrentUser(null);
     initGuestMode();
   }
 
   function signOut() {
     root.currentUser = null;
+    if (typeof root.setCurrentUser === 'function') root.setCurrentUser(null);
     if (typeof global !== 'undefined') global.currentUser = null;
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem('sprintdial_user');

@@ -86,7 +86,7 @@ function selectDealTier(tierNum) {
     }
   });
 
-  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  const p = getGlobalProspects().find(item => item.id === getSelectedId());
   const tier = DEAL_TIERS[tierNum] || DEAL_TIERS[1];
 
   const totalEl = document.getElementById('dealSummaryTotal');
@@ -114,7 +114,7 @@ function selectDealTier(tierNum) {
 }
 
 function openDealCommitmentModal(prospectId) {
-  const p = PROSPECTS.find(item => item.id === (prospectId || selectedProspectId));
+  const p = getGlobalProspects().find(item => item.id === (prospectId || getSelectedId()));
   if (!p) return;
   playSound('click');
 
@@ -160,7 +160,7 @@ function copyDealProposalLink() {
 }
 
 function sendWhatsAppDealCommitment() {
-  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  const p = getGlobalProspects().find(item => item.id === getSelectedId());
   if (!p) return;
   playSound('click');
 
@@ -182,7 +182,7 @@ function sendWhatsAppDealCommitment() {
     : `https://wa.me/?text=${encodeURIComponent(msg)}`;
 
   if (typeof recordPartnerActivity === 'function') {
-    recordPartnerActivity('PROPOSAL_DISPATCH', selectedProspectId, { client: p.name, tier: currentDealTier, url });
+    recordPartnerActivity('PROPOSAL_DISPATCH', getSelectedId(), { client: p.name, tier: currentDealTier, url });
   }
 
   if (typeof window !== "undefined") {
@@ -191,7 +191,7 @@ function sendWhatsAppDealCommitment() {
 }
 
 function confirmDealDepositReceived() {
-  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  const p = getGlobalProspects().find(item => item.id === getSelectedId());
   if (!p) return;
   playSound('chime');
 
@@ -230,12 +230,13 @@ function confirmDealDepositReceived() {
 
   showNotification(`[SUCCESS] 50% Deposit Confirmed! Deal Closed & Commission of ₹${tier.commission.toLocaleString('en-IN')} Unlocked!`);
   closeDealCommitmentModal();
-  updateProfileDropdownUI();
+  if (typeof root.updateProfileDropdownUI === 'function') root.updateProfileDropdownUI();
+  else if (typeof window !== 'undefined' && typeof window.updateProfileDropdownUI === 'function') window.updateProfileDropdownUI();
 }
 
 // Track 2: Executive Handoff to Apoorv
 function openExecutiveHandoffModal(prospectId) {
-  const p = PROSPECTS.find(item => item.id === (prospectId || selectedProspectId));
+  const p = getGlobalProspects().find(item => item.id === (prospectId || getSelectedId()));
   if (!p) return;
   playSound('click');
 
@@ -268,7 +269,7 @@ function closeExecutiveHandoffModal() {
 }
 
 function getExecutiveHandoffBriefText() {
-  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  const p = getGlobalProspects().find(item => item.id === getSelectedId());
   if (!p) return '';
 
   const callerUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : (window.currentUser || {});
@@ -321,7 +322,7 @@ function copyHandoffBriefText() {
 
 function generateApoorvMeetInvite() {
   playSound('click');
-  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  const p = getGlobalProspects().find(item => item.id === getSelectedId());
   if (!p) return;
 
   const timeVal = document.getElementById('handoffMeetingTime')?.value;
@@ -356,7 +357,7 @@ function sendHandoffBriefToApoorv() {
 }
 
 function saveHandoffAndAdvance() {
-  const p = PROSPECTS.find(item => item.id === selectedProspectId);
+  const p = getGlobalProspects().find(item => item.id === getSelectedId());
   if (!p) return;
   playSound('chime');
 

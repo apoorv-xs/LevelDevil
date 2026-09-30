@@ -776,6 +776,10 @@ function selectProspect(id, playSoundEffect = false) {
     playSound('click');
   }
   selectedProspectId = id;
+  if (typeof root !== 'undefined') root.selectedProspectId = id;
+  if (typeof window !== 'undefined') window.selectedProspectId = id;
+  if (typeof global !== 'undefined') global.selectedProspectId = id;
+  if (typeof root.setSelectedProspectId === 'function') root.setSelectedProspectId(id);
   resetCallWorkflowState();
   renderQueue();
   renderActiveProspect();
@@ -984,7 +988,8 @@ function renderActiveProspect() {
   }
 
   // Lock Status
-  const isLockedByOther = p.status === 'locked' && p.lockedEmail !== currentUser?.email;
+  const activeUser = getCurrentUser();
+  const isLockedByOther = p.status === 'locked' && p.lockedEmail && p.lockedEmail !== activeUser?.email;
   const isDNC = p.status === 'blacklisted';
   const lockedBadge = document.getElementById('lockedBadge');
   const lockStatusSpan = document.getElementById('currentLockStatus');
