@@ -2871,7 +2871,7 @@ const WORKSPACE_TOUR_STEPS = [
     step: 3,
     total: 8,
     badge: 'STEP 3 OF 8 // RECON HOOK',
-    targetSelector: '#callWrapCard, #preCallHookText, #preCallBleedText',
+    targetSelector: '#preCallIntelCard, #preCallHookText, #preCallBleedText',
     targetLabel: 'COLUMN 2 MID // 10s RECON HOOK & BLEED INTEL',
     targetSubtext: 'Empirical Lighthouse 4G speed deficit & aggregator commission leak',
     sectorBadge: '// RECON TELEMETRY LOCKED',
