@@ -183,9 +183,10 @@ describe('SprintDial Cloud MCP Server for Gemini Spark', () => {
     });
 
     expect(response.status).toBe('ONLINE');
-    expect(response.totalTools).toBe(14);
+    expect(response.totalTools).toBe(15);
     expect(response.tools).toContain('generate_upi_deposit_rail');
     expect(response.tools).toContain('mark_deal_closed_won');
+    expect(response.tools).toContain('get_prospect_comparison_matrix');
     expect(response.tools).toContain('get_objection_rebuttal');
   });
 
@@ -257,7 +258,7 @@ describe('SprintDial Cloud MCP Server for Gemini Spark', () => {
     });
 
     expect(listRes.result.tools).toBeDefined();
-    expect(listRes.result.tools.length).toBe(14);
+    expect(listRes.result.tools.length).toBe(15);
 
     // 3. tools/call
     const callPayload = JSON.stringify({
@@ -288,5 +289,21 @@ describe('SprintDial Cloud MCP Server for Gemini Spark', () => {
     const content = JSON.parse(callRes.result.content[0].text);
     expect(content.advanceRequired).toBe('₹25,000');
     expect(content.upiVpa).toBe('apoorvxs@okaxis');
+  });
+
+  it('18. get_prospect_comparison_matrix returns comprehensive before vs after contrast and ROI payback', async () => {
+    const res = await serverModule.executeToolCall('get_prospect_comparison_matrix', {
+      prospect_id: 'p-1',
+      monthly_visitors: 4000,
+      average_order_value: 3000,
+      tier: 1
+    });
+
+    expect(res).toHaveProperty('comparisonGrid');
+    expect(res.comparisonGrid.length).toBeGreaterThanOrEqual(8);
+    expect(res.comparisonGrid[0]).toHaveProperty('whatTheyHave');
+    expect(res.comparisonGrid[0]).toHaveProperty('whatWeProvide');
+    expect(res.revenueRecoveryCalculus).toHaveProperty('breakEvenPaybackPeriod');
+    expect(res.interactiveTeardownUrl).toContain('apoorv.qzz.io/sales?teardown=p-1');
   });
 });

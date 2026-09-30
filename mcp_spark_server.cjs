@@ -532,6 +532,19 @@ const MCP_TOOLS = [
       type: 'object',
       properties: {}
     }
+  },
+  {
+    name: 'get_prospect_comparison_matrix',
+    description: 'Get deep side-by-side technical and economic comparison: what the client currently has (slow LCP, aggregator bleed, DPDP risks) vs what Apoorv delivers (0.8s mobile paint, locked 60 FPS Three.js/WebGPU, 100% direct bookings, SLA guarantee), plus payback days calculator.',
+    parameters: {
+      type: 'object',
+      properties: {
+        prospect_id: { type: 'string', description: 'Existing lead ID from SprintDial database (e.g. "p-1").' },
+        monthly_visitors: { type: 'number', description: 'Estimated monthly website visitors (default 3,000).' },
+        average_order_value: { type: 'number', description: 'Average order / consultation value in INR (default ₹2,500).' },
+        tier: { type: 'number', enum: [1, 2, 3], description: 'Target tier to compare against: 1 (₹50k), 2 (₹100k), 3 (₹200k).' }
+      }
+    }
   }
 ];
 
@@ -978,6 +991,97 @@ Under our sovereign 60 FPS SLA guarantee, if your mobile speed fails to hit 60 F
         combinedEarnings: `₹${(cleared + pending).toLocaleString('en-IN')}`,
         totalDeals: ledger.length,
         ledger
+      };
+    }
+
+    case 'get_prospect_comparison_matrix': {
+      const p = args.prospect_id ? all.find(item => item.id === args.prospect_id) : (all[0] || {});
+      const clientName = p.name || 'Your Establishment';
+      const currentSite = p.site || 'Current Website';
+      const detectedLcp = p.lcpTime ? p.lcpTime.replace('LCP: ', '') : '4.4s';
+      const speedScore = p.speedScore || '35 / 100';
+      const techStack = p.techStack || 'WordPress / Elementor';
+
+      const monthlyVisitors = Number(args.monthly_visitors) || 3000;
+      const aov = Number(args.average_order_value) || 2500;
+      const tierNum = Number(args.tier) || 1;
+      const tier = DEAL_TIERS[tierNum] || DEAL_TIERS[1];
+
+      // Revenue Recovery Model
+      const monthlyOrders = monthlyVisitors * 0.05; // 5% baseline conversion
+      const grossMonthly = monthlyOrders * aov;
+      const aggregatorBleed = Math.round(grossMonthly * 0.20); // 20% commission bleed to Practo/Zomato/OTAs
+      const annualBleed = aggregatorBleed * 12;
+      const dailySavings = aggregatorBleed / 30;
+      const paybackDays = dailySavings > 0 ? Math.max(1, Math.round((tier.total / dailySavings) * 10) / 10) : 10;
+
+      const interactiveTeardownUrl = `https://apoorv.qzz.io/sales?teardown=${encodeURIComponent(p.id || 'p-1')}`;
+      const interactiveProposalUrl = `https://apoorv.qzz.io/sales?proposal=${encodeURIComponent(p.id || 'p-1')}&fee=${tier.total}`;
+
+      return {
+        prospect_id: p.id || 'sample',
+        clientName,
+        currentSite,
+        interactiveTeardownUrl,
+        interactiveProposalUrl,
+        comparisonGrid: [
+          {
+            dimension: 'Mobile Loading Latency (4G/5G)',
+            whatTheyHave: `${detectedLcp} (High drop-off / failing Google INP)`,
+            whatWeProvide: '0.8s mobile paint (Instantaneous response)',
+            strategicImpact: 'Every second over 2.5s causes a 40%+ drop-off to competitors.'
+          },
+          {
+            dimension: 'Google Speed Score',
+            whatTheyHave: `${speedScore} (Penalized in mobile search algorithms)`,
+            whatWeProvide: '99 / 100 (Flawless green Core Web Vitals pass)',
+            strategicImpact: 'Guarantees priority indexing in local organic search.'
+          },
+          {
+            dimension: 'Code Weight & Plugins',
+            whatTheyHave: `${techStack} (Heavy PHP/Elementor asset bloat, >3000 DOM nodes)`,
+            whatWeProvide: 'Zero-Plugin Pure Headless Code (<5MB bundle, Draco compressed)',
+            strategicImpact: 'Eliminates smartphone overheating and browser freezes.'
+          },
+          {
+            dimension: 'Direct Booking Conduit',
+            whatTheyHave: 'Multi-step contact form (5+ input fields with 80%+ bounce)',
+            whatWeProvide: '1-tap Ergonomic Thumb-Zone WhatsApp booking conduit',
+            strategicImpact: 'Converts high-intent mobile searchers in 1 second.'
+          },
+          {
+            dimension: 'Aggregator Margin Bleed',
+            whatTheyHave: `₹${aggregatorBleed.toLocaleString('en-IN')}/mo (18%-25% lost to Practo/Zomato/OTAs)`,
+            whatWeProvide: '100% Owned Direct Booking Pipeline (0% commissions)',
+            strategicImpact: `Recovers ₹${annualBleed.toLocaleString('en-IN')}/year in lost net margin.`
+          },
+          {
+            dimension: 'Legal & Privacy Compliance',
+            whatTheyHave: 'Statutory Non-Compliance (Missing affirmative DPDP consent)',
+            whatWeProvide: 'DPDP Act 2023 Statutory Compliance Shield',
+            strategicImpact: 'Shields business from statutory penalties up to ₹250 Cr under Indian law.'
+          },
+          {
+            dimension: 'Visual Prestige & Spatial UI',
+            whatTheyHave: 'Flat 2D template brochure (Generic commodity look)',
+            whatWeProvide: 'Locked 60 FPS Three.js / WebGPU Spatial Interactive Showcase',
+            strategicImpact: 'Commands authority and justifies premium ticket pricing.'
+          },
+          {
+            dimension: 'Commercial SLA Guarantee',
+            whatTheyHave: 'Generic agency promise (Zero outcome or speed warranty)',
+            whatWeProvide: '100% Money-Back 60 FPS Performance SLA Guarantee',
+            strategicImpact: 'If delivered site fails 60 FPS or sub-1.5s CWV on mobile, full deposit refunded.'
+          }
+        ],
+        revenueRecoveryCalculus: {
+          monthlyVisitors: `${monthlyVisitors.toLocaleString('en-IN')} visitors`,
+          averageOrderValue: `₹${aov.toLocaleString('en-IN')}`,
+          monthlyAggregatorBleed: `₹${aggregatorBleed.toLocaleString('en-IN')} / month`,
+          annualAggregatorBleed: `₹${annualBleed.toLocaleString('en-IN')} / year`,
+          recommendedTier: `${tier.name} (₹${tier.total.toLocaleString('en-IN')})`,
+          breakEvenPaybackPeriod: `${paybackDays} Days (Pays for itself in ~${Math.ceil(paybackDays)} days)`
+        }
       };
     }
 
