@@ -183,11 +183,15 @@ describe('SprintDial Cloud MCP Server for Gemini Spark', () => {
     });
 
     expect(response.status).toBe('ONLINE');
-    expect(response.totalTools).toBe(15);
+    expect(response.totalTools).toBe(19);
     expect(response.tools).toContain('generate_upi_deposit_rail');
     expect(response.tools).toContain('mark_deal_closed_won');
     expect(response.tools).toContain('get_prospect_comparison_matrix');
     expect(response.tools).toContain('get_objection_rebuttal');
+    expect(response.tools).toContain('generate_outreach_sequence');
+    expect(response.tools).toContain('harvest_leads_by_niche');
+    expect(response.tools).toContain('verify_email_deliverability');
+    expect(response.tools).toContain('get_deliverability_health');
   });
 
   it('16. Server serves valid MCP SSE endpoint event with string URI', async () => {
@@ -258,7 +262,7 @@ describe('SprintDial Cloud MCP Server for Gemini Spark', () => {
     });
 
     expect(listRes.result.tools).toBeDefined();
-    expect(listRes.result.tools.length).toBe(15);
+    expect(listRes.result.tools.length).toBe(19);
 
     // 3. tools/call
     const callPayload = JSON.stringify({
@@ -305,5 +309,61 @@ describe('SprintDial Cloud MCP Server for Gemini Spark', () => {
     expect(res.comparisonGrid[0]).toHaveProperty('whatWeProvide');
     expect(res.revenueRecoveryCalculus).toHaveProperty('breakEvenPaybackPeriod');
     expect(res.interactiveTeardownUrl).toContain('apoorv.qzz.io/sales?teardown=p-1');
+  });
+
+  it('19. generate_outreach_sequence outputs complete 4-touch Swokei drip sequence with Gmail compose links', async () => {
+    const res = await serverModule.executeToolCall('generate_outreach_sequence', {
+      prospect_id: 'p-1',
+      recipient_email: 'director@drrajeshcosmetic.com'
+    });
+
+    expect(res).toHaveProperty('sequence');
+    expect(res.sequence.length).toBe(4);
+    expect(res.sequence[0].touchNumber).toBe(1);
+    expect(res.sequence[0].day).toBe(1);
+    expect(res.sequence[0].subject).toContain('Executive Performance Teardown');
+    expect(res.sequence[0].gmailComposeUrl).toContain('mail.google.com/mail');
+    expect(res.sequence[0].whatsappText).toContain('Namaste');
+
+    expect(res.sequence[1].day).toBe(3);
+    expect(res.sequence[2].day).toBe(6);
+    expect(res.sequence[3].day).toBe(9);
+    expect(res.sequence[3].title).toContain('Permission to Close File');
+  });
+
+  it('20. harvest_leads_by_niche harvests and auto-books high-ticket prospects into SprintDial radar', async () => {
+    const res = await serverModule.executeToolCall('harvest_leads_by_niche', {
+      niche: 'Hospitality',
+      city: 'Goa',
+      count: 2
+    });
+
+    expect(res.success).toBe(true);
+    expect(res.leads.length).toBeGreaterThanOrEqual(1);
+    expect(res.leads[0]).toHaveProperty('site');
+    expect(res.leads[0]).toHaveProperty('lcpTime');
+    expect(res.leads[0]).toHaveProperty('flaws');
+    expect(res.leads[0].bookmarked).toBe(true);
+  });
+
+  it('21. verify_email_deliverability checks MX, SPF and DMARC with deliverability score', async () => {
+    const res = await serverModule.executeToolCall('verify_email_deliverability', {
+      target_email_or_domain: 'google.com'
+    });
+
+    expect(res).toHaveProperty('deliverabilityScore');
+    expect(res.hasValidMx).toBe(true);
+    expect(res.hasSpfRecord).toBe(true);
+    expect(res.status).toBe('OPTIMAL');
+  });
+
+  it('22. get_deliverability_health provides sender inbox health and daily volume limits', async () => {
+    const res = await serverModule.executeToolCall('get_deliverability_health', {});
+
+    expect(res.senderInbox).toBe('apoorvxs@gmail.com');
+    expect(res.status).toBe('ACTIVE_OPTIMAL');
+    expect(res.safeDailySendingLimits).toHaveProperty('currentRecommendedDailyCeiling');
+    expect(res.deliverabilityInvariants.length).toBeGreaterThan(0);
+    expect(res.optimalSendingWindows.length).toBeGreaterThan(0);
   });
 });

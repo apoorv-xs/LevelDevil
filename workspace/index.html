@@ -1612,6 +1612,19 @@
               </svg>
               <span>Teardown</span>
             </button>
+
+            <button 
+              id="btnOutreachDrip"
+              onclick="openOutreachDripModal()" 
+              class="px-3.5 py-2 bg-[#fce566] hover:bg-[#ffe58f] text-[#17120f] border-2 border-[#17120f] font-arcade text-[10px] sm:text-xs shadow-[2px_2px_0_#17120f] transition flex items-center justify-center gap-1.5 cursor-pointer"
+              title="Launch Swokei-grade 4-touch cold outreach sequence"
+            >
+              <svg class="w-3.5 h-3.5 text-[#17120f] shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <span>Outreach Drip</span>
+            </button>
           </div>
         </div>
 
@@ -2590,6 +2603,150 @@
         </button>
       </div>
     </div>
+  <!-- 4.1. SWOKEI-GRADE OUTREACH DRIP SEQUENCE ENGINE MODAL -->
+  <div id="outreachDripModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-[1055]" role="dialog" aria-modal="true" aria-labelledby="outreachDripModalTitle">
+    <div id="outreachDripModalBox" class="studio-panel-elevated bg-[#fffdf1] border-[3px] border-[#17120f] shadow-[8px_8px_0_#17120f] max-w-2xl w-full p-4 sm:p-6 space-y-4 flex flex-col max-h-[92vh] font-mono text-[#17120f] overflow-y-auto">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b-2 border-[#17120f] pb-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 text-[9px] font-arcade bg-[#fce566] text-[#17120f] border border-[#17120f] shadow-[1px_1px_0_#17120f]">SWOKEI ENGINE</span>
+            <h3 id="outreachDripModalTitle" class="font-arcade text-xs sm:text-sm font-bold text-[#17120f]">Cold Outreach Drip Sequence</h3>
+          </div>
+          <p class="text-[11px] font-mono text-[#17120f]/80 mt-1">
+            Prospect: <strong id="dripClientName" class="text-blue-700">--</strong> • DM: <span id="dripDmName" class="font-bold">--</span>
+          </p>
+        </div>
+        <button onclick="closeOutreachDripModal()" aria-label="Close Drip Modal" class="w-8 h-8 bg-[#fffdf1] hover:bg-[#fce566] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-sm font-bold flex items-center justify-center cursor-pointer transition active:translate-x-[1px] active:translate-y-[1px]">✕</button>
+      </div>
+
+      <!-- Recipient & Deliverability Verification Row -->
+      <div class="p-3 bg-[#e8f4fd] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] space-y-2">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div class="flex items-center gap-2 flex-1 min-w-0">
+            <label for="dripRecipientEmail" class="text-[10px] font-arcade uppercase text-[#17120f] shrink-0">TO:</label>
+            <input 
+              type="email" 
+              id="dripRecipientEmail" 
+              placeholder="dm@company.com" 
+              class="flex-1 min-w-0 px-2.5 py-1 bg-white border-2 border-[#17120f] text-xs font-mono font-bold text-[#17120f] focus:outline-none focus:bg-[#fff9d6]"
+            >
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <span id="dripDnsBadge" class="text-[9px] font-mono px-2 py-1 bg-emerald-100 text-emerald-800 border border-emerald-600 font-bold">
+              ● MX/SPF OPTIMAL (100/100)
+            </span>
+            <button 
+              type="button"
+              onclick="verifyActiveLeadDeliverabilityUI()" 
+              class="px-2 py-1 bg-[#fffdf1] hover:bg-[#fce566] border border-[#17120f] text-[9px] font-arcade font-bold transition shadow-[1px_1px_0_#17120f]"
+              title="Query live Cloudflare DNS (1.1.1.1) for MX, SPF and DMARC records"
+            >
+              [VERIFY DNS]
+            </button>
+          </div>
+        </div>
+        <div id="dripDnsDetailText" class="text-[10px] text-blue-900 font-mono flex items-center gap-1.5">
+          <span>🛡️ Verified sender mailbox: <strong>apoorvxs@gmail.com</strong> (DKIM/SPF aligned)</span>
+        </div>
+      </div>
+
+      <!-- 4-Touch Drip Stage Tabs -->
+      <div class="flex border-b-2 border-[#17120f] gap-1.5 font-arcade text-[9px] sm:text-[10px] overflow-x-auto pb-1.5 shrink-0">
+        <button id="btnDripTouch1" onclick="switchOutreachDripTouch(1)" class="drip-touch-btn px-2.5 py-1.5 bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-bold shrink-0 transition">
+          [1] Day 1: Teardown
+        </button>
+        <button id="btnDripTouch2" onclick="switchOutreachDripTouch(2)" class="drip-touch-btn px-2.5 py-1.5 bg-[#fffdf1] hover:bg-[#fff1bd] text-[#17120f] border border-[#17120f] shrink-0 transition">
+          [2] Day 3: 60 FPS Demo
+        </button>
+        <button id="btnDripTouch3" onclick="switchOutreachDripTouch(3)" class="drip-touch-btn px-2.5 py-1.5 bg-[#fffdf1] hover:bg-[#fff1bd] text-[#17120f] border border-[#17120f] shrink-0 transition">
+          [3] Day 6: Payback Math
+        </button>
+        <button id="btnDripTouch4" onclick="switchOutreachDripTouch(4)" class="drip-touch-btn px-2.5 py-1.5 bg-[#fffdf1] hover:bg-[#fff1bd] text-[#17120f] border border-[#17120f] shrink-0 transition">
+          [4] Day 9: Breakup
+        </button>
+      </div>
+
+      <!-- Touch Subject Row -->
+      <div class="space-y-1">
+        <label for="dripSubjectInput" class="text-[10px] font-arcade uppercase text-[#17120f]/80 flex items-center justify-between">
+          <span>EMAIL SUBJECT LINE</span>
+          <span id="dripTouchTitleLabel" class="text-blue-700 text-[9px] font-mono">Touch 1 • Problem-First Hook</span>
+        </label>
+        <div class="flex items-center gap-2">
+          <input 
+            type="text" 
+            id="dripSubjectInput" 
+            class="w-full px-3 py-1.5 bg-white border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] text-xs font-mono text-[#17120f] focus:outline-none focus:bg-[#fff9d6]"
+          >
+          <button 
+            type="button"
+            onclick="copyOutreachSubject()" 
+            class="px-3 py-1.5 bg-[#fffdf1] hover:bg-[#fce566] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-[10px] font-bold shrink-0 transition"
+          >
+            [COPY]
+          </button>
+        </div>
+      </div>
+
+      <!-- Email Body Area -->
+      <div class="space-y-1">
+        <label for="dripBodyInput" class="text-[10px] font-arcade uppercase text-[#17120f]/80 flex items-center justify-between">
+          <span>EMAIL BODY (PLAIN TEXT / HIGH-DELIVERABILITY)</span>
+          <span class="text-neutral-500 text-[9px] font-mono">Zero HTML bloat • 1 clean link</span>
+        </label>
+        <textarea 
+          id="dripBodyInput" 
+          rows="7" 
+          class="w-full p-3 bg-white border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] text-xs font-mono text-[#17120f] leading-relaxed focus:outline-none focus:bg-[#fff9d6] custom-scrollbar"
+        ></textarea>
+      </div>
+
+      <!-- Action Buttons Row -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t-2 border-[#17120f]">
+        <div class="flex flex-wrap items-center gap-2">
+          <button 
+            type="button"
+            onclick="launchGmailComposeUI()" 
+            class="px-4 py-2 bg-[#d93025] hover:bg-[#c5221f] text-white border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] font-arcade text-[10px] font-bold flex items-center gap-1.5 transition active:translate-x-[1px] active:translate-y-[1px]"
+            title="Open pre-filled Gmail compose window with recipient, subject, and body"
+          >
+            <svg class="w-3.5 h-3.5 fill-current shrink-0" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            <span>[GMAIL] Launch Compose (1-Click)</span>
+          </button>
+          <button 
+            type="button"
+            onclick="copyOutreachBody()" 
+            class="px-3 py-2 bg-[#fffdf1] hover:bg-[#fce566] text-[#17120f] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-[10px] font-bold transition active:translate-x-[1px] active:translate-y-[1px]"
+          >
+            [COPY BODY]
+          </button>
+          <button 
+            type="button"
+            onclick="sendOutreachWhatsAppUI()" 
+            class="px-3 py-2 bg-[#d4edda] hover:bg-[#c3e6cb] text-[#155724] border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-[10px] font-bold flex items-center gap-1.5 transition active:translate-x-[1px] active:translate-y-[1px]"
+          >
+            <span>[ WA ] Send WhatsApp</span>
+          </button>
+        </div>
+
+        <button 
+          type="button"
+          onclick="closeOutreachDripModal()" 
+          class="px-4 py-2 bg-[#fffdf1] hover:bg-neutral-200 border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] font-arcade text-[10px] font-bold transition"
+        >
+          Close
+        </button>
+      </div>
+
+      <!-- Footer Policy Strip -->
+      <div class="p-2 bg-[#fff4c9] border border-[#17120f]/30 text-[9.5px] font-mono text-[#17120f]/90 flex items-center justify-between flex-wrap gap-2">
+        <span>⚡ <strong>Swokei Invariant:</strong> 45 emails/day ceiling • Tuesday & Thursday 10:30 AM peak open-rate windows</span>
+        <span class="text-rose-700 font-bold">100% Money-Back 60 FPS SLA Included</span>
+      </div>
+
+    </div>
   </div>
 
   <!-- 4.5. SMARTPHONE SCAN-TO-DIAL MODAL (QR PHONE LINK) -->
@@ -3169,6 +3326,7 @@
         <button id="btnAdminTabSync" onclick="switchAdminTab('sync')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Cloud Sync</button>
         <button id="btnAdminTabUsers" onclick="switchAdminTab('users')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>[PARTNERS]</span><span>Partners &amp; Invites</span></button>
         <button id="btnAdminTabBrain" onclick="switchAdminTab('brain')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>[BRAIN]</span><span>Brain Studio</span></button>
+        <button id="btnAdminTabWarmup" onclick="switchAdminTab('warmup')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>[WARMUP]</span><span>Email Deliverability</span></button>
       </div>
 
       <!-- Tab 1: Gemini AI -->
@@ -3692,6 +3850,100 @@
             <button onclick="resetBrainToFactoryUI()" class="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-red-900/40 hover:bg-red-800/60 text-red-200 border border-red-800/40 font-mono text-xs transition flex items-center justify-center gap-1.5 sm:ml-auto cursor-pointer">
               <span>[RESET]</span><span>Reset to Factory</span>
             </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 7: Email Deliverability & Warmup Sentinel (Swokei-Grade) -->
+      <div id="adminTabWarmup" class="hidden flex-1 overflow-y-auto space-y-4 custom-scrollbar">
+        <!-- Sender Mailbox Health Status Card -->
+        <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-1.5 border-b border-white/10 pb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-white font-bold">[SENDER] OUTREACH MAILBOX HEALTH</span>
+              <span class="px-2 py-0.5 text-[9px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded">STAGE 4: PRODUCTION READY</span>
+            </div>
+            <span class="text-[10px] font-mono text-neutral-400">Mailbox: <strong class="text-white">apoorvxs@gmail.com</strong></span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+            <div class="p-3 bg-white/[0.03] border border-white/[0.08] rounded-lg">
+              <p class="text-[10px] text-neutral-400 font-mono">Daily Outreach Ceiling</p>
+              <p class="text-emerald-400 font-mono font-bold text-sm mt-0.5">45 Emails / Day</p>
+              <span class="text-[9px] text-neutral-500">Warmed Inbox Ceiling</span>
+            </div>
+            <div class="p-3 bg-white/[0.03] border border-white/[0.08] rounded-lg">
+              <p class="text-[10px] text-neutral-400 font-mono">Authentication Status</p>
+              <p class="text-emerald-400 font-mono font-bold text-sm mt-0.5">SPF / DKIM PASS</p>
+              <span class="text-[9px] text-neutral-500">Google Sovereign Sign-off</span>
+            </div>
+            <div class="p-3 bg-white/[0.03] border border-white/[0.08] rounded-lg">
+              <p class="text-[10px] text-neutral-400 font-mono">DNS Resolver Rail</p>
+              <p class="text-blue-400 font-mono font-bold text-sm mt-0.5">Cloudflare 1.1.1.1</p>
+              <span class="text-[9px] text-neutral-500">Zero-latency record lookup</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live DNS & Deliverability Verifier -->
+        <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
+          <div class="text-xs font-mono text-neutral-300 font-bold">Autonomous Domain Deliverability &amp; DNS Scanner:</div>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input 
+              type="text" 
+              id="adminDnsTargetInput" 
+              placeholder="Enter prospect domain or email (e.g. cochinaesthetic.com)..." 
+              class="flex-1 bg-[#15161B] border border-white/10 rounded-lg px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-white/30"
+            />
+            <button 
+              type="button" 
+              onclick="auditDomainDeliverabilityFromAdmin()" 
+              class="w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold shadow transition flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <span>[AUDIT DNS]</span>
+            </button>
+          </div>
+
+          <!-- DNS Audit Results Output Box -->
+          <div id="adminDnsResultsBox" class="hidden bg-black/60 border border-white/10 rounded-xl p-3 font-mono text-xs space-y-2">
+            <div class="flex items-center justify-between border-b border-white/10 pb-1.5">
+              <span class="text-white font-bold" id="adminDnsTargetDisplay">--</span>
+              <span id="adminDnsScoreBadge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-700">SCORE: 100/100</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
+              <div>• MX Records: <span id="adminDnsMxStatus" class="font-bold text-white">--</span></div>
+              <div>• SPF Policy: <span id="adminDnsSpfStatus" class="font-bold text-white">--</span></div>
+              <div>• DMARC: <span id="adminDnsDmarcStatus" class="font-bold text-white">--</span></div>
+            </div>
+            <p id="adminDnsRecommendation" class="text-neutral-300 text-[11px] leading-relaxed"></p>
+          </div>
+        </div>
+
+        <!-- Optimal Cold Dispatch Windows & Warmup Schedule -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+          <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-2">
+            <div class="text-white font-bold text-xs border-b border-white/10 pb-1">⚡ Peak Open-Rate Dispatch Windows</div>
+            <div class="space-y-1.5 text-neutral-300 text-[11px]">
+              <div class="flex justify-between">
+                <span>• Tuesday (10:00 AM - 1:30 PM IST)</span>
+                <span class="text-emerald-400 font-bold">42% Open Rate</span>
+              </div>
+              <div class="flex justify-between">
+                <span>• Thursday (10:30 AM - 2:00 PM IST)</span>
+                <span class="text-emerald-400 font-bold">46% Open Rate</span>
+              </div>
+              <div class="text-neutral-500 text-[10px] pt-1">Automated dispatch avoids Monday triage and Friday archive drops.</div>
+            </div>
+          </div>
+
+          <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-2">
+            <div class="text-white font-bold text-xs border-b border-white/10 pb-1">🛡️ Anti-Spam Deliverability Invariants</div>
+            <ul class="space-y-1 text-neutral-300 text-[10.5px]">
+              <li>✓ Plain-text format (Zero heavy CSS or tracking pixels)</li>
+              <li>✓ Strictly 1 personalized interactive teardown link</li>
+              <li>✓ Zero spam keywords ("Free", "Act Now", "Cheap")</li>
+              <li>✓ Clear professional opt-out in signature</li>
+            </ul>
           </div>
         </div>
       </div>
