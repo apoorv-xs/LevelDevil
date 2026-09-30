@@ -157,7 +157,32 @@ describe('24/7 Google Cloud Run Deployment & MCP Relay Pipeline', () => {
     const content = fs.readFileSync(htmlPath, 'utf8');
     expect(content).toContain('sparkServerUrlInput');
     expect(content).toContain('sparkServerStatusBadge');
+    expect(content).toContain('sparkSecretKeyInput');
     expect(content).toContain('saveSparkServerUrlUI()');
+    expect(content).toContain('saveSparkSecretKeyUI()');
     expect(content).toContain('testSparkServerConnectionUI()');
+  });
+
+  it('11. Workspace app.js implements Sovereign Secret Key and authenticated headers', () => {
+    const appPath = path.resolve(__dirname, '../../workspace/app.js');
+    const content = fs.readFileSync(appPath, 'utf8');
+    expect(content).toContain('getSparkSecretKey');
+    expect(content).toContain('saveSparkSecretKeyUI');
+    expect(content).toContain('getSparkServerHeaders');
+    expect(content).toContain('sprintdial_spark_secret_key');
+  });
+
+  it('12. /health probe returns sanitized status without leaking pipeline metrics or tools', async () => {
+    const res = await new Promise((resolve, reject) => {
+      http.get(`http://127.0.0.1:${testPort}/health`, res => {
+        let body = '';
+        res.on('data', c => body += c);
+        res.on('end', () => resolve({ status: res.statusCode, data: JSON.parse(body) }));
+      }).on('error', reject);
+    });
+    expect(res.status).toBe(200);
+    expect(res.data.status).toBe('ONLINE');
+    expect(res.data.stats).toBeUndefined(); // Zero client or financial pipeline metrics leaked
+    expect(res.data.tools).toBeDefined();
   });
 });

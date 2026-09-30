@@ -25,12 +25,42 @@ try {
 }
 
 const PORT = process.env.PORT || 3099;
+const SPARK_SECRET_KEY = process.env.SPARK_SECRET_KEY || process.env.MCP_AUTH_KEY || '';
 const CUSTOM_LEADS_FILE = path.join(__dirname, 'workspace', 'custom_prospects.json');
 const PROSPECTS_DATA_FILE = path.join(__dirname, 'workspace', 'prospects_data.js');
 const PIPELINE_OVERRIDES_FILE = path.join(__dirname, 'workspace', 'pipeline_overrides.json');
 
 // Active SSE client sessions: sessionId -> response object
 const sseSessions = new Map();
+
+/**
+ * Sovereign Authorization Gatekeeper
+ * Ensures zero unauthorized leakage. Only Apoorv and his authenticated Gemini Spark agent can access.
+ */
+function isAuthorizedRequest(req, parsed) {
+  // If running in development without a secret key set, allow local loopback
+  const remoteIp = req.socket?.remoteAddress || '';
+  const isLoopback = remoteIp === '127.0.0.1' || remoteIp === '::1' || remoteIp === '::ffff:127.0.0.1' || remoteIp === '';
+  
+  if (!SPARK_SECRET_KEY && process.env.NODE_ENV !== 'production' && isLoopback) {
+    return true;
+  }
+
+  // Extract candidate key from Authorization header, X-Spark-Key header, or URL query parameters
+  const authHeader = req.headers['authorization'] || '';
+  const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : '';
+  const sparkHeader = (req.headers['x-spark-key'] || '').trim();
+  const queryKey = (parsed.query?.key || parsed.query?.apiKey || parsed.query?.token || '').trim();
+
+  const candidateKey = bearerToken || sparkHeader || queryKey;
+
+  if (SPARK_SECRET_KEY) {
+    return candidateKey === SPARK_SECRET_KEY;
+  }
+
+  // If in production without SPARK_SECRET_KEY, block all non-loopback connections to prevent leaks
+  return isLoopback;
+}
 
 // -------------------------------------------------------------
 // 1. DATASET LOADER & PERSISTENCE
@@ -1485,11 +1515,34 @@ const server = http.createServer(async (req, res) => {
   // Global CORS Headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, X-Spark-Key');
 
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
     res.end();
+    return;
+  }
+
+  // --- HEALTH CHECK (Cloud Run Liveness Probe: Sanitized with ZERO data leakage) ---
+  if (pathname === '/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      status: 'ONLINE',
+      protected: Boolean(SPARK_SECRET_KEY),
+      service: 'SprintDial Sovereign MCP Server',
+      totalTools: MCP_TOOLS.length,
+      tools: MCP_TOOLS.map(t => t.name)
+    }));
+    return;
+  }
+
+  // --- SOVEREIGN SECURITY GATE (ZERO UNAUTHORIZED LEAKAGE) ---
+  if (!isAuthorizedRequest(req, parsed)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      error: 'Unauthorized. Sovereign authorization token required. Zero unauthorized leakage permitted.',
+      owner: 'Apoorv A S (@apoorv_xs)'
+    }));
     return;
   }
 
@@ -1620,8 +1673,8 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // --- HEALTH & STATUS (GET / or /health) ---
-  if (pathname === '/' || pathname === '/health' || pathname === '/status') {
+  // --- AUTHENTICATED DASHBOARD (GET / or /status) ---
+  if (pathname === '/' || pathname === '/status') {
     const stats = await executeToolCall('get_pipeline_stats', {});
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({

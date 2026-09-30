@@ -7660,6 +7660,27 @@ function updateSparkServerStatusBadge(isConnected, message) {
   }
 }
 
+function getSparkSecretKey() {
+  return localStorage.getItem('sprintdial_spark_secret_key') || '';
+}
+
+function saveSparkSecretKeyUI() {
+  const input = document.getElementById('sparkSecretKeyInput');
+  const val = input ? input.value.trim() : '';
+  localStorage.setItem('sprintdial_spark_secret_key', val);
+  showNotification('[ARMOR] Sovereign Secret Key saved! Zero-leakage shield active.');
+}
+
+function getSparkServerHeaders() {
+  const headers = { 'Content-Type': 'application/json' };
+  const secretKey = getSparkSecretKey();
+  if (secretKey) {
+    headers['Authorization'] = `Bearer ${secretKey}`;
+    headers['X-Spark-Key'] = secretKey;
+  }
+  return headers;
+}
+
 async function testSparkServerConnectionUI() {
   const baseUrl = getSparkServerBaseUrl();
   if (!baseUrl) {
@@ -7667,11 +7688,26 @@ async function testSparkServerConnectionUI() {
     return;
   }
   try {
-    const res = await fetch(`${baseUrl}/health`);
+    const headers = getSparkServerHeaders();
+    // Test authenticated status endpoint
+    const res = await fetch(`${baseUrl}/status`, { headers });
     if (res.ok) {
       const data = await res.json();
-      updateSparkServerStatusBadge(true, `● ONLINE (${data.totalTools} Tools)`);
-      alert(`[SUCCESS] Connected to 24/7 Cloud MCP Server!\n\nAgent: ${data.agent || 'Gemini Spark'}\nActive Tools: ${data.totalTools}\nMCP Endpoint: ${baseUrl}/sse`);
+      updateSparkServerStatusBadge(true, `● SOVEREIGN ONLINE (${data.totalTools} Tools)`);
+      alert(`[SUCCESS] Authenticated & Connected to 24/7 Cloud MCP Server!\n\nAgent: ${data.agent || 'Gemini Spark'}\nActive Tools: ${data.totalTools}\nZero-Leakage Shield: ACTIVE\nMCP Endpoint: ${baseUrl}/sse`);
+      return;
+    } else if (res.status === 401) {
+      updateSparkServerStatusBadge(false, '▲ 401 Locked (Key Required)');
+      alert(`[401 UNAUTHORIZED] The Cloud MCP Server rejected the request.\n\nPlease ensure your Sovereign Secret Key in the cockpit matches the SPARK_SECRET_KEY configured in Google Cloud Run.`);
+      return;
+    }
+
+    // Fallback to health probe
+    const hRes = await fetch(`${baseUrl}/health`);
+    if (hRes.ok) {
+      const hData = await hRes.json();
+      updateSparkServerStatusBadge(true, `● ONLINE (Protected)`);
+      alert(`[ONLINE] Cloud MCP Server is live (Protected mode: ${hData.protected}).`);
     } else {
       updateSparkServerStatusBadge(false, `○ HTTP ${res.status}`);
       alert(`Server returned HTTP ${res.status}`);
@@ -7691,6 +7727,11 @@ function initGeminiSettingsUI() {
   const serverInput = document.getElementById('sparkServerUrlInput');
   if (serverInput && savedServer) {
     serverInput.value = savedServer;
+  }
+  const savedSecret = getSparkSecretKey();
+  const secretInput = document.getElementById('sparkSecretKeyInput');
+  if (secretInput && savedSecret) {
+    secretInput.value = savedSecret;
   }
   const savedKey = getGeminiApiKey();
   const input = document.getElementById('geminiApiKeyInput');
@@ -7781,7 +7822,7 @@ async function runAiScoutFromUI() {
       if (logText) logText.innerText += `[2/3] Connecting to Cloud MCP Server (${serverBase})...\n`;
       const res = await fetch(`${serverBase}/api/spark/scout`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getSparkServerHeaders(),
         body: JSON.stringify({ business, city, category })
       });
       if (res.ok) {
@@ -7899,7 +7940,7 @@ async function runBatchScoutFromAdmin() {
       if (logText) logText.innerText += `[2/4] Connecting to Cloud MCP Server (${serverBase})...\n`;
       const res = await fetch(`${serverBase}/api/spark/scout`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getSparkServerHeaders(),
         body: JSON.stringify({ niche: vertical, city, count })
       });
       if (res.ok) {
@@ -8217,7 +8258,7 @@ async function analyzeVoiceMemoWithGemini() {
     try {
       const res = await fetch(`${serverBase}/api/spark/debrief`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getSparkServerHeaders(),
         body: JSON.stringify({
           prospect_id: p.id,
           transcript: fallbackData.transcript,
@@ -10239,6 +10280,9 @@ if (typeof global !== 'undefined') {
   global.runAiScoutFromUI = runAiScoutFromUI;
   global.runBatchScoutFromAdmin = runBatchScoutFromAdmin;
   global.initGeminiSettingsUI = initGeminiSettingsUI;
+  global.getSparkSecretKey = getSparkSecretKey;
+  global.saveSparkSecretKeyUI = saveSparkSecretKeyUI;
+  global.getSparkServerHeaders = getSparkServerHeaders;
 }
 
 if (typeof window !== 'undefined') {
@@ -10251,6 +10295,9 @@ if (typeof window !== 'undefined') {
   window.runAiScoutFromUI = runAiScoutFromUI;
   window.runBatchScoutFromAdmin = runBatchScoutFromAdmin;
   window.initGeminiSettingsUI = initGeminiSettingsUI;
+  window.getSparkSecretKey = getSparkSecretKey;
+  window.saveSparkSecretKeyUI = saveSparkSecretKeyUI;
+  window.getSparkServerHeaders = getSparkServerHeaders;
 }
 
 // Initial visibility check on load
