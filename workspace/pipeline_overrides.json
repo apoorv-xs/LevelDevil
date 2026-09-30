@@ -5,9 +5,9 @@
     "lastOutcome": "callback_requested",
     "callbackTime": "2026-10-02 11:30 AM IST",
     "tags": [],
-    "notes": "[2026-09-30T06:24:43.857Z] Reach: CONNECTED | Outcome: CALLBACK_REQUESTED\nDoctor requested callback on Thursday morning after clinical rounds.\n\n[2026-09-30T06:25:33.178Z] Reach: CONNECTED | Outcome: CALLBACK_REQUESTED\nDoctor requested callback on Thursday morning after clinical rounds.\n\n[2026-09-30T06:25:43.927Z] Reach: CONNECTED | Outcome: CALLBACK_REQUESTED\nDoctor requested callback on Thursday morning after clinical rounds.\n\n[2026-09-30T06:30:24.890Z] Reach: CONNECTED | Outcome: CALLBACK_REQUESTED\nDoctor requested callback on Thursday morning after clinical rounds.",
-    "lastContactedAt": "2026-09-30T06:30:24.890Z",
-    "updatedAt": "2026-09-30T06:30:24.943Z",
+    "notes": "[2026-09-30T06:24:43.857Z] Reach: CONNECTED | Outcome: CALLBACK_REQUESTED\nDoctor requested callback on Thursday morning after clinical rounds.\n\n[2026-09-30T06:25:33.178Z] Reach: CONNECTED | Outcome: CALLBACK_REQUESTED\nDoctor requested callback on Thursday morning after clinical rounds.\n\n[2026-09-30T06:25:43.927Z] Reach: CONNECTED | Outcome: CALLBACK_REQUESTED\nDoctor requested callback on Thursday morning after clinical rounds.\n\n[2026-09-30T06:30:24.890Z] Reach: CONNECTED | Outcome: CALLBACK_REQUESTED\nDoctor requested callback on Thursday morning after clinical rounds.\n\n[2026-09-30T08:51:24.866Z] Reach: CONNECTED | Outcome: CALLBACK_REQUESTED\nDoctor requested callback on Thursday morning after clinical rounds.",
+    "lastContactedAt": "2026-09-30T08:51:24.866Z",
+    "updatedAt": "2026-09-30T08:51:24.891Z",
     "updatedBy": "Gemini Spark Cloud Agent",
     "bookmarked": true
   },
@@ -16,18 +16,18 @@
     "closedTier": 1,
     "depositPaid": 25000,
     "commission": 7500,
-    "notes": "[CLOSED WON - 2026-09-30T06:24:43.929Z]\nTier: Tier 1: Speed & Direct Booking Engine\nDeposit Paid: ₹25,000\nCommission Unlocked: ₹7,500\nNotes: Deposit received via UPI transaction ref #AXIS99120.\n\n[CLOSED WON - 2026-09-30T06:25:33.189Z]\nTier: Tier 1: Speed & Direct Booking Engine\nDeposit Paid: ₹25,000\nCommission Unlocked: ₹7,500\nNotes: Deposit received via UPI transaction ref #AXIS99120.\n\n[CLOSED WON - 2026-09-30T06:25:44.094Z]\nTier: Tier 1: Speed & Direct Booking Engine\nDeposit Paid: ₹25,000\nCommission Unlocked: ₹7,500\nNotes: Deposit received via UPI transaction ref #AXIS99120.\n\n[CLOSED WON - 2026-09-30T06:30:24.989Z]\nTier: Tier 1: Speed & Direct Booking Engine\nDeposit Paid: ₹25,000\nCommission Unlocked: ₹7,500\nNotes: Deposit received via UPI transaction ref #AXIS99120.",
-    "closedAt": "2026-09-30T06:30:24.989Z",
-    "updatedAt": "2026-09-30T06:30:24.994Z",
+    "notes": "[CLOSED WON - 2026-09-30T06:24:43.929Z]\nTier: Tier 1: Speed & Direct Booking Engine\nDeposit Paid: ₹25,000\nCommission Unlocked: ₹7,500\nNotes: Deposit received via UPI transaction ref #AXIS99120.\n\n[CLOSED WON - 2026-09-30T06:25:33.189Z]\nTier: Tier 1: Speed & Direct Booking Engine\nDeposit Paid: ₹25,000\nCommission Unlocked: ₹7,500\nNotes: Deposit received via UPI transaction ref #AXIS99120.\n\n[CLOSED WON - 2026-09-30T06:25:44.094Z]\nTier: Tier 1: Speed & Direct Booking Engine\nDeposit Paid: ₹25,000\nCommission Unlocked: ₹7,500\nNotes: Deposit received via UPI transaction ref #AXIS99120.\n\n[CLOSED WON - 2026-09-30T06:30:24.989Z]\nTier: Tier 1: Speed & Direct Booking Engine\nDeposit Paid: ₹25,000\nCommission Unlocked: ₹7,500\nNotes: Deposit received via UPI transaction ref #AXIS99120.\n\n[CLOSED WON - 2026-09-30T08:51:24.930Z]\nTier: Tier 1: Speed & Direct Booking Engine\nDeposit Paid: ₹25,000\nCommission Unlocked: ₹7,500\nNotes: Deposit received via UPI transaction ref #AXIS99120.",
+    "closedAt": "2026-09-30T08:51:24.930Z",
+    "updatedAt": "2026-09-30T08:51:24.935Z",
     "updatedBy": "Gemini Spark Cloud Agent"
   },
   "p-3": {
     "status": "discovery_booked",
     "walkthroughTime": "Friday 3:00 PM IST",
     "referralCommission": 5000,
-    "notes": "[DISCOVERY WALKTHROUGH SCHEDULED - 2026-09-30T06:24:43.961Z]\nWalkthrough Time: Friday 3:00 PM IST\nReferral Commission: ₹5,000 (10% Safety Net)\nClient Brief: Client wants custom WebGPU 3D showroom for luxury resort villas.\n\n[DISCOVERY WALKTHROUGH SCHEDULED - 2026-09-30T06:25:33.193Z]\nWalkthrough Time: Friday 3:00 PM IST\nReferral Commission: ₹5,000 (10% Safety Net)\nClient Brief: Client wants custom WebGPU 3D showroom for luxury resort villas.\n\n[DISCOVERY WALKTHROUGH SCHEDULED - 2026-09-30T06:25:44.152Z]\nWalkthrough Time: Friday 3:00 PM IST\nReferral Commission: ₹5,000 (10% Safety Net)\nClient Brief: Client wants custom WebGPU 3D showroom for luxury resort villas.\n\n[DISCOVERY WALKTHROUGH SCHEDULED - 2026-09-30T06:30:24.999Z]\nWalkthrough Time: Friday 3:00 PM IST\nReferral Commission: ₹5,000 (10% Safety Net)\nClient Brief: Client wants custom WebGPU 3D showroom for luxury resort villas.",
-    "escalatedAt": "2026-09-30T06:30:24.999Z",
-    "updatedAt": "2026-09-30T06:30:25.002Z",
+    "notes": "[DISCOVERY WALKTHROUGH SCHEDULED - 2026-09-30T06:24:43.961Z]\nWalkthrough Time: Friday 3:00 PM IST\nReferral Commission: ₹5,000 (10% Safety Net)\nClient Brief: Client wants custom WebGPU 3D showroom for luxury resort villas.\n\n[DISCOVERY WALKTHROUGH SCHEDULED - 2026-09-30T06:25:33.193Z]\nWalkthrough Time: Friday 3:00 PM IST\nReferral Commission: ₹5,000 (10% Safety Net)\nClient Brief: Client wants custom WebGPU 3D showroom for luxury resort villas.\n\n[DISCOVERY WALKTHROUGH SCHEDULED - 2026-09-30T06:25:44.152Z]\nWalkthrough Time: Friday 3:00 PM IST\nReferral Commission: ₹5,000 (10% Safety Net)\nClient Brief: Client wants custom WebGPU 3D showroom for luxury resort villas.\n\n[DISCOVERY WALKTHROUGH SCHEDULED - 2026-09-30T06:30:24.999Z]\nWalkthrough Time: Friday 3:00 PM IST\nReferral Commission: ₹5,000 (10% Safety Net)\nClient Brief: Client wants custom WebGPU 3D showroom for luxury resort villas.\n\n[DISCOVERY WALKTHROUGH SCHEDULED - 2026-09-30T08:51:24.975Z]\nWalkthrough Time: Friday 3:00 PM IST\nReferral Commission: ₹5,000 (10% Safety Net)\nClient Brief: Client wants custom WebGPU 3D showroom for luxury resort villas.",
+    "escalatedAt": "2026-09-30T08:51:24.975Z",
+    "updatedAt": "2026-09-30T08:51:24.984Z",
     "updatedBy": "Gemini Spark Cloud Agent"
   }
 }

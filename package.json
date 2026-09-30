@@ -7,7 +7,6 @@
     "dev": "vite",
     "build": "node build.js",
     "start": "vite preview",
-    "start:mcp": "node mcp_spark_server.cjs",
     "test:unit": "vitest run",
     "test:api": "vitest run tests/api",
     "test:e2e": "playwright test",

@@ -21,4 +21,5 @@ v2/
 *prospects_export*.json
 *.csv
 scratch/
+workspace/custom_prospects.json
 
