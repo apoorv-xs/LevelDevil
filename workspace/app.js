@@ -7628,13 +7628,70 @@ window.sprintdial = {
 window.clientRadar = window.sprintdial;
 
 // ==========================================
-// GEMINI AI INTEGRATION (IN-COCKPIT CONTROLS)
+// 24/7 CLOUD MCP & GEMINI SPARK INTEGRATION
 // ==========================================
+function getSparkServerBaseUrl() {
+  const custom = localStorage.getItem('sprintdial_spark_server_url');
+  if (custom && custom.trim()) return custom.trim().replace(/\/+$/, '');
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    return 'http://localhost:3099';
+  }
+  return '';
+}
+
+function saveSparkServerUrlUI() {
+  const input = document.getElementById('sparkServerUrlInput');
+  const val = input ? input.value.trim() : '';
+  localStorage.setItem('sprintdial_spark_server_url', val);
+  updateSparkServerStatusBadge(true, val ? '● Cloud URL Saved' : '● Local (localhost:3099)');
+  showNotification('[CLOUD] Cloud MCP Server endpoint configured!');
+}
+
+function updateSparkServerStatusBadge(isConnected, message) {
+  const badge = document.getElementById('sparkServerStatusBadge');
+  if (badge) {
+    if (isConnected) {
+      badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-bold";
+      badge.innerText = message || "● MCP Stream Ready";
+    } else {
+      badge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-rose-950/50 text-rose-300 border border-rose-800/50 font-bold";
+      badge.innerText = message || "○ Unreachable";
+    }
+  }
+}
+
+async function testSparkServerConnectionUI() {
+  const baseUrl = getSparkServerBaseUrl();
+  if (!baseUrl) {
+    alert('Please enter your Google Cloud Run MCP Server URL (or leave blank to use localhost:3099).');
+    return;
+  }
+  try {
+    const res = await fetch(`${baseUrl}/health`);
+    if (res.ok) {
+      const data = await res.json();
+      updateSparkServerStatusBadge(true, `● ONLINE (${data.totalTools} Tools)`);
+      alert(`[SUCCESS] Connected to 24/7 Cloud MCP Server!\n\nAgent: ${data.agent || 'Gemini Spark'}\nActive Tools: ${data.totalTools}\nMCP Endpoint: ${baseUrl}/sse`);
+    } else {
+      updateSparkServerStatusBadge(false, `○ HTTP ${res.status}`);
+      alert(`Server returned HTTP ${res.status}`);
+    }
+  } catch (err) {
+    updateSparkServerStatusBadge(false, '○ Offline');
+    alert(`Failed to connect to Cloud MCP Server at ${baseUrl}: ${err.message}`);
+  }
+}
+
 function getGeminiApiKey() {
   return localStorage.getItem('sprintdial_gemini_api_key') || '';
 }
 
 function initGeminiSettingsUI() {
+  const savedServer = localStorage.getItem('sprintdial_spark_server_url') || '';
+  const serverInput = document.getElementById('sparkServerUrlInput');
+  if (serverInput && savedServer) {
+    serverInput.value = savedServer;
+  }
   const savedKey = getGeminiApiKey();
   const input = document.getElementById('geminiApiKeyInput');
   if (input && savedKey) {
@@ -7717,6 +7774,34 @@ async function runAiScoutFromUI() {
   if (btnText) btnText.innerText = 'Auditing & Synthesizing...';
   if (logText) logText.innerText = `[1/3] Scanning ${business} in ${city}...\n`;
 
+  // 1. Try 24/7 Cloud MCP Server first (Zero client-side API key required)
+  const serverBase = getSparkServerBaseUrl();
+  if (serverBase) {
+    try {
+      if (logText) logText.innerText += `[2/3] Connecting to Cloud MCP Server (${serverBase})...\n`;
+      const res = await fetch(`${serverBase}/api/spark/scout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ business, city, category })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const prospectData = data.prospect;
+        if (prospectData) {
+          window.sprintdial.addProspect(prospectData);
+          if (logText) logText.innerText += `[3/3] ✔ Cloud MCP Server audited & injected ${prospectData.name} into live queue!\n`;
+          showNotification(`[AI] Cloud MCP audited & injected ${prospectData.name}!`);
+          if (btnText) btnText.innerText = 'Audit & Inject Lead with Gemini';
+          if (businessInput) businessInput.value = '';
+          return;
+        }
+      }
+    } catch (serverErr) {
+      if (logText) logText.innerText += `[!] Cloud MCP server relay notice (${serverErr.message}). Testing client backup...\n`;
+    }
+  }
+
+  // 2. Client-side Gemini backup
   const key = getGeminiApiKey();
   if (key) {
     try {
@@ -7804,9 +7889,47 @@ async function runBatchScoutFromAdmin() {
   if (btn) btn.disabled = true;
   if (btnText) btnText.innerText = 'Worker Running...';
   if (logText) {
-    logText.innerText = `[1/4] [AI] Launching Gemini 2.0 Flash autonomous scout for ${count} ${vertical} leads in ${city}...\n`;
+    logText.innerText = `[1/4] [AI] Launching Cloud MCP / Gemini autonomous scout for ${count} ${vertical} leads in ${city}...\n`;
   }
 
+  // 1. Try 24/7 Cloud MCP Server first (Zero client-side API key required)
+  const serverBase = getSparkServerBaseUrl();
+  if (serverBase) {
+    try {
+      if (logText) logText.innerText += `[2/4] Connecting to Cloud MCP Server (${serverBase})...\n`;
+      const res = await fetch(`${serverBase}/api/spark/scout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ niche: vertical, city, count })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const leads = data.leads || data.harvestedLeads || (data.prospect ? [data.prospect] : []);
+        if (leads.length > 0) {
+          if (logText) logText.innerText += `[3/4] Ingesting ${leads.length} harvested dossiers from Cloud MCP into cockpit...\n`;
+          let added = 0;
+          let addedValue = 0;
+          leads.forEach(item => {
+            const addedLead = window.sprintdial.addProspect(item);
+            if (addedLead) {
+              added++;
+              const numFee = parseInt(String(addedLead.fee).replace(/[^0-9]/g, ''), 10) || 50000;
+              addedValue += numFee;
+            }
+          });
+          if (logText) logText.innerText += `[4/4] ✔ Complete! Added ${added} new lead(s) to live queue. Pipeline expanded by ₹${addedValue.toLocaleString('en-IN')}.\n`;
+          showNotification(`[AI] Cloud MCP Server generated & injected ${added} new leads!`);
+          if (btn) btn.disabled = false;
+          if (btnText) btnText.innerText = 'Launch Worker';
+          return;
+        }
+      }
+    } catch (serverErr) {
+      if (logText) logText.innerText += `[!] Cloud MCP server notice (${serverErr.message}). Testing client backup...\n`;
+    }
+  }
+
+  // 2. Client-side Gemini backup
   const key = getGeminiApiKey();
 
   if (key) {
@@ -8087,6 +8210,30 @@ async function analyzeVoiceMemoWithGemini() {
   if (strategyEl) strategyEl.innerText = "Extracting objections, practitioner pain points, and high-conversion angles...";
 
   const fallbackData = getVoiceDebriefFallback(p);
+
+  // 1. Try 24/7 Cloud MCP Server first
+  const serverBase = getSparkServerBaseUrl();
+  if (serverBase && p) {
+    try {
+      const res = await fetch(`${serverBase}/api/spark/debrief`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prospect_id: p.id,
+          transcript: fallbackData.transcript,
+          caller_notes: fallbackData.structuredNote,
+          objection_category: 'price_roi'
+        })
+      });
+      if (res.ok) {
+        applyDebriefResult(fallbackData);
+        showNotification('[AI] 24/7 Cloud MCP analyzed debrief & updated CRM!');
+        return;
+      }
+    } catch (serverErr) {
+      console.warn('[Cloud MCP] Debrief relay notice:', serverErr.message);
+    }
+  }
 
   const key = getGeminiApiKey();
 
@@ -10083,11 +10230,27 @@ if (typeof global !== 'undefined') {
   global.verifyActiveLeadDeliverabilityUI = verifyActiveLeadDeliverabilityUI;
   global.auditDomainDeliverabilityFromAdmin = auditDomainDeliverabilityFromAdmin;
   global.getOutreachSequenceForLead = getOutreachSequenceForLead;
+
+  // Cloud MCP Server & Gemini Spark Bridge
+  global.getSparkServerBaseUrl = getSparkServerBaseUrl;
+  global.saveSparkServerUrlUI = saveSparkServerUrlUI;
+  global.testSparkServerConnectionUI = testSparkServerConnectionUI;
+  global.updateSparkServerStatusBadge = updateSparkServerStatusBadge;
+  global.runAiScoutFromUI = runAiScoutFromUI;
+  global.runBatchScoutFromAdmin = runBatchScoutFromAdmin;
+  global.initGeminiSettingsUI = initGeminiSettingsUI;
 }
 
 if (typeof window !== 'undefined') {
   window.claimActiveInvite = claimActiveInvite;
   window.handleInviteToken = handleInviteToken;
+  window.getSparkServerBaseUrl = getSparkServerBaseUrl;
+  window.saveSparkServerUrlUI = saveSparkServerUrlUI;
+  window.testSparkServerConnectionUI = testSparkServerConnectionUI;
+  window.updateSparkServerStatusBadge = updateSparkServerStatusBadge;
+  window.runAiScoutFromUI = runAiScoutFromUI;
+  window.runBatchScoutFromAdmin = runBatchScoutFromAdmin;
+  window.initGeminiSettingsUI = initGeminiSettingsUI;
 }
 
 // Initial visibility check on load

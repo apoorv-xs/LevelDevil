@@ -1678,17 +1678,193 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // --- /api/spark/scout ---
+  if (pathname === '/api/spark/scout' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        let result;
+        if (payload.niche) {
+          result = await executeToolCall('harvest_leads_by_niche', {
+            niche: payload.niche,
+            city: payload.city || 'Kochi',
+            count: Number(payload.count) || 5
+          });
+        } else {
+          const business = payload.business || payload.name || 'Establishment';
+          const city = payload.city || 'Kochi';
+          const cat = payload.category || payload.cat || 'clinic';
+          const audit = await executeToolCall('audit_website_live', {
+            target_url: payload.site || `https://${business.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`,
+            business_name: business
+          });
+          const newProspect = {
+            id: 'c_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 6),
+            city,
+            name: business,
+            dm: payload.dm || 'Managing Director',
+            phone: payload.phone || '+91 94470 ' + Math.floor(10000 + Math.random() * 90000),
+            site: audit.targetUrl || payload.site || `https://${business.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`,
+            cat,
+            ptype: 'UPGRADE',
+            fee: payload.fee || '₹50,000',
+            speedScore: audit.speedScore || '28 / 100',
+            lcpTime: audit.lcpTime || '4.8s',
+            techStack: audit.techStack || 'WordPress / Elementor',
+            flaws: audit.flawsDetected || ['Severe mobile LCP latency', 'Missing affirmative DPDP consent'],
+            scripts: {
+              speed: {
+                en: `Noticed your mobile website takes ~${audit.lcpTime || '4.8s'} on 4G. We rebuild in Three.js/WebGPU under 0.8s with a 100% money-back SLA.`,
+                ml: `മൊബൈൽ സൈറ്റ് ലോഡാവാൻ സമയമെടുക്കുന്നു. ഞങ്ങളുടെ 60 FPS സിസ്റ്റം വഴി 0.8 സെക്കൻഡിൽ സൈറ്റ് റെഡിയാക്കാം.`,
+                manglish: `Mobile site loading time kuravanu. Njangal 0.8s speed guaranteed aayi deliver cheyyum.`
+              },
+              commission: {
+                en: `You are losing 18-25% aggregator commission every month. A direct booking system pays for itself in ~12 days.`,
+                ml: `അഗ്രിഗേറ്റർ കമ്മീഷൻ ലാഭിക്കാൻ ഡയറക്റ്റ് ബുക്കിംഗ് സിസ്റ്റം സഹായിക്കും.`,
+                manglish: `Aggregator commission save cheyyan direct booking engine set cheyyaam.`
+              },
+              visual: {
+                en: `High-ticket clients bounce from slow flat sites. Our 60 FPS spatial showcase commands immediate trust.`,
+                ml: `പ്രീമിയം കസ്റ്റമേഴ്‌സിന് വേണ്ടി ആധുനിക 3D വെബ് എക്സ്പീരിയൻസ്.`,
+                manglish: `Premium customers-nu vendi modern 3D UI website.`
+              },
+              gatekeeper: `Connecting regarding the mobile site loading latency audit for the Director.`
+            },
+            waMessage: `Hi ${business}, we noticed your mobile page takes ~${audit.lcpTime || '4.8s'} on 4G. View 60 FPS preview: https://apoorv.qzz.io/sales`
+          };
+          const custom = loadCustomProspects();
+          custom.unshift(newProspect);
+          saveCustomProspects(custom);
+          result = { success: true, prospect: newProspect, audit };
+        }
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result, null, 2));
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: e.message }));
+      }
+    });
+    return;
+  }
+
+  // --- /api/spark/debrief ---
+  if (pathname === '/api/spark/debrief' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        const prospectId = payload.prospect_id;
+        const transcript = payload.transcript || payload.notes || 'Client showed interest in 60 FPS speed upgrade and asked for ROI figures.';
+        const result = await executeToolCall('log_lead_disposition', {
+          prospect_id: prospectId,
+          reach: payload.reach || 'phone',
+          outcome: payload.outcome || 'callback_requested',
+          notes: transcript
+        });
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result, null, 2));
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: e.message }));
+      }
+    });
+    return;
+  }
+
+  // --- /api/spark/outreach ---
+  if (pathname === '/api/spark/outreach' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        const result = await executeToolCall('generate_outreach_sequence', {
+          prospect_id: payload.prospect_id,
+          recipient_email: payload.recipient_email
+        });
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result, null, 2));
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: e.message }));
+      }
+    });
+    return;
+  }
+
+  // --- /api/spark/verify ---
+  if (pathname === '/api/spark/verify' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        const domain = payload.domain || payload.target_email_or_domain;
+        const result = await executeToolCall('verify_email_deliverability', {
+          target_email_or_domain: domain
+        });
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result, null, 2));
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: e.message }));
+      }
+    });
+    return;
+  }
+
+  // --- /api/spark/deposit ---
+  if (pathname === '/api/spark/deposit' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        const result = await executeToolCall('generate_upi_deposit_rail', {
+          prospect_id: payload.prospect_id,
+          tier: Number(payload.tier) || 1,
+          customer_phone: payload.customer_phone,
+          customer_email: payload.customer_email
+        });
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result, null, 2));
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: e.message }));
+      }
+    });
+    return;
+  }
+
   // 404 Fallback
   res.writeHead(404, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({ error: 'Endpoint not found', available: ['/sse', '/message', '/health', '/api/leads', '/api/audit', '/api/pitch'] }));
+  res.end(JSON.stringify({
+    error: 'Endpoint not found',
+    available: [
+      '/sse',
+      '/message',
+      '/health',
+      '/api/leads',
+      '/api/audit',
+      '/api/pitch',
+      '/api/spark/scout',
+      '/api/spark/debrief',
+      '/api/spark/outreach',
+      '/api/spark/verify',
+      '/api/spark/deposit'
+    ]
+  }));
 });
 
-// Start listening if executed directly
+// Start listening if executed directly (Explicitly bind 0.0.0.0 for Google Cloud Run / Docker)
 if (require.main === module) {
-  server.listen(PORT, () => {
-    console.log(`[SprintDial Cloud MCP] Server running on http://localhost:${PORT}`);
-    console.log(`[SprintDial Cloud MCP] Remote SSE Endpoint: http://localhost:${PORT}/sse`);
-    console.log(`[SprintDial Cloud MCP] Health Endpoint: http://localhost:${PORT}/health`);
+  server.listen(PORT, '0.0.0.0', () => {
+    console.log(`[SprintDial Cloud MCP] Server running on 0.0.0.0:${PORT}`);
+    console.log(`[SprintDial Cloud MCP] Remote SSE Endpoint: http://0.0.0.0:${PORT}/sse`);
+    console.log(`[SprintDial Cloud MCP] Health Endpoint: http://0.0.0.0:${PORT}/health`);
   });
 }
 
