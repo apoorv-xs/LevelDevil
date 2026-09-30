@@ -400,7 +400,7 @@ function generateOutreachSequence(prospectId, emailOverride) {
   const lcp = p.lcpTime ? p.lcpTime.replace('LCP: ', '') : '4.4s';
   const fee = p.fee || '₹1,00,000';
   const cleanId = p.id || 'p-1';
-  const email = emailOverride || p.email || 'dm@' + (p.site ? p.site.replace(/^https?:\/\//, '').replace(/\/.*$/, '') : 'company.com');
+  const email = emailOverride || p.email || 'dm@' + (p.site ? p.site.replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/.*$/, '') : 'company.com');
   const teardownUrl = `https://apoorv.qzz.io/sales?teardown=${encodeURIComponent(cleanId)}`;
   const proposalUrl = `https://apoorv.qzz.io/sales?proposal=${encodeURIComponent(cleanId)}&fee=${parseInt(String(fee).replace(/[^0-9]/g, '')) || 50000}`;
 

@@ -12,7 +12,7 @@
     const name = p.name || 'Establishment';
     const dm = (p.dm || 'Managing Director').split('(')[0].trim();
     const site = p.site || 'your website';
-    const cleanSite = (p.site || '').replace(/^https?:\/\//, '').replace(/\/.*$/, '').trim();
+    const cleanSite = (p.site || '').replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/.*$/, '').trim();
     const lcp = (p.lcpTime || '4.4s').replace('LCP: ', '').trim();
     const cleanId = p.id || 'p-1';
     const rawFee = parseInt(String(p.fee).replace(/[^0-9]/g, '')) || 50000;
@@ -94,7 +94,7 @@
     const emailInput = document.getElementById('dripRecipientEmail');
 
     const cleanDm = (p.dm || 'Managing Director').split('(')[0].trim();
-    const cleanSite = (p.site || '').replace(/^https?:\/\//, '').replace(/\/.*$/, '').trim();
+    const cleanSite = (p.site || '').replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/.*$/, '').trim();
     const defaultEmail = p.email || (cleanSite && cleanSite !== '#' ? `contact@${cleanSite}` : '');
 
     if (nameEl) nameEl.textContent = p.name;
