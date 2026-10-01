@@ -246,18 +246,23 @@ describe('Interactive 3D Deal Teardown & Trojan Pitch Engine', () => {
     const indexHtml = fs.readFileSync(path.resolve(__dirname, '../../index.html'), 'utf8');
     const shellJs = fs.readFileSync(path.resolve(__dirname, '../../shell.js'), 'utf8');
 
-    it('enforces 4-pillar navigation (Home, Audit, Workspace, Contact) across index.html', () => {
-      expect(indexHtml).toContain('href="/"');
-      expect(indexHtml).toContain('href="/audit"');
-      expect(indexHtml).toContain('href="/workspace/"');
-      expect(indexHtml).toContain('href="/sales"');
+    it('enforces exact 4-pillar navigation order (Home, Audit, Contact, Workspace) across index.html', () => {
+      const navMatch = indexHtml.match(/<nav class="site-nav"[^>]*>([\s\S]*?)<\/nav>/);
+      expect(navMatch).not.toBeNull();
+      const hrefs = [...navMatch[1].matchAll(/href="([^"]*)"/g)].map(m => m[1]);
+      expect(hrefs).toEqual(['/', '/audit', '/sales', '/workspace/']);
     });
 
-    it('enforces 4-pillar navigation across sales.html and workspace/index.html', () => {
-      expect(salesHtml).toContain('href="/audit"');
-      expect(salesHtml).toContain('href="/sales"');
-      expect(workspaceHtml).toContain('href="/audit"');
-      expect(workspaceHtml).toContain('href="/sales"');
+    it('enforces exact 4-pillar navigation order across sales.html and workspace/index.html', () => {
+      const salesMatch = salesHtml.match(/<nav class="site-nav"[^>]*>([\s\S]*?)<\/nav>/);
+      expect(salesMatch).not.toBeNull();
+      const salesHrefs = [...salesMatch[1].matchAll(/href="([^"]*)"/g)].map(m => m[1]);
+      expect(salesHrefs).toEqual(['/', '/audit', '/sales', '/workspace/']);
+
+      const wsMatch = workspaceHtml.match(/<nav class="site-nav"[^>]*>([\s\S]*?)<\/nav>/);
+      expect(wsMatch).not.toBeNull();
+      const wsHrefs = [...wsMatch[1].matchAll(/href="([^"]*)"/g)].map(m => m[1]);
+      expect(wsHrefs).toEqual(['/', '/audit', '/sales', '/workspace/']);
     });
 
     it('implements isAuditRoute in shell.js and activates Audit tab on /audit and /dossier', () => {
