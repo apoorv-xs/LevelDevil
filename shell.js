@@ -625,15 +625,46 @@ window.APP_SHELL.signOut = async function() {
   }
 };
 
-window.APP_SHELL.openAuth = function() {
+window.APP_SHELL.openAuth = async function() {
   if (isWorkspaceRoute()) {
     if (typeof window.openAuthGate === "function") window.openAuthGate();
   } else if (isSalesRoute()) {
     if (typeof window.handleGoogleSignIn === "function") {
       window.handleGoogleSignIn();
+    } else if (window.APP_SHELL?.session?.signIn) {
+      try {
+        await window.APP_SHELL.session.signIn();
+        window.APP_SHELL.initUniversalTopbar();
+      } catch (err) {
+        console.warn("Sign-in error:", err);
+      }
     }
   } else {
-    window.location.href = "/sales#signin";
+    // Home route or general routes: direct Google popup if configured, otherwise fallback to /sales#signin
+    if (window.SALES_PLATFORM_AUTH?.signIn && window.APP_SHELL?.session?.signIn) {
+      try {
+        const btn = document.getElementById("topbar-sign-in");
+        if (btn) btn.disabled = true;
+        await window.APP_SHELL.session.signIn();
+        window.APP_SHELL.initUniversalTopbar();
+        if (typeof window.showNotification === "function") {
+          window.showNotification("[AUTH] Signed in successfully!");
+        }
+      } catch (err) {
+        const msg = err?.message || "";
+        if (!msg.includes("cancelled") && !msg.includes("closed-by-user")) {
+          console.warn("Home sign-in error:", err);
+          if (typeof window.showNotification === "function") {
+            window.showNotification("[AUTH] " + (msg || "Sign-in cancelled."));
+          }
+        }
+      } finally {
+        const btn = document.getElementById("topbar-sign-in");
+        if (btn) btn.disabled = false;
+      }
+    } else {
+      window.location.href = "/sales#signin";
+    }
   }
 };
 
