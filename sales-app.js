@@ -837,7 +837,18 @@ function initTrojanPitchFromUrl() {
   try {
     const params = new URLSearchParams(window.location.search);
     const prospect = params.get("prospect") || params.get("client") || params.get("target") || params.get("proposal") || params.get("teardown");
-    if (!prospect) return;
+    if (!prospect) {
+      if (typeof window !== "undefined" && (window.location.pathname.includes("audit") || window.location.pathname.includes("dossier"))) {
+        const previewSection = document.getElementById("trojan-teardown-section");
+        if (previewSection) {
+          previewSection.classList.remove("hidden");
+          const credBanner = document.getElementById("trojan-credentials-banner");
+          if (credBanner) credBanner.style.display = "none";
+          calculateRevenueRecovery();
+        }
+      }
+      return;
+    }
 
     const dm = params.get("dm") || "";
     const lcp = params.get("lcp") || "4.4s";

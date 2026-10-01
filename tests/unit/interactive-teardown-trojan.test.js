@@ -237,8 +237,8 @@ describe('Interactive 3D Deal Teardown & Trojan Pitch Engine', () => {
       expect(excludes).toContain('/audit*');
     });
 
-    it('generates /dossier URLs from workspace getTeardownUrl instead of /sales', () => {
-      expect(workspaceAppJs).toContain('/dossier?');
+    it('generates /audit URLs from workspace getTeardownUrl', () => {
+      expect(workspaceAppJs).toContain('/audit?');
     });
   });
 
