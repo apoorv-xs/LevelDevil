@@ -82,9 +82,12 @@
           status: rawP.status || 'available',
           speedScore: rawP.speedScore || rawP.speedscore || '🔴 32/100 (Mobile)',
           lcpTime: rawP.lcpTime || rawP.lcptime || 'LCP: 4.4s',
-          techStack: rawP.techStack || rawP.techstack || 'WordPress',
           flaws: Array.isArray(rawP.flaws) ? rawP.flaws : (typeof rawP.flaws === 'string' ? rawP.flaws.split(';').map(s=>s.trim()).filter(Boolean) : []),
-          notes: rawP.notes || ''
+          notes: rawP.notes || '',
+          geoScore: rawP.geoScore || rawP.geoscore || rawP.geo || '',
+          llmsStatus: rawP.llmsStatus || rawP.llmsstatus || rawP.llms || '',
+          schemaStatus: rawP.schemaStatus || rawP.schemastatus || rawP.schema || '',
+          smokingGun: rawP.smokingGun || rawP.smokinggun || ''
         };
         const idx = list.findIndex(p => p.id === sheetP.id || (p.site && sheetP.site && p.site === sheetP.site) || (p.phone && sheetP.phone && p.phone === sheetP.phone));
         if (idx !== -1) {
@@ -161,7 +164,7 @@
       return str;
     }
 
-    const headers = ['ID', 'City', 'Company Name', 'Decision Maker', 'Phone', 'WhatsApp', 'Website', 'Category', 'Fee', 'Status', 'Speed Score', 'LCP Time', 'Tech Stack', 'Flaws', 'Notes', 'Last Call Time', 'Caller'];
+    const headers = ['ID', 'City', 'Company Name', 'Decision Maker', 'Phone', 'WhatsApp', 'Website', 'Category', 'Fee', 'Status', 'Speed Score', 'LCP Time', 'Tech Stack', 'Flaws', 'GEO Score', 'LLMS Status', 'Schema Status', 'Smoking Gun', 'Notes', 'Last Call Time', 'Caller'];
     const rows = [headers.join(',')];
 
     const list = root.PROSPECTS || [];
@@ -181,6 +184,10 @@
         escapeCsv(p.lcpTime),
         escapeCsv(p.techStack),
         escapeCsv((p.flaws || []).join('; ')),
+        escapeCsv(p.geoScore || ''),
+        escapeCsv(p.llmsStatus || ''),
+        escapeCsv(p.schemaStatus || ''),
+        escapeCsv(p.smokingGun || ''),
         escapeCsv(p.notes || ''),
         escapeCsv(p.lastCallTime || ''),
         escapeCsv(p.lockedBy || '')

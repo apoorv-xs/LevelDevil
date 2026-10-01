@@ -1412,6 +1412,8 @@ function openClientTeardownModal() {
   const speedEl = document.getElementById('modalSpeedScore');
   const leakEl = document.getElementById('modalRevenueLeak');
   const bleedEl = document.getElementById('modalAggregatorBleed');
+  const geoEl = document.getElementById('modalGeoScore');
+  const llmsEl = document.getElementById('modalLlmsStatus');
   const shareInput = document.getElementById('teardownShareUrl');
 
   if (nameEl) nameEl.innerText = `${p.name} (${(p.dm || 'Owner').split('(')[0].trim()})`;
@@ -1419,6 +1421,8 @@ function openClientTeardownModal() {
   if (speedEl) speedEl.innerText = speedText;
   if (leakEl) leakEl.innerText = leakText;
   if (bleedEl) bleedEl.innerText = bleedText;
+  if (geoEl) geoEl.innerText = p.geoScore || (isNoSite ? "0% (Unindexed)" : "22% (Missing)");
+  if (llmsEl) llmsEl.innerText = p.llmsStatus || (isNoSite ? "Unindexed Domain" : "Missing (/llms.txt 404)");
 
   const teardownUrl = getTeardownUrl(p);
   if (shareInput) shareInput.value = teardownUrl;
