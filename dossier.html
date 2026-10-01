@@ -468,27 +468,15 @@
       </div>
     </section>
 
-    <!-- Alternative Engagement Card -->
-    <section class="grid sales-public-only" aria-label="Alternative Actions" style="max-width:820px; margin: 2rem auto; display:block;">
-      <article class="card" style="text-align: center; padding: 24px;" data-kaboom-body="true">
-        <span class="font-arcade text-xs text-highlight">LOOKING TO COMMISSION A BESPOKE 3D BUILD INSTEAD?</span>
-        <p class="font-mono text-xs text-muted" style="margin: 8px 0 16px 0;">If you already have clear architectural specs, 3D assets, or an active RFP, submit a direct inquiry.</p>
-        <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
-          <a href="/sales" class="font-arcade text-xs" style="padding:10px 18px; background:var(--ink); color:#fff; text-decoration:none; border:2px solid var(--ink); box-shadow:3px 3px 0 var(--amber-light);">[ SUBMIT PROJECT BRIEF › ]</a>
-          <button type="button" onclick="openConsultationModal()" class="font-arcade text-xs" style="padding:10px 18px; background:var(--white); color:var(--ink); border:2px solid var(--ink); box-shadow:3px 3px 0 var(--ink); cursor:pointer;">[ BOOK 15-MIN STRATEGY CALL ]</button>
-        </div>
-      </article>
-
-      <!-- Hidden background auth & workspace handles for headless session management -->
-      <div id="auth-placeholder" hidden></div>
-      <div id="workspace" hidden>
-        <div class="workspace-head">
-          <p id="workspace-role"></p>
-          <button id="refresh-workspace" type="button" class="secondary">Refresh</button>
-        </div>
-        <pre id="workspace-data" aria-label="Workspace data"></pre>
+    <!-- Hidden background auth & workspace handles for headless session management -->
+    <div id="auth-placeholder" hidden></div>
+    <div id="workspace" hidden>
+      <div class="workspace-head">
+        <p id="workspace-role"></p>
+        <button id="refresh-workspace" type="button" class="secondary">Refresh</button>
       </div>
-    </section>
+      <pre id="workspace-data" aria-label="Workspace data"></pre>
+    </div>
 
     <!-- SECTION: STATUTORY & LEGAL COMPLIANCE FOOTER -->
     <footer class="site-legal-footer" data-kaboom-body="true" data-trap="false">
