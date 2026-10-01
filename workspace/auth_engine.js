@@ -4,12 +4,14 @@
   let isAuthenticatingGoogle = false;
 
   function isApoorvOwnerEmail(email) {
-    if (typeof root.isApoorvOwnerEmail === 'function') return root.isApoorvOwnerEmail(email);
-    if (typeof global !== 'undefined' && typeof global.isApoorvOwnerEmail === 'function') return global.isApoorvOwnerEmail(email);
+    if (typeof root.isApoorvOwnerEmail === 'function' && root.isApoorvOwnerEmail !== isApoorvOwnerEmail) return root.isApoorvOwnerEmail(email);
+    if (typeof global !== 'undefined' && typeof global.isApoorvOwnerEmail === 'function' && global.isApoorvOwnerEmail !== isApoorvOwnerEmail) return global.isApoorvOwnerEmail(email);
     if (!email || typeof email !== 'string') return false;
     const n = email.toLowerCase().trim().replace(/\./g, '');
     return n === 'apoorvxs@gmailcom';
   }
+  root.isApoorvOwnerEmail = isApoorvOwnerEmail;
+  if (typeof window !== 'undefined') window.isApoorvOwnerEmail = isApoorvOwnerEmail;
 
   function initGuestMode() {
     root.currentUser = null;
@@ -779,6 +781,7 @@
     try {
       if (typeof sessionStorage !== 'undefined') {
         sessionStorage.removeItem('sprintdial_owner_unlocked');
+        sessionStorage.removeItem('sprintdial_active_invite_token');
       }
     } catch(e) {}
     if (typeof window !== 'undefined' && typeof window.firebase?.auth === 'function') {
@@ -787,16 +790,41 @@
     if (typeof window !== 'undefined' && typeof window.SALES_PLATFORM_AUTH?.getAuth === 'function') {
       window.SALES_PLATFORM_AUTH.getAuth().then(a => a.signOut?.()).catch(() => {});
     }
-    if (typeof location !== 'undefined' && typeof location.reload === 'function') {
-      location.reload();
+
+    if (typeof window !== 'undefined' && window.history && window.history.replaceState) {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+
+    closeAuthGate();
+    const adminModal = document.getElementById('adminModal');
+    if (adminModal) adminModal.classList.add('hidden');
+    const walletModal = document.getElementById('partnerWalletModal');
+    if (walletModal) walletModal.classList.add('hidden');
+
+    if (typeof syncShieldOwnerExemption === 'function') {
+      syncShieldOwnerExemption();
+    } else if (typeof root.syncShieldOwnerExemption === 'function') {
+      root.syncShieldOwnerExemption();
+    } else if (typeof window !== 'undefined' && typeof window.APP_SHELL?.syncShieldOwnerExemption === 'function') {
+      window.APP_SHELL.syncShieldOwnerExemption();
+    }
+
+    initGuestMode();
+
+    if (typeof root.showNotification === 'function') {
+      root.showNotification('[LOGOUT] Workstation signed out. Access perimeter restricted.');
     }
   }
 
   function signOutGoogle() {
+    if (typeof window !== 'undefined' && typeof window.APP_SHELL?.signOut === 'function') {
+      return window.APP_SHELL.signOut();
+    }
     signOut();
   }
 
   const exports = {
+    isApoorvOwnerEmail,
     initGuestMode,
     handleUserAuthResolved,
     renderApplicantView,

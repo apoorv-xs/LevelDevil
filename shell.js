@@ -598,6 +598,17 @@ window.APP_SHELL.signOut = async function() {
   window.APP_SHELL.closeProfileDropdown();
   window.APP_SHELL.initUniversalTopbar();
 
+  try {
+    if (typeof localStorage !== "undefined") {
+      localStorage.removeItem("sprintdial_user");
+      localStorage.removeItem("sprintdial_google_user");
+    }
+    if (typeof sessionStorage !== "undefined") {
+      sessionStorage.removeItem("sprintdial_owner_unlocked");
+      sessionStorage.removeItem("sprintdial_active_invite_token");
+    }
+  } catch (e) {}
+
   if (window.SALES_PLATFORM_AUTH?.getAuth) {
     try {
       const auth = await window.SALES_PLATFORM_AUTH.getAuth();
@@ -609,10 +620,30 @@ window.APP_SHELL.signOut = async function() {
   }
 
   if (isWorkspaceRoute()) {
-    if (typeof window.openAuthGate === "function") {
-      window.openAuthGate();
-    } else {
-      window.location.reload();
+    if (typeof window.closeAuthGate === "function") {
+      window.closeAuthGate();
+    }
+    const authOverlay = document.getElementById("authGateOverlay");
+    if (authOverlay) authOverlay.classList.add("hidden");
+    const adminModal = document.getElementById("adminModal");
+    if (adminModal) adminModal.classList.add("hidden");
+    const walletModal = document.getElementById("partnerWalletModal");
+    if (walletModal) walletModal.classList.add("hidden");
+
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+
+    if (typeof window.initGuestMode === "function") {
+      window.initGuestMode();
+    } else if (typeof window.WorkspaceAuthEngine?.initGuestMode === "function") {
+      window.WorkspaceAuthEngine.initGuestMode();
+    }
+
+    syncShieldOwnerExemption();
+
+    if (typeof window.showNotification === "function") {
+      window.showNotification("[LOGOUT] Workstation signed out. Access perimeter restricted.");
     }
   } else if (isSalesRoute()) {
     if (typeof window.syncAuthState === "function") {
@@ -1338,15 +1369,84 @@ function initContentShield() {
     }
   });
 
-  // 4. PrintScreen Key Detection & Clipboard Purge
-  window.addEventListener("keyup", (e) => {
+  // 4. PrintScreen & Screen Snip Key Detection & Immediate Shield Blur
+  function dismissAntiSnippingShield() {
+    const shieldEl = document.getElementById("antiSnippingShield");
+    if (shieldEl) {
+      shieldEl.classList.remove("active");
+      shieldEl.style.removeProperty("display");
+      shieldEl.style.removeProperty("opacity");
+      shieldEl.style.removeProperty("visibility");
+      shieldEl.style.removeProperty("pointer-events");
+    }
+    const cockpit = document.getElementById("workspaceCockpitContainer");
+    if (cockpit) {
+      cockpit.classList.remove("anti-snipping-blurred");
+      cockpit.style.removeProperty("filter");
+      cockpit.style.removeProperty("opacity");
+    }
+  }
+
+  const handlePrintScreenDown = (e) => {
     if (isShieldExempt()) return;
-    if (e.key === "PrintScreen" || e.keyCode === 44) {
+    const isPrtScn = e.key === "PrintScreen" || e.keyCode === 44 || e.code === "PrintScreen" || e.key === "Snapshot";
+    const isSnippingTool = (e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === "s" || e.key === "S");
+    if (isPrtScn || isSnippingTool) {
       if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
         navigator.clipboard.writeText("").catch(() => {});
       }
+      const shieldEl = document.getElementById("antiSnippingShield");
+      if (shieldEl) {
+        shieldEl.classList.add("active");
+        shieldEl.style.setProperty("display", "flex", "important");
+        shieldEl.style.setProperty("opacity", "1", "important");
+        shieldEl.style.setProperty("visibility", "visible", "important");
+        shieldEl.style.setProperty("pointer-events", "auto", "important");
+      }
+      const cockpit = document.getElementById("workspaceCockpitContainer");
+      if (cockpit) {
+        cockpit.classList.add("anti-snipping-blurred");
+        cockpit.style.setProperty("filter", "blur(20px)", "important");
+        cockpit.style.setProperty("opacity", "0.15", "important");
+      }
       triggerShieldStrobe();
       showShieldNotice("📸 Screen Capture Restricted // Clipboard purged.");
+    }
+  };
+  window.addEventListener("keydown", handlePrintScreenDown, true);
+
+  window.addEventListener("keyup", (e) => {
+    if (isShieldExempt()) return;
+    if (e.key === "PrintScreen" || e.keyCode === 44 || e.code === "PrintScreen" || e.key === "Snapshot") {
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+        navigator.clipboard.writeText("").catch(() => {});
+      }
+      const shieldEl = document.getElementById("antiSnippingShield");
+      if (shieldEl) {
+        shieldEl.classList.add("active");
+        shieldEl.style.setProperty("display", "flex", "important");
+        shieldEl.style.setProperty("opacity", "1", "important");
+        shieldEl.style.setProperty("visibility", "visible", "important");
+        shieldEl.style.setProperty("pointer-events", "auto", "important");
+      }
+      const cockpit = document.getElementById("workspaceCockpitContainer");
+      if (cockpit) {
+        cockpit.classList.add("anti-snipping-blurred");
+        cockpit.style.setProperty("filter", "blur(20px)", "important");
+        cockpit.style.setProperty("opacity", "0.15", "important");
+      }
+      triggerShieldStrobe();
+      showShieldNotice("📸 Screen Capture Restricted // Clipboard purged.");
+    }
+  });
+
+  const shieldElObj = document.getElementById("antiSnippingShield");
+  if (shieldElObj) {
+    shieldElObj.addEventListener("click", dismissAntiSnippingShield);
+  }
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      dismissAntiSnippingShield();
     }
   });
 
@@ -1404,9 +1504,19 @@ function initContentShield() {
       return;
     }
     const shieldEl = document.getElementById("antiSnippingShield");
-    if (shieldEl) shieldEl.classList.add("active");
+    if (shieldEl) {
+      shieldEl.classList.add("active");
+      shieldEl.style.setProperty("display", "flex", "important");
+      shieldEl.style.setProperty("opacity", "1", "important");
+      shieldEl.style.setProperty("visibility", "visible", "important");
+      shieldEl.style.setProperty("pointer-events", "auto", "important");
+    }
     const cockpit = document.getElementById("workspaceCockpitContainer");
-    if (cockpit) cockpit.classList.add("anti-snipping-blurred");
+    if (cockpit) {
+      cockpit.classList.add("anti-snipping-blurred");
+      cockpit.style.setProperty("filter", "blur(20px)", "important");
+      cockpit.style.setProperty("opacity", "0.15", "important");
+    }
   }
 
   function handleWindowFocus() {

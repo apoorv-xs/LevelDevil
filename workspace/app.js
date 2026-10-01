@@ -798,6 +798,9 @@ function signOut() {
 }
 
 function signOutGoogle() {
+  if (typeof window !== 'undefined' && typeof window.APP_SHELL?.signOut === 'function') {
+    return window.APP_SHELL.signOut();
+  }
   signOut();
 }
 
