@@ -3193,7 +3193,7 @@
     "phone": "Verified Phone: +91 96069 54100",
     "tel": "+919606954100",
     "wa": "919606954100",
-    "site": "https://lupabengaluru.com/",
+    "site": "https://lupa.co.in/",
     "ptype": "UPGRADE",
     "fee": "₹50,000",
     "cat": "general",

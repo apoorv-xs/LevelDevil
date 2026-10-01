@@ -22,6 +22,7 @@
     "lockedBy": null,
     "lockedEmail": null,
     "flaws": [
+      "[VERIFY] Site URL failed DNS Oct 01 2026 (studioverveblr.com dead) — confirm live site on call before pitching audit",
       "Uncompressed 4K portfolio render drag (LCP 4.4s)",
       "Passive contact form with zero CRM/calendar sync",
       "Lacks full-screen WebGL / 3D spatial project walkthrough",
@@ -67,6 +68,7 @@
     "lockedBy": null,
     "lockedEmail": null,
     "flaws": [
+      "[VERIFY] Site URL failed DNS Oct 01 2026 (atelierformdesign.in dead) — confirm live site on call before pitching audit",
       "High-res architectural imagery unoptimized (LCP 4.9s)",
       "Mobile viewport layout shift on gallery load",
       "Static PDF project portfolio download required",
