@@ -193,7 +193,7 @@
       const subject = `Invitation: Join Apoorv A S as an Outreach Partner / Sales Rep`;
       const body = `Hi,
 
-You have been invited by Apoorv A S to join the SprintDial Client Radar workspace as an Authorized Outreach Partner / Sales Rep.
+You have been invited by Apoorv A S to join the Client Radar workspace as an Authorized Sales Rep.
 
 Position & Commercial Overview:
 • Role: ${primaryInvite.roleTitle}
@@ -264,7 +264,7 @@ apoorvxs@gmail.com | https://apoorv.qzz.io`;
     const subject = `Invitation: Join Apoorv A S as an Outreach Partner / Sales Rep`;
     const body = `Hi,
 
-You have been invited by Apoorv A S to join the SprintDial Client Radar workspace as an Authorized Outreach Partner / Sales Rep.
+You have been invited by Apoorv A S to join the Client Radar workspace as an Authorized Sales Rep.
 
 Position & Commercial Overview:
 • Role: ${inv.roleTitle || 'Outreach Partner (15% Commission)'}

@@ -8,14 +8,14 @@
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#e6a83b">
 
-  <!-- Open Graph / Social Cards for Partner Invites & Previews -->
+  <!-- Open Graph / Social Cards for Sales Rep Invites & Previews -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://apoorv.qzz.io/workspace/">
-  <meta property="og:title" content="SprintDial // Client Intelligence Radar — Authorized Partner Portal">
+  <meta property="og:title" content="Client Radar // Client Intelligence Workstation">
   <meta property="og:description" content="Official client intelligence radar, 15% revenue share commission tracking, and live dialer cockpit for creative engineering contracts.">
   <meta property="og:image" content="https://apoorv.qzz.io/thumbnail.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="SprintDial // Client Intelligence Radar — Authorized Partner Portal">
+  <meta name="twitter:title" content="Client Radar // Client Intelligence Workstation">
   <meta name="twitter:description" content="Official client intelligence radar, 15% revenue share commission tracking, and live dialer cockpit for creative engineering contracts.">
   <meta name="twitter:image" content="https://apoorv.qzz.io/thumbnail.png">
 
@@ -1370,7 +1370,7 @@
           type="button" 
           onclick="openAuthGate()" 
           class="text-[11px] font-mono text-[#17120f]/70 hover:text-[#17120f] underline decoration-2 cursor-pointer mt-1">
-          Have an assigned Partner ID / Username? Sign in here →
+          Have an assigned Sales Rep ID / Username? Sign in here →
         </button>
       </div>
 
@@ -1384,8 +1384,8 @@
   </div>
 
   <!-- ================================================================= -->
-  <!-- VIEW 2: OUTREACH PARTNER APPLICATION PORTAL                       -->
-  <!-- (Authenticated Google Users who are not yet approved partners)    -->
+  <!-- VIEW 2: SALES REP APPLICATION PORTAL                              -->
+  <!-- (Authenticated Google Users who are not yet approved reps)        -->
   <!-- ================================================================= -->
   <div id="workspaceApplicantContainer" class="hidden flex-1 overflow-y-auto flex items-center justify-center p-4 sm:p-8 bg-[#fff4c9]">
     <div class="max-w-2xl w-full bg-[#fffdf1] border-[3px] border-[#17120f] shadow-[6px_6px_0_#17120f] p-6 sm:p-8 space-y-6" data-kaboom-body="true">
@@ -1411,10 +1411,10 @@
       <div class="p-4 bg-[#fff1bd] border-2 border-[#17120f] shadow-[3px_3px_0_#17120f] space-y-2">
         <div class="flex items-center gap-2">
           <span class="text-sm">[AUTH]</span>
-          <span class="font-arcade text-xs font-bold text-[#17120f] uppercase">Outreach Partner Access Required</span>
+          <span class="font-arcade text-xs font-bold text-[#17120f] uppercase">Sales Rep Access Required</span>
         </div>
         <p class="text-xs font-mono text-[#17120f]/80 leading-relaxed">
-          The Client Radar cockpit is reserved for active outreach partners and referral scouts. Connect local businesses, clinics, and brands with Apoorv's custom 3D web engineering and earn a 15% commission (₹7,500 on ₹50k base) on every closed deal.
+          The Client Radar cockpit is reserved for active sales reps and referral scouts. Connect local businesses, clinics, and brands with Apoorv's custom 3D web engineering and earn a 15% commission (₹7,500 on ₹50k base) on every closed deal.
         </p>
       </div>
 
@@ -1457,7 +1457,7 @@
 
         <label class="flex items-start gap-2 text-xs font-mono text-[#17120f] cursor-pointer">
           <input type="checkbox" id="portalApplicantConsent" required class="mt-0.5 cursor-pointer" />
-          <span>I consent to the collection and verification of my professional coordinates under the <button type="button" onclick="window.APP_SHELL?.openLegalModal?.('privacy')" class="underline font-bold">DPDP Act 2023</button> exclusively for outreach partner clearance.</span>
+          <span>I consent to the collection and verification of my professional coordinates under the <button type="button" onclick="window.APP_SHELL?.openLegalModal?.('privacy')" class="underline font-bold">DPDP Act 2023</button> exclusively for sales rep clearance.</span>
         </label>
 
         <button 
@@ -1465,7 +1465,7 @@
           id="portalSubmitAppBtn" 
           class="w-full py-3 px-4 bg-[#fce566] hover:bg-[#ffe875] text-[#17120f] border-[3px] border-[#17120f] shadow-[4px_4px_0_#17120f] font-arcade text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0_#17120f]">
           <span>[EXEC]</span>
-          <span>APPLY FOR OUTREACH PARTNER ACCESS</span>
+          <span>APPLY FOR SALES REP ACCESS</span>
         </button>
       </form>
 
@@ -1476,7 +1476,7 @@
           <span class="font-arcade text-xs font-bold text-[#17120f]">APPLICATION ON FILE // PENDING REVIEW</span>
         </div>
         <p id="portalApplicantStatusText" class="text-xs font-mono text-[#17120f]/80 leading-relaxed">
-          Your outreach partner request has been received. You will receive an update once approved.
+          Your sales rep request has been received. You will receive an update once approved.
         </p>
         <div class="p-3 bg-[#fff1bd] border-2 border-[#17120f] text-[11px] font-mono text-[#17120f]">
           <strong>Clearance Target:</strong> <span id="portalApplicantStatusTerritory">--</span><br>
@@ -2400,13 +2400,13 @@
 
         <div class="flex items-center gap-3">
           <div class="h-px bg-white/10 flex-1"></div>
-          <span class="text-[10px] font-mono text-neutral-500 uppercase">Or Partner ID</span>
+          <span class="text-[10px] font-mono text-neutral-500 uppercase">Or Sales Rep ID</span>
           <div class="h-px bg-white/10 flex-1"></div>
         </div>
 
         <form onsubmit="handleCredentialsAuth(event)" class="space-y-3">
           <div>
-            <label for="loginUsernameInput" class="block text-[11px] font-mono text-neutral-400 mb-1">Username / Partner ID</label>
+            <label for="loginUsernameInput" class="block text-[11px] font-mono text-neutral-400 mb-1">Username / Sales Rep ID</label>
             <input 
               type="text" 
               id="loginUsernameInput" 
@@ -2432,7 +2432,7 @@
           <div id="loginErrorMsg" class="hidden text-xs text-rose-400 font-mono"></div>
 
           <button type="submit" class="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-mono text-xs font-bold transition border border-white/10 cursor-pointer">
-            Sign In with Partner ID →
+            Sign In with Sales Rep ID →
           </button>
         </form>
 
@@ -2463,10 +2463,10 @@
         [RESTRICTED] <strong class="text-white">Notice:</strong> The prospect radar and audit dossiers are restricted to verified outreach partners. Select your path below:
       </div>
 
-      <!-- Path 1: Apply as Outreach Partner -->
+      <!-- Path 1: Apply as Sales Rep -->
       <div id="repApplicationSection" class="bg-[#101114] border border-blue-900/30 rounded-xl p-4 space-y-3">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-mono text-white font-bold">[ACCESS] Apply for Outreach Partner Access</span>
+          <span class="text-xs font-mono text-white font-bold">[ACCESS] Apply for Sales Rep Access</span>
           <span class="text-[10px] font-mono text-blue-400 font-bold">15% Commission Affiliate</span>
         </div>
         <form id="repApplicationForm" onsubmit="handleRepApplicationSubmit(event)" class="space-y-3">
@@ -2488,7 +2488,7 @@
             <input type="text" id="applicantPhone" placeholder="+91 / +1 ..." class="w-full bg-[#15161B] border border-white/10 rounded-lg px-2.5 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-white/30" />
           </div>
           <button type="submit" id="submitAppBtn" class="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
-            <span>[APPLY] Apply for Outreach Partner Access</span>
+            <span>[APPLY] Apply for Sales Rep Access</span>
           </button>
         </form>
         <div id="applicantSuccessMsg" class="hidden text-xs font-mono text-emerald-400 bg-emerald-950/40 p-2.5 rounded-lg border border-emerald-800/40">
@@ -3207,7 +3207,7 @@
         <div>
           <div class="flex items-center gap-2">
             <span class="px-2 py-0.5 text-[9px] font-arcade bg-[#fce566] text-[#17120f] border border-[#17120f] shadow-[1px_1px_0_#17120f] font-bold">COMMISSIONS // WALLET</span>
-            <h3 id="walletModalTitle" class="font-arcade text-xs sm:text-sm font-bold text-[#17120f]">Partner Wallet &amp; UPI Payout Terminal</h3>
+            <h3 id="walletModalTitle" class="font-arcade text-xs sm:text-sm font-bold text-[#17120f]">Sales Rep Wallet &amp; UPI Payout Terminal</h3>
           </div>
           <p class="text-[11px] font-mono text-[#17120f]/80 mt-1">
             Real-time commission ledger, milestone performance &amp; instant UPI settlement.
@@ -3341,7 +3341,7 @@
         <img src="/favicon.png" width="48" height="48" class="w-12 h-12 border-2 border-[#17120f] shadow-[2px_2px_0_#17120f] bg-[#fce566] p-1 object-contain" alt="Client Radar Icon">
         <div class="flex-1 min-w-0">
           <div class="font-arcade text-[11px] font-bold text-[#17120f] truncate">CLIENT RADAR MOBILE</div>
-          <div class="text-[10px] text-[#17120f]/70 font-mono">SprintDial Cockpit • 60 FPS Engine</div>
+          <div class="text-[10px] text-[#17120f]/70 font-mono">Client Radar Cockpit • 60 FPS Engine</div>
           <div class="inline-flex items-center gap-1.5 mt-1 text-[9px] font-arcade text-emerald-800 bg-emerald-100 border border-emerald-700 px-1.5 py-0.5">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> VERIFIED CALLER ACCREDITED
           </div>
@@ -3455,7 +3455,7 @@
         <button id="btnAdminTabIngest" onclick="switchAdminTab('ingest')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Bulk Ingestion</button>
         <button id="btnAdminTabLogs" onclick="switchAdminTab('logs')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>[SURV]</span><span>Surveillance & Logs</span></button>
         <button id="btnAdminTabSync" onclick="switchAdminTab('sync')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0">Cloud Sync</button>
-        <button id="btnAdminTabUsers" onclick="switchAdminTab('users')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>[PARTNERS]</span><span>Partners &amp; Invites</span></button>
+        <button id="btnAdminTabUsers" onclick="switchAdminTab('users')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>[REPS]</span><span>Sales Reps &amp; Invites</span></button>
         <button id="btnAdminTabBrain" onclick="switchAdminTab('brain')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>[BRAIN]</span><span>Brain Studio</span></button>
         <button id="btnAdminTabWarmup" onclick="switchAdminTab('warmup')" class="admin-tab-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition shrink-0 flex items-center gap-1"><span>[WARMUP]</span><span>Email Deliverability</span></button>
       </div>
@@ -3856,14 +3856,14 @@
         </div>
 
         <div class="bg-[#101114] border border-white/5 rounded-xl p-4 space-y-3">
-          <div class="text-xs font-mono text-neutral-300 font-bold">Create Authorized Outreach Partner Account:</div>
+          <div class="text-xs font-mono text-neutral-300 font-bold">Create Authorized Sales Rep Account:</div>
           <form onsubmit="handleCreateWorkerAccount(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <input type="text" id="newWorkerUsername" autocomplete="username" placeholder="username" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white" />
             <input type="text" id="newWorkerDisplayName" placeholder="Display Name" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white" />
             <input type="password" id="newWorkerPassword" autocomplete="new-password" placeholder="Password" class="bg-[#15161B] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white" />
             <div class="sm:col-span-3">
               <button type="submit" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition">
-                Create Partner Account
+                Create Sales Rep Account
               </button>
             </div>
           </form>

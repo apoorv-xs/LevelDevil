@@ -238,13 +238,13 @@
     }
 
     const callerUser = root.currentUser || (window.currentUser || {});
-    const callerName = callerUser.displayName || callerUser.name || 'Outreach Partner';
+    const callerName = callerUser.displayName || callerUser.name || 'Sales Rep';
     const callerEmail = callerUser.email || '';
 
     const clearedDeals = (telemetry.ledger || []).filter(d => d.type === 'closed_won' && !d.isSettled);
     const ledgerLines = clearedDeals.map(d => `• ${d.name} (${d.tierName}) → Commission: ₹${d.commission.toLocaleString('en-IN')}`).join('\n');
 
-    const msg = `[REQUEST] OUTREACH PARTNER COMMISSION SETTLEMENT\n\nPartner: ${callerName} (${callerEmail})\nRegistered UPI: ${upiId}\nRequested Payout: ₹${cleared.toLocaleString('en-IN')}\n\nVerified Deal Ledger:\n${ledgerLines}\n\nTotal Cleared Balance: ₹${cleared.toLocaleString('en-IN')}\n\nPlease transfer and mark settled.\nOffice of Apoorv A S | SprintDial Cockpit`;
+    const msg = `[REQUEST] OUTREACH PARTNER COMMISSION SETTLEMENT\n\nPartner: ${callerName} (${callerEmail})\nRegistered UPI: ${upiId}\nRequested Payout: ₹${cleared.toLocaleString('en-IN')}\n\nVerified Deal Ledger:\n${ledgerLines}\n\nTotal Cleared Balance: ₹${cleared.toLocaleString('en-IN')}\n\nPlease transfer and mark settled.\nOffice of Apoorv A S | Client Radar Cockpit`;
 
     const waLink = `https://wa.me/919495462450?text=${encodeURIComponent(msg)}`;
 
