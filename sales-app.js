@@ -848,6 +848,7 @@ function initTrojanPitchFromUrl() {
     const fee = params.get("fee") || "₹50,000";
     const geo = params.get("geo") || "22% (Missing llms.txt)";
     const llms = params.get("llms") || "MISSING (/llms.txt 404)";
+    const smokingGun = params.get("smokingGun") || params.get("gun") || "";
     const partner = params.get("partner") || params.get("ref") || "";
     const isProposalFastTrack = Boolean(params.get("proposal"));
 
@@ -857,7 +858,7 @@ function initTrojanPitchFromUrl() {
       } catch (e) {}
     }
 
-    mountTrojanTeardown({ prospect, dm, lcp, speed, leak, bleed, site, fee, geo, llms, partner, isProposalFastTrack });
+    mountTrojanTeardown({ prospect, dm, lcp, speed, leak, bleed, site, fee, geo, llms, smokingGun, partner, isProposalFastTrack });
   } catch (err) {
     console.warn("[Trojan] URL parameter parsing failed:", err);
   }
@@ -878,6 +879,8 @@ function mountTrojanTeardown(data) {
   const geoLlmsEl = document.getElementById("trojan-geo-llms");
   const dossierIdEl = document.getElementById("trojan-dossier-id");
   const partnerIdEl = document.getElementById("trojan-partner-id");
+  const smokingGunCard = document.getElementById("trojan-smoking-gun-card");
+  const smokingGunTextEl = document.getElementById("trojan-smoking-gun-text");
 
   if (clientNameEl) clientNameEl.textContent = data.prospect;
   if (entityNameEl) entityNameEl.textContent = data.prospect;
@@ -888,6 +891,15 @@ function mountTrojanTeardown(data) {
   if (geoEl) geoEl.textContent = data.geo || "22% (Missing llms.txt)";
   if (agenticBrandEl) agenticBrandEl.textContent = data.prospect || "your website";
   if (geoLlmsEl && data.llms) geoLlmsEl.textContent = data.llms;
+
+  if (smokingGunCard && smokingGunTextEl) {
+    if (data.smokingGun) {
+      smokingGunTextEl.textContent = data.smokingGun;
+      smokingGunCard.classList.remove("hidden");
+    } else {
+      smokingGunCard.classList.add("hidden");
+    }
+  }
 
   const cleanProspectCode = (data.prospect || "CLIENT").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12);
   if (dossierIdEl) dossierIdEl.textContent = `RADAR-${cleanProspectCode || "STUDIO"}`;

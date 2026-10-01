@@ -835,7 +835,10 @@ function renderQueue() {
       </div>
       <div class="flex justify-between items-center gap-2 text-[11px] text-gray-400 mt-0.5">
         <span class="truncate flex-1 min-w-0">${safeDm}</span>
-        <span class="text-[7.5px] font-arcade px-1 py-0.5 bg-[#fffdf1] border border-[#17120f] shadow-[1px_1px_0_#17120f] text-[#17120f] font-bold shrink-0 uppercase tracking-wider">${safePtype}</span>
+        <div class="flex items-center gap-1 shrink-0">
+          ${p.geoScore ? `<span class="text-[8px] font-mono px-1 py-0.2 rounded bg-cyan-950/60 text-cyan-300 border border-cyan-800/60 font-semibold" title="GEO AI Readiness Score">GEO ${escapeHTML(p.geoScore)}</span>` : ''}
+          <span class="text-[7.5px] font-arcade px-1 py-0.5 bg-[#fffdf1] border border-[#17120f] shadow-[1px_1px_0_#17120f] text-[#17120f] font-bold shrink-0 uppercase tracking-wider">${safePtype}</span>
+        </div>
       </div>
     `;
 
@@ -1043,6 +1046,37 @@ function renderActiveProspect() {
   }
   if (lcpEl) lcpEl.innerText = p.lcpTime;
   if (techStackEl) techStackEl.innerText = p.techStack;
+
+  // 2026 Agentic & GEO Radar Telemetry
+  const geoBadge = document.getElementById('dossierGeoBadge');
+  const llmsBadge = document.getElementById('dossierLlmsBadge');
+  const schemaBadge = document.getElementById('dossierSchemaBadge');
+  const agentSummary = document.getElementById('dossierAgentSummary');
+
+  if (geoBadge) {
+    geoBadge.innerText = `GEO: ${p.geoScore || (isNoSite ? '0%' : '35%')}`;
+  }
+  if (llmsBadge) {
+    llmsBadge.innerText = p.llmsStatus || (isNoSite ? 'Unindexed Domain' : 'Missing (/llms.txt 404)');
+    llmsBadge.className = `font-mono text-[10.5px] font-semibold truncate ${
+      (p.llmsStatus && p.llmsStatus.toLowerCase().includes('indexed')) ? 'text-emerald-400' : 'text-rose-400'
+    }`;
+  }
+  if (schemaBadge) {
+    schemaBadge.innerText = p.schemaStatus || (isNoSite ? 'None' : 'Unstructured DOM');
+    schemaBadge.className = `font-mono text-[10.5px] font-semibold truncate ${
+      (p.schemaStatus && (p.schemaStatus.toLowerCase().includes('json-ld') || p.schemaStatus.toLowerCase().includes('valid'))) ? 'text-emerald-400' : 'text-amber-400'
+    }`;
+  }
+  if (agentSummary) {
+    if (isNoSite) {
+      agentSummary.innerText = "Prospect has zero owned web infrastructure. Invisible to SearchGPT, Perplexity, and Apple Intelligence. 100% reliant on third-party aggregators.";
+    } else if (p.smokingGun) {
+      agentSummary.innerText = p.smokingGun;
+    } else {
+      agentSummary.innerText = "Lacks /llms.txt and structured JSON-LD entity schema. AI agents cannot extract pricing, appointments, or services directly, routing inquiries to competitors.";
+    }
+  }
 
   // WhatsApp 1-Tap Link (Dynamic Brief with Custom Intelligence)
   const waBtn = document.getElementById('whatsappActionBtn');
@@ -1344,6 +1378,10 @@ function renderActiveProspect() {
       ? `${p.wastedSpend} on aggregators • Mobile LCP ${cleanLcpTime} cellular bounce risk.`
       : `Mobile LCP ${cleanLcpTime} • High aggregator fee leak on mobile traffic.`;
   }
+  const preCallSmokingGun = document.getElementById('preCallSmokingGunText');
+  if (preCallSmokingGun) {
+    preCallSmokingGun.innerText = p.smokingGun || (p.flaws && p.flaws[0]) || "Mobile asset drag and aggregator commission bleed.";
+  }
 
   // 3D WebUI & High-Impact Conversion Moat Solutions
   updateMoatSolutions(p, isNoSite);
@@ -1519,6 +1557,24 @@ function updateMoatSolutions(p, isNoSite) {
     }
   }
 
+  function copySmokingGunHook() {
+    const p = getGlobalProspects().find(item => item.id === selectedProspectId);
+    const text = p?.smokingGun || (p?.flaws && p?.flaws[0]) || "";
+    if (!text) {
+      notify("No smoking gun hook available for this prospect.");
+      return;
+    }
+    if (typeof navigator !== 'undefined' && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+      navigator.clipboard.writeText(text).then(() => {
+        notify("📋 [SMOKING GUN] Copied hook to clipboard!");
+      }).catch(() => {
+        notify("Failed to copy hook to clipboard.");
+      });
+    } else {
+      notify("📋 [SMOKING GUN] " + text.slice(0, 60) + "...");
+    }
+  }
+
   const WorkspaceQueueEngine = {
     filterStatus,
     matchStatus,
@@ -1540,7 +1596,8 @@ function updateMoatSolutions(p, isNoSite) {
     showMobilePane,
     ensureDesktopPanesVisible,
     switchCockpitSubTab,
-    toggleSparkHaltActiveLeadUI
+    toggleSparkHaltActiveLeadUI,
+    copySmokingGunHook
   };
 
   root.WorkspaceQueueEngine = WorkspaceQueueEngine;
@@ -1565,12 +1622,15 @@ function updateMoatSolutions(p, isNoSite) {
   root.ensureDesktopPanesVisible = ensureDesktopPanesVisible;
   root.switchCockpitSubTab = switchCockpitSubTab;
   root.toggleSparkHaltActiveLeadUI = toggleSparkHaltActiveLeadUI;
+  root.copySmokingGunHook = copySmokingGunHook;
 
   if (typeof window !== 'undefined') {
     window.toggleSparkHaltActiveLeadUI = toggleSparkHaltActiveLeadUI;
+    window.copySmokingGunHook = copySmokingGunHook;
   }
   if (typeof global !== 'undefined') {
     global.toggleSparkHaltActiveLeadUI = toggleSparkHaltActiveLeadUI;
+    global.copySmokingGunHook = copySmokingGunHook;
   }
 
   if (typeof module !== 'undefined' && module.exports) {

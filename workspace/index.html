@@ -1793,6 +1793,15 @@
               <span class="text-rose-700 font-bold shrink-0">› REVENUE LEAK:</span>
               <span id="preCallBleedText" class="leading-relaxed">Cellular 4G drop-off on slow mobile loading; high aggregator commissions.</span>
             </div>
+            <div id="preCallSmokingGunBox" class="flex items-start justify-between gap-2 bg-[#fee2e2] p-2 border-2 border-[#e11d48]/40 text-[11px] text-[#991b1b]">
+              <div class="flex items-start gap-1.5 min-w-0">
+                <span class="font-bold shrink-0 text-[#b91c1c]">› 🚨 SMOKING GUN:</span>
+                <span id="preCallSmokingGunText" class="leading-relaxed font-semibold break-words">Analyzing critical flaw...</span>
+              </div>
+              <button type="button" onclick="window.copySmokingGunHook && window.copySmokingGunHook()" class="shrink-0 px-2 py-0.5 bg-[#b91c1c] text-white hover:bg-[#991b1b] border border-[#17120f] font-mono text-[10px] font-bold shadow-[1px_1px_0_#17120f] transition-transform active:translate-y-0.5 cursor-pointer" title="Copy hook to clipboard">
+                [📋 COPY HOOK]
+              </button>
+            </div>
           </div>
         </div>
 
@@ -2317,6 +2326,33 @@
               </div>
             </div>
 
+            <!-- 2.5 2026 AGENTIC DISCOVERY & MACHINE-READABILITY (GEO) -->
+            <div class="bg-[#15161B] border border-cyan-500/20 rounded-xl p-3 space-y-2.5">
+              <div class="flex items-center justify-between border-b border-white/[0.06] pb-2">
+                <span class="text-[11px] font-mono text-cyan-300 font-bold flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                  <span>2026 Agentic &amp; GEO Radar:</span>
+                </span>
+                <span id="dossierGeoBadge" class="text-[10px] font-mono bg-cyan-500/10 text-cyan-300 px-2 py-0.5 rounded border border-cyan-500/30 font-bold">
+                  GEO: --%
+                </span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div class="bg-black/30 border border-white/[0.04] rounded-lg p-2 space-y-0.5">
+                  <div class="text-[9px] font-mono text-neutral-400 uppercase">llms.txt Protocol</div>
+                  <div id="dossierLlmsBadge" class="font-mono text-[10.5px] font-semibold text-rose-400 truncate">Missing (404)</div>
+                </div>
+                <div class="bg-black/30 border border-white/[0.04] rounded-lg p-2 space-y-0.5">
+                  <div class="text-[9px] font-mono text-neutral-400 uppercase">Schema Knowledge Graph</div>
+                  <div id="dossierSchemaBadge" class="font-mono text-[10.5px] font-semibold text-amber-400 truncate">Unstructured DOM</div>
+                </div>
+              </div>
+              <div class="bg-black/20 border border-white/[0.04] rounded-lg p-2 text-[10.5px] font-mono text-neutral-300 leading-snug">
+                <div class="text-[9px] text-cyan-400/90 font-bold uppercase mb-1">AI Search Indexability (Perplexity/SearchGPT):</div>
+                <p id="dossierAgentSummary" class="text-neutral-300">Evaluating machine readability and direct discovery indexing...</p>
+              </div>
+            </div>
+
             <!-- 3. BASELESS TECH SPEND & COMMISSION BLEED -->
             <div class="bg-[#15161B] border border-amber-500/20 rounded-xl p-3 space-y-2">
               <div class="flex items-center justify-between">
@@ -2692,6 +2728,17 @@
           </div>
           <span class="text-[9px] text-amber-400 font-mono bg-amber-900/40 px-2 py-0.5 rounded border border-amber-500/30">AI Search</span>
         </div>
+      </div>
+
+      <!-- Smoking Gun Callout in Modal -->
+      <div id="modalSmokingGunBox" class="p-2.5 bg-rose-950/20 border border-rose-500/30 rounded-lg text-xs font-mono space-y-1">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] text-rose-300 font-bold uppercase flex items-center gap-1">
+            <span>🚨 Primary Revenue Bottleneck:</span>
+          </span>
+          <span class="text-[9px] text-rose-400 bg-rose-900/40 px-1.5 py-0.5 rounded border border-rose-500/30 font-semibold">Smoking Gun</span>
+        </div>
+        <p id="modalSmokingGun" class="text-rose-200 text-[11px] leading-relaxed break-words font-medium">--</p>
       </div>
 
       <!-- Generated URL Box -->

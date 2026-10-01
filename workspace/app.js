@@ -1370,6 +1370,7 @@ function getTeardownUrl(p) {
   const fee = (typeof calculateUpgradeFee === 'function') ? calculateUpgradeFee(p.techStack, p.lcpTime, p.flaws, p.cat) : (p.fee || "₹50,000");
   const geo = p.geoScore || (isNoSite ? "0% (Unindexed)" : "22% (Missing llms.txt)");
   const llms = p.llmsStatus || (isNoSite ? "UNINDEXED DOMAIN" : "MISSING (/llms.txt 404)");
+  const smokingGun = p.smokingGun || (p.flaws && p.flaws[0]) || "";
 
   const params = new URLSearchParams({
     prospect: p.name || "",
@@ -1382,7 +1383,8 @@ function getTeardownUrl(p) {
     fee: fee,
     geo: geo,
     llms: llms,
-    cat: p.cat || ""
+    cat: p.cat || "",
+    ...(smokingGun ? { smokingGun: smokingGun } : {})
   });
 
   const origin = (typeof window !== "undefined" && window.location?.origin && !window.location.origin.includes("null") && !window.location.origin.startsWith("file:"))
@@ -1414,6 +1416,7 @@ function openClientTeardownModal() {
   const bleedEl = document.getElementById('modalAggregatorBleed');
   const geoEl = document.getElementById('modalGeoScore');
   const llmsEl = document.getElementById('modalLlmsStatus');
+  const smokingGunEl = document.getElementById('modalSmokingGun');
   const shareInput = document.getElementById('teardownShareUrl');
 
   if (nameEl) nameEl.innerText = `${p.name} (${(p.dm || 'Owner').split('(')[0].trim()})`;
@@ -1423,6 +1426,7 @@ function openClientTeardownModal() {
   if (bleedEl) bleedEl.innerText = bleedText;
   if (geoEl) geoEl.innerText = p.geoScore || (isNoSite ? "0% (Unindexed)" : "22% (Missing)");
   if (llmsEl) llmsEl.innerText = p.llmsStatus || (isNoSite ? "Unindexed Domain" : "Missing (/llms.txt 404)");
+  if (smokingGunEl) smokingGunEl.innerText = p.smokingGun || (p.flaws && p.flaws[0]) || "Mobile asset drag and aggregator commission bleed.";
 
   const teardownUrl = getTeardownUrl(p);
   if (shareInput) shareInput.value = teardownUrl;
@@ -2325,6 +2329,7 @@ if (typeof window !== 'undefined') {
   window.previewTeardownPage = previewTeardownPage;
   window.sendWhatsAppTeardown = sendWhatsAppTeardown;
   window.ensureProspectsLoaded = ensureProspectsLoaded;
+  window.copySmokingGunHook = (typeof WorkspaceQueueEngine !== 'undefined' && WorkspaceQueueEngine.copySmokingGunHook) || window.copySmokingGunHook;
 }
 if (typeof global !== 'undefined') {
   global.isInstallAppEligible = isInstallAppEligible;
@@ -2342,6 +2347,7 @@ if (typeof global !== 'undefined') {
   global.previewTeardownPage = previewTeardownPage;
   global.ensureProspectsLoaded = ensureProspectsLoaded;
   global.sendWhatsAppTeardown = sendWhatsAppTeardown;
+  global.copySmokingGunHook = (typeof WorkspaceQueueEngine !== 'undefined' && WorkspaceQueueEngine.copySmokingGunHook) || global.copySmokingGunHook;
 }
 
 /* ==========================================================================
