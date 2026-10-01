@@ -114,10 +114,10 @@ describe('Interactive 3D Deal Teardown & Trojan Pitch Engine', () => {
       expect(salesAppJs).toContain('const activePrefill = prefill || window._activeTrojanData;');
     });
 
-    it('activates Executive Dossier Mode in mountTrojanTeardown with body class, nav transformation, and title update', () => {
+    it('activates Executive Dossier Mode in mountTrojanTeardown with body class, nav activation, and title update', () => {
       expect(salesAppJs).toContain('document.body.classList.add("dossier-mode")');
       expect(salesAppJs).toContain('getElementById("nav-audit-link")');
-      expect(salesAppJs).toContain('DOSSIER');
+      expect(salesAppJs).toContain('Audit');
       expect(salesAppJs).toContain('60 FPS Architectural Teardown');
     });
   });

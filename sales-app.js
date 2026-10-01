@@ -917,15 +917,15 @@ function mountTrojanTeardown(data) {
   // Activate dossier-mode on body to suppress public portfolio fluff
   document.body.classList.add("dossier-mode");
 
-  // Transform topbar nav: "Audit" → "[ ● DOSSIER ]"
+  // Keep topbar nav as clean "Audit"
   const auditLink = document.getElementById("nav-audit-link") || document.querySelector('.site-nav a[href*="audit"]');
   if (auditLink) {
-    auditLink.innerHTML = '<span style="display:inline-flex; align-items:center; gap:5px;"><span class="topbar-dot" style="background:#10b981;"></span> DOSSIER</span>';
-    auditLink.setAttribute("title", "Confidential Dossier for " + data.prospect);
+    auditLink.textContent = "Audit";
+    auditLink.setAttribute("title", "Performance Audit for " + (data.prospect || "Client"));
   }
 
-  // Update document title to reflect exclusive prospect context
-  document.title = "Dossier: " + (data.prospect || "Client") + " | 60 FPS Architectural Teardown";
+  // Update document title cleanly
+  document.title = (data.prospect ? (data.prospect + " | Performance Audit") : "Performance Audit") + " | 60 FPS Architectural Teardown";
 
   // Parse fee and select matching deal tier
   let initialTier = 1;
@@ -949,9 +949,10 @@ function mountTrojanTeardown(data) {
     }, 300);
   }
 
-  // Let BB-8 celebrate and emit diagnostic thought
-  if (window.System1Brain?.emitThought) {
-    window.System1Brain.emitThought(`[SYS] Diagnostic ready for ${data.prospect}!`);
+  // Ensure companion thought bubble is hidden on audit report
+  if (window.System1Brain?.bubbleElement) {
+    window.System1Brain.bubbleElement.style.display = "none";
+    window.System1Brain.bubbleElement.style.opacity = "0";
   }
   if (window.Player3D && typeof window.Player3D.celebrateVictory === "function") {
     setTimeout(() => {

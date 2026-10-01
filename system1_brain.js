@@ -579,6 +579,18 @@
         emitThought(text, duration = 3200) {
             this.currentThought = text;
             if (typeof document === "undefined") return;
+
+            // Suppress companion thoughts on technical audit pages, executive dossiers, and workspace
+            const isAuditOrDossier = (typeof window !== "undefined" && window.location && (window.location.pathname.includes("audit") || window.location.pathname.includes("dossier"))) ||
+                (typeof document !== "undefined" && document.body && (document.body.classList.contains("dossier-mode") || document.body.classList.contains("audit-page")));
+            if (isAuditOrDossier) {
+                if (this.bubbleElement) {
+                    this.bubbleElement.style.display = "none";
+                    this.bubbleElement.style.opacity = "0";
+                }
+                return;
+            }
+
             if (!this.bubbleElement) this.setupBubble();
             if (!this.bubbleElement) return;
             const now = (typeof performance !== "undefined") ? performance.now() : Date.now();
@@ -1649,6 +1661,10 @@
         },
 
         maybeEmitContextualThought(telemetry) {
+            const isAuditOrDossier = (typeof window !== "undefined" && window.location && (window.location.pathname.includes("audit") || window.location.pathname.includes("dossier"))) ||
+                (typeof document !== "undefined" && document.body && (document.body.classList.contains("dossier-mode") || document.body.classList.contains("audit-page")));
+            if (isAuditOrDossier) return;
+
             const now = (typeof performance !== "undefined") ? performance.now() : Date.now();
             if (now - this.lastThoughtTime < 8000) return;
 
