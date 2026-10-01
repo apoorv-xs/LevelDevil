@@ -1011,7 +1011,7 @@ function renderActiveProspect() {
 
   const callPhoneTextEl = document.getElementById('callPhoneText');
   if (callPhoneTextEl) {
-    callPhoneTextEl.innerText = isUnmasked ? 'Call Prospect [D]' : 'Reveal & Call [D]';
+    callPhoneTextEl.innerText = 'Call Prospect [D]';
   }
 
   // Site Link
