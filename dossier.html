@@ -233,10 +233,11 @@
           <label data-kaboom-body="true" style="margin-top:10px;">
             <span class="field-header"><span>Primary Technical Bottleneck / Objective</span></span>
             <select name="objective" id="audit-objective" data-kaboom-body="true" style="width:100%; padding:10px; background:var(--white); border:2px solid var(--ink); font-family:'Courier Prime', monospace; font-size:13px;">
-              <option value="mobile_speed">Mobile LCP Bottleneck / Ad Traffic Bouncing (&gt;3s 4G paint)</option>
+              <option value="geo_agentic">AI Search &amp; Agentic Discovery (llms.txt, Perplexity/SearchGPT, Schema Graph)</option>
+              <option value="mobile_speed">Mobile LCP Bottleneck / Ad Traffic Bouncing (&gt;3s 4G paint, INP)</option>
               <option value="aggregator_bleed">High Marketplace &amp; Middleman Commission Bleed (15–25%)</option>
               <option value="3d_upgrade">Want Bespoke 60 FPS 3D / WebGPU Spatial Experience</option>
-              <option value="full_rebuild">Complete Headless High-Performance Transformation</option>
+              <option value="full_rebuild">Complete Headless Transformation (60 FPS + Agent-Ready)</option>
             </select>
           </label>
           <div style="margin-top:1.25rem;">
@@ -266,16 +267,16 @@
 
         <div style="display:flex; flex-direction:column; gap:10px; font-family:'Courier Prime', monospace; font-size:13px; line-height:1.5;">
           <div data-kaboom-body="true" style="padding:8px 10px; background:var(--cream); border:2px solid var(--ink);">
-            <strong>[01. 4G Mobile LCP Waterfall]:</strong> Full synthetic packet trace quantifying render delays, blocking scripts, and mobile visitor drop-off.
+            <strong>[01. 4G Mobile LCP &amp; INP]:</strong> Full synthetic packet trace quantifying main-thread blocking, touch response latency, and mobile drop-off.
           </div>
           <div data-kaboom-body="true" style="padding:8px 10px; background:var(--cream); border:2px solid var(--ink);">
-            <strong>[02. 60 FPS Framerate Autopsy]:</strong> WebGL canvas analysis, draw call count (&lt;50 target), GPU shader load, and thermal throttling.
+            <strong>[02. 60 FPS Framerate Autopsy]:</strong> WebGL canvas draw calls (&lt;50 budget), GPU shader load, thermal throttling, and memory leaks.
           </div>
           <div data-kaboom-body="true" style="padding:8px 10px; background:var(--cream); border:2px solid var(--ink);">
-            <strong>[03. Margin Bleed Modeling]:</strong> Exact mathematical loss calculation measuring ad spend wasted and middleman commissions paid.
+            <strong>[03. 2026 Agentic &amp; GEO Radar]:</strong> Full audit of /llms.txt, Schema.org Knowledge Graph, and AI crawler hydration (SearchGPT/Perplexity).
           </div>
           <div data-kaboom-body="true" style="padding:8px 10px; background:var(--cream); border:2px solid var(--ink);">
-            <strong>[04. 60 FPS Rebuild Roadmap]:</strong> Step-by-step Three.js / WebGPU architecture spec guaranteed to maintain 16.6ms frame budgets.
+            <strong>[04. Margin Bleed Modeling]:</strong> Exact mathematical loss calculation measuring ad spend wasted and middleman commissions paid.
           </div>
         </div>
 
@@ -329,6 +330,10 @@
               <span class="metric-label">Aggregator Commission:</span>
               <span id="trojan-val-bleed" class="metric-val val-bad">₹42,000/yr</span>
             </div>
+            <div class="trojan-metric-item" data-kaboom-body="true">
+              <span class="metric-label">AI Agent &amp; GEO Score:</span>
+              <span id="trojan-val-geo" class="metric-val val-bad">22% (Missing llms.txt)</span>
+            </div>
           </div>
         </div>
 
@@ -355,6 +360,43 @@
               <span class="metric-label">Frame Budget:</span>
               <span class="metric-val val-good">16.6ms (60 FPS Locked)</span>
             </div>
+            <div class="trojan-metric-item" data-kaboom-body="true">
+              <span class="metric-label">AI Agent &amp; GEO Score:</span>
+              <span class="metric-val val-good">100% (llms.txt + Schema Graph)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2026 Agentic Discovery & Machine-Readability Telemetry Panel -->
+      <div id="trojan-agentic-radar" class="trojan-simulator-card font-mono text-xs" data-kaboom-body="true" style="margin-top:1.25rem;">
+        <div class="simulator-header" data-kaboom-body="true">
+          <span class="font-arcade text-xs text-purple">2026 AGENTIC DISCOVERY &amp; GEO RADAR</span>
+          <span class="font-mono text-xs text-muted">LLM INGESTION • SCHEMA GRAPH • SEARCHGPT</span>
+        </div>
+        <p class="text-xs text-muted mt-2" style="line-height:1.5;">
+          Modern autonomous agents (ChatGPT Search, Perplexity, Claude, Apple Intelligence) bypass traditional meta tags. Here is how machine crawlers perceive <span id="trojan-agentic-brand" class="font-bold text-ink">your website</span>:
+        </p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin-top:12px;">
+          <div style="padding:10px; background:var(--white); border:2px solid var(--ink); box-shadow:2px 2px 0 var(--ink);">
+            <div class="font-arcade text-[9px] text-muted">01 // LLMS.TXT SPEC</div>
+            <div id="trojan-geo-llms" class="font-bold text-bad mt-1">MISSING (/llms.txt 404)</div>
+            <p class="text-[11px] text-muted mt-1" style="line-height:1.4;">AI models burn excessive tokens or hallucinate outdated services and pricing.</p>
+          </div>
+          <div style="padding:10px; background:var(--white); border:2px solid var(--ink); box-shadow:2px 2px 0 var(--ink);">
+            <div class="font-arcade text-[9px] text-muted">02 // SCHEMA KNOWLEDGE GRAPH</div>
+            <div id="trojan-geo-schema" class="font-bold text-bad mt-1">UNSTRUCTURED DOM</div>
+            <p class="text-[11px] text-muted mt-1" style="line-height:1.4;">Missing interconnected JSON-LD entity relations (@id anchors &amp; booking APIs).</p>
+          </div>
+          <div style="padding:10px; background:var(--white); border:2px solid var(--ink); box-shadow:2px 2px 0 var(--ink);">
+            <div class="font-arcade text-[9px] text-muted">03 // AI BOT HYDRATION</div>
+            <div id="trojan-geo-hydration" class="font-bold text-bad mt-1">BLANK CLIENT PAYLOAD</div>
+            <p class="text-[11px] text-muted mt-1" style="line-height:1.4;">Heavy client-side JS causes GPTBot/PerplexityBot crawler timeouts.</p>
+          </div>
+          <div style="padding:10px; background:var(--white); border:2px solid var(--ink); box-shadow:2px 2px 0 var(--ink);">
+            <div class="font-arcade text-[9px] text-good">04 // APOORV REMEDIATION</div>
+            <div class="font-bold text-good mt-1">AGENT-NATIVE MANIFEST</div>
+            <p class="text-[11px] text-muted mt-1" style="line-height:1.4;">Pre-rendered semantic HTML, /llms.txt, and zero-JS entity resolution.</p>
           </div>
         </div>
       </div>

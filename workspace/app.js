@@ -1368,6 +1368,8 @@ function getTeardownUrl(p) {
   const leak = p.revenueLeak || advGrading.revenueLeak || "₹1,80,000/mo";
   const bleed = p.wastedSpend || wasteIntel.wastedSpend || "₹42,000/yr";
   const fee = (typeof calculateUpgradeFee === 'function') ? calculateUpgradeFee(p.techStack, p.lcpTime, p.flaws, p.cat) : (p.fee || "₹50,000");
+  const geo = p.geoScore || (isNoSite ? "0% (Unindexed)" : "22% (Missing llms.txt)");
+  const llms = p.llmsStatus || (isNoSite ? "UNINDEXED DOMAIN" : "MISSING (/llms.txt 404)");
 
   const params = new URLSearchParams({
     prospect: p.name || "",
@@ -1378,6 +1380,8 @@ function getTeardownUrl(p) {
     leak: leak,
     bleed: bleed,
     fee: fee,
+    geo: geo,
+    llms: llms,
     cat: p.cat || ""
   });
 

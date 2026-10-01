@@ -846,6 +846,8 @@ function initTrojanPitchFromUrl() {
     const bleed = params.get("bleed") || "₹42,000/yr";
     const site = params.get("site") || "";
     const fee = params.get("fee") || "₹50,000";
+    const geo = params.get("geo") || "22% (Missing llms.txt)";
+    const llms = params.get("llms") || "MISSING (/llms.txt 404)";
     const partner = params.get("partner") || params.get("ref") || "";
     const isProposalFastTrack = Boolean(params.get("proposal"));
 
@@ -855,7 +857,7 @@ function initTrojanPitchFromUrl() {
       } catch (e) {}
     }
 
-    mountTrojanTeardown({ prospect, dm, lcp, speed, leak, bleed, site, fee, partner, isProposalFastTrack });
+    mountTrojanTeardown({ prospect, dm, lcp, speed, leak, bleed, site, fee, geo, llms, partner, isProposalFastTrack });
   } catch (err) {
     console.warn("[Trojan] URL parameter parsing failed:", err);
   }
@@ -871,6 +873,9 @@ function mountTrojanTeardown(data) {
   const speedEl = document.getElementById("trojan-val-speed");
   const leakEl = document.getElementById("trojan-val-leak");
   const bleedEl = document.getElementById("trojan-val-bleed");
+  const geoEl = document.getElementById("trojan-val-geo");
+  const agenticBrandEl = document.getElementById("trojan-agentic-brand");
+  const geoLlmsEl = document.getElementById("trojan-geo-llms");
   const dossierIdEl = document.getElementById("trojan-dossier-id");
   const partnerIdEl = document.getElementById("trojan-partner-id");
 
@@ -880,6 +885,9 @@ function mountTrojanTeardown(data) {
   if (speedEl) speedEl.textContent = `${data.speed} / 100`;
   if (leakEl) leakEl.textContent = data.leak;
   if (bleedEl) bleedEl.textContent = data.bleed;
+  if (geoEl) geoEl.textContent = data.geo || "22% (Missing llms.txt)";
+  if (agenticBrandEl) agenticBrandEl.textContent = data.prospect || "your website";
+  if (geoLlmsEl && data.llms) geoLlmsEl.textContent = data.llms;
 
   const cleanProspectCode = (data.prospect || "CLIENT").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12);
   if (dossierIdEl) dossierIdEl.textContent = `RADAR-${cleanProspectCode || "STUDIO"}`;
