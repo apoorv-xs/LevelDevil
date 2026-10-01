@@ -68,7 +68,24 @@
       const list = root.PROSPECTS || [];
       let addedCount = 0;
       let updatedCount = 0;
-      data.prospects.forEach(sheetP => {
+      data.prospects.forEach(rawP => {
+        const sheetP = {
+          id: rawP.id || 'p-sheet-' + Date.now(),
+          city: rawP.city || 'Kochi',
+          name: rawP.name || rawP.companyname || rawP.company || 'Business',
+          dm: rawP.dm || rawP.decisionmaker || 'Director',
+          phone: rawP.phone || '',
+          wa: rawP.wa || rawP.whatsapp || (rawP.phone ? String(rawP.phone).replace(/[^0-9]/g, '') : ''),
+          site: rawP.site || rawP.website || '',
+          cat: rawP.cat || rawP.category || 'general',
+          fee: rawP.fee || '₹50,000',
+          status: rawP.status || 'available',
+          speedScore: rawP.speedScore || rawP.speedscore || '🔴 32/100 (Mobile)',
+          lcpTime: rawP.lcpTime || rawP.lcptime || 'LCP: 4.4s',
+          techStack: rawP.techStack || rawP.techstack || 'WordPress',
+          flaws: Array.isArray(rawP.flaws) ? rawP.flaws : (typeof rawP.flaws === 'string' ? rawP.flaws.split(';').map(s=>s.trim()).filter(Boolean) : []),
+          notes: rawP.notes || ''
+        };
         const idx = list.findIndex(p => p.id === sheetP.id || (p.site && sheetP.site && p.site === sheetP.site) || (p.phone && sheetP.phone && p.phone === sheetP.phone));
         if (idx !== -1) {
           const localP = list[idx];
