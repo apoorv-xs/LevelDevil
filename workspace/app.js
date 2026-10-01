@@ -341,12 +341,19 @@ window.addEventListener('DOMContentLoaded', () => {
   // 4. Google / Owner accounts: verify with active Firebase Auth session to prevent localStorage tampering
   initFirebaseSessionObserver();
 
-  // 5. Check for Sales Rep invitation token (?invite=...)
+  // 5. Check for Sales Rep invitation token (?invite=...) or direct call (?call=...)
   try {
     const urlParams = new URLSearchParams(window.location.search);
     const inviteToken = urlParams.get('invite');
     if (inviteToken) {
       handleInviteToken(inviteToken);
+    }
+    const callParam = urlParams.get('call') || urlParams.get('dial');
+    if (callParam) {
+      const cleanCall = callParam.replace(/[^0-9+]/g, '');
+      if (cleanCall) {
+        window.location.href = `tel:${cleanCall}`;
+      }
     }
   } catch (e) {}
 
@@ -1939,11 +1946,20 @@ function setQrDialMode(mode, targetProspect = null) {
 
   if (mode === 'call') {
     if (instructionsEl) {
-      instructionsEl.innerText = 'Point phone camera at code → Tap the yellow prompt on your screen to dial.';
+      instructionsEl.innerText = 'Point phone camera at code → Tap the 📞 Call icon on your screen (avoid "Add to contact").';
     }
     const dialPayload = `tel:${formattedTel}`;
     if (qrImg) {
       qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=4&data=${encodeURIComponent(dialPayload)}`;
+    }
+  } else if (mode === 'webcall') {
+    if (instructionsEl) {
+      instructionsEl.innerText = 'Point phone camera at code → Tap "Open in browser" to trigger direct phone dialer.';
+    }
+    const origin = (typeof window !== 'undefined' && window.location?.origin) ? window.location.origin : 'https://apoorv.qzz.io';
+    const webDialUrl = `${origin}/workspace/?call=${encodeURIComponent(formattedTel)}`;
+    if (qrImg) {
+      qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=4&data=${encodeURIComponent(webDialUrl)}`;
     }
   } else {
     if (instructionsEl) {
@@ -1953,6 +1969,16 @@ function setQrDialMode(mode, targetProspect = null) {
     if (qrImg) {
       qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=4&data=${encodeURIComponent(waUrl)}`;
     }
+  }
+}
+
+function toggleWebDialMode() {
+  playSound('click');
+  const nextMode = (currentQrDialMode === 'webcall') ? 'call' : 'webcall';
+  setQrDialMode(nextMode);
+  const btn = document.getElementById('btnToggleWebDial');
+  if (btn) {
+    btn.innerText = (nextMode === 'webcall') ? '📞 Switch back to Native tel: QR' : '⚡ Phone says "Add Contact"? Click for 1-Tap Web QR';
   }
 }
 
@@ -1984,6 +2010,7 @@ if (typeof window !== 'undefined') {
   window.openQrDialModal = openQrDialModal;
   window.closeQrDialModal = closeQrDialModal;
   window.setQrDialMode = setQrDialMode;
+  window.toggleWebDialMode = toggleWebDialMode;
   window.copyQrDialPhone = copyQrDialPhone;
   window.startCallHudFromQrModal = startCallHudFromQrModal;
 }

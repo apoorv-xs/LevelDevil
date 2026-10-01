@@ -2927,9 +2927,16 @@
         <div class="w-[200px] h-[200px] border-2 border-[#17120f] p-1 bg-white shadow-inner flex items-center justify-center">
           <img id="qrDialCodeImg" src="" alt="Dynamic Phone Dialing QR Code" class="w-full h-full object-contain">
         </div>
-        <p id="qrDialInstructions" class="text-[10px] font-mono text-[#17120f]/80 max-w-[260px] leading-tight">
-          Point phone camera at code → Tap the yellow prompt on your screen to dial.
+        <p id="qrDialInstructions" class="text-[10px] font-mono text-[#17120f]/80 max-w-[280px] leading-tight">
+          Point phone camera at code → Tap the 📞 Call icon on your screen (avoid "Add to contact").
         </p>
+        <div class="p-2 bg-[#fbf8ef] border border-[#17120f]/30 text-[10px] font-mono text-[#17120f] space-y-1 text-left w-full max-w-[280px]">
+          <div class="font-bold flex items-center gap-1 text-[#2e7d32]"><span>💡</span><span>Scanner Tip:</span></div>
+          <p class="leading-relaxed text-[9px] text-[#17120f]/80">On phone camera popups, tap the small <strong>📞 Call icon</strong> to dial. Tapping the card text opens "Add contact".</p>
+          <button type="button" id="btnToggleWebDial" onclick="toggleWebDialMode()" class="w-full mt-1 px-2 py-1 bg-[#fffdf1] hover:bg-[#fce566] border border-[#17120f] font-arcade text-[8px] font-bold shadow-[1px_1px_0_#17120f] cursor-pointer transition text-center">
+            ⚡ Phone says "Add Contact"? Click for 1-Tap Web QR
+          </button>
+        </div>
       </div>
 
       <!-- Footer Actions -->
