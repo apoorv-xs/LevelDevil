@@ -25,6 +25,21 @@ describe('Interactive 3D Deal Teardown & Trojan Pitch Engine', () => {
       expect(salesHtml).toContain('onclick="claimTrojanConsultation()"');
     });
 
+    it('marks public-only sections with sales-public-only class for Executive Dossier Mode suppression', () => {
+      expect(salesHtml).toContain('class="hero sales-public-only"');
+      expect(salesHtml).toContain('class="action-rail sales-public-only"');
+      expect(salesHtml).toContain('class="grid sales-public-only"');
+    });
+
+    it('uses nav-contact-link id on the Contact navigation link for dossier transformation', () => {
+      expect(salesHtml).toContain('id="nav-contact-link"');
+    });
+
+    it('renders the close button with ASCII X instead of unicode ✕ to prevent broken glyphs', () => {
+      expect(salesHtml).toContain('class="trojan-close-btn"');
+      expect(salesHtml).not.toContain('trojan-close-btn font-arcade');
+    });
+
     it('contains the upgraded Interactive Client Teardown Modal in workspace/index.html', () => {
       expect(workspaceHtml).toContain('id="clientTeardownModal"');
       expect(workspaceHtml).toContain('TROJAN 3D PITCH');
@@ -49,6 +64,33 @@ describe('Interactive 3D Deal Teardown & Trojan Pitch Engine', () => {
       expect(salesCss).toContain('.fps-toggle-btn');
       expect(salesCss).toContain('.trojan-claim-btn');
     });
+
+    it('enforces deep ink color on public-tier-btn to prevent invisible white-on-white tier titles', () => {
+      expect(salesCss).toContain('.public-tier-btn .font-arcade');
+      expect(salesCss).toContain('color: #17120f !important');
+    });
+
+    it('uses Courier Prime on trojan-close-btn for reliable glyph rendering', () => {
+      expect(salesCss).toContain("font-family: 'Courier Prime', monospace, sans-serif");
+    });
+
+    it('constrains QR card and UPI ID box with proper box-sizing to prevent overflow', () => {
+      expect(salesCss).toContain('.trojan-qr-card');
+      expect(salesCss).toContain('max-width: 240px');
+      expect(salesCss).toContain('.upi-id-box');
+    });
+
+    it('styles SLA badge as high-contrast sovereign dark terminal seal instead of red-on-pink', () => {
+      expect(salesCss).toContain('.sla-badge');
+      // SLA badge must use dark background (#17120f) with gold text (#fce566)
+      expect(salesCss).toMatch(/\.sla-badge\s*\{[^}]*background:\s*#17120f/);
+      expect(salesCss).toMatch(/\.sla-badge\s*\{[^}]*color:\s*#fce566/);
+    });
+
+    it('defines Executive Dossier Mode CSS rules that suppress public-only elements', () => {
+      expect(salesCss).toContain('body.dossier-mode .sales-public-only');
+      expect(salesCss).toContain('display: none !important');
+    });
   });
 
   describe('2. Sales Controller Implementation Verification', () => {
@@ -70,6 +112,13 @@ describe('Interactive 3D Deal Teardown & Trojan Pitch Engine', () => {
     it('upgrades openConsultationModal to accept prefill context and active Trojan data', () => {
       expect(salesAppJs).toContain('function openConsultationModal(prefill = null)');
       expect(salesAppJs).toContain('const activePrefill = prefill || window._activeTrojanData;');
+    });
+
+    it('activates Executive Dossier Mode in mountTrojanTeardown with body class, nav transformation, and title update', () => {
+      expect(salesAppJs).toContain('document.body.classList.add("dossier-mode")');
+      expect(salesAppJs).toContain('getElementById("nav-contact-link")');
+      expect(salesAppJs).toContain('DOSSIER');
+      expect(salesAppJs).toContain('60 FPS Architectural Teardown');
     });
   });
 
@@ -156,6 +205,40 @@ describe('Interactive 3D Deal Teardown & Trojan Pitch Engine', () => {
 
       expect(sanitized).toBe('&lt;script&gt;alert(1)&lt;/script&gt;');
       expect(sanitized).not.toContain('<script>');
+    });
+  });
+
+  describe('5. Executive Dossier Routing & URL Alias Verification', () => {
+    const vercelJson = fs.readFileSync(path.resolve(__dirname, '../../vercel.json'), 'utf8');
+    const swaConfig = fs.readFileSync(path.resolve(__dirname, '../../staticwebapp.config.json'), 'utf8');
+
+    it('registers /dossier and /audit rewrites in vercel.json for executive outreach URLs', () => {
+      const config = JSON.parse(vercelJson);
+      const sources = config.rewrites.map(r => r.source);
+      expect(sources).toContain('/dossier');
+      expect(sources).toContain('/dossier/:match*');
+      expect(sources).toContain('/audit');
+      expect(sources).toContain('/audit/:match*');
+    });
+
+    it('registers /dossier and /audit routes in staticwebapp.config.json for Azure parity', () => {
+      const config = JSON.parse(swaConfig);
+      const routes = config.routes.map(r => r.route);
+      expect(routes).toContain('/dossier');
+      expect(routes).toContain('/dossier/*');
+      expect(routes).toContain('/audit');
+      expect(routes).toContain('/audit/*');
+    });
+
+    it('excludes /dossier and /audit from SPA navigation fallback in staticwebapp.config.json', () => {
+      const config = JSON.parse(swaConfig);
+      const excludes = config.navigationFallback.exclude;
+      expect(excludes).toContain('/dossier*');
+      expect(excludes).toContain('/audit*');
+    });
+
+    it('generates /dossier URLs from workspace getTeardownUrl instead of /sales', () => {
+      expect(workspaceAppJs).toContain('/dossier?');
     });
   });
 });

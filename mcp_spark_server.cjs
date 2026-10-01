@@ -1546,8 +1546,8 @@ const server = http.createServer(async (req, res) => {
 
   const acceptsSse = req.headers.accept && req.headers.accept.includes('text/event-stream');
 
-  // --- MCP SSE STREAM (/sse OR GET / with Accept: text/event-stream) ---
-  if ((pathname === '/sse' || (pathname === '/' && acceptsSse)) && req.method === 'GET') {
+  // --- MCP SSE STREAM (/sse OR /mcp with Accept: text/event-stream) ---
+  if ((pathname === '/sse' || ((pathname === '/mcp' || pathname === '/') && acceptsSse)) && req.method === 'GET') {
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache, no-transform',
@@ -1580,8 +1580,24 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // --- MCP JSON-RPC MESSAGE (POST /message or POST /) ---
-  if ((pathname === '/message' || pathname === '/') && req.method === 'POST') {
+  // --- STREAMABLE HTTP PROBE (GET /mcp without SSE) ---
+  if (pathname === '/mcp' && req.method === 'GET' && !acceptsSse) {
+    res.writeHead(200, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
+    res.end(JSON.stringify({
+      status: 'ok',
+      service: 'SprintDial Cloud MCP Server for Gemini Spark',
+      transport: 'StreamableHTTP',
+      protocolVersion: '2024-11-05',
+      endpoint: '/mcp'
+    }));
+    return;
+  }
+
+  // --- MCP JSON-RPC MESSAGE (POST /message OR POST /mcp OR POST /) ---
+  if ((pathname === '/message' || pathname === '/mcp' || pathname === '/') && req.method === 'POST') {
     let body = '';
     req.on('data', chunk => { body += chunk; });
     req.on('end', async () => {
@@ -1599,7 +1615,7 @@ const server = http.createServer(async (req, res) => {
             jsonrpc: '2.0',
             id,
             result: {
-              protocolVersion: '2024-11-05',
+              protocolVersion: params?.protocolVersion || '2024-11-05',
               capabilities: {
                 tools: {}
               },

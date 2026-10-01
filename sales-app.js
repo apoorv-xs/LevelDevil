@@ -893,6 +893,20 @@ function mountTrojanTeardown(data) {
   section.classList.remove("hidden");
   window._activeTrojanData = { ...data, partner: activePartner };
 
+  // === EXECUTIVE DOSSIER MODE ===
+  // Activate dossier-mode on body to suppress public portfolio fluff
+  document.body.classList.add("dossier-mode");
+
+  // Transform topbar nav: "Contact" → "[ DOSSIER ]"
+  const navLink = document.getElementById("nav-contact-link");
+  if (navLink) {
+    navLink.innerHTML = '<span style="display:inline-flex; align-items:center; gap:5px;"><span class="topbar-dot" style="background:#10b981;"></span> DOSSIER</span>';
+    navLink.setAttribute("title", "Confidential Dossier for " + data.prospect);
+  }
+
+  // Update document title to reflect exclusive prospect context
+  document.title = "Dossier: " + (data.prospect || "Client") + " | 60 FPS Architectural Teardown";
+
   // Parse fee and select matching deal tier
   let initialTier = 1;
   const rawFeeNum = Number(String(data.fee || "").replace(/[^0-9]/g, ""));

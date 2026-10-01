@@ -63,7 +63,7 @@
     <div class="topbar-center">
       <nav class="site-nav" aria-label="Primary navigation">
         <a href="/">Home</a>
-        <a href="/sales" aria-current="page">Contact</a>
+        <a href="/sales" id="nav-contact-link" aria-current="page">Contact</a>
         <a href="/workspace/" aria-label="Workspace"><span class="nav-label-full">Workspace</span><span class="nav-label-short">Work</span></a>
       </nav>
     </div>
@@ -138,7 +138,7 @@
 
   <main class="shell" id="main-content" tabindex="-1">
 
-    <section class="hero" data-kaboom-body="true">
+    <section class="hero sales-public-only" data-kaboom-body="true">
       <p class="eyebrow" data-kaboom-body="true">Bespoke 3D Systems &amp; Architecture</p>
       <h1 data-kaboom-body="true">Architect &amp; Build High-Performance 3D WebUI &amp; Spatial Systems.</h1>
       <p class="lede" data-kaboom-body="true">Engineering bespoke 60 FPS interactive spatial interfaces, custom WebGPU &amp; GLSL shaders, and high-performance WebGL systems. Submit an architectural brief below or book a direct technical walkthrough.</p>
@@ -158,7 +158,7 @@
       </div>
     </section>
 
-    <nav class="action-rail" aria-label="Sales actions">
+    <nav class="action-rail sales-public-only" aria-label="Sales actions">
       <a href="#inquiry-card" data-kaboom-body="true">Project inquiry</a>
       <a href="#engagement-card" data-kaboom-body="true">Direct engagement</a>
       <a href="#booking-box" onclick="openConsultationModal(); return false;" data-kaboom-body="true" style="color:var(--purple-dark); font-weight:700;">[CAL] 15-Min Strategy Walkthrough</a>
@@ -316,7 +316,7 @@
             <h3 class="font-arcade text-sm mt-1">Sovereign 1-Page Milestone SOW &amp; Deposit Terminal</h3>
             <p class="font-mono text-xs text-muted">Direct Escrow • Zero Intermediary Markups • 50/25/25 Structured Release</p>
           </div>
-          <button type="button" onclick="toggleTrojanPaymentView(false)" class="trojan-close-btn font-arcade" aria-label="Close Payment Terminal">✕</button>
+          <button type="button" onclick="toggleTrojanPaymentView(false)" class="trojan-close-btn" aria-label="Close Payment Terminal">X</button>
         </div>
 
         <!-- Scope Tier Selection -->
@@ -386,7 +386,7 @@
       </div>
     </section>
 
-    <section class="grid" aria-label="Sales platform actions">
+    <section class="grid sales-public-only" aria-label="Sales platform actions">
       <article class="card" id="inquiry-card" data-kaboom-body="true">
         <p class="eyebrow" data-kaboom-body="true">Public</p>
         <h2 data-kaboom-body="true">Project inquiry</h2>

@@ -17,6 +17,22 @@
       "rewrite": "/sales.html"
     },
     {
+      "route": "/dossier",
+      "rewrite": "/sales.html"
+    },
+    {
+      "route": "/dossier/*",
+      "rewrite": "/sales.html"
+    },
+    {
+      "route": "/audit",
+      "rewrite": "/sales.html"
+    },
+    {
+      "route": "/audit/*",
+      "rewrite": "/sales.html"
+    },
+    {
       "route": "/workspace",
       "rewrite": "/workspace/index.html",
       "headers": {
@@ -51,6 +67,6 @@
   },
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/api/*", "/fonts/*", "/workspace/*", "*.{css,js,png,pdf,svg,ico,json,woff2,woff,ttf}", "/sales.html", "/sales*", "/contact*"]
+    "exclude": ["/api/*", "/fonts/*", "/workspace/*", "*.{css,js,png,pdf,svg,ico,json,woff2,woff,ttf}", "/sales.html", "/sales*", "/contact*", "/dossier*", "/audit*"]
   }
 }

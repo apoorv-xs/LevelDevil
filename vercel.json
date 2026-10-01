@@ -20,6 +20,22 @@
       "destination": "/sales.html"
     },
     {
+      "source": "/dossier",
+      "destination": "/sales.html"
+    },
+    {
+      "source": "/dossier/:match*",
+      "destination": "/sales.html"
+    },
+    {
+      "source": "/audit",
+      "destination": "/sales.html"
+    },
+    {
+      "source": "/audit/:match*",
+      "destination": "/sales.html"
+    },
+    {
       "source": "/workspace",
       "destination": "/workspace/index.html"
     },

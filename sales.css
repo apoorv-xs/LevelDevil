@@ -886,7 +886,10 @@ pre {
   background: var(--white);
   border: 2px solid var(--ink);
   box-shadow: 2px 2px 0 var(--ink);
-  font-weight: bold;
+  font-family: 'Courier Prime', monospace, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -916,6 +919,17 @@ pre {
   flex-direction: column;
   gap: 4px;
   transition: all 0.15s ease;
+  color: var(--ink) !important;
+}
+
+.public-tier-btn .font-arcade,
+.public-tier-btn .tier-title {
+  color: #17120f !important;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  line-height: 1.4;
+  display: block;
+  margin-bottom: 2px;
 }
 
 .public-tier-btn:hover {
@@ -927,6 +941,7 @@ pre {
   border-color: var(--ink);
   box-shadow: 3px 3px 0 var(--ink);
   outline: 2px solid var(--ink);
+  color: #17120f !important;
 }
 
 .tier-price {
@@ -965,6 +980,9 @@ pre {
   align-items: center;
   gap: 8px;
   box-shadow: 3px 3px 0 var(--ink);
+  box-sizing: border-box;
+  max-width: 240px;
+  width: 100%;
 }
 
 .qr-container {
@@ -991,6 +1009,10 @@ pre {
   background: #f1f5f9;
   padding: 4px 8px;
   border: 1px solid #cbd5e1;
+  width: 100%;
+  box-sizing: border-box;
+  justify-content: space-between;
+  overflow: hidden;
 }
 
 .copy-upi-btn {
@@ -1036,12 +1058,14 @@ pre {
 }
 
 .sla-badge {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  padding: 8px;
-  margin-top: 4px;
+  background: #17120f;
+  color: #fce566;
+  border: 2px solid #17120f;
+  padding: 10px 12px;
+  margin-top: 8px;
   font-size: 11px;
-  line-height: 1.4;
+  line-height: 1.5;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
 }
 
 .trojan-payment-actions {
@@ -1074,3 +1098,20 @@ pre {
 
 
 
+
+/* ==========================================================================
+   EXECUTIVE DOSSIER MODE (ACTIVATED ON ?prospect= OR ?proposal= PARAMS)
+   Suppresses public portfolio contact fluff and focuses 100% on the
+   confidential 3D teardown, revenue simulator, and sovereign SOW terminal.
+   ========================================================================== */
+body.dossier-mode .sales-public-only {
+  display: none !important;
+}
+
+body.dossier-mode .trojan-teardown-section {
+  margin-top: 0.5rem;
+}
+
+body.dossier-mode .trojan-teardown-section.hidden {
+  display: none !important;
+}

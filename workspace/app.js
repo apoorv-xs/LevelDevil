@@ -1384,7 +1384,7 @@ function getTeardownUrl(p) {
   const origin = (typeof window !== "undefined" && window.location?.origin && !window.location.origin.includes("null") && !window.location.origin.startsWith("file:"))
     ? window.location.origin 
     : "https://apoorv.qzz.io";
-  return `${origin}/sales?${params.toString()}`;
+  return `${origin}/dossier?${params.toString()}`;
 }
 
 function openClientTeardownModal() {
