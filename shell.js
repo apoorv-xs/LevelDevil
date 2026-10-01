@@ -10,8 +10,15 @@ const portfolioScripts = [
   "collision_editor.js?v=1022"
 ];
 
+function isAuditRoute(pathname = window.location.pathname) {
+  return pathname === "/audit" || pathname.startsWith("/audit/") || pathname.endsWith("/audit.html") ||
+         pathname === "/dossier" || pathname.startsWith("/dossier/") || pathname.endsWith("/dossier.html");
+}
+
 function isSalesRoute(pathname = window.location.pathname) {
-  return pathname === "/sales" || pathname.startsWith("/sales/") || pathname.endsWith("/sales.html");
+  return pathname === "/sales" || pathname.startsWith("/sales/") || pathname.endsWith("/sales.html") ||
+         pathname === "/contact" || pathname.startsWith("/contact/") || pathname.endsWith("/contact.html") ||
+         isAuditRoute(pathname);
 }
 
 function isWorkspaceRoute(pathname = window.location.pathname) {
@@ -19,7 +26,7 @@ function isWorkspaceRoute(pathname = window.location.pathname) {
 }
 
 function isHomeRoute(pathname = window.location.pathname) {
-  return !isSalesRoute(pathname) && !isWorkspaceRoute(pathname);
+  return !isAuditRoute(pathname) && !isSalesRoute(pathname) && !isWorkspaceRoute(pathname);
 }
 
 function triggerHaptic(pattern = 15) {
@@ -198,13 +205,16 @@ if (typeof global !== "undefined") {
 
 
 function setActiveNavigation(root = document) {
-  const sales = isSalesRoute();
+  const audit = isAuditRoute();
   const workspace = isWorkspaceRoute();
+  const sales = !audit && isSalesRoute();
   root.querySelectorAll(".site-nav a").forEach((link) => {
     const target = link.getAttribute("href") || "";
     let active = false;
     if (workspace) {
       active = target.includes("workspace");
+    } else if (audit) {
+      active = target.includes("audit") || target.includes("dossier");
     } else if (sales) {
       active = target.includes("sales") || target.includes("contact");
     } else {
@@ -322,7 +332,7 @@ async function loadSalesRoute() {
   document.body.appendChild(module);
 }
 
-window.APP_SHELL = { isSalesRoute, setActiveNavigation };
+window.APP_SHELL = { isSalesRoute, isAuditRoute, isWorkspaceRoute, setActiveNavigation };
 window.APP_SHELL.status = {
   element: null,
   set(message, isError = false) {

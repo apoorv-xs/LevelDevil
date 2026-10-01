@@ -102,8 +102,9 @@
     <div class="topbar-center">
       <nav class="site-nav" aria-label="Primary navigation">
         <a href="/">Home</a>
-        <a href="/dossier" id="nav-contact-link" aria-current="page"><span style="display:inline-flex; align-items:center; gap:5px;"><span class="topbar-dot" style="background:#10b981;"></span> DOSSIER</span></a>
+        <a href="/audit" id="nav-audit-link" aria-current="page">Audit</a>
         <a href="/workspace/" aria-label="Workspace"><span class="nav-label-full">Workspace</span><span class="nav-label-short">Work</span></a>
+        <a href="/sales">Contact</a>
       </nav>
     </div>
 
@@ -177,33 +178,68 @@
 
   <main class="shell" id="main-content" tabindex="-1">
 
-    <section class="hero sales-public-only" data-kaboom-body="true">
-      <p class="eyebrow" data-kaboom-body="true">Bespoke 3D Systems &amp; Architecture</p>
-      <h1 data-kaboom-body="true">Architect &amp; Build High-Performance 3D WebUI &amp; Spatial Systems.</h1>
-      <p class="lede" data-kaboom-body="true">Engineering bespoke 60 FPS interactive spatial interfaces, custom WebGPU &amp; GLSL shaders, and high-performance WebGL systems. Submit an architectural brief below or book a direct technical walkthrough.</p>
-      <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:1.25rem;">
-        <a href="mailto:apoorvxs@gmail.com" data-kaboom-body="true" style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; background:var(--ink); color:var(--white); text-decoration:none; font-family:'Courier Prime', monospace; font-size:13px; font-weight:700; border:2px solid var(--ink); box-shadow:3px 3px 0 var(--amber-light);">
-          <span>Email: apoorvxs@gmail.com</span>
-        </a>
-        <a href="https://x.com/apoorv_xs" target="_blank" rel="noopener noreferrer" data-kaboom-body="true" style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; background:var(--paper); color:var(--ink); text-decoration:none; font-family:'Courier Prime', monospace; font-size:13px; font-weight:700; border:2px solid var(--ink); box-shadow:3px 3px 0 var(--ink);">
-          <span>X: @apoorv_xs</span>
-        </a>
-        <a href="https://github.com/apoorv-xs" target="_blank" rel="noopener noreferrer" data-kaboom-body="true" style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; background:var(--paper); color:var(--ink); text-decoration:none; font-family:'Courier Prime', monospace; font-size:13px; font-weight:700; border:2px solid var(--ink); box-shadow:3px 3px 0 var(--ink);">
-          <span>GitHub: @apoorv-xs</span>
-        </a>
-        <a href="https://www.linkedin.com/in/apoorv-a-s" target="_blank" rel="noopener noreferrer" data-kaboom-body="true" style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; background:var(--paper); color:var(--ink); text-decoration:none; font-family:'Courier Prime', monospace; font-size:13px; font-weight:700; border:2px solid var(--ink); box-shadow:3px 3px 0 var(--ink);">
-          <span>LinkedIn: Apoorv A S</span>
-        </a>
-      </div>
+    <!-- PUBLIC INBOUND AUDIT TERMINAL (DISPLAYED WHEN NO PROSPECT PARAMS) -->
+    <section class="hero audit-public-hero sales-public-only" data-kaboom-body="true">
+      <p class="eyebrow" data-kaboom-body="true">Empirical Mobile Performance &amp; Revenue Telemetry</p>
+      <h1 data-kaboom-body="true">Apply for a 60 FPS Mobile &amp; Revenue Leak Audit.</h1>
+      <p class="lede" data-kaboom-body="true">We benchmark your mobile Largest Contentful Paint (LCP) on real 4G networks, quantify frame-drop bounce rates, and calculate middleman aggregator margin bleed. Delivered as an interactive 3D dossier in 24 hours.</p>
     </section>
 
-    <nav class="action-rail sales-public-only" aria-label="Sales actions">
-      <a href="#inquiry-card" data-kaboom-body="true">Project inquiry</a>
-      <a href="#engagement-card" data-kaboom-body="true">Direct engagement</a>
-      <a href="#booking-box" onclick="openConsultationModal(); return false;" data-kaboom-body="true" style="color:var(--purple-dark); font-weight:700;">[CAL] 15-Min Strategy Walkthrough</a>
-    </nav>
+    <!-- Audit Ingestion Card -->
+    <section class="grid audit-public-form sales-public-only" aria-label="Apply for 60 FPS Audit">
+      <article class="card" id="audit-request-card" data-kaboom-body="true" style="grid-column: 1 / -1; max-width: 820px; margin: 0 auto; width: 100%;">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:1rem; padding-bottom:8px; border-bottom:2px dashed var(--ink);">
+          <span class="font-arcade text-xs text-highlight">[ INBOUND RADAR ] AUDIT INGESTION</span>
+          <span class="font-mono text-xs text-muted">COMPLIMENTARY 24H ARCHITECTURAL TURNAROUND</span>
+        </div>
+        <form id="audit-application-form" onsubmit="handleAuditApplication(event)">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px;">
+            <label data-kaboom-body="true">
+              <span class="field-header"><span>Company / Brand Name *</span></span>
+              <input name="company" id="audit-company" required placeholder="e.g. Livglam Aesthetic Clinic" data-kaboom-body="true">
+            </label>
+            <label data-kaboom-body="true">
+              <span class="field-header"><span>Live Website URL *</span></span>
+              <input name="website" id="audit-website" type="url" required placeholder="https://example.com" data-kaboom-body="true">
+            </label>
+            <label data-kaboom-body="true">
+              <span class="field-header"><span>Decision Maker / Your Name *</span></span>
+              <input name="name" id="audit-name" required placeholder="e.g. Dr. Harish / Principal Architect" data-kaboom-body="true">
+            </label>
+            <label data-kaboom-body="true">
+              <span class="field-header"><span>WhatsApp / Mobile Number *</span></span>
+              <input name="phone" id="audit-phone" type="tel" required placeholder="+91 98490 12345" data-kaboom-body="true">
+            </label>
+          </div>
+          <label data-kaboom-body="true" style="margin-top:10px;">
+            <span class="field-header"><span>Work Email (For Dossier Dispatch) *</span></span>
+            <input name="email" id="audit-email" type="email" required placeholder="doctor@clinic.com" data-kaboom-body="true">
+          </label>
+          <label data-kaboom-body="true" style="margin-top:10px;">
+            <span class="field-header"><span>Primary Technical Bottleneck / Objective</span></span>
+            <select name="objective" id="audit-objective" data-kaboom-body="true" style="width:100%; padding:10px; background:var(--white); border:2px solid var(--ink); font-family:'Courier Prime', monospace; font-size:13px;">
+              <option value="mobile_speed">Mobile LCP Bottleneck / Ad Traffic Bouncing (&gt;3s 4G paint)</option>
+              <option value="aggregator_bleed">Losing High Margins to Aggregators (Practo, Zomato, Fresha 20%)</option>
+              <option value="3d_upgrade">Want Bespoke 60 FPS 3D / WebGPU Spatial Experience</option>
+              <option value="full_rebuild">Complete Headless High-Performance Transformation</option>
+            </select>
+          </label>
+          <div style="margin-top:1.25rem;">
+            <button type="submit" id="btnSubmitAudit" class="font-arcade" style="width:100%; padding:14px; background:#10b981; color:#fff; font-size:11px; border:3px solid var(--ink); box-shadow:4px 4px 0 var(--ink); cursor:pointer;">
+              [ SUBMIT SITE FOR 60 FPS AUDIT &amp; TEARDOWN ]
+            </button>
+          </div>
+          <p id="auditSubmitSuccess" class="font-mono text-xs text-good mt-2 hidden" style="font-weight:700;">
+            ✓ Audit Queued! Apoorv Studio is benchmarking your mobile LCP. Your private dossier will be dispatched in 24h.
+          </p>
+        </form>
+      </article>
+    </section>
 
-    <p id="status" class="status" role="status" aria-live="polite"></p>
+    <!-- Public Preview Banner for Live Interactive Teardown -->
+    <div class="sales-public-only" style="max-width: 900px; margin: 2rem auto 0; text-align: center;">
+      <span class="font-arcade text-xs text-muted">▼ INTERACTIVE PREVIEW: SAMPLE 60 FPS DIAGNOSTIC DOSSIER ▼</span>
+    </div>
 
     <!-- TROJAN 3D PERFORMANCE TEARDOWN CONTAINER (DYNAMICALLY MOUNTED ON URL PARAMS) -->
     <section id="trojan-teardown-section" class="trojan-teardown-section hidden" data-kaboom-body="true" aria-label="Personalized 3D Performance Teardown">
@@ -421,140 +457,30 @@
               </a>
             </div>
           </div>
+        <!-- Architectural Agency Trust & Cross-Link Cards -->
+        <div class="trojan-agency-cards font-mono" data-kaboom-body="true">
+          <div class="agency-trust-card" data-kaboom-body="true">
+            <span class="font-arcade text-[10px] text-highlight">🎮 60 FPS SPATIAL PORTFOLIO</span>
+            <p class="text-xs text-muted mt-1">Test Apoorv's proprietary WebGPU shaders, spatial mechanics, and 60 FPS physics engine live on the canvas.</p>
+            <a href="/" class="agency-link-btn font-arcade text-[10px]">[ LAUNCH PORTFOLIO CORE › ]</a>
+          </div>
+          <div class="agency-trust-card" data-kaboom-body="true">
+            <span class="font-arcade text-[10px] text-good">🤝 SALES PARTNER NETWORK</span>
+            <p class="text-xs text-muted mt-1">Apoorv Studio operates an active partner ecosystem with verified outreach specialists and technical sales reps.</p>
+            <a href="/workspace/" class="agency-link-btn font-arcade text-[10px]">[ EXPLORE PARTNER WORKSPACE › ]</a>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="grid sales-public-only" aria-label="Sales platform actions">
-      <article class="card" id="inquiry-card" data-kaboom-body="true">
-        <p class="eyebrow" data-kaboom-body="true">Public</p>
-        <h2 data-kaboom-body="true">Project inquiry</h2>
-
-        <!-- Google 1-Tap Auto-fill & Verification Banner -->
-        <div id="form-google-auth-box" data-kaboom-body="true" style="margin-bottom: 1.25rem; padding: 12px 14px; background: rgba(142, 68, 173, 0.08); border: 2px dashed var(--purple-main);">
-          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-            <span style="font-family: 'Press Start 2P', monospace; font-size: 0.62rem; color: var(--purple-dark);">
-              FAST-TRACK INQUIRY
-            </span>
-            <button id="sign-in" type="button" data-kaboom-body="true" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--white); color: var(--ink); border: 2px solid var(--ink); box-shadow: 2px 2px 0 var(--ink); font-family: 'Courier Prime', monospace; font-size: 13px; font-weight: 700; cursor: pointer;">
-              <svg width="14" height="14" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-              <span>Continue with Google</span>
-            </button>
-          </div>
-          <div id="form-auth-status" style="font-family: 'Courier Prime', monospace; font-size: 12px; color: var(--ink); margin-top: 6px;">
-            Sign in with Google to auto-fill verified contact details.
-          </div>
-        </div>
-
-        <form id="inquiry-form">
-          <label data-kaboom-body="true">
-            <span class="field-header"><span>Name</span><span class="field-feedback" id="feedback-name"></span></span>
-            <input name="name" id="inquiry-name" autocomplete="name" required maxlength="120" placeholder="Your name or company" data-kaboom-body="true">
-          </label>
-          <label data-kaboom-body="true">
-            <span class="field-header"><span>Email</span><span class="field-feedback" id="feedback-email"></span></span>
-            <input name="email" id="inquiry-email" type="email" autocomplete="email" required maxlength="254" placeholder="name@company.com" data-kaboom-body="true">
-          </label>
-          <label data-kaboom-body="true">
-            <span class="field-header"><span>Project Scope</span><span class="field-hint">Quick Select:</span></span>
-            <div class="chip-group" id="scope-chips" role="radiogroup" aria-label="Project Scope quick select" data-kaboom-body="true">
-              <button type="button" class="tier-chip active" role="radio" aria-checked="true" data-val="Performance Sprint">[SLA] 60 FPS Sprint</button>
-              <button type="button" class="tier-chip" role="radio" aria-checked="false" data-val="3D Web Feature">[3D] 3D / Shaders</button>
-              <button type="button" class="tier-chip" role="radio" aria-checked="false" data-val="Product Configurator">[CFG] Configurator</button>
-              <button type="button" class="tier-chip" role="radio" aria-checked="false" data-val="Full Interactive Site">[GPU] WebGPU Site</button>
-            </div>
-            <select name="scope" id="inquiry-scope" data-kaboom-body="true" style="width:100%; padding:8px 10px; background:var(--white); border:2px solid var(--ink); font-family:'Courier Prime', monospace; font-size:14px; margin-top:2px;">
-              <option value="Performance Sprint">Performance Optimization / 60 FPS Sprint</option>
-              <option value="3D Web Feature">3D WebUI Feature / Procedural Shader</option>
-              <option value="Product Configurator">3D Product Configurator / E-Commerce Viewer</option>
-              <option value="Full Interactive Site">Full Interactive Website / WebGPU Experience</option>
-              <option value="Exploration / Other">Other / Creative Tech Exploration</option>
-            </select>
-          </label>
-          <label data-kaboom-body="true">
-            <span class="field-header"><span>Budget Tier</span><span class="field-hint">Quick Select:</span></span>
-            <div class="chip-group" id="budget-chips" role="radiogroup" aria-label="Budget Tier quick select" data-kaboom-body="true">
-              <button type="button" class="tier-chip active" role="radio" aria-checked="true" data-val="$5k - $15k">$5k – $15k Flagship</button>
-              <button type="button" class="tier-chip" role="radio" aria-checked="false" data-val="$15k - $30k">$15k – $30k Spatial</button>
-              <button type="button" class="tier-chip" role="radio" aria-checked="false" data-val="$30k+">$30k+ Bespoke</button>
-              <button type="button" class="tier-chip" role="radio" aria-checked="false" data-val="$15k+">$15k+ Enterprise</button>
-            </div>
-            <select name="budget" id="inquiry-budget" data-kaboom-body="true" style="width:100%; padding:8px 10px; background:var(--white); border:2px solid var(--ink); font-family:'Courier Prime', monospace; font-size:14px; margin-top:2px;">
-              <option value="Flexible">Flexible / Strategy Discussion</option>
-              <option value="$5k - $15k" selected>Flagship Build ($5,000 – $15,000)</option>
-              <option value="$15k - $30k">Spatial Architecture ($15,000 – $30,000)</option>
-              <option value="$30k+">Bespoke Ecosystem ($30,000+)</option>
-              <option value="$15k+">Enterprise / Bespoke ($15,000+)</option>
-            </select>
-          </label>
-          <label data-kaboom-body="true">
-            <span class="field-header"><span>Project Brief &amp; Architecture Specifications</span><span class="field-feedback" id="feedback-message"></span></span>
-            <textarea name="message" id="inquiry-message" required maxlength="4000" placeholder="Outline your spatial architecture requirements, target frame budget, deliverables, and timeline..." data-kaboom-body="true"></textarea>
-          </label>
-          <label class="consent-checkbox-wrap" style="display:flex; align-items:flex-start; gap:8px; margin: 12px 0; cursor:pointer;" data-kaboom-body="true">
-            <input type="checkbox" id="inquiry-consent" name="consent" required style="margin-top:3px; cursor:pointer;">
-            <span style="font-family:'Courier Prime', monospace; font-size:11px; line-height:1.4; color:var(--ink);">
-              I agree to the <button type="button" onclick="window.APP_SHELL?.openLegalModal?.('terms')" style="background:none; border:none; padding:0; text-decoration:underline; font-weight:bold; cursor:pointer; color:inherit;">Terms of Engagement</button> and consent to the processing of my contact coordinates under the <button type="button" onclick="window.APP_SHELL?.openLegalModal?.('privacy')" style="background:none; border:none; padding:0; text-decoration:underline; font-weight:bold; cursor:pointer; color:inherit;">DPDP Act 2023</button> exclusively for project evaluation.
-            </span>
-          </label>
-          <button type="submit" id="inquiry-submit-btn" data-kaboom-body="true" data-trap="cta">Send inquiry</button>
-          <p class="privacy-note" style="font-family:'Courier Prime', monospace; font-size:11px; opacity:0.8; margin-top:10px; margin-bottom:0; line-height:1.4;">
-            PRIVACY // Coordinates provided are used exclusively to evaluate and respond to your inquiry under strict confidentiality. Zero commercial tracking, zero third-party data brokering.
-          </p>
-        </form>
-      </article>
-
-      <article class="card" id="engagement-card" data-kaboom-body="true">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
-          <p class="eyebrow" data-kaboom-body="true" style="margin:0;">Direct Engagement</p>
-          <span id="deliverables-tier-badge" style="font-family:'Press Start 2P', monospace; font-size:9px; background:var(--purple); color:var(--white); padding:3px 6px; border:2px solid var(--ink);">FLAGSHIP 3D BUILD</span>
-        </div>
-        <div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:6px; margin-top:4px;">
-          <h2 data-kaboom-body="true" style="margin:0;">Standards & Turnaround</h2>
-          <span id="deliverables-turnaround-badge" style="font-family:'Courier Prime', monospace; font-size:12px; font-weight:700; color:var(--ink); background:var(--cream); padding:2px 6px; border:1px solid var(--ink);">2–3 Weeks Turnaround</span>
-        </div>
-        <p class="muted" style="margin-top:0.5rem; margin-bottom:1.25rem; font-size:14px; line-height:1.5;">
-          High-margin creative engineering without agency overhead. All systems built from first principles.
-        </p>
-
-        <div id="engagement-deliverables-list" style="display:flex; flex-direction:column; gap:12px; font-family:'Courier Prime', monospace; font-size:13px; line-height:1.6;">
-          <div data-kaboom-body="true" style="padding:10px 12px; background:var(--cream); border:2px solid var(--ink);">
-            <strong>[SLA] Rapid Response:</strong> Direct feedback &amp; scoping within 24 hours.
-          </div>
-          <div data-kaboom-body="true" style="padding:10px 12px; background:var(--cream); border:2px solid var(--ink);">
-            <strong>[60FPS] Engine Guarantee:</strong> Strict 16.6ms frame budget, DPR clamp, and zero memory leaks.
-          </div>
-          <div data-kaboom-body="true" style="padding:10px 12px; background:var(--cream); border:2px solid var(--ink);">
-            <strong>[KTX2] Featherweight Delivery:</strong> Sub-5MB Draco/KTX2 payloads designed for instant mobile loads.
-          </div>
-          <div data-kaboom-body="true" style="padding:10px 12px; background:var(--cream); border:2px solid var(--ink);">
-            <strong>[ESCROW] Milestone Terms:</strong> Structured 50/25/25 milestone terms with staged preview environments.
-          </div>
-        </div>
-
-        <!-- DIRECT 15-MIN STRATEGY CONSULTATION TRIGGER -->
-        <div id="booking-box" data-kaboom-body="true" style="margin-top:1.25rem; padding:14px; background:var(--white); border:2px solid var(--ink); box-shadow:3px 3px 0 var(--purple);">
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
-            <span style="font-family:'Press Start 2P', monospace; font-size:9px; color:var(--purple-dark); letter-spacing:0.04em;">
-              CONSULTATION // 1-ON-1 STRATEGY
-            </span>
-            <span style="font-family:'Courier Prime', monospace; font-size:11px; color:var(--ink); font-weight:700; background:var(--cream); padding:2px 6px; border:1px solid var(--ink);">
-              › Direct Screen Share
-            </span>
-          </div>
-          <p style="margin:8px 0 12px 0; font-family:'Courier Prime', monospace; font-size:13px; line-height:1.5; color:var(--ink);">
-            Need a direct 15-minute screen walkthrough of your site's 60 FPS bottlenecks, WebGL spatial architecture, or high-margin project specs before submitting?
-          </p>
-          <button type="button" id="btn-open-consultation" onclick="openConsultationModal()" data-kaboom-body="true" style="width:100%; display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:11px 14px; background:var(--purple); color:var(--white); font-family:'Press Start 2P', monospace; font-size:10px; font-weight:700; border:2px solid var(--ink); box-shadow:3px 3px 0 var(--ink); cursor:pointer; transition:transform 0.1s, box-shadow 0.1s;">
-            [ BOOK 15-MIN STRATEGY WALKTHROUGH ]
-          </button>
-        </div>
-
-        <div style="margin-top:1.5rem; padding-top:1.25rem; border-top:2px dashed var(--ink);">
-          <p style="font-family:'Press Start 2P', monospace; font-size:10px; color:var(--purple-dark); margin:0 0 10px 0;">
-            DIRECT DISPATCH
-          </p>
-          <p style="margin:0; font-size:13px;">Prefer direct outreach? Reach Apoorv via email at <a href="mailto:apoorvxs@gmail.com" style="color:var(--purple-dark); font-weight:700;">apoorvxs@gmail.com</a> or connect on <a href="https://www.linkedin.com/in/apoorv-a-s" target="_blank" rel="noopener noreferrer" style="color:var(--purple-dark); font-weight:700;">LinkedIn ↗</a></p>
+    <!-- Alternative Engagement Card -->
+    <section class="grid sales-public-only" aria-label="Alternative Actions" style="max-width:820px; margin: 2rem auto; display:block;">
+      <article class="card" style="text-align: center; padding: 24px;" data-kaboom-body="true">
+        <span class="font-arcade text-xs text-highlight">LOOKING TO COMMISSION A BESPOKE 3D BUILD INSTEAD?</span>
+        <p class="font-mono text-xs text-muted" style="margin: 8px 0 16px 0;">If you already have clear architectural specs, 3D assets, or an active RFP, submit a direct inquiry.</p>
+        <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+          <a href="/sales" class="font-arcade text-xs" style="padding:10px 18px; background:var(--ink); color:#fff; text-decoration:none; border:2px solid var(--ink); box-shadow:3px 3px 0 var(--amber-light);">[ SUBMIT PROJECT BRIEF › ]</a>
+          <button type="button" onclick="openConsultationModal()" class="font-arcade text-xs" style="padding:10px 18px; background:var(--white); color:var(--ink); border:2px solid var(--ink); box-shadow:3px 3px 0 var(--ink); cursor:pointer;">[ BOOK 15-MIN STRATEGY CALL ]</button>
         </div>
       </article>
 

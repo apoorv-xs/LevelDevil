@@ -1115,3 +1115,57 @@ body.dossier-mode .trojan-teardown-section {
 body.dossier-mode .trojan-teardown-section.hidden {
   display: none !important;
 }
+
+/* ==========================================================================
+   ARCHITECTURAL AGENCY TRUST & CROSS-LINK CARDS
+   ========================================================================== */
+.trojan-agency-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 2px dashed var(--ink);
+}
+
+.agency-trust-card {
+  background: #fdfbf7;
+  border: 2px solid var(--ink);
+  padding: 16px;
+  box-shadow: 3px 3px 0 var(--ink);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.agency-trust-card p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #4b5563;
+}
+
+.agency-link-btn {
+  display: inline-block;
+  padding: 10px 14px;
+  background: var(--ink);
+  color: var(--white);
+  text-decoration: none;
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0 var(--amber-light);
+  text-align: center;
+  font-weight: 700;
+  transition: all 0.15s ease;
+}
+
+.agency-link-btn:hover {
+  background: #2d241e;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--amber-light);
+}
+
+.agency-link-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--amber-light);
+}

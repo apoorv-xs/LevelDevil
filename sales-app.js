@@ -897,11 +897,11 @@ function mountTrojanTeardown(data) {
   // Activate dossier-mode on body to suppress public portfolio fluff
   document.body.classList.add("dossier-mode");
 
-  // Transform topbar nav: "Contact" → "[ DOSSIER ]"
-  const navLink = document.getElementById("nav-contact-link");
-  if (navLink) {
-    navLink.innerHTML = '<span style="display:inline-flex; align-items:center; gap:5px;"><span class="topbar-dot" style="background:#10b981;"></span> DOSSIER</span>';
-    navLink.setAttribute("title", "Confidential Dossier for " + data.prospect);
+  // Transform topbar nav: "Audit" → "[ ● DOSSIER ]"
+  const auditLink = document.getElementById("nav-audit-link") || document.querySelector('.site-nav a[href*="audit"]');
+  if (auditLink) {
+    auditLink.innerHTML = '<span style="display:inline-flex; align-items:center; gap:5px;"><span class="topbar-dot" style="background:#10b981;"></span> DOSSIER</span>';
+    auditLink.setAttribute("title", "Confidential Dossier for " + data.prospect);
   }
 
   // Update document title to reflect exclusive prospect context
@@ -1138,6 +1138,51 @@ function claimTrojanConsultation() {
   openConsultationModal(window._activeTrojanData);
 }
 
+function handleAuditApplication(event) {
+  if (event && event.preventDefault) event.preventDefault();
+  const form = document.getElementById("audit-application-form");
+  if (!form) return;
+
+  const company = document.getElementById("audit-company")?.value?.trim() || "";
+  const website = document.getElementById("audit-website")?.value?.trim() || "";
+  const name = document.getElementById("audit-name")?.value?.trim() || "";
+  const phone = document.getElementById("audit-phone")?.value?.trim() || "";
+  const email = document.getElementById("audit-email")?.value?.trim() || "";
+  const objective = document.getElementById("audit-objective")?.value || "mobile_speed";
+
+  const submission = {
+    id: "inbound_" + Date.now(),
+    company,
+    website,
+    name,
+    phone,
+    email,
+    objective,
+    createdAt: new Date().toISOString(),
+    status: "NEW_INBOUND"
+  };
+
+  try {
+    const existing = JSON.parse(localStorage.getItem("apoorv_inbound_audits") || "[]");
+    existing.unshift(submission);
+    localStorage.setItem("apoorv_inbound_audits", JSON.stringify(existing.slice(0, 50)));
+  } catch (e) {}
+
+  const successEl = document.getElementById("auditSubmitSuccess");
+  const submitBtn = document.getElementById("btnSubmitAudit");
+  if (successEl) successEl.classList.remove("hidden");
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "[ ✓ AUDIT QUEUED // CHECK EMAIL & WA IN 24H ]";
+    submitBtn.style.background = "#059669";
+  }
+
+  if (typeof playSound === "function") playSound("teleport");
+  if (window.System1Brain?.emitThought) {
+    window.System1Brain.emitThought(`[AUDIT] Inbound teardown queued for ${company || "New Client"}!`);
+  }
+}
+
 // Initial initialization
 initChipGroups();
 initLiveValidation();
@@ -1159,6 +1204,7 @@ if (typeof window !== "undefined") {
   window.toggleTrojanPaymentView = toggleTrojanPaymentView;
   window.selectPublicDealTier = selectPublicDealTier;
   window.copyPublicUpiId = copyPublicUpiId;
+  window.handleAuditApplication = handleAuditApplication;
 }
 
 

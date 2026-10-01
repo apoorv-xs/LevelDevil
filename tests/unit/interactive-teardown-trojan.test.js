@@ -116,7 +116,7 @@ describe('Interactive 3D Deal Teardown & Trojan Pitch Engine', () => {
 
     it('activates Executive Dossier Mode in mountTrojanTeardown with body class, nav transformation, and title update', () => {
       expect(salesAppJs).toContain('document.body.classList.add("dossier-mode")');
-      expect(salesAppJs).toContain('getElementById("nav-contact-link")');
+      expect(salesAppJs).toContain('getElementById("nav-audit-link")');
       expect(salesAppJs).toContain('DOSSIER');
       expect(salesAppJs).toContain('60 FPS Architectural Teardown');
     });
@@ -239,6 +239,46 @@ describe('Interactive 3D Deal Teardown & Trojan Pitch Engine', () => {
 
     it('generates /dossier URLs from workspace getTeardownUrl instead of /sales', () => {
       expect(workspaceAppJs).toContain('/dossier?');
+    });
+  });
+
+  describe('6. Universal 4-Pillar Navigation & Agency Trust Architecture', () => {
+    const indexHtml = fs.readFileSync(path.resolve(__dirname, '../../index.html'), 'utf8');
+    const shellJs = fs.readFileSync(path.resolve(__dirname, '../../shell.js'), 'utf8');
+
+    it('enforces 4-pillar navigation (Home, Audit, Workspace, Contact) across index.html', () => {
+      expect(indexHtml).toContain('href="/"');
+      expect(indexHtml).toContain('href="/audit"');
+      expect(indexHtml).toContain('href="/workspace/"');
+      expect(indexHtml).toContain('href="/sales"');
+    });
+
+    it('enforces 4-pillar navigation across sales.html and workspace/index.html', () => {
+      expect(salesHtml).toContain('href="/audit"');
+      expect(salesHtml).toContain('href="/sales"');
+      expect(workspaceHtml).toContain('href="/audit"');
+      expect(workspaceHtml).toContain('href="/sales"');
+    });
+
+    it('implements isAuditRoute in shell.js and activates Audit tab on /audit and /dossier', () => {
+      expect(shellJs).toContain('function isAuditRoute');
+      expect(shellJs).toContain('target.includes("audit") || target.includes("dossier")');
+      expect(shellJs).toContain('window.APP_SHELL = { isSalesRoute, isAuditRoute');
+    });
+
+    it('defines architectural agency trust cards with links to Portfolio and Partner Workspace', () => {
+      expect(salesCss).toContain('.trojan-agency-cards');
+      expect(salesCss).toContain('.agency-trust-card');
+      expect(salesCss).toContain('.agency-link-btn');
+      expect(salesHtml).toContain('trojan-agency-cards');
+      expect(salesHtml).toContain('[ LAUNCH PORTFOLIO CORE › ]');
+      expect(salesHtml).toContain('[ EXPLORE PARTNER WORKSPACE › ]');
+    });
+
+    it('implements handleAuditApplication inbound telemetry in sales-app.js', () => {
+      expect(salesAppJs).toContain('function handleAuditApplication');
+      expect(salesAppJs).toContain('apoorv_inbound_audits');
+      expect(salesAppJs).toContain('window.handleAuditApplication = handleAuditApplication');
     });
   });
 });
