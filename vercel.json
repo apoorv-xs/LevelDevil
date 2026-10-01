@@ -46,6 +46,24 @@
   ],
   "headers": [
     {
+      "source": "/(sales|shell|dossier|audit)\\.(css|js)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/sales-app\\.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
       "source": "/workspace/(prospects_data|custom_prospects)\\.(js|json)",
       "headers": [
         {

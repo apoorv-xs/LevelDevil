@@ -47,10 +47,49 @@
   <link rel="preload" href="/fonts/courier-prime-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/courier-prime-700.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/fonts.css">
-  <link rel="stylesheet" href="/sales.css">
-  <link rel="stylesheet" href="/shell.css">
+  <link rel="stylesheet" href="/sales.css?v=2.2.0">
+  <link rel="stylesheet" href="/shell.css?v=2.2.0">
+  <style>
+    /* Critical Dossier Mode & High-Contrast Overrides */
+    body.dossier-mode .sales-public-only { display: none !important; }
+    body.dossier-mode .trojan-teardown-section { margin-top: 0.5rem !important; }
+    .public-tier-btn, .public-tier-btn * { color: #17120f !important; }
+    .public-tier-btn.active { background: #fce566 !important; }
+    .public-tier-btn .font-arcade, .public-tier-btn .tier-title {
+      color: #17120f !important;
+      font-family: 'Press Start 2P', monospace !important;
+      font-size: 9px !important;
+      display: block !important;
+      margin-bottom: 2px !important;
+    }
+    .trojan-close-btn {
+      font-family: 'Courier Prime', monospace, sans-serif !important;
+      font-size: 16px !important;
+      font-weight: 700 !important;
+      color: #17120f !important;
+    }
+    .sla-badge {
+      background: #17120f !important;
+      color: #fce566 !important;
+      border: 2px solid #17120f !important;
+      padding: 10px 12px !important;
+      font-size: 11px !important;
+      line-height: 1.5 !important;
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.2) !important;
+    }
+    .trojan-qr-card {
+      box-sizing: border-box !important;
+      max-width: 240px !important;
+      width: 100% !important;
+    }
+    .upi-id-box {
+      width: 100% !important;
+      box-sizing: border-box !important;
+      overflow: hidden !important;
+    }
+  </style>
 </head>
-<body class="sales-page">
+<body class="sales-page dossier-mode">
   <a href="#main-content" class="skip-link font-arcade">SKIP TO CONTENT [TAB]</a>
   <!-- Global Universal 54px Topbar Navigation -->
   <header class="topbar">
@@ -63,7 +102,7 @@
     <div class="topbar-center">
       <nav class="site-nav" aria-label="Primary navigation">
         <a href="/">Home</a>
-        <a href="/sales" id="nav-contact-link" aria-current="page">Contact</a>
+        <a href="/dossier" id="nav-contact-link" aria-current="page"><span style="display:inline-flex; align-items:center; gap:5px;"><span class="topbar-dot" style="background:#10b981;"></span> DOSSIER</span></a>
         <a href="/workspace/" aria-label="Workspace"><span class="nav-label-full">Workspace</span><span class="nav-label-short">Work</span></a>
       </nav>
     </div>
@@ -691,7 +730,7 @@
   <script src="/three.min.js"></script>
   <script src="/sales-config.js"></script>
   <script src="/sales-auth.js"></script>
-  <script src="/shell.js"></script>
-  <script src="/sales-app.js" type="module"></script>
+  <script src="/shell.js?v=2.2.0"></script>
+  <script src="/sales-app.js?v=2.2.0" type="module"></script>
 </body>
 </html>
