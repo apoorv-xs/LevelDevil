@@ -228,6 +228,33 @@
       opacity: 1 !important;
     }
 
+    /* Dossier Bilingual Language Toggle Contrast Guard */
+    #dossierLangToggleContainer,
+    .retro-workspace #dossierLangToggleContainer {
+      background: #17120f !important;
+      border: 2px solid #17120f !important;
+      box-shadow: 2px 2px 0 #17120f !important;
+      border-radius: 0 !important;
+    }
+    #btnDossierLangEn.active,
+    #btnDossierLangMl.active,
+    .retro-workspace .dossier-lang-btn.active {
+      background: #fce566 !important;
+      color: #17120f !important;
+      font-weight: 700 !important;
+      border: 1px solid #17120f !important;
+      border-radius: 0 !important;
+    }
+    #btnDossierLangEn:not(.active),
+    #btnDossierLangMl:not(.active),
+    .retro-workspace .dossier-lang-btn:not(.active) {
+      background: transparent !important;
+      color: #fffdf1 !important;
+      font-weight: 700 !important;
+      border: 1px solid transparent !important;
+      border-radius: 0 !important;
+    }
+
     /* Universal Toast Notification Legibility Guard */
     #universalToastNotification,
     .retro-workspace #universalToastNotification {
@@ -2098,11 +2125,11 @@
               <div class="text-[11px] font-arcade text-white uppercase font-bold flex items-center justify-between">
                 <span>Conversational Cheat Sheet:</span>
                 <div class="flex items-center gap-1.5">
-                  <div class="flex bg-[#15161B] p-0.5 border border-white/[0.1] rounded text-[9px] font-mono">
-                    <button id="btnDossierLangEn" type="button" onclick="switchDossierLang('en')" class="px-2 py-0.5 rounded font-bold text-[9px] font-mono bg-white/[0.18] text-white border border-white/20 transition cursor-pointer">EN</button>
-                    <button id="btnDossierLangMl" type="button" onclick="switchDossierLang('ml')" class="px-2 py-0.5 rounded font-medium text-[9px] font-mono text-neutral-400 hover:text-white transition cursor-pointer">ML</button>
+                  <div id="dossierLangToggleContainer" class="flex bg-[#17120f] p-0.5 border-2 border-[#17120f] shadow-[2px_2px_0px_#17120f] rounded-none text-[9px] font-mono">
+                    <button id="btnDossierLangEn" type="button" onclick="switchDossierLang('en')" class="dossier-lang-btn active px-2 py-0.5 font-bold text-[9px] font-mono bg-[#fce566] text-[#17120f] border border-[#17120f] transition cursor-pointer">EN</button>
+                    <button id="btnDossierLangMl" type="button" onclick="switchDossierLang('ml')" class="dossier-lang-btn px-2 py-0.5 font-bold text-[9px] font-mono bg-transparent text-[#fffdf1] hover:text-[#fce566] border border-transparent transition cursor-pointer">ML</button>
                   </div>
-                  <span class="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 hidden sm:inline">NO TECH JARGON</span>
+                  <span class="text-[9px] font-mono text-[#047857] bg-emerald-100 px-1.5 py-0.5 border border-emerald-300 font-bold hidden sm:inline">NO TECH JARGON</span>
                 </div>
               </div>
 

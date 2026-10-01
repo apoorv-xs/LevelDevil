@@ -789,11 +789,15 @@ function switchDossierLang(lang) {
   const btnMl = document.getElementById('btnDossierLangMl');
   if (btnEn && btnMl) {
     if (lang === 'en') {
-      btnEn.className = "px-2 py-0.5 rounded font-bold text-[9px] font-mono bg-white/[0.18] text-white border border-white/20 transition cursor-pointer";
-      btnMl.className = "px-2 py-0.5 rounded font-medium text-[9px] font-mono text-neutral-400 hover:text-white transition cursor-pointer";
+      btnEn.classList.add('active');
+      btnMl.classList.remove('active');
+      btnEn.className = "dossier-lang-btn active px-2 py-0.5 font-bold text-[9px] font-mono bg-[#fce566] text-[#17120f] border border-[#17120f] transition cursor-pointer";
+      btnMl.className = "dossier-lang-btn px-2 py-0.5 font-bold text-[9px] font-mono bg-transparent text-[#fffdf1] hover:text-[#fce566] border border-transparent transition cursor-pointer";
     } else {
-      btnMl.className = "px-2 py-0.5 rounded font-bold text-[9px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition cursor-pointer";
-      btnEn.className = "px-2 py-0.5 rounded font-medium text-[9px] font-mono text-neutral-400 hover:text-white transition cursor-pointer";
+      btnMl.classList.add('active');
+      btnEn.classList.remove('active');
+      btnMl.className = "dossier-lang-btn active px-2 py-0.5 font-bold text-[9px] font-mono bg-[#fce566] text-[#17120f] border border-[#17120f] transition cursor-pointer";
+      btnEn.className = "dossier-lang-btn px-2 py-0.5 font-bold text-[9px] font-mono bg-transparent text-[#fffdf1] hover:text-[#fce566] border border-transparent transition cursor-pointer";
     }
   }
   renderActiveProspectHelper();
