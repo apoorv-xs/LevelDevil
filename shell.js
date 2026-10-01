@@ -773,7 +773,8 @@ if (typeof window !== "undefined" && !window._shellAuthListenerAttached) {
 function initMobileDrawer() {
   if (typeof document === "undefined") return;
   if (!document.getElementById("mobile-menu-drawer") && document.body) {
-    const isSales = isSalesRoute();
+    const isAudit = isAuditRoute();
+    const isSales = !isAudit && isSalesRoute();
     const isWs = isWorkspaceRoute();
     const isHome = isHomeRoute();
 
@@ -799,13 +800,18 @@ function initMobileDrawer() {
             <span class="drawer-link-title">HOME PORTFOLIO</span>
             <span class="drawer-link-tag">[ 2.5D SKY ]</span>
           </a>
-          <a href="/sales" class="mobile-drawer-link ${isSales ? 'active' : ''}" data-route="sales">
+          <a href="/audit" class="mobile-drawer-link ${isAudit ? 'active' : ''}" data-route="audit">
             <span class="drawer-link-num">02</span>
+            <span class="drawer-link-title">PERFORMANCE AUDIT</span>
+            <span class="drawer-link-tag">[ AUDIT ]</span>
+          </a>
+          <a href="/sales" class="mobile-drawer-link ${isSales ? 'active' : ''}" data-route="sales">
+            <span class="drawer-link-num">03</span>
             <span class="drawer-link-title">CONTACT & INQUIRIES</span>
             <span class="drawer-link-tag">[ BRIEF ]</span>
           </a>
           <a href="/workspace/" class="mobile-drawer-link ${isWs ? 'active' : ''}" data-route="workspace">
-            <span class="drawer-link-num">03</span>
+            <span class="drawer-link-num">04</span>
             <span class="drawer-link-title">CLIENT WORKSPACE</span>
             <span class="drawer-link-tag">[ COCKPIT ]</span>
           </a>
@@ -845,12 +851,13 @@ function initMobileDrawer() {
     const triggerBtn = document.getElementById("mobile-menu-btn");
     if (triggerBtn) triggerBtn.setAttribute("aria-expanded", "true");
     document.body.classList.add("drawer-open");
-    const isSales = isSalesRoute();
+    const isAudit = isAuditRoute();
+    const isSales = !isAudit && isSalesRoute();
     const isWs = isWorkspaceRoute();
     const isHome = isHomeRoute();
     drawer.querySelectorAll(".mobile-drawer-link").forEach(link => {
       const r = link.getAttribute("data-route");
-      if ((r === "home" && isHome) || (r === "sales" && isSales) || (r === "workspace" && isWs)) {
+      if ((r === "home" && isHome) || (r === "audit" && isAudit) || (r === "sales" && isSales) || (r === "workspace" && isWs)) {
         link.classList.add("active");
       } else {
         link.classList.remove("active");

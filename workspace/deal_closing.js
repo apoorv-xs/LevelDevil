@@ -102,7 +102,7 @@ function selectDealTier(tierNum) {
   const clientName = p ? p.name : 'Client';
   const cleanId = p ? p.id : 'deal';
   const upiId = (typeof window !== 'undefined' && window.SALES_PLATFORM_CONFIG?.upiId) || (typeof root !== 'undefined' && root.SALES_PLATFORM_CONFIG?.upiId) || 'apoorvxs@okaxis';
-  const upiIntent = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=Apoorv%20A%20S&am=${tier.advance}&cu=INR&tn=${encodeURIComponent(`50% Advance ${clientName.slice(0, 20)}`)}`;
+  const upiIntent = `upi://pay?pa=${upiId}&pn=Apoorv%20A%20S&am=${tier.advance}&cu=INR&tn=${encodeURIComponent(`50% Advance ${clientName.slice(0, 20)}`)}`;
   
   if (qrImg) {
     qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=4&data=${encodeURIComponent(upiIntent)}`;
