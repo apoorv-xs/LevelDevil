@@ -1871,6 +1871,21 @@ html.shield-owner-exempt .forensic-watermark-overlay {
   }
 }
 
-
-
+/* Universal Toast Notification */
+#universalToastNotification {
+  z-index: 999999 !important;
+}
+#universalToastNotification div {
+  background: #17120f !important;
+  color: #fce566 !important;
+  border-color: #fce566 !important;
+}
+#universalToastNotification span,
+#universalToastNotification .universal-toast-text {
+  color: #fce566 !important;
+  font-family: "Press Start 2P", monospace !important;
+}
+#universalToastNotification span:first-child {
+  background: #4deeea !important;
+}
 

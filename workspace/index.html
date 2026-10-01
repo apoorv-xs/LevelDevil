@@ -228,6 +228,29 @@
       opacity: 1 !important;
     }
 
+    /* Universal Toast Notification Legibility Guard */
+    #universalToastNotification,
+    .retro-workspace #universalToastNotification {
+      z-index: 999999 !important;
+    }
+    #universalToastNotification div,
+    .retro-workspace #universalToastNotification div {
+      background: #17120f !important;
+      color: #fce566 !important;
+      border-color: #fce566 !important;
+    }
+    #universalToastNotification span,
+    #universalToastNotification .universal-toast-text,
+    .retro-workspace #universalToastNotification span,
+    .retro-workspace #universalToastNotification .universal-toast-text {
+      color: #fce566 !important;
+      font-family: "Press Start 2P", monospace !important;
+    }
+    #universalToastNotification span:first-child,
+    .retro-workspace #universalToastNotification span:first-child {
+      background: #4deeea !important;
+    }
+
     /* Workstation Columns */
     .retro-workspace #queuePane {
       background: var(--paper) !important;

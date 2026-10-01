@@ -71,16 +71,16 @@ function showNotification(msg, options = {}) {
   if (!toast) {
     toast = document.createElement("div");
     toast.id = "universalToastNotification";
-    toast.style.cssText = "position: fixed; bottom: 24px; right: 24px; z-index: 99999; pointer-events: none; transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease; transform: translateY(20px); opacity: 0; max-width: calc(100vw - 48px);";
+    toast.style.cssText = "position: fixed; bottom: 24px; right: 24px; z-index: 999999; pointer-events: none; transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease; transform: translateY(20px); opacity: 0; max-width: calc(100vw - 48px);";
     toast.setAttribute("role", "status");
     toast.setAttribute("aria-live", "polite");
     document.body.appendChild(toast);
   }
 
   toast.innerHTML = `
-    <div style="background: #17120f; color: #fce566; border: 2.5px solid #fce566; box-shadow: 4px 4px 0 #000; padding: 12px 18px; font-family: 'Press Start 2P', monospace; font-size: 10px; line-height: 1.6; letter-spacing: 0.5px; display: flex; align-items: flex-start; gap: 10px; max-width: 420px; box-sizing: border-box; pointer-events: none;">
-      <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #4deeea; flex-shrink: 0; margin-top: 3px;"></span>
-      <span style="line-height: 1.6; word-break: break-word; overflow-wrap: anywhere; flex: 1;">${escapeHTML(msg)}</span>
+    <div style="background: #17120f !important; color: #fce566 !important; border: 2.5px solid #fce566 !important; box-shadow: 4px 4px 0 #000; padding: 12px 18px; font-family: 'Press Start 2P', monospace !important; font-size: 10px !important; line-height: 1.6 !important; letter-spacing: 0.5px !important; display: flex !important; align-items: flex-start !important; gap: 10px !important; max-width: 420px !important; box-sizing: border-box !important; pointer-events: none !important;">
+      <span style="display: inline-block !important; width: 8px !important; height: 8px !important; border-radius: 50% !important; background: #4deeea !important; flex-shrink: 0 !important; margin-top: 3px !important;"></span>
+      <span class="universal-toast-text" style="color: #fce566 !important; font-family: 'Press Start 2P', monospace !important; font-size: 10px !important; line-height: 1.6 !important; letter-spacing: 0.5px !important; word-break: break-word !important; overflow-wrap: anywhere !important; flex: 1 !important; display: inline-block !important;">${escapeHTML(msg)}</span>
     </div>
   `;
 
