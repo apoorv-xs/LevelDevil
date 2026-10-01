@@ -3768,6 +3768,25 @@
                 <span>[LINK]</span><span>Generate &amp; Copy Link Only</span>
               </button>
             </div>
+
+            <!-- 1-Click Generated Invite Display Box (Instant Visual Copy) -->
+            <div id="inviteGeneratedBox" class="hidden p-3 bg-emerald-950/40 border border-emerald-500/50 rounded-lg space-y-2 mt-2">
+              <div class="flex items-center justify-between text-[11px] font-mono">
+                <span class="text-emerald-300 font-bold flex items-center gap-1.5">
+                  <span>✔</span><span>Invitation Link Ready (Expires in 72h)</span>
+                </span>
+                <button type="button" onclick="document.getElementById('inviteGeneratedBox').classList.add('hidden')" class="text-neutral-400 hover:text-white px-1">✕</button>
+              </div>
+              <div class="flex gap-1.5">
+                <input type="text" id="inviteGeneratedInput" readonly class="flex-1 min-w-0 bg-[#0c0d10] border border-emerald-500/30 rounded px-2.5 py-1.5 text-xs font-mono text-emerald-200 selection:bg-emerald-700 select-all" />
+                <button type="button" id="btnCopyGeneratedInvite" onclick="copyGeneratedInviteFromBox()" class="px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition cursor-pointer whitespace-nowrap">
+                  Copy Link
+                </button>
+              </div>
+              <p class="text-[10px] font-mono text-neutral-400">
+                Share this link directly with your partner via WhatsApp, Telegram, or Slack.
+              </p>
+            </div>
           </div>
 
           <!-- Pending & Active Invitations Sub-Section -->

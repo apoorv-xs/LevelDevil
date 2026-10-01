@@ -180,6 +180,15 @@
       navClipboard.writeText(primaryUrl).catch(() => {});
     }
 
+    // Display primary link in #inviteGeneratedBox for immediate visibility & copying
+    const genBox = doc ? doc.getElementById('inviteGeneratedBox') : null;
+    const genInput = doc ? doc.getElementById('inviteGeneratedInput') : null;
+    if (genBox && genInput) {
+      genInput.value = primaryUrl;
+      genBox.classList.remove('hidden');
+      if (typeof genInput.select === 'function') genInput.select();
+    }
+
     if (mode === 'email') {
       const subject = `Invitation: Join Apoorv A S as an Outreach Partner / Sales Rep`;
       const body = `Hi,
@@ -213,9 +222,34 @@ apoorvxs@gmail.com | https://apoorv.qzz.io`;
         }
       }
 
-      showNotificationHelper(`[MAIL] Invitation generated for ${emails.length} recipient(s)! Mail composer opened & link copied.`);
+      showNotificationHelper(`[MAIL] Invitation generated! Link copied & displayed below.`);
     } else {
-      showNotificationHelper(`[COPIED] Generated invitation! 1-click link copied to clipboard.`);
+      showNotificationHelper(`[COPIED] Invitation generated! Link copied & displayed below.`);
+    }
+  }
+
+  function copyGeneratedInviteFromBox() {
+    playSoundHelper('click');
+    const doc = (typeof document !== 'undefined') ? document : (root.document || null);
+    const genInput = doc ? doc.getElementById('inviteGeneratedInput') : null;
+    const btn = doc ? doc.getElementById('btnCopyGeneratedInvite') : null;
+    if (!genInput || !genInput.value) return;
+
+    const url = genInput.value;
+    const navClipboard = (typeof navigator !== 'undefined' && navigator.clipboard) ? navigator.clipboard : null;
+    if (navClipboard && navClipboard.writeText) {
+      navClipboard.writeText(url).then(() => {
+        showNotificationHelper('[COPIED] Invitation link copied to clipboard!');
+        if (btn) {
+          const oldText = btn.innerText;
+          btn.innerText = 'Copied!';
+          setTimeout(() => { btn.innerText = oldText; }, 2000);
+        }
+      }).catch(() => {
+        if (typeof prompt === 'function') prompt('Copy invitation link:', url);
+      });
+    } else {
+      if (typeof prompt === 'function') prompt('Copy invitation link:', url);
     }
   }
 
@@ -511,7 +545,8 @@ apoorvxs@gmail.com | https://apoorv.qzz.io`;
     renderAdminInvitationsList,
     claimActiveInvite,
     handleInviteToken,
-    triggerDirectGoogleAuth
+    triggerDirectGoogleAuth,
+    copyGeneratedInviteFromBox
   };
 
   root.WorkspaceInvitationsEngine = exports;
