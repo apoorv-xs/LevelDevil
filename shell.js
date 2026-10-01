@@ -32,7 +32,7 @@ function triggerHaptic(pattern = 15) {
 
 const APP_CONFIG = {
   OWNER_EMAIL: "apoorvxs@gmail.com",
-  OWNER_UPI_VPA: "apoorvxs@okaxis",
+  OWNER_UPI_VPA: (typeof window !== "undefined" && window.SALES_PLATFORM_CONFIG?.upiId) || "apoorvxs@okaxis",
   OWNER_WHATSAPP: "919495462450",
   PORTFOLIO_URL: "https://apoorv.qzz.io",
   SLA_GUARANTEE_DAYS: 14

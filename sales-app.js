@@ -1022,12 +1022,15 @@ function selectPublicDealTier(tierNum) {
   const partnerId = window._activeTrojanData?.partner || "CORE-STUDIO";
 
   // Dynamic UPI Intent URL
+  const upiId = window.SALES_PLATFORM_CONFIG?.upiId || "apoorvxs@okaxis";
   const note = `50% Advance - ${prospectName} (${tierConfig.name})`;
-  const upiUrl = `upi://pay?pa=apoorvxs@okaxis&pn=Apoorv%20A%20S&am=${tierConfig.advance}&cu=INR&tn=${encodeURIComponent(note)}`;
+  const upiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=Apoorv%20A%20S&am=${tierConfig.advance}&cu=INR&tn=${encodeURIComponent(note)}`;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiUrl)}`;
 
   const qrImg = document.getElementById("publicUpiQrImg");
   if (qrImg) qrImg.src = qrUrl;
+  const upiIdTextEl = document.getElementById("publicUpiIdText");
+  if (upiIdTextEl) upiIdTextEl.textContent = upiId;
 
   // WhatsApp Proof / Confirmation Link
   const whatsAppBtn = document.getElementById("btnPublicWhatsAppProof");
@@ -1049,16 +1052,16 @@ function selectPublicDealTier(tierNum) {
 }
 
 function copyPublicUpiId() {
-  const upiId = "apoorvxs@okaxis";
+  const upiId = window.SALES_PLATFORM_CONFIG?.upiId || "apoorvxs@okaxis";
   if (typeof window.triggerHaptic === "function") window.triggerHaptic([30, 20, 30]);
   if (typeof window.copyToClipboard === "function") {
-    window.copyToClipboard(upiId, "[COPIED] UPI ID 'apoorvxs@okaxis' copied to clipboard");
+    window.copyToClipboard(upiId, `[COPIED] UPI ID '${upiId}' copied to clipboard`);
   } else if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(upiId).then(() => {
       if (typeof window.showNotification === "function") {
-        window.showNotification("[COPIED] UPI ID 'apoorvxs@okaxis' copied to clipboard", "success");
+        window.showNotification(`[COPIED] UPI ID '${upiId}' copied to clipboard`, "success");
       } else {
-        alert("[COPIED] UPI ID 'apoorvxs@okaxis' copied to clipboard");
+        alert(`[COPIED] UPI ID '${upiId}' copied to clipboard`);
       }
     }).catch(() => {
       prompt("Copy UPI ID:", upiId);

@@ -1225,7 +1225,7 @@ Would you have 10 minutes this week for a brief walkthrough?`;
       const tier = DEAL_TIERS[tierNum] || DEAL_TIERS[1];
       const clientName = p.name || 'Client';
 
-      const upiVpa = 'apoorvxs@okaxis';
+      const upiVpa = process.env.OWNER_UPI_VPA || 'apoorvxs@okaxis';
       const payeeName = 'Apoorv A S';
       const upiIntent = `upi://pay?pa=${upiVpa}&pn=${encodeURIComponent(payeeName)}&am=${tier.advance}&cu=INR&tn=${encodeURIComponent(`50% Advance ${clientName.slice(0, 20)}`)}`;
       const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=4&data=${encodeURIComponent(upiIntent)}`;

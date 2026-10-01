@@ -30,6 +30,19 @@
   ],
   "headers": [
     {
+      "source": "/workspace/(prospects_data|custom_prospects)\\.(js|json)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow, noarchive, nosnippet"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, private, max-age=0"
+        }
+      ]
+    },
+    {
       "source": "/workspace/:match*",
       "headers": [
         {

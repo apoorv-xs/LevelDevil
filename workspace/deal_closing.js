@@ -101,11 +101,14 @@ function selectDealTier(tierNum) {
 
   const clientName = p ? p.name : 'Client';
   const cleanId = p ? p.id : 'deal';
-  const upiIntent = `upi://pay?pa=apoorvxs@okaxis&pn=Apoorv%20A%20S&am=${tier.advance}&cu=INR&tn=${encodeURIComponent(`50% Advance ${clientName.slice(0, 20)}`)}`;
+  const upiId = (typeof window !== 'undefined' && window.SALES_PLATFORM_CONFIG?.upiId) || (typeof root !== 'undefined' && root.SALES_PLATFORM_CONFIG?.upiId) || 'apoorvxs@okaxis';
+  const upiIntent = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=Apoorv%20A%20S&am=${tier.advance}&cu=INR&tn=${encodeURIComponent(`50% Advance ${clientName.slice(0, 20)}`)}`;
   
   if (qrImg) {
     qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=4&data=${encodeURIComponent(upiIntent)}`;
   }
+  const upiIdEl = document.getElementById('dealUpiIdText');
+  if (upiIdEl) upiIdEl.innerText = upiId;
 
   const callerUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : (window.currentUser || {});
   const partnerId = callerUser.sub || callerUser.uid || 'partner';
@@ -136,9 +139,10 @@ function closeDealCommitmentModal() {
 
 function copyUpiId() {
   playSound('click');
+  const upiId = (typeof window !== 'undefined' && window.SALES_PLATFORM_CONFIG?.upiId) || (typeof root !== 'undefined' && root.SALES_PLATFORM_CONFIG?.upiId) || 'apoorvxs@okaxis';
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText('apoorvxs@okaxis').then(() => {
-      showNotification('[COPIED] UPI ID apoorvxs@okaxis copied!');
+    navigator.clipboard.writeText(upiId).then(() => {
+      showNotification(`[COPIED] UPI ID ${upiId} copied!`);
     });
   }
 }
@@ -175,7 +179,8 @@ function sendWhatsAppDealCommitment() {
   const cleanDm = (p.dm || 'Director').split('(')[0].trim();
   const cleanName = (p.name || 'Establishment').split(',')[0].trim();
 
-  const msg = `Namaste ${cleanDm},\n\nFollowing our discussion regarding ${cleanName}:\n\nHere is your official Executive Proposal & 1-Page Milestone SOW from Apoorv A S (Creative Technologist & 3D WebUI Architect):\n\nPackage: ${tier.name}\nTotal Investment: ₹${tier.total.toLocaleString('en-IN')}\n50% Kickoff Advance: ₹${tier.advance.toLocaleString('en-IN')}\n\n60 FPS PERFORMANCE SLA GUARANTEE:\nIf your delivered site fails to achieve a locked 60 FPS floor or Core Web Vitals pass on modern mobile, Apoorv guarantees a 100% full refund of your deposit.\n\nReview Proposal & Pay Deposit via UPI/Card:\n${url}\n\nUPI ID: apoorvxs@okaxis\n\nWarm regards,\n${callerName}\nOffice of Apoorv A S | https://apoorv.qzz.io`;
+  const upiId = (typeof window !== 'undefined' && window.SALES_PLATFORM_CONFIG?.upiId) || (typeof root !== 'undefined' && root.SALES_PLATFORM_CONFIG?.upiId) || 'apoorvxs@okaxis';
+  const msg = `Namaste ${cleanDm},\n\nFollowing our discussion regarding ${cleanName}:\n\nHere is your official Executive Proposal & 1-Page Milestone SOW from Apoorv A S (Creative Technologist & 3D WebUI Architect):\n\nPackage: ${tier.name}\nTotal Investment: ₹${tier.total.toLocaleString('en-IN')}\n50% Kickoff Advance: ₹${tier.advance.toLocaleString('en-IN')}\n\n60 FPS PERFORMANCE SLA GUARANTEE:\nIf your delivered site fails to achieve a locked 60 FPS floor or Core Web Vitals pass on modern mobile, Apoorv guarantees a 100% full refund of your deposit.\n\nReview Proposal & Pay Deposit via UPI/Card:\n${url}\n\nUPI ID: ${upiId}\n\nWarm regards,\n${callerName}\nOffice of Apoorv A S | https://apoorv.qzz.io`;
 
   const waLink = targetPhone
     ? `https://wa.me/${targetPhone}?text=${encodeURIComponent(msg)}`

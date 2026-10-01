@@ -76,8 +76,20 @@ if (fs.existsSync(workspaceSrcDir)) {
         const wsSrcPath = path.join(workspaceSrcDir, wsFile);
         const wsDestPath = path.join(workspaceDistDir, wsFile);
         if (fs.statSync(wsSrcPath).isFile()) {
-            fs.copyFileSync(wsSrcPath, wsDestPath);
-            console.log(`Copied: workspace/${wsFile}`);
+            if (wsFile === 'prospects_data.js' || wsFile === 'custom_prospects.js' || wsFile === 'custom_prospects.json') {
+                // Privacy Shield: Mask plaintext phone numbers in static client bundles
+                let content = fs.readFileSync(wsSrcPath, 'utf8');
+                content = content.replace(/"phone":\s*"([^"]+)"/g, (match, phone) => {
+                    const clean = phone.trim();
+                    const prefix = clean.length > 5 ? clean.slice(0, clean.length - 5) : '';
+                    return `"phone": "${prefix}•••••"`;
+                });
+                fs.writeFileSync(wsDestPath, content, 'utf8');
+                console.log(`Copied & Shielded: workspace/${wsFile}`);
+            } else {
+                fs.copyFileSync(wsSrcPath, wsDestPath);
+                console.log(`Copied: workspace/${wsFile}`);
+            }
         }
     });
 }
