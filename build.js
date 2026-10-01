@@ -25,6 +25,7 @@ const EXCLUDED_FILES = new Set([
     'vitest.config.js',
     'vite.config.js',
     'take_screenshot.js',
+    'render_radar_thumbnail.js',
     'local_preview.png',
     'package.json',
     'package-lock.json'
