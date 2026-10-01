@@ -203,6 +203,31 @@
       box-shadow: 2px 2px 0 var(--ink) !important;
     }
 
+    /* Column 3 Dossier Tabs High-Contrast Legibility */
+    .retro-workspace .dossier-tab-btn {
+      color: var(--ink) !important;
+      font-family: "Courier Prime", monospace !important;
+      font-weight: 700 !important;
+      font-size: 11px !important;
+      letter-spacing: 0.5px !important;
+      border-radius: 0 !important;
+      transition: all 0.15s ease !important;
+    }
+    .retro-workspace .dossier-tab-btn.active {
+      background: var(--ink) !important;
+      color: var(--accent, #fce566) !important;
+      box-shadow: 2px 2px 0 rgba(23, 18, 15, 0.3) !important;
+    }
+    .retro-workspace .dossier-tab-btn:not(.active) {
+      background: transparent !important;
+      color: var(--ink) !important;
+      opacity: 0.8 !important;
+    }
+    .retro-workspace .dossier-tab-btn:not(.active):hover {
+      background: rgba(23, 18, 15, 0.08) !important;
+      opacity: 1 !important;
+    }
+
     /* Workstation Columns */
     .retro-workspace #queuePane {
       background: var(--paper) !important;

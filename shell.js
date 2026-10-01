@@ -71,16 +71,16 @@ function showNotification(msg, options = {}) {
   if (!toast) {
     toast = document.createElement("div");
     toast.id = "universalToastNotification";
-    toast.style.cssText = "position: fixed; bottom: 20px; right: 20px; z-index: 99999; pointer-events: none; transition: transform 0.25s ease, opacity 0.25s ease; transform: translateY(20px); opacity: 0;";
+    toast.style.cssText = "position: fixed; bottom: 24px; right: 24px; z-index: 99999; pointer-events: none; transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease; transform: translateY(20px); opacity: 0; max-width: calc(100vw - 48px);";
     toast.setAttribute("role", "status");
     toast.setAttribute("aria-live", "polite");
     document.body.appendChild(toast);
   }
 
   toast.innerHTML = `
-    <div style="background: #17120f; color: #fce566; border: 2px solid #fce566; box-shadow: 4px 4px 0 #000; padding: 10px 16px; font-family: monospace; font-size: 12px; font-weight: bold; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; max-width: 380px; pointer-events: none;">
-      <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #4deeea; flex-shrink: 0;"></span>
-      <span style="line-height: 1.4; word-break: break-word;">${escapeHTML(msg)}</span>
+    <div style="background: #17120f; color: #fce566; border: 2.5px solid #fce566; box-shadow: 4px 4px 0 #000; padding: 12px 18px; font-family: 'Press Start 2P', monospace; font-size: 10px; line-height: 1.6; letter-spacing: 0.5px; display: flex; align-items: flex-start; gap: 10px; max-width: 420px; box-sizing: border-box; pointer-events: none;">
+      <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #4deeea; flex-shrink: 0; margin-top: 3px;"></span>
+      <span style="line-height: 1.6; word-break: break-word; overflow-wrap: anywhere; flex: 1;">${escapeHTML(msg)}</span>
     </div>
   `;
 
