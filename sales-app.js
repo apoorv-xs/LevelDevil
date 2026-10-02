@@ -740,7 +740,7 @@ async function handleConsultationSubmit(event) {
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
-    notifyUser("Please provide a valid email address so we can confirm the calendar invitation.", "warning");
+    notifyUser("Please provide a valid email address so I can confirm the calendar invitation.", "warning");
     return;
   }
 
@@ -927,6 +927,19 @@ function mountTrojanTeardown(data) {
   // Update document title cleanly
   document.title = (data.prospect ? (data.prospect + " | Performance Audit") : "Performance Audit") + " | 60 FPS Architectural Teardown";
 
+  // Dynamically tailor tier button descriptions for Starter (No website) vs Upgrade
+  const isNoSite = !data.site || data.site === '#' || String(data.lcp || '').toLowerCase().includes('no owned');
+  [1, 2, 3].forEach(num => {
+    const config = getDealTierConfig(num, isNoSite);
+    const btn = document.getElementById(`publicTier${num}`);
+    if (btn) {
+      const titleSpan = btn.querySelector('.font-arcade');
+      const deliverableSpan = btn.querySelector('.tier-deliverable');
+      if (titleSpan) titleSpan.textContent = config.name.toUpperCase();
+      if (deliverableSpan) deliverableSpan.textContent = config.tag;
+    }
+  });
+
   // Parse fee and select matching deal tier
   let initialTier = 1;
   const rawFeeNum = Number(String(data.fee || "").replace(/[^0-9]/g, ""));
@@ -1007,14 +1020,73 @@ function toggleTrojanPaymentView(forceState) {
   }
 }
 
+function getDealTierConfig(tierNum, isNoSite) {
+  if (isNoSite) {
+    const noSiteTiers = {
+      1: {
+        name: "Tier 1: Owned Digital Flagship",
+        total: 50000,
+        advance: 25000,
+        totalStr: "₹50,000",
+        advStr: "₹25,000",
+        tag: "Turnkey 60 FPS Mobile Core • Direct VIP Lead Desk"
+      },
+      2: {
+        name: "Tier 2: 3D Spatial Showcase",
+        total: 100000,
+        advance: 50000,
+        totalStr: "₹1,00,000",
+        advStr: "₹50,000",
+        tag: "Interactive Three.js Experience • Cel-shaded FX"
+      },
+      3: {
+        name: "Tier 3: WebGPU Custom Engine",
+        total: 200000,
+        advance: 100000,
+        totalStr: "₹2,00,000",
+        advStr: "₹1,00,000",
+        tag: "Proprietary WebGPU/GLSL Spatial Engine"
+      }
+    };
+    return noSiteTiers[tierNum] || noSiteTiers[1];
+  }
+  const standardTiers = {
+    1: {
+      name: "Tier 1: Headless Edge Migration",
+      total: 50000,
+      advance: 25000,
+      totalStr: "₹50,000",
+      advStr: "₹25,000",
+      tag: "Sub-0.8s LCP • Zero Aggregator Commission Bleed"
+    },
+    2: {
+      name: "Tier 2: 3D Spatial Showcase",
+      total: 100000,
+      advance: 50000,
+      totalStr: "₹1,00,000",
+      advStr: "₹50,000",
+      tag: "Interactive Three.js Experience • Cel-shaded FX"
+    },
+    3: {
+      name: "Tier 3: WebGPU Custom Engine",
+      total: 200000,
+      advance: 100000,
+      totalStr: "₹2,00,000",
+      advStr: "₹1,00,000",
+      tag: "Proprietary WebGPU/GLSL Spatial Engine"
+    }
+  };
+  return standardTiers[tierNum] || standardTiers[1];
+}
+
 const PUBLIC_DEAL_TIERS = {
   1: {
-    name: "Tier 1: Speed & Booking",
+    name: "Tier 1: Headless Edge Migration",
     total: 50000,
     advance: 25000,
     totalStr: "₹50,000",
     advStr: "₹25,000",
-    tag: "Sub-0.8s LCP • 100% Direct Booking Engine"
+    tag: "Sub-0.8s LCP • Zero Aggregator Commission Bleed"
   },
   2: {
     name: "Tier 2: 3D Spatial Showcase",
@@ -1035,7 +1107,8 @@ const PUBLIC_DEAL_TIERS = {
 };
 
 function selectPublicDealTier(tierNum) {
-  const tierConfig = PUBLIC_DEAL_TIERS[tierNum] || PUBLIC_DEAL_TIERS[1];
+  const isNoSite = !window._activeTrojanData?.site || window._activeTrojanData?.site === '#' || String(window._activeTrojanData?.lcp || '').toLowerCase().includes('no owned');
+  const tierConfig = getDealTierConfig(tierNum, isNoSite);
   window._activePublicTierNum = tierNum;
   window._activePublicTierFee = tierConfig.total;
 
@@ -1078,7 +1151,7 @@ function selectPublicDealTier(tierNum) {
       `50% Advance Locked: ${tierConfig.advStr}\n` +
       `Attributed Partner: ${partnerId}\n` +
       `UPI Reference / Screenshot: [Attached Below]\n` +
-      `SLA Guarantee: 100% Refund if < 60 FPS on Mobile.`;
+      `SLA Guarantee: 60 FPS mathematical verification on mobile by Apoorv.`;
     whatsAppBtn.href = `https://wa.me/919495462450?text=${encodeURIComponent(message)}`;
   }
 
