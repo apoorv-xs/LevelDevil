@@ -884,6 +884,10 @@ function resolveTrojanRecord(key, list) {
 
 function deriveTrojanFromRecord(p) {
   const isNoSite = !p.site || p.site === "#" || p.ptype === "STARTER";
+  const payloadEvidence = [p.techStack, ((p.flaws || []).join(' '))].join(' ');
+  const hydration = /MB|requests|scripts|payload/i.test(payloadEvidence)
+    ? `Heavy measured payload strains crawler hydration budgets (${String(p.techStack || '').slice(0, 90)})`
+    : "";
   return {
     prospect: p.name || "",
     dm: (p.dm || "").split("(")[0].trim(),
@@ -896,7 +900,9 @@ function deriveTrojanFromRecord(p) {
     geo: p.geoScore || (isNoSite ? "0% (Unindexed)" : "N/A"),
     llms: p.llmsStatus || (isNoSite ? "UNINDEXED DOMAIN" : "N/A"),
     smokingGun: p.smokingGun || ((p.flaws && p.flaws[0]) || ""),
-    cat: p.cat || ""
+    cat: p.cat || "",
+    schema: p.schemaStatus || "",
+    hydration: hydration
   };
 }
 
@@ -921,6 +927,8 @@ async function initTrojanPitchFromUrl() {
       llms: params.get("llms") || "N/A",
       smokingGun: params.get("smokingGun") || params.get("gun") || "",
       cat: params.get("cat") || "",
+      schema: params.get("schema") || "",
+      hydration: params.get("hydration") || "",
       partner: params.get("partner") || params.get("ref") || "",
       isProposalFastTrack: Boolean(params.get("proposal"))
     };
@@ -946,6 +954,8 @@ async function initTrojanPitchFromUrl() {
       if (!has("llms")) data.llms = d.llms;
       if (!has("cat")) data.cat = d.cat;
       if (!data.smokingGun) data.smokingGun = d.smokingGun;
+      if (!data.schema) data.schema = d.schema;
+      if (!data.hydration) data.hydration = d.hydration;
     }
 
     const partner = data.partner;
@@ -1011,14 +1021,25 @@ function mountTrojanTeardown(data) {
     }
   }
 
+  const geoSchemaEl = document.getElementById("trojan-geo-schema");
+  const geoHydrationEl = document.getElementById("trojan-geo-hydration");
+  if (geoSchemaEl) geoSchemaEl.textContent = data.schema || "N/A (pending audit)";
+  if (geoHydrationEl) geoHydrationEl.textContent = data.hydration || "N/A (crawler behavior unmeasured)";
+
   const cleanProspectCode = (data.prospect || "CLIENT").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12);
-  if (dossierIdEl) dossierIdEl.textContent = `RADAR-${cleanProspectCode || "STUDIO"}`;
+  if (dossierIdEl) dossierIdEl.textContent = `AUDIT-${cleanProspectCode || "STUDIO"}`;
   
   const savedPartner = (() => {
     try { return localStorage.getItem("apoorv_partner_id"); } catch (e) { return ""; }
   })();
-  const activePartner = data.partner || savedPartner || "CORE-STUDIO";
+  const activePartner = data.partner || savedPartner || "DIRECT";
   if (partnerIdEl) partnerIdEl.textContent = activePartner;
+  // Partner-network upsell is an internal surface: hide it on lead-attached dossier views.
+  const partnerCard = document.getElementById("trojan-partner-card");
+  if (partnerCard) {
+    if (data.prospect) partnerCard.classList.add("hidden");
+    else partnerCard.classList.remove("hidden");
+  }
 
   section.classList.remove("hidden");
   window._activeTrojanData = { ...data, partner: activePartner };
@@ -1252,7 +1273,7 @@ function selectPublicDealTier(tierNum) {
   if (advanceEl) advanceEl.textContent = tierConfig.advStr;
 
   const prospectName = window._activeTrojanData?.prospect || "Valued Client";
-  const partnerId = window._activeTrojanData?.partner || "CORE-STUDIO";
+  const partnerId = window._activeTrojanData?.partner || "DIRECT";
 
   // Dynamic UPI Intent URL
   const upiId = window.SALES_PLATFORM_CONFIG?.upiId || "apoorvxs@okaxis";

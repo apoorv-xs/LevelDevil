@@ -1371,6 +1371,16 @@ function getTeardownUrl(p) {
   const geo = p.geoScore || (isNoSite ? "0% (Unindexed)" : "N/A");
   const llms = p.llmsStatus || (isNoSite ? "UNINDEXED DOMAIN" : "N/A");
   const smokingGun = p.smokingGun || (p.flaws && p.flaws[0]) || "";
+  const schema = p.schemaStatus || "";
+  // Hydration wording only from measured payload evidence in the record — never asserted blind.
+  const payloadEvidence = [p.techStack, (p.flaws || []).join(' ')].join(' ');
+  const hydration = /MB|requests|scripts|payload/i.test(payloadEvidence)
+    ? `Heavy measured payload strains crawler hydration budgets (${String(p.techStack || '').slice(0, 90)})`
+    : "";
+
+  // Top-card commission uses the funnel model at simulator defaults so the card
+  // and the simulator open on one coherent story (bills itself as funnel model).
+  const funnelBleed = "₹1,40,000/mo (funnel model)";
 
   // Simulator commission preset: flat 10% starting point (adjustable on-page);
   // no lead has a confirmed aggregator cut, so no record claims a higher default.
@@ -1381,12 +1391,14 @@ function getTeardownUrl(p) {
     lcp: lcp,
     speed: speed,
     leak: leak,
-    bleed: bleed,
+    bleed: funnelBleed,
     fee: fee,
     geo: geo,
     llms: llms,
     cat: p.cat || "",
     commission: "10",
+    ...(schema ? { schema: schema } : {}),
+    ...(hydration ? { hydration: hydration } : {}),
     ...(smokingGun ? { smokingGun: smokingGun } : {})
   });
 

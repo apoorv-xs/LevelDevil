@@ -151,7 +151,7 @@ test.describe("Two-Track Deal Closing Engine & Sovereign Payment Terminal E2E", 
 
     // Credentials banner verification
     const dossierId = page.locator("#trojan-dossier-id");
-    await expect(dossierId).toHaveText(/RADAR-KOCHIGRAND/i);
+    await expect(dossierId).toHaveText(/AUDIT-KOCHIGRAND/i);
     const partnerId = page.locator("#trojan-partner-id");
     await expect(partnerId).toHaveText("AFFILIATE_42");
 

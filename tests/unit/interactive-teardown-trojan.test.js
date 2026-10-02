@@ -117,6 +117,20 @@ describe('Interactive 3D Deal Teardown & Trojan Pitch Engine', () => {
       expect(salesAppJs).toContain('sim-fee-sub');
     });
 
+    it('renders schema and hydration boxes dynamically with N/A fallbacks', () => {
+      expect(salesAppJs).toContain('trojan-geo-schema');
+      expect(salesAppJs).toContain('trojan-geo-hydration');
+      expect(salesAppJs).toContain('N/A (pending audit)');
+      expect(salesAppJs).toContain('N/A (crawler behavior unmeasured)');
+    });
+
+    it('brands dossier refs as audits with direct attribution', () => {
+      expect(salesAppJs).toContain('AUDIT-${cleanProspectCode');
+      expect(salesAppJs).toContain('trojan-partner-card');
+      expect(salesAppJs).not.toContain('RADAR-${cleanProspectCode');
+      expect(salesAppJs).not.toContain('|| "CORE-STUDIO"');
+    });
+
     it('exports Trojan methods to global window scope for inline event accessibility', () => {
       expect(salesAppJs).toContain('window.initTrojanPitchFromUrl = initTrojanPitchFromUrl;');
       expect(salesAppJs).toContain('window.mountTrojanTeardown = mountTrojanTeardown;');
