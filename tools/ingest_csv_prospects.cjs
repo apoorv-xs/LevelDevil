@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const csvPath = path.join(__dirname, '..', 'Client Radar Prospects - Client_Radar_GoogleSheet_Export_2026-10-02.csv');
+const csvPath = path.join(__dirname, '..', 'Client Radar Prospects - Client_Radar_GoogleSheet_Export_2026-10-02-latest.csv');
 const raw = fs.readFileSync(csvPath, 'utf8');
 
 function parseCSV(text) {

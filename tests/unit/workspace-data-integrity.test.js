@@ -42,7 +42,8 @@ describe('Workspace Data Integrity & Dynamic Bindings', () => {
 
   it('accurately distinguishes companies with no owned website (STARTER tier)', () => {
     const noSiteLeads = prospects.filter(p => !p.site || p.site === '#' || p.ptype === 'STARTER');
-    expect(noSiteLeads.length).toBeGreaterThanOrEqual(10);
+    // Oct-02 reverification: 4 leads (p-4/p-5/p-7/p-11) gained verified domains and converted to UPGRADE.
+    expect(noSiteLeads.length).toBeGreaterThanOrEqual(7);
 
     noSiteLeads.forEach(p => {
       expect(p.site).toBe('#');

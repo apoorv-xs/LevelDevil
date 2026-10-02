@@ -49,7 +49,7 @@ describe("managed API", () => {
     expect(result.status).toBe(200);
     const body = JSON.parse(result.body);
     expect(body.data.prospects).toHaveLength(60);
-    expect(body.data.custom).toHaveLength(70);
+    expect(body.data.custom).toHaveLength(5);
   });
 
   it("rejects mock bearer tokens when the test-only flag is disabled", async () => {

@@ -163,8 +163,8 @@ describe('Subsystem 5: Client Radar Workspace & Outreach Cockpit (Expanded Matri
       expect(() => safeSearch('C++', prospectsData)).not.toThrow();
       expect(() => safeSearch('A*', prospectsData)).not.toThrow();
       expect(() => safeSearch('(Director)', prospectsData)).not.toThrow();
-      expect(() => safeSearch('+91 94470', prospectsData)).not.toThrow();
-      expect(safeSearch('+91 94470', prospectsData).length).toBeGreaterThan(0);
+      expect(() => safeSearch('+91 79999', prospectsData)).not.toThrow();
+      expect(safeSearch('+91 79999', prospectsData).length).toBeGreaterThan(0);
     });
 
     it('filters prospect accounts strictly by city territory', () => {
