@@ -199,7 +199,7 @@ test.describe("Two-Track Deal Closing Engine & Sovereign Payment Terminal E2E", 
     // WhatsApp proof link
     const waLink = page.locator("#btnPublicWhatsAppProof");
     const href = await waLink.getAttribute("href");
-    expect(href).toContain("wa.me/919495462450");
+    expect(href).toContain("wa.me/917012945209");
     expect(href).toContain("AFFILIATE_42");
   });
 

@@ -521,16 +521,24 @@
         <div class="trojan-payment-body">
           <!-- QR Card -->
           <div class="trojan-qr-card">
-            <span class="font-arcade text-[9px] text-center">SCAN TO LOCK 50% ADVANCE DEPOSIT</span>
+            <div class="qr-card-header font-arcade text-[9px]">
+              <span class="qr-pulse-dot"></span>
+              <span>SCAN TO PAY 50% ADVANCE</span>
+            </div>
             <div class="qr-container">
               <img id="publicUpiQrImg" src="" alt="Dynamic 50% Advance UPI QR Code" class="qr-img">
             </div>
-            <div class="upi-id-box font-mono text-xs">
-              <span>UPI ID:</span>
-              <code id="publicUpiIdText" class="font-bold">apoorvxs@okaxis</code>
-              <button type="button" onclick="copyPublicUpiId()" class="copy-upi-btn" title="Copy UPI ID">[COPY]</button>
+            <div class="upi-id-card font-mono">
+              <div class="upi-id-meta">
+                <span class="upi-label font-arcade text-[8px] text-muted">DIRECT UPI HANDLE</span>
+                <span class="upi-badge font-mono text-[9px] text-good font-bold">ALL APPS</span>
+              </div>
+              <div class="upi-id-row">
+                <code id="publicUpiIdText" class="upi-code font-bold select-all">apoorvxs@okaxis</code>
+                <button type="button" onclick="copyPublicUpiId()" class="copy-upi-btn font-arcade text-[8px]" title="Copy UPI ID">[COPY]</button>
+              </div>
             </div>
-            <span class="font-mono text-[10px] text-muted text-center">All UPI Apps: GPay • PhonePe • Paytm • BHIM • Cred</span>
+            <span class="font-mono text-[10px] text-muted text-center leading-tight">All UPI Apps: GPay • PhonePe • Paytm • BHIM • Cred</span>
           </div>
 
           <!-- SOW & SLA Summary -->
@@ -557,7 +565,7 @@
             </div>
             <div class="trojan-payment-actions">
               <a id="btnPublicWhatsAppProof" href="#" target="_blank" rel="noopener noreferrer" class="whatsapp-proof-btn font-arcade text-xs">
-                [ WA ] NOTIFY APOORV (+91 94954 62450)
+                [ WA ] NOTIFY APOORV (+91 70129 45209)
               </a>
             </div>
           </div>

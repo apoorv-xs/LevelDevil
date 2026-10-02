@@ -246,7 +246,8 @@
 
     const msg = `[REQUEST] OUTREACH PARTNER COMMISSION SETTLEMENT\n\nPartner: ${callerName} (${callerEmail})\nRegistered UPI: ${upiId}\nRequested Payout: ₹${cleared.toLocaleString('en-IN')}\n\nVerified Deal Ledger:\n${ledgerLines}\n\nTotal Cleared Balance: ₹${cleared.toLocaleString('en-IN')}\n\nPlease transfer and mark settled.\nOffice of Apoorv A S | Client Radar Cockpit`;
 
-    const waLink = `https://wa.me/919495462450?text=${encodeURIComponent(msg)}`;
+    const targetOwnerWa = (typeof window !== "undefined" && window.APP_CONFIG?.OWNER_WHATSAPP) || (typeof window !== "undefined" && window.SALES_PLATFORM_CONFIG?.directPhone?.replace(/[^0-9]/g, '')) || "917012945209";
+    const waLink = `https://wa.me/${targetOwnerWa}?text=${encodeURIComponent(msg)}`;
 
     if (typeof root.recordPartnerActivity === 'function') {
       root.recordPartnerActivity('SETTLEMENT_REQUESTED', 'wallet', {

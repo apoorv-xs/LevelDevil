@@ -76,8 +76,7 @@ describe('Interactive 3D Deal Teardown & Trojan Pitch Engine', () => {
 
     it('constrains QR card and UPI ID box with proper box-sizing to prevent overflow', () => {
       expect(salesCss).toContain('.trojan-qr-card');
-      expect(salesCss).toContain('max-width: 240px');
-      expect(salesCss).toContain('.upi-id-box');
+      expect(salesCss).toContain('.upi-id-card');
     });
 
     it('styles SLA badge as high-contrast sovereign dark terminal seal instead of red-on-pink', () => {

@@ -2,6 +2,7 @@ window.SALES_PLATFORM_CONFIG = Object.freeze({
   apiBase: "/api",
   webhookUrl: "", // Optional: Paste Discord Webhook, Telegram bot, or Formspree endpoint here
   directEmail: "apoorvxs@gmail.com",
+  directPhone: "+917012945209",
   upiId: "apoorvxs@okaxis",
   firebase: Object.freeze({
     apiKey: "AIzaSyATthNsmARrI0ANLsd8Xwh2bnpB85McUbE",

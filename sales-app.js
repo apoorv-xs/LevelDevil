@@ -1152,7 +1152,8 @@ function selectPublicDealTier(tierNum) {
       `Attributed Partner: ${partnerId}\n` +
       `UPI Reference / Screenshot: [Attached Below]\n` +
       `SLA Guarantee: 60 FPS mathematical verification on mobile by Apoorv.`;
-    whatsAppBtn.href = `https://wa.me/919495462450?text=${encodeURIComponent(message)}`;
+    const waNumber = (window.SALES_PLATFORM_CONFIG?.directPhone || "+917012945209").replace(/[^0-9]/g, "");
+    whatsAppBtn.href = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
   }
 
   // Recalculate payback in simulator

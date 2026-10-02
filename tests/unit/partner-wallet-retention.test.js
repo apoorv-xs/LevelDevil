@@ -218,7 +218,7 @@ describe("Subsystem 20: Partner Gamification, Commission Wallet & Lead Retention
     expect(deal1Ledger.statusText).toBe("SETTLED");
   });
 
-  it("20.3 Generates verified WhatsApp UPI Settlement Request message to Apoorv (+91 94954 62450)", async () => {
+  it("20.3 Generates verified WhatsApp UPI Settlement Request message to Apoorv (+91 70129 45209)", async () => {
     await import("../../workspace/app.js");
     const { requestUpiSettlement, savePartnerUpiId } = global;
 
@@ -230,7 +230,7 @@ describe("Subsystem 20: Partner Gamification, Commission Wallet & Lead Retention
 
     expect(global.window.open).toHaveBeenCalled();
     const calledUrl = global.window.open.mock.calls[0][0];
-    expect(calledUrl).toContain("https://wa.me/919495462450");
+    expect(calledUrl).toContain("https://wa.me/917012945209");
     expect(calledUrl).toContain(encodeURIComponent("[REQUEST] OUTREACH PARTNER COMMISSION SETTLEMENT"));
     expect(calledUrl).toContain(encodeURIComponent("Registered UPI: caller@okhdfcbank"));
     expect(calledUrl).toContain(encodeURIComponent("Requested Payout: ₹22,500"));

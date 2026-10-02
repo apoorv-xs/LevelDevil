@@ -961,8 +961,9 @@ pre {
 
 .trojan-payment-body {
   display: grid;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: 280px 1fr;
   gap: 16px;
+  align-items: stretch;
 }
 
 @media (max-width: 640px) {
@@ -978,22 +979,42 @@ pre {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 10px;
   box-shadow: 3px 3px 0 var(--ink);
   box-sizing: border-box;
-  max-width: 240px;
   width: 100%;
 }
 
-.qr-container {
-  width: 170px;
-  height: 170px;
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
+.qr-card-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
+  gap: 6px;
+  width: 100%;
+  padding-bottom: 6px;
+  border-bottom: 2px dashed var(--ink);
+  color: var(--ink);
+}
+
+.qr-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  display: inline-block;
+}
+
+.qr-container {
+  width: 180px;
+  height: 180px;
+  background: #ffffff;
+  border: 2px solid var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  box-shadow: 2px 2px 0 var(--ink);
 }
 
 .qr-img {
@@ -1002,24 +1023,67 @@ pre {
   object-fit: contain;
 }
 
-.upi-id-box {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: #f1f5f9;
-  padding: 4px 8px;
-  border: 1px solid #cbd5e1;
+.upi-id-box,
+.upi-id-card {
   width: 100%;
   box-sizing: border-box;
+  background: #fffdf1;
+  border: 2px solid var(--ink);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.upi-id-meta {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
+}
+
+.upi-id-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--white);
+  border: 1px solid var(--ink);
+  padding: 6px 8px;
+}
+
+.upi-code {
+  font-family: 'Courier Prime', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.2px;
 }
 
 .copy-upi-btn {
-  background: none;
-  border: none;
+  background: var(--ink);
+  color: var(--white);
+  border: 1px solid var(--ink);
+  padding: 3px 8px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
   cursor: pointer;
-  font-size: 12px;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+.copy-upi-btn:hover {
+  background: var(--accent-yellow);
+  color: var(--ink);
+}
+
+.copy-upi-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
 }
 
 .trojan-sow-card {
