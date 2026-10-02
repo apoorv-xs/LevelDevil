@@ -15,23 +15,23 @@
     "ptype": "UPGRADE",
     "fee": "₹50,000",
     "cat": "clinic",
-    "speedScore": "42/100",
-    "lcpTime": "3.8s",
-    "techStack": "WordPress / PHP (Kots Media / Booking Calendar)",
+    "speedScore": "5/100 (Mobile, measured Oct 02)",
+    "lcpTime": "LCP: 16s typical (9-28s, 3 runs)",
+    "techStack": "WordPress 7.1.2 (Contact Form 7 booking, 77 scripts, 9.5MB payload)",
     "status": "available",
     "geoScore": "35%",
     "llmsStatus": "Missing (/llms.txt 404)",
-    "schemaStatus": "Unstructured DOM",
-    "smokingGun": "Live PHP GD library error disables online appointment booking; missing /llms.txt and entity schema causes high-value dental implant patients to bounce.",
+    "schemaStatus": "Structured (Dentist JSON-LD x2, verified Oct 02)",
+    "smokingGun": "Measured 16s typical mobile load, 28s worst cold-start (Moto G, Oct 02, 3 runs): 122 requests, 9.5MB payload, 77 scripts; 9 failed requests (404s + dead DNS); Contact Form 7 booking present but page sheds assets first; /llms.txt 404.",
     "notes": "Verified via Google Maps: Kadavanthra & Palarivattom",
     "lastCallTime": "",
     "lockedBy": null,
     "lockedEmail": null,
     "scripts": {
       "speed": {
-        "en": "Good morning, calling on Apoorv's behalf for Dr. Anisha P John (CEO & Director). Apoorv audited Smile Kochi Dental Clinic's mobile web presence and noted that mobile loading takes 3.8s, causing high-intent prospective clients to drop off before booking. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) to secure direct bookings. Would Dr. Anisha P John have 10 minutes for a brief discovery screen share with Apoorv this Thursday?",
-        "ml": "നമസ്കാരം, ഇത് Smile Kochi Dental Clinic അല്ലേ? ഞാൻ അപൂർവിൻ വേണ്ടിയാണ് വിളിക്കുന്നത് (calling on Apoorv's behalf). Dr. Anisha P John (CEO & Director)-നോട് സംസാരിക്കാൻ സാധിക്കുമോ? നിങ്ങളുടെ വെബ്സൈഞ്ടെ മൊബൈർ സ്പീഡും (3.8s) ഡയറക്ട് ബുക്കിംഗും വർധിപ്പിക്കാൻ അപൂർവ് തയ്യാറാക്കിയ എക്സിക്യൂട്ടിവ് പെർഫോർമൻസ് ഓഡിട്ട് ഷെയർ ചെയ്യാന്. അപൂർവുമാണി സംസാരിക്കാൻ ഈ വ്യാഴാഴ്ച 10 മിനിറ്ട് സമയം തരാമോ?",
-        "manglish": "Namaskaram, ithu Smile Kochi Dental Clinic alle? Njan Apoorv-nu vendiyanu vilikkunnathu. Dr. Anisha P John (CEO & Director)-nodu oru minute samsarikkan sadhikkumo? Ningalude website mobile loading 3.8s edukkunnathinaal drop-off undavunnu. Direct bookings maximize cheyyaan Apoorv thayyaraakkiya technical audit share cheyyaam. 10 minute samayam tharaamo?"
+        "en": "Good morning, calling on Apoorv's behalf for Dr. Anisha P John (CEO & Director). Apoorv audited Smile Kochi Dental Clinic's mobile web presence and noted that mobile loading takes 16s, causing high-intent prospective clients to drop off before booking. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) to secure direct bookings. Would Dr. Anisha P John have 10 minutes for a brief discovery screen share with Apoorv this Thursday?",
+        "ml": "നമസ്കാരം, ഇത് Smile Kochi Dental Clinic അല്ലേ? ഞാൻ അപൂർവിൻ വേണ്ടിയാണ് വിളിക്കുന്നത് (calling on Apoorv's behalf). Dr. Anisha P John (CEO & Director)-നോട് സംസാരിക്കാൻ സാധിക്കുമോ? നിങ്ങളുടെ വെബ്സൈഞ്ടെ മൊബൈർ സ്പീഡും (16s) ഡയറക്ട് ബുക്കിംഗും വർധിപ്പിക്കാൻ അപൂർവ് തയ്യാറാക്കിയ എക്സിക്യൂട്ടിവ് പെർഫോർമൻസ് ഓഡിട്ട് ഷെയർ ചെയ്യാന്. അപൂർവുമാണി സംസാരിക്കാൻ ഈ വ്യാഴാഴ്ച 10 മിനിറ്ട് സമയം തരാമോ?",
+        "manglish": "Namaskaram, ithu Smile Kochi Dental Clinic alle? Njan Apoorv-nu vendiyanu vilikkunnathu. Dr. Anisha P John (CEO & Director)-nodu oru minute samsarikkan sadhikkumo? Ningalude website mobile loading 16s edukkunnathinaal drop-off undavunnu. Direct bookings maximize cheyyaan Apoorv thayyaraakkiya technical audit share cheyyaam. 10 minute samayam tharaamo?"
       },
       "commission": {
         "en": "Good morning, calling on Apoorv's behalf for Dr. Anisha P John (CEO & Director). Premier establishments in Kochi are currently surrendering 15% to 25% of client revenue to aggregators because their own direct website lacks an instant, friction-free booking engine. Apoorv builds high-conversion direct portals that eliminate middleman commission bleed. Would Dr. Anisha P John be open to a 10-minute strategy call with Apoorv this week?",
@@ -45,11 +45,11 @@
       },
       "gatekeeper": "Good morning, I’m calling on Apoorv's behalf for Dr. Anisha P John (CEO & Director) regarding mobile booking drop-offs and the 2026 AI search audit for Smile Kochi Dental Clinic. Is Dr. Anisha P John currently between consultations or should I reach their personal desk?"
     },
-    "waMessage": "Hi Dr. Anisha P John, following up on our call on Apoorv's behalf regarding Smile Kochi Dental Clinic. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (3.8s). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
+    "waMessage": "Hi Dr. Anisha P John, following up on our call on Apoorv's behalf regarding Smile Kochi Dental Clinic. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (16s). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
     "flaws": [
-      "Live PHP GD-Library error on online booking form ('CAPTCHA requires GD library activated')",
-      "broken YouTube video embed in hero section",
-      "100% manual front-desk callback dependency."
+      "Measured LCP 16s typical, 28s worst cold-start (Moto G 4G, Oct 02, 3 runs)",
+      "122 requests, 9.5MB payload, 9 failed requests (404s + dead DNS host)",
+      "Contact Form 7 booking exists but assets fail before patients reach it"
     ],
     "wastedSpend": "₹42,000/yr in bookings at risk (Practo-listed rivals + plugin overhead)",
     "wastedBreakdown": [
@@ -58,40 +58,40 @@
       "₹5,500/yr SMS/form-friction overhead (est.)"
     ],
     "callerCheatSheet": {
-      "icebreaker": "Live PHP GD library error disables online appointment booking; missing /llms.txt and entity schema causes high-value dental implant patients to bounce.",
-      "laymanAnalogy": "Your website is like having a clinic door with a rusty latch taking 4.4 seconds to open—patients give up and book whoever answers first on Practo.",
+      "icebreaker": "Measured 16s typical mobile load, 28s worst cold-start (Moto G, Oct 02, 3 runs): 122 requests, 9.5MB payload, 77 scripts; 9 failed requests (404s + dead DNS); Contact Form 7 booking present but page sheds assets first; /llms.txt 404.",
+      "laymanAnalogy": "Your website is like having a clinic door with a rusty latch taking 16 seconds to open—patients give up and book whoever answers first on Practo.",
       "competitorEdge": "Top clinics in Kochi use zero-latency WhatsApp direct booking to capture patient consultations with zero aggregator commissions."
     },
     "securityAudit": {
-      "grade": "⚠️ MODERATE RISK",
-      "score": "42/100 (Exposure Detected)",
+      "grade": "MODERATE RISK",
+      "score": "42/100 (heavy payload, version disclosed)",
       "issues": [
-        "Exposed /wp-json/ user enumeration and login endpoint",
-        "Intake contact form has zero anti-bot rate-limiting (spam flooding)",
-        "Missing HSTS and Strict Content-Security-Policy trust headers"
+        "WordPress 7.1.2 version disclosed + 77 render-blocking scripts (measured Oct 02)",
+        "9 failed sub-requests (404s, dead DNS host) shedding assets before booking",
+        "No WhatsApp booking path found; 6 tap-to-call links only"
       ],
-      "callerTalkingPoint": "Their WordPress login and patient intake form lack anti-bot security, flooding their reception desk with daily junk messages and risking trust warnings on Chrome."
+      "callerTalkingPoint": "Their WordPress version is public, 77 scripts block rendering, and 9 page assets fail outright before a patient ever reaches the booking form."
     },
-    "revenueLeak": "₹1,80,000/mo Est. Revenue Leak",
-    "revenueLeakNumeric": 180000,
+    "revenueLeak": "₹6,70,000/mo Est. Revenue Leak",
+    "revenueLeakNumeric": 670000,
     "dpdpCompliance": {
-      "status": "🔴 DPDP Non-Compliant",
-      "risk": "High Regulatory & Privacy Exposure",
-      "detail": "Lead/intake form captures personal contact info without explicit consent checkboxes or encrypted storage policies required by DPDP Sec 4-6."
+      "status": "Intake consent unaudited",
+      "risk": "Contact Form 7 data handling",
+      "detail": "A 15-field Contact Form 7 intake exists; consent-checkbox posture not yet verified Oct 02."
     },
     "thumbZone": {
-      "status": "❌ No Sticky Action Bar",
-      "detail": "No 1-tap thumb call or WhatsApp bar at screen bottom; client must pinch-zoom or scroll to find phone number."
+      "status": "Sticky bars present, no WhatsApp path",
+      "detail": "3 fixed bottom bars and 6 tap-to-call links detected Oct 02; 0 WhatsApp links site-wide."
     },
     "bookingFriction": {
-      "steps": "7 Friction Steps",
-      "severity": "🔴 Severe Drop-off Risk",
-      "detail": "Requires typing name, email, query, waiting for admin callback, or opening unoptimized external PDF."
+      "steps": "15-field form, no calendar sync",
+      "severity": "High friction",
+      "detail": "One 15-field Contact Form 7 with no visible calendar availability or slot confirmation; booking-calendar page exists separately."
     },
     "reputationBridge": {
-      "status": "⚠️ Reputation Disconnect",
-      "detail": "Strong Google review ratings (4.5★+) are wasted because incoming mobile visitors encounter a slow, static website with zero live booking bridge."
-    }
+      "status": "Unverified review equity",
+      "detail": "No Google rating confirmed Oct 02; whatever reputation they carry cannot survive a 16s first impression."
+    },
   },
   {
     "id": "p-2",
