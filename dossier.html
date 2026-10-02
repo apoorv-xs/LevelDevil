@@ -416,28 +416,28 @@
       </div>
 
       <!-- Interactive Revenue Recovery Simulator -->
-      <div id="trojan-simulator-card" class="trojan-simulator-card" data-kaboom-body="true">
-        <div class="simulator-header" data-kaboom-body="true">
+      <div id="trojan-simulator-card" class="trojan-simulator-card">
+        <div class="simulator-header">
           <span class="font-arcade text-xs">REVENUE RECOVERY SIMULATOR</span>
           <span class="font-mono text-xs text-muted">AGGREGATOR BLEED VS 60 FPS DIRECT</span>
         </div>
-        <div class="simulator-sliders-grid" data-kaboom-body="true">
-          <div class="slider-control" data-kaboom-body="true">
+        <div class="simulator-sliders-grid">
+          <div class="slider-control">
             <div class="slider-label-row">
               <label for="sim-visitors" class="font-mono text-xs">Monthly Inbound Footfall / Visitors:</label>
               <span id="sim-visitors-val" class="font-mono font-bold text-xs">3,000 / mo</span>
             </div>
-            <input type="range" id="sim-visitors" min="500" max="25000" step="500" value="3000" oninput="calculateRevenueRecovery()" class="retro-slider" data-kaboom-body="true">
+            <input type="range" id="sim-visitors" min="500" max="25000" step="500" value="3000" oninput="calculateRevenueRecovery()" class="retro-slider">
           </div>
-          <div class="slider-control" data-kaboom-body="true">
+          <div class="slider-control">
             <div class="slider-label-row">
               <label for="sim-aov" class="font-mono text-xs">Average Order / Booking Value:</label>
               <span id="sim-aov-val" class="font-mono font-bold text-xs">₹2,500</span>
             </div>
-            <input type="range" id="sim-aov" min="500" max="15000" step="250" value="2500" oninput="calculateRevenueRecovery()" class="retro-slider" data-kaboom-body="true">
+            <input type="range" id="sim-aov" min="500" max="15000" step="250" value="2500" oninput="calculateRevenueRecovery()" class="retro-slider">
           </div>
         </div>
-        <div class="simulator-results-row" data-kaboom-body="true">
+        <div class="simulator-results-row">
           <div class="sim-result-box sim-result-bad">
             <span class="sim-metric-lbl font-mono">EST. MONTHLY AGGREGATOR BLEED:</span>
             <span id="sim-bleed-val" class="sim-metric-num text-bad font-mono">₹1,50,000 / mo</span>
@@ -457,16 +457,16 @@
       </div>
 
       <!-- Dual-Action Conversion Bar -->
-      <div class="trojan-cta-row" data-kaboom-body="true">
-        <div class="trojan-dual-actions" data-kaboom-body="true">
-          <button type="button" id="trojan-cta-btn" onclick="claimTrojanConsultation()" class="trojan-claim-btn font-arcade" data-kaboom-body="true">
+      <div class="trojan-cta-row">
+        <div class="trojan-dual-actions">
+          <button type="button" id="trojan-cta-btn" onclick="claimTrojanConsultation()" class="trojan-claim-btn font-arcade">
             [ BOOK 15-MIN STRATEGY WALKTHROUGH WITH APOORV ]
           </button>
-          <button type="button" id="trojan-fasttrack-btn" onclick="toggleTrojanPaymentView()" class="trojan-fasttrack-btn font-arcade" data-kaboom-body="true">
+          <button type="button" id="trojan-fasttrack-btn" onclick="toggleTrojanPaymentView()" class="trojan-fasttrack-btn font-arcade">
             [ FAST-TRACK: REVIEW SOW &amp; LOCK 50% DEPOSIT ]
           </button>
         </div>
-        <span class="trojan-guarantee font-mono text-xs" data-kaboom-body="true">100% Mathematical SLA Guarantee: Full refund if architecture fails 60 FPS or Core Web Vitals on mobile • Direct screen share with Apoorv</span>
+        <span class="trojan-guarantee font-mono text-xs">60 FPS Mathematical Performance Guarantee: Verified on reference mobile baseline with zero-cost prioritized code remediation.</span>
       </div>
 
       <!-- Sovereign Payment & Milestone SOW Terminal (Fast-Track / ?proposal=...) -->
@@ -544,7 +544,7 @@
               <div class="text-[11px] text-muted mt-2 border-t border-dashed border-ink pt-2">
                 <strong>Scope Bounds:</strong> Includes turnkey 60 FPS mobile engine &amp; conversion UI. Custom uncompressed 3D modeling from raw CAD or 3rd-party API fees quoted via written Change Order. Includes 30-day bug warranty with zero recurring maintenance lock-in.
               </div>
-              <div class="sla-badge font-bold text-good">
+              <div class="sla-badge font-bold">
                 SLA GUARANTEE // 60 FPS PERFORMANCE: Mathematical verification on reference mobile baseline (iOS 16+ / Chrome on 4G, DPR clamped to 2.0). If staging metrics fall below 60 FPS, prioritized code remediation is performed at zero cost before final settlement.
               </div>
             </div>
@@ -554,18 +554,20 @@
               </a>
             </div>
           </div>
-        <!-- Architectural Agency Trust & Cross-Link Cards -->
-        <div class="trojan-agency-cards font-mono" data-kaboom-body="true">
-          <div class="agency-trust-card" data-kaboom-body="true">
-            <span class="font-arcade text-[10px] text-highlight">🎮 60 FPS SPATIAL PORTFOLIO</span>
-            <p class="text-xs text-muted mt-1">Test Apoorv's proprietary WebGPU shaders, spatial mechanics, and 60 FPS physics engine live on the canvas.</p>
-            <a href="/" class="agency-link-btn font-arcade text-[10px]">[ LAUNCH PORTFOLIO CORE › ]</a>
-          </div>
-          <div class="agency-trust-card" data-kaboom-body="true">
-            <span class="font-arcade text-[10px] text-good">🤝 SALES PARTNER NETWORK</span>
-            <p class="text-xs text-muted mt-1">I collaborate with an active partner network of verified outreach specialists and technical deal representatives.</p>
-            <a href="/workspace/" class="agency-link-btn font-arcade text-[10px]">[ EXPLORE PARTNER WORKSPACE › ]</a>
-          </div>
+        </div>
+      </div>
+
+      <!-- Architectural Agency Trust & Cross-Link Cards -->
+      <div class="trojan-agency-cards font-mono">
+        <div class="agency-trust-card">
+          <span class="font-arcade text-[10px] text-highlight">🎮 60 FPS SPATIAL PORTFOLIO</span>
+          <p class="text-xs text-muted mt-1">Test Apoorv's proprietary WebGPU shaders, spatial mechanics, and 60 FPS physics engine live on the canvas.</p>
+          <a href="/" class="agency-link-btn font-arcade text-[10px]">[ LAUNCH PORTFOLIO CORE › ]</a>
+        </div>
+        <div class="agency-trust-card">
+          <span class="font-arcade text-[10px] text-good">🤝 SALES PARTNER NETWORK</span>
+          <p class="text-xs text-muted mt-1">I collaborate with an active partner network of verified outreach specialists and technical deal representatives.</p>
+          <a href="/workspace/" class="agency-link-btn font-arcade text-[10px]">[ EXPLORE PARTNER WORKSPACE › ]</a>
         </div>
       </div>
     </section>
