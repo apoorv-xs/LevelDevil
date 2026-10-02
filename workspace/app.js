@@ -1442,7 +1442,7 @@ function openClientTeardownModal() {
   const lcpRaw = isNoSite ? "" : (p.lcpTime || '').replace('LCP: ', '').trim();
   const lcpText = isNoSite
     ? 'Zero Owned Domain (Aggregator Bleed)'
-    : (lcpRaw ? `${lcpRaw} (Failing)` : 'N/A');
+    : (lcpRaw ? `${lcpRaw} (Poor LCP)` : 'N/A');
   const speedRaw = isNoSite ? "" : String(p.speedScore != null ? p.speedScore : '').replace('/100', '').trim();
   const speedText = isNoSite ? '0 / 100' : (speedRaw ? `${speedRaw} / 100` : 'N/A');
   const leakText = p.revenueLeak || advGrading.revenueLeak || 'N/A';

@@ -977,6 +977,28 @@ async function initTrojanPitchFromUrl() {
         slider.value = String(v);
       }
     }
+    // Category-appropriate simulator starting points (sliders stay adjustable).
+    // Aesthetic clinics quote high-ticket procedures; restaurants run high footfall.
+    const catPresets = {
+      clinic: { visitors: 2000, aov: 8000 },
+      restaurant: { visitors: 3000, aov: 2500 },
+      salon: { visitors: 1500, aov: 3000 },
+      design: { visitors: 1000, aov: 50000 }
+    };
+    const catKey = String(data.cat || "").toLowerCase();
+    const preset = catPresets[catKey];
+    if (preset) {
+      const visitorsSlider = document.getElementById("sim-visitors");
+      const aovSlider = document.getElementById("sim-aov");
+      if (visitorsSlider && !params.get("visitors")) {
+        visitorsSlider.min = "500"; visitorsSlider.max = "25000"; visitorsSlider.step = "100";
+        visitorsSlider.value = String(preset.visitors);
+      }
+      if (aovSlider && !params.get("aov")) {
+        aovSlider.min = "500"; aovSlider.max = "50000"; aovSlider.step = "500";
+        aovSlider.value = String(preset.aov);
+      }
+    }
     if (typeof calculateRevenueRecovery === "function") {
       try { calculateRevenueRecovery(); } catch (e) {}
     }
@@ -1000,18 +1022,34 @@ function mountTrojanTeardown(data) {
   const geoLlmsEl = document.getElementById("trojan-geo-llms");
   const dossierIdEl = document.getElementById("trojan-dossier-id");
   const partnerIdEl = document.getElementById("trojan-partner-id");
+  const attnWrapEl = document.getElementById("trojan-attn-wrap");
+  const attnDmEl = document.getElementById("trojan-attn-dm");
+  if (attnDmEl && attnWrapEl) {
+    if (data.dm) { attnDmEl.textContent = data.dm; attnWrapEl.style.display = ""; }
+    else { attnWrapEl.style.display = "none"; }
+  }
   const smokingGunCard = document.getElementById("trojan-smoking-gun-card");
   const smokingGunTextEl = document.getElementById("trojan-smoking-gun-text");
 
   if (clientNameEl) clientNameEl.textContent = data.prospect;
   if (entityNameEl) entityNameEl.textContent = data.prospect;
-  if (lcpEl) lcpEl.textContent = (data.lcp && data.lcp !== "N/A") ? `${data.lcp} (Failing INP)` : "N/A";
+  if (lcpEl) lcpEl.textContent = (data.lcp && data.lcp !== "N/A") ? `${data.lcp} (Poor LCP)` : "N/A";
   if (speedEl) speedEl.textContent = (data.speed && data.speed !== "N/A") ? `${data.speed} / 100` : "N/A";
   if (leakEl) leakEl.textContent = data.leak || "N/A";
   if (bleedEl) bleedEl.textContent = data.bleed || "N/A";
   if (geoEl) geoEl.textContent = data.geo || "N/A";
   if (agenticBrandEl) agenticBrandEl.textContent = data.prospect || "your website";
-  if (geoLlmsEl && data.llms) geoLlmsEl.textContent = data.llms;
+  const llmsLive = /present|live/i.test(data.llms || "");
+  if (geoLlmsEl) {
+    if (data.llms) geoLlmsEl.textContent = data.llms;
+    geoLlmsEl.classList.remove("text-bad", "text-good");
+    geoLlmsEl.classList.add(llmsLive ? "text-good" : "text-bad");
+  }
+  if (remediationEl) {
+    remediationEl.textContent = llmsLive
+      ? "Enrich the live manifest (pricing, booking endpoints, contact) and deploy entity schema graphs."
+      : "Pre-rendered semantic HTML, /llms.txt, and zero-JS entity resolution.";
+  }
 
   if (smokingGunCard && smokingGunTextEl) {
     if (data.smokingGun) {
@@ -1025,7 +1063,16 @@ function mountTrojanTeardown(data) {
   const geoSchemaEl = document.getElementById("trojan-geo-schema");
   const geoHydrationEl = document.getElementById("trojan-geo-hydration");
   const geoLlmsSubEl = document.getElementById("trojan-geo-llms-sub");
-  if (geoSchemaEl) geoSchemaEl.textContent = data.schema || "N/A (pending audit)";
+  const remediationEl = document.getElementById("trojan-remediation-text");
+  const setStateColor = (el, positive) => {
+    if (!el) return;
+    el.classList.remove("text-bad", "text-good");
+    el.classList.add(positive ? "text-good" : "text-bad");
+  };
+  if (geoSchemaEl) {
+    geoSchemaEl.textContent = data.schema || "N/A (pending audit)";
+    setStateColor(geoSchemaEl, /present|structured|live/i.test(data.schema || ""));
+  }
   if (geoHydrationEl) geoHydrationEl.textContent = data.hydration || "N/A (crawler behavior unmeasured)";
   if (geoLlmsSubEl) {
     const llmsLive = /present|live/i.test(data.llms || "");
