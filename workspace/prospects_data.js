@@ -17,12 +17,12 @@
     "cat": "clinic",
     "speedScore": "5/100 (Mobile, measured Oct 02)",
     "lcpTime": "LCP: 16s typical (9-28s, 3 runs)",
-    "techStack": "WordPress 7.1.2 (Contact Form 7 booking, 77 scripts, 9.5MB payload)",
+    "techStack": "WordPress (generator tag declares bogus 7.1.2; Booking Calendar + Contact Form 7, 77 scripts, 9.5MB payload)",
     "status": "available",
     "geoScore": "35%",
     "llmsStatus": "Missing (/llms.txt 404)",
     "schemaStatus": "Structured (Dentist JSON-LD x2, verified Oct 02)",
-    "smokingGun": "Measured 16s typical mobile load, 28s worst cold-start (Moto G, Oct 02, 3 runs): 122 requests, 9.5MB payload, 77 scripts; 9 failed requests (404s + dead DNS); Contact Form 7 booking present but page sheds assets first; /llms.txt 404.",
+    "smokingGun": "VERIFIED live Oct 02: Booking Calendar form renders \"Error! CAPTCHA requires the GD library activated in your PHP configuration\" (server lacks PHP GD extension). Measured 16s typical load, 28s worst cold-start (Moto G, 3 runs): 122 requests, 9.5MB payload, 77 scripts; hero YouTube embed unresolvable (oEmbed 404); /llms.txt 404.",
     "notes": "Verified via Google Maps: Kadavanthra & Palarivattom",
     "lastCallTime": "",
     "lockedBy": null,
@@ -47,9 +47,10 @@
     },
     "waMessage": "Hi Dr. Anisha P John, following up on our call on Apoorv's behalf regarding Smile Kochi Dental Clinic. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (16s). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
     "flaws": [
+      "VERIFIED live: Booking Calendar CAPTCHA dead with on-page GD-library error (no server-side booking validation possible)",
+      "Hero YouTube embed unresolvable (oEmbed 404 on embedded video ID)",
       "Measured LCP 16s typical, 28s worst cold-start (Moto G 4G, Oct 02, 3 runs)",
-      "122 requests, 9.5MB payload, 9 failed requests (404s + dead DNS host)",
-      "Contact Form 7 booking exists but assets fail before patients reach it"
+      "122 requests, 9.5MB payload, 9 failed requests (404s + dead DNS host)"
     ],
     "wastedSpend": "₹42,000/yr in bookings at risk (Practo-listed rivals + plugin overhead)",
     "wastedBreakdown": [
@@ -58,7 +59,7 @@
       "₹5,500/yr SMS/form-friction overhead (est.)"
     ],
     "callerCheatSheet": {
-      "icebreaker": "Measured 16s typical mobile load, 28s worst cold-start (Moto G, Oct 02, 3 runs): 122 requests, 9.5MB payload, 77 scripts; 9 failed requests (404s + dead DNS); Contact Form 7 booking present but page sheds assets first; /llms.txt 404.",
+      "icebreaker": "VERIFIED live Oct 02: Booking Calendar form renders \"Error! CAPTCHA requires the GD library activated in your PHP configuration\" (server lacks PHP GD extension). Measured 16s typical load, 28s worst cold-start (Moto G, 3 runs): 122 requests, 9.5MB payload, 77 scripts; hero YouTube embed unresolvable (oEmbed 404); /llms.txt 404.",
       "laymanAnalogy": "Your website is like having a clinic door with a rusty latch taking 16 seconds to open—patients give up and book whoever answers first on Practo.",
       "competitorEdge": "Top clinics in Kochi use zero-latency WhatsApp direct booking to capture patient consultations with zero aggregator commissions."
     },
@@ -66,7 +67,8 @@
       "grade": "MODERATE RISK",
       "score": "42/100 (heavy payload, version disclosed)",
       "issues": [
-        "WordPress 7.1.2 version disclosed + 77 render-blocking scripts (measured Oct 02)",
+        "Booking Calendar CAPTCHA dead: server lacks PHP GD extension (verbatim on-page error, Oct 02)",
+        "Generator tag declares bogus WordPress 7.1.2 (no such release) + 77 render-blocking scripts",
         "9 failed sub-requests (404s, dead DNS host) shedding assets before booking",
         "No WhatsApp booking path found; 6 tap-to-call links only"
       ],
