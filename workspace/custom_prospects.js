@@ -200,23 +200,25 @@
     "ptype": "UPGRADE",
     "fee": "₹50,000",
     "status": "available",
-    "speedScore": "42/100",
-    "lcpTime": "3.9s",
-    "techStack": "WordPress / Custom Aesthetic Theme",
+    "speedScore": "5/100 (Mobile, cold-load measured Oct 02)",
+    "lcpTime": "LCP: 13.5s cold, 1.8s warm (2 runs, Moto G)",
+    "techStack": "Custom theme, LiteSpeed server (no WP markers; 87 requests, 11.8MB payload)",
     "flaws": [
       "Broken counter stats displaying blank numbers ('+ Procedures', '+ Years', '% success rate')",
       "doctor profile contains Latin dummy text ('Cras ultricies ligula...')",
-      "multiple typos ('Bosy Care', 'Inida', 'Thuesday')."
+      "multiple typos ('Bosy Care', 'Inida', 'Thuesday').",
+      "Grammar flaws in live copy ('dermatosuergery', 'adressing', 'better satisfactions') + stale 2024-25 copyright (verified Oct 02)",
+      "Unoptimized doctors-day popup modal shipped in homepage DOM"
     ],
     "geoScore": "35%",
     "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
-    "schemaStatus": "Partial Microdata",
-    "smokingGun": "Blank counter symbols ('+ Procedures', '% success rate'), Latin dummy text, and 'Inida' typos on live site severely damage high-ticket cosmetic surgery authority.",
+    "schemaStatus": "LocalBusiness JSON-LD present; no procedure/pricing depth (verified Oct 02)",
+    "smokingGun": "VERIFIED Oct 02 (raw HTML + rendered DOM): blank counter symbols ('+ Procedures', '% success rate'), Latin dummy text, and 'Inida'/'Bosy'/'Thuesday' typos on live site; measured 13.5s cold load.",
     "scripts": {
       "speed": {
-        "en": "Good morning, calling on Apoorv's behalf for Dr. Harish B (Founder & Medical Director, B.D.S, F.A.M, F.H.T, MBA-HM). Apoorv audited Livglam Aesthetic Clinic's mobile web presence and noted that mobile loading takes 3.9s, causing high-intent prospective clients to drop off before booking. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) to secure direct bookings. Would Dr. Harish B have 10 minutes for a brief discovery screen share with Apoorv this Thursday?",
-        "ml": "നമസ്കാരം, ഇത് Livglam Aesthetic Clinic അല്ലേ? ഞാൻ അപൂർവിൻ വേണ്ടിയാണ് വിളിക്കുന്നത് (calling on Apoorv's behalf). Dr. Harish B (Founder & Medical Director, B.D.S, F.A.M, F.H.T, MBA-HM)-നോട് സംസാരിക്കാൻ സാധിക്കുമോ? നിങ്ങളുടെ വെബ്സൈഞ്ടെ മൊബൈർ സ്പീഡും (3.9s) ഡയറക്ട് ബുക്കിംഗും വർധിപ്പിക്കാൻ അപൂർവ് തയ്യാറാക്കിയ എക്സിക്യൂട്ടിവ് പെർഫോർമൻസ് ഓഡിട്ട് ഷെയർ ചെയ്യാന്. അപൂർവുമാണി സംസാരിക്കാൻ ഈ വ്യാഴാഴ്ച 10 മിനിറ്ട് സമയം തരാമോ?",
-        "manglish": "Namaskaram, ithu Livglam Aesthetic Clinic alle? Njan Apoorv-nu vendiyanu vilikkunnathu. Dr. Harish B (Founder & Medical Director, B.D.S, F.A.M, F.H.T, MBA-HM)-nodu oru minute samsarikkan sadhikkumo? Ningalude website mobile loading 3.9s edukkunnathinaal drop-off undavunnu. Direct bookings maximize cheyyaan Apoorv thayyaraakkiya technical audit share cheyyaam. 10 minute samayam tharaamo?"
+        "en": "Good morning, calling on Apoorv's behalf for Dr. Harish B (Founder & Medical Director, B.D.S, F.A.M, F.H.T, MBA-HM). Apoorv audited Livglam Aesthetic Clinic's mobile web presence and noted that mobile loading takes 13.5s cold (1.8s warm), causing high-intent prospective clients to drop off before booking. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) to secure direct bookings. Would Dr. Harish B have 10 minutes for a brief discovery screen share with Apoorv this Thursday?",
+        "ml": "നമസ്കാരം, ഇത് Livglam Aesthetic Clinic അല്ലേ? ഞാൻ അപൂർവിൻ വേണ്ടിയാണ് വിളിക്കുന്നത് (calling on Apoorv's behalf). Dr. Harish B (Founder & Medical Director, B.D.S, F.A.M, F.H.T, MBA-HM)-നോട് സംസാരിക്കാൻ സാധിക്കുമോ? നിങ്ങളുടെ വെബ്സൈഞ്ടെ മൊബൈർ സ്പീഡും (13.5s cold (1.8s warm)) ഡയറക്ട് ബുക്കിംഗും വർധിപ്പിക്കാൻ അപൂർവ് തയ്യാറാക്കിയ എക്സിക്യൂട്ടിവ് പെർഫോർമൻസ് ഓഡിട്ട് ഷെയർ ചെയ്യാന്. അപൂർവുമാണി സംസാരിക്കാൻ ഈ വ്യാഴാഴ്ച 10 മിനിറ്ട് സമയം തരാമോ?",
+        "manglish": "Namaskaram, ithu Livglam Aesthetic Clinic alle? Njan Apoorv-nu vendiyanu vilikkunnathu. Dr. Harish B (Founder & Medical Director, B.D.S, F.A.M, F.H.T, MBA-HM)-nodu oru minute samsarikkan sadhikkumo? Ningalude website mobile loading 13.5s cold (1.8s warm) edukkunnathinaal drop-off undavunnu. Direct bookings maximize cheyyaan Apoorv thayyaraakkiya technical audit share cheyyaam. 10 minute samayam tharaamo?"
       },
       "commission": {
         "en": "Good morning, calling on Apoorv's behalf for Dr. Harish B (Founder & Medical Director, B.D.S, F.A.M, F.H.T, MBA-HM). Premier establishments in Bangalore are currently surrendering 15% to 25% of client revenue to aggregators because their own direct website lacks an instant, friction-free booking engine. Apoorv builds high-conversion direct portals that eliminate middleman commission bleed. Would Dr. Harish B be open to a 10-minute strategy call with Apoorv this week?",
@@ -230,7 +232,7 @@
       },
       "gatekeeper": "Good morning, I’m calling on Apoorv's behalf for Dr. Harish B (Founder & Medical Director, B.D.S, F.A.M, F.H.T, MBA-HM) regarding mobile booking drop-offs and the 2026 AI search audit for Livglam Aesthetic Clinic. Is Dr. Harish B currently between consultations or should I reach their personal desk?"
     },
-    "waMessage": "Hi Dr. Harish B, following up on our call on Apoorv's behalf regarding Livglam Aesthetic Clinic. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (3.9s). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
+    "waMessage": "Hi Dr. Harish B, following up on our call on Apoorv's behalf regarding Livglam Aesthetic Clinic. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (13.5s cold (1.8s warm)). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
     "wastedSpend": "₹55,000/yr at risk to aggregator directories",
     "wastedBreakdown": [
       "₹35,000/yr third-party aggregator listings",
@@ -238,11 +240,11 @@
       "₹8,000/yr wasted ad spend on high-bounce mobile traffic"
     ],
     "callerCheatSheet": {
-      "icebreaker": "Blank counter symbols ('+ Procedures', '% success rate'), Latin dummy text, and 'Inida' typos on live site severely damage high-ticket cosmetic surgery authority.",
+      "icebreaker": "VERIFIED Oct 02: blank counters, Latin dummy text, and 3 typos ('Bosy', 'Inida', 'Thuesday') live on site; plus measured 13.5s cold load.",
       "laymanAnalogy": "Slow mobile site leaks high-intent guests to whoever answers first on an aggregator.",
       "competitorEdge": "Top properties use 60 FPS portals and /llms.txt for direct bookings."
     },
-    "notes": "Verified mobile & WhatsApp via Google Maps",
+    "notes": "Jayanagar flagship per Spark audit (Pattabhirama Nagar, opp IIMB corridor; address/credentials/staff not independently verified): Dr. Harish B, Founder & Medical Director (BDS, FAM, FHT, MBA-HM); front-desk Roma. WhatsApp/booking line +91 97416 20538.",
     "lastCallTime": "",
     "lockedBy": null,
     "lockedEmail": null
