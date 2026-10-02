@@ -109,6 +109,14 @@ describe('Interactive 3D Deal Teardown & Trojan Pitch Engine', () => {
       expect(salesAppJs).toContain('/workspace/custom_prospects.js');
     });
 
+    it('models simulator bleed as bounce loss plus commission on the captured remainder', () => {
+      expect(salesAppJs).toContain('bouncedRevenue');
+      expect(salesAppJs).toContain('aggregatorBleed');
+      expect(salesAppJs).toContain('sim-commission');
+      expect(salesAppJs).toContain('sim-payback-val');
+      expect(salesAppJs).toContain('sim-fee-sub');
+    });
+
     it('exports Trojan methods to global window scope for inline event accessibility', () => {
       expect(salesAppJs).toContain('window.initTrojanPitchFromUrl = initTrojanPitchFromUrl;');
       expect(salesAppJs).toContain('window.mountTrojanTeardown = mountTrojanTeardown;');

@@ -1095,30 +1095,39 @@ function calculateRevenueRecovery() {
   const recoveredVal = document.getElementById("sim-recovered-val");
   const paybackVal = document.getElementById("sim-payback-val");
 
-  const visitors = Number(visitorsInp ? visitorsInp.value : 3000) || 3000;
-  const aov = Number(aovInp ? aovInp.value : 2500) || 2500;
-  const commissionRate = commissionInp ? (Number(commissionInp.value) / 100) : 0.20;
+  const visitors = Number(visitorsInp ? visitorsInp.value : 2000) || 2000;
+  const aov = Number(aovInp ? aovInp.value : 5000) || 5000;
+  const commissionRate = commissionInp ? (Number(commissionInp.value) / 100) : 0.10;
 
   if (visitorsVal) visitorsVal.textContent = `${visitors.toLocaleString('en-IN')} / mo`;
   if (aovVal) aovVal.textContent = `₹${aov.toLocaleString('en-IN')}`;
   if (commissionVal) commissionVal.textContent = `${Math.round(commissionRate * 100)}%`;
 
-  // Illustrative 5% conversion model on inbound footfall (adjustable assumption)
-  const monthlyOrders = visitors * 0.05;
-  const grossMonthly = monthlyOrders * aov;
-  // Adjustable aggregator take-rate (defaults 20%; set 0% where no aggregator presence is confirmed)
-  const monthlyBleed = Math.round(grossMonthly * commissionRate);
+  // Two-part illustrative model (assumptions labeled on-page, all sliders adjustable):
+  // 1. Bounce loss: 5% of footfall would book; 20% of those bounce off slow mobile.
+  // 2. Aggregator cut: commission applies to the captured remainder routed via intermediaries.
+  const potentialBookings = visitors * 0.05;
+  const bouncedRevenue = (potentialBookings * 0.20) * aov;
+  const aggregatorBleed = (potentialBookings * 0.80) * aov * commissionRate;
+  const monthlyBleed = Math.round(bouncedRevenue + aggregatorBleed);
   const monthlyRecovered = monthlyBleed;
 
   const currentTierFee = window._activePublicTierFee || 50000;
   const dailySavings = monthlyBleed / 30;
-  const paybackDays = dailySavings > 0 ? Math.max(1, Math.round((currentTierFee / dailySavings) * 10) / 10) : 10;
+  // No bleed means nothing to recover: payback is undefined, never a hardcoded number.
+  let paybackText = "N/A";
+  if (dailySavings > 0) {
+    const days = Math.ceil(currentTierFee / dailySavings);
+    paybackText = days > 180 ? "> 6 Months" : (days === 1 ? "1 Day" : `${days} Days`);
+  }
 
   if (bleedVal) bleedVal.textContent = `₹${monthlyBleed.toLocaleString('en-IN')} / mo`;
   const bleedSub = document.getElementById("sim-bleed-sub");
-  if (bleedSub) bleedSub.textContent = `${Math.round(commissionRate * 100)}% commission to intermediaries`;
+  if (bleedSub) bleedSub.textContent = `bounce loss + ${Math.round(commissionRate * 100)}% cut on captured share`;
   if (recoveredVal) recoveredVal.textContent = `₹${monthlyRecovered.toLocaleString('en-IN')} / mo`;
-  if (paybackVal) paybackVal.textContent = `${paybackDays} Days`;
+  if (paybackVal) paybackVal.textContent = paybackText;
+  const feeSub = document.getElementById("sim-fee-sub");
+  if (feeSub) feeSub.textContent = `Based on ₹${currentTierFee.toLocaleString('en-IN')} sprint fee`;
 }
 
 function toggleTrojanPaymentView(forceState) {

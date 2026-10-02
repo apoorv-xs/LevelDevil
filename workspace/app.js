@@ -1372,8 +1372,8 @@ function getTeardownUrl(p) {
   const llms = p.llmsStatus || (isNoSite ? "UNINDEXED DOMAIN" : "N/A");
   const smokingGun = p.smokingGun || (p.flaws && p.flaws[0]) || "";
 
-  const evidenceBlob = [p.wastedSpend, p.smokingGun, (p.wastedBreakdown || []).join(' ')].join(' ');
-  const aggregatorUnconfirmed = /unconfirmed/i.test(evidenceBlob);
+  // Simulator commission preset: flat 10% starting point (adjustable on-page);
+  // no lead has a confirmed aggregator cut, so no record claims a higher default.
   const params = new URLSearchParams({
     prospect: p.name || "",
     dm: (p.dm || "").split("(")[0].trim(),
@@ -1386,7 +1386,7 @@ function getTeardownUrl(p) {
     geo: geo,
     llms: llms,
     cat: p.cat || "",
-    commission: aggregatorUnconfirmed ? "10" : "20",
+    commission: "10",
     ...(smokingGun ? { smokingGun: smokingGun } : {})
   });
 
