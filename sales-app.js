@@ -956,6 +956,19 @@ async function initTrojanPitchFromUrl() {
     }
 
     mountTrojanTeardown(data);
+
+    // Record-driven commission preset (unconfirmed aggregator presence starts lower).
+    const presetCommission = params.get("commission");
+    if (presetCommission !== null && presetCommission !== "") {
+      const slider = document.getElementById("sim-commission");
+      if (slider) {
+        const v = Math.max(0, Math.min(30, Number(presetCommission) || 0));
+        slider.value = String(v);
+      }
+    }
+    if (typeof calculateRevenueRecovery === "function") {
+      try { calculateRevenueRecovery(); } catch (e) {}
+    }
   } catch (err) {
     console.warn("[Trojan] URL parameter parsing failed:", err);
   }
@@ -1074,23 +1087,27 @@ function mountTrojanTeardown(data) {
 function calculateRevenueRecovery() {
   const visitorsInp = document.getElementById("sim-visitors");
   const aovInp = document.getElementById("sim-aov");
+  const commissionInp = document.getElementById("sim-commission");
   const visitorsVal = document.getElementById("sim-visitors-val");
   const aovVal = document.getElementById("sim-aov-val");
+  const commissionVal = document.getElementById("sim-commission-val");
   const bleedVal = document.getElementById("sim-bleed-val");
   const recoveredVal = document.getElementById("sim-recovered-val");
   const paybackVal = document.getElementById("sim-payback-val");
 
   const visitors = Number(visitorsInp ? visitorsInp.value : 3000) || 3000;
   const aov = Number(aovInp ? aovInp.value : 2500) || 2500;
+  const commissionRate = commissionInp ? (Number(commissionInp.value) / 100) : 0.20;
 
   if (visitorsVal) visitorsVal.textContent = `${visitors.toLocaleString('en-IN')} / mo`;
   if (aovVal) aovVal.textContent = `₹${aov.toLocaleString('en-IN')}`;
+  if (commissionVal) commissionVal.textContent = `${Math.round(commissionRate * 100)}%`;
 
-  // Conservative 5% conversion model on inbound footfall
+  // Illustrative 5% conversion model on inbound footfall (adjustable assumption)
   const monthlyOrders = visitors * 0.05;
   const grossMonthly = monthlyOrders * aov;
-  // 20% aggregator take-rate / commission bleed
-  const monthlyBleed = Math.round(grossMonthly * 0.20);
+  // Adjustable aggregator take-rate (defaults 20%; set 0% where no aggregator presence is confirmed)
+  const monthlyBleed = Math.round(grossMonthly * commissionRate);
   const monthlyRecovered = monthlyBleed;
 
   const currentTierFee = window._activePublicTierFee || 50000;
@@ -1098,6 +1115,8 @@ function calculateRevenueRecovery() {
   const paybackDays = dailySavings > 0 ? Math.max(1, Math.round((currentTierFee / dailySavings) * 10) / 10) : 10;
 
   if (bleedVal) bleedVal.textContent = `₹${monthlyBleed.toLocaleString('en-IN')} / mo`;
+  const bleedSub = document.getElementById("sim-bleed-sub");
+  if (bleedSub) bleedSub.textContent = `${Math.round(commissionRate * 100)}% commission to intermediaries`;
   if (recoveredVal) recoveredVal.textContent = `₹${monthlyRecovered.toLocaleString('en-IN')} / mo`;
   if (paybackVal) paybackVal.textContent = `${paybackDays} Days`;
 }

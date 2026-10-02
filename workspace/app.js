@@ -1372,6 +1372,8 @@ function getTeardownUrl(p) {
   const llms = p.llmsStatus || (isNoSite ? "UNINDEXED DOMAIN" : "N/A");
   const smokingGun = p.smokingGun || (p.flaws && p.flaws[0]) || "";
 
+  const evidenceBlob = [p.wastedSpend, p.smokingGun, (p.wastedBreakdown || []).join(' ')].join(' ');
+  const aggregatorUnconfirmed = /unconfirmed/i.test(evidenceBlob);
   const params = new URLSearchParams({
     prospect: p.name || "",
     dm: (p.dm || "").split("(")[0].trim(),
@@ -1384,6 +1386,7 @@ function getTeardownUrl(p) {
     geo: geo,
     llms: llms,
     cat: p.cat || "",
+    commission: aggregatorUnconfirmed ? "10" : "20",
     ...(smokingGun ? { smokingGun: smokingGun } : {})
   });
 

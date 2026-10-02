@@ -452,12 +452,22 @@
             </div>
             <input type="range" id="sim-aov" min="500" max="15000" step="250" value="2500" oninput="calculateRevenueRecovery()" class="retro-slider">
           </div>
+          <div class="slider-control">
+            <div class="slider-label-row">
+              <label for="sim-commission" class="font-mono text-xs">Aggregator Commission Cut:</label>
+              <span id="sim-commission-val" class="font-mono font-bold text-xs">20%</span>
+            </div>
+            <input type="range" id="sim-commission" min="0" max="30" step="1" value="20" oninput="calculateRevenueRecovery()" class="retro-slider">
+          </div>
+        </div>
+        <div class="simulator-assumptions font-mono">
+          Illustrative model: 5% booking rate on your footfall. Adjust all three sliders to her real numbers — defaults are starting points, not her data.
         </div>
         <div class="simulator-results-row">
           <div class="sim-result-box sim-result-bad">
             <span class="sim-metric-lbl font-mono">EST. MONTHLY AGGREGATOR BLEED:</span>
             <span id="sim-bleed-val" class="sim-metric-num text-bad font-mono">₹1,50,000 / mo</span>
-            <span class="sim-metric-sub font-mono">20% commission to intermediaries</span>
+            <span class="sim-metric-sub font-mono" id="sim-bleed-sub">20% commission to intermediaries</span>
           </div>
           <div class="sim-result-box sim-result-good">
             <span class="sim-metric-lbl font-mono">RECOVERED DIRECT EARNINGS:</span>
