@@ -294,10 +294,10 @@ Meeting Slot: ${formattedTime} (Google Meet)
 Referred By: ${callerName} (ID: ${partnerId}) -> 10% Referral Safety Net Active
 
 DETECTED TELEMETRY & BOTTLENECKS:
-- Detected Stack: ${p.techStack || 'WordPress'}
-- Mobile 4G LCP: ${p.lcpTime || '4.4s'} (Benchmark: < 0.8s)
-- Est. Revenue Leak: ${p.revenueLeak || '₹1,80,000/mo'}
-- Aggregator Bleed: ${p.wastedSpend || '₹42,000/yr'}
+- Detected Stack: ${p.techStack || 'N/A'}
+- Mobile 4G LCP: ${p.lcpTime || 'N/A'} (Benchmark: < 0.8s)
+- Est. Revenue Leak: ${p.revenueLeak || 'N/A'}
+- Aggregator Bleed: ${p.wastedSpend || 'N/A'}
 
 KEY QUESTIONS & DISCUSSION CONTEXT:
 ${contextNotes}

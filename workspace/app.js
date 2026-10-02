@@ -1363,13 +1363,13 @@ function getTeardownUrl(p) {
   const isNoSite = !p.site || p.site === '#' || p.ptype === 'STARTER';
   const advGrading = (typeof gradeProspectData === 'function') ? gradeProspectData(p) : {};
   const wasteIntel = (typeof calculateAggregatorWaste === 'function') ? calculateAggregatorWaste(p) : {};
-  const lcp = isNoSite ? "No Owned Site" : (p.lcpTime || "4.5s").replace("LCP: ", "").trim();
-  const speed = isNoSite ? "0" : String(p.speedScore || 35).replace("/100", "").trim();
-  const leak = p.revenueLeak || advGrading.revenueLeak || "₹1,80,000/mo";
-  const bleed = p.wastedSpend || wasteIntel.wastedSpend || "₹42,000/yr";
-  const fee = (typeof calculateUpgradeFee === 'function') ? calculateUpgradeFee(p.techStack, p.lcpTime, p.flaws, p.cat) : (p.fee || "₹50,000");
-  const geo = p.geoScore || (isNoSite ? "0% (Unindexed)" : "22% (Missing llms.txt)");
-  const llms = p.llmsStatus || (isNoSite ? "UNINDEXED DOMAIN" : "MISSING (/llms.txt 404)");
+  const lcp = isNoSite ? "No Owned Site" : (p.lcpTime || "N/A").replace("LCP: ", "").trim();
+  const speed = isNoSite ? "0" : String(p.speedScore != null ? p.speedScore : "N/A").replace("/100", "").trim();
+  const leak = p.revenueLeak || advGrading.revenueLeak || "N/A";
+  const bleed = p.wastedSpend || wasteIntel.wastedSpend || "N/A";
+  const fee = (typeof calculateUpgradeFee === 'function') ? calculateUpgradeFee(p.techStack, p.lcpTime, p.flaws, p.cat) : (p.fee || "N/A");
+  const geo = p.geoScore || (isNoSite ? "0% (Unindexed)" : "N/A");
+  const llms = p.llmsStatus || (isNoSite ? "UNINDEXED DOMAIN" : "N/A");
   const smokingGun = p.smokingGun || (p.flaws && p.flaws[0]) || "";
 
   const params = new URLSearchParams({
@@ -1402,12 +1402,14 @@ function openClientTeardownModal() {
   const advGrading = (typeof gradeProspectData === 'function') ? gradeProspectData(p) : {};
   const wasteIntel = (typeof calculateAggregatorWaste === 'function') ? calculateAggregatorWaste(p) : {};
   
-  const lcpText = isNoSite 
-    ? 'Zero Owned Domain (Aggregator Bleed)' 
-    : `${(p.lcpTime || '4.5s').replace('LCP: ', '')} (Failing)`;
-  const speedText = isNoSite ? '0 / 100' : `${String(p.speedScore || '35').replace('/100', '')} / 100`;
-  const leakText = p.revenueLeak || advGrading.revenueLeak || '₹1,80,000/mo';
-  const bleedText = p.wastedSpend || wasteIntel.wastedSpend || '₹42,000/yr';
+  const lcpRaw = isNoSite ? "" : (p.lcpTime || '').replace('LCP: ', '').trim();
+  const lcpText = isNoSite
+    ? 'Zero Owned Domain (Aggregator Bleed)'
+    : (lcpRaw ? `${lcpRaw} (Failing)` : 'N/A');
+  const speedRaw = isNoSite ? "" : String(p.speedScore != null ? p.speedScore : '').replace('/100', '').trim();
+  const speedText = isNoSite ? '0 / 100' : (speedRaw ? `${speedRaw} / 100` : 'N/A');
+  const leakText = p.revenueLeak || advGrading.revenueLeak || 'N/A';
+  const bleedText = p.wastedSpend || wasteIntel.wastedSpend || 'N/A';
 
   const nameEl = document.getElementById('modalClientName');
   const lcpEl = document.getElementById('modalCurrentLcp');
@@ -1424,9 +1426,9 @@ function openClientTeardownModal() {
   if (speedEl) speedEl.innerText = speedText;
   if (leakEl) leakEl.innerText = leakText;
   if (bleedEl) bleedEl.innerText = bleedText;
-  if (geoEl) geoEl.innerText = p.geoScore || (isNoSite ? "0% (Unindexed)" : "22% (Missing)");
-  if (llmsEl) llmsEl.innerText = p.llmsStatus || (isNoSite ? "Unindexed Domain" : "Missing (/llms.txt 404)");
-  if (smokingGunEl) smokingGunEl.innerText = p.smokingGun || (p.flaws && p.flaws[0]) || "Mobile asset drag and aggregator commission bleed.";
+  if (geoEl) geoEl.innerText = p.geoScore || (isNoSite ? "0% (Unindexed)" : "N/A");
+  if (llmsEl) llmsEl.innerText = p.llmsStatus || (isNoSite ? "Unindexed Domain" : "N/A");
+  if (smokingGunEl) smokingGunEl.innerText = p.smokingGun || (p.flaws && p.flaws[0]) || "N/A (awaiting audit)";
 
   const teardownUrl = getTeardownUrl(p);
   if (shareInput) shareInput.value = teardownUrl;

@@ -48,7 +48,7 @@
       "gatekeeper": "Good morning, I’m calling on Apoorv's behalf for Assistant General Manager (agm@rainwoodhotels.com) & Rainwood Hotels Management regarding mobile booking drop-offs and the 2026 AI search audit for Eve Munnar Luxury Resort. Is Assistant General Manager currently between consultations or should I reach their personal desk?"
     },
     "waMessage": "Hi Assistant General Manager, following up on our call on Apoorv's behalf regarding Eve Munnar Luxury Resort. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (3.6s). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
-    "wastedSpend": "₹55,000/yr on aggregator directories & ads",
+    "wastedSpend": "₹55,000/yr at risk to aggregator directories",
     "wastedBreakdown": [
       "₹35,000/yr third-party aggregator listings",
       "₹12,000/yr maintenance & slow hosting",
@@ -109,7 +109,7 @@
       "gatekeeper": "Good morning, I’m calling on Apoorv's behalf for General Manager (gm@petalsresorts.com) & Front Office Team regarding mobile booking drop-offs and the 2026 AI search audit for Petals Resorts Wayanad. Is General Manager currently between consultations or should I reach their personal desk?"
     },
     "waMessage": "Hi General Manager, following up on our call on Apoorv's behalf regarding Petals Resorts Wayanad. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (3.5s). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
-    "wastedSpend": "₹55,000/yr on aggregator directories & ads",
+    "wastedSpend": "₹55,000/yr at risk to aggregator directories",
     "wastedBreakdown": [
       "₹35,000/yr third-party aggregator listings",
       "₹12,000/yr maintenance & slow hosting",
@@ -148,7 +148,7 @@
       "vertical letter spacing bugs in headers."
     ],
     "geoScore": "35%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Unstructured DOM",
     "smokingGun": "Unedited theme dummy co-founder ('Dianne Russell') and '0% Satisfaction' counters active on live homepage destroy clinical credibility.",
     "scripts": {
@@ -170,7 +170,7 @@
       "gatekeeper": "Good morning, I’m calling on Apoorv's behalf for Clinical Director (facecodentalclinic@gmail.com) regarding mobile booking drop-offs and the 2026 AI search audit for Faceco Dental Clinic & Skin Care Clinic. Is Clinical Director currently between consultations or should I reach their personal desk?"
     },
     "waMessage": "Hi Clinical Director, following up on our call on Apoorv's behalf regarding Faceco Dental Clinic & Skin Care Clinic. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (4.2s). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
-    "wastedSpend": "₹55,000/yr on aggregator directories & ads",
+    "wastedSpend": "₹55,000/yr at risk to aggregator directories",
     "wastedBreakdown": [
       "₹35,000/yr third-party aggregator listings",
       "₹12,000/yr maintenance & slow hosting",
@@ -209,7 +209,7 @@
       "multiple typos ('Bosy Care', 'Inida', 'Thuesday')."
     ],
     "geoScore": "35%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Partial Microdata",
     "smokingGun": "Blank counter symbols ('+ Procedures', '% success rate'), Latin dummy text, and 'Inida' typos on live site severely damage high-ticket cosmetic surgery authority.",
     "scripts": {
@@ -231,7 +231,7 @@
       "gatekeeper": "Good morning, I’m calling on Apoorv's behalf for Dr. Harish B (Founder & Medical Director, B.D.S, F.A.M, F.H.T, MBA-HM) regarding mobile booking drop-offs and the 2026 AI search audit for Livglam Aesthetic Clinic. Is Dr. Harish B currently between consultations or should I reach their personal desk?"
     },
     "waMessage": "Hi Dr. Harish B, following up on our call on Apoorv's behalf regarding Livglam Aesthetic Clinic. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (3.9s). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
-    "wastedSpend": "₹55,000/yr on aggregator directories & ads",
+    "wastedSpend": "₹55,000/yr at risk to aggregator directories",
     "wastedBreakdown": [
       "₹35,000/yr third-party aggregator listings",
       "₹12,000/yr maintenance & slow hosting",
@@ -270,7 +270,7 @@
       "OTA dependency vs direct booking."
     ],
     "geoScore": "35%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Partial Microdata",
     "smokingGun": "Severe language selector DOM bloat and heavy gallery asset drag slow mobile reservations, driving guests to book through high-commission OTAs.",
     "scripts": {
@@ -292,7 +292,7 @@
       "gatekeeper": "Good morning, I’m calling on Apoorv's behalf for Managing Director & Management (Corporate: Residency Rd, Bangalore) regarding mobile booking drop-offs and the 2026 AI search audit for Waterwoods Lodge Kabini. Is Managing Director & Management currently between consultations or should I reach their personal desk?"
     },
     "waMessage": "Hi Managing Director & Management, following up on our call on Apoorv's behalf regarding Waterwoods Lodge Kabini. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (3.8s). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
-    "wastedSpend": "₹55,000/yr on aggregator directories & ads",
+    "wastedSpend": "₹55,000/yr at risk to aggregator directories",
     "wastedBreakdown": [
       "₹35,000/yr third-party aggregator listings",
       "₹12,000/yr maintenance & slow hosting",

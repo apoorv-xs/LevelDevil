@@ -888,13 +888,13 @@ function deriveTrojanFromRecord(p) {
     prospect: p.name || "",
     dm: (p.dm || "").split("(")[0].trim(),
     site: (!p.site || p.site === "#") ? "" : p.site,
-    lcp: isNoSite ? "No Owned Site" : String(p.lcpTime || "4.5s").replace("LCP: ", "").trim(),
-    speed: isNoSite ? "0" : String(p.speedScore || 35).replace("/100", "").trim(),
-    leak: p.revenueLeak || "₹11,80,000/mo",
-    bleed: p.wastedSpend || "₹1,42,000/yr",
-    fee: p.fee || "₹1,50,000",
-    geo: p.geoScore || (isNoSite ? "0% (Unindexed)" : "22% (Missing llms.txt)"),
-    llms: p.llmsStatus || (isNoSite ? "UNINDEXED DOMAIN" : "MISSING (/llms.txt 404)"),
+    lcp: isNoSite ? "No Owned Site" : String(p.lcpTime || "N/A").replace("LCP: ", "").trim(),
+    speed: isNoSite ? "0" : String(p.speedScore != null ? p.speedScore : "N/A").replace("/100", "").trim(),
+    leak: p.revenueLeak || "N/A",
+    bleed: p.wastedSpend || "N/A",
+    fee: p.fee || "N/A",
+    geo: p.geoScore || (isNoSite ? "0% (Unindexed)" : "N/A"),
+    llms: p.llmsStatus || (isNoSite ? "UNINDEXED DOMAIN" : "N/A"),
     smokingGun: p.smokingGun || ((p.flaws && p.flaws[0]) || ""),
     cat: p.cat || ""
   };
@@ -911,14 +911,14 @@ async function initTrojanPitchFromUrl() {
     const data = {
       prospect: prospect,
       dm: params.get("dm") || "",
-      lcp: params.get("lcp") || "4.4s",
-      speed: params.get("speed") || "35",
-      leak: params.get("leak") || "₹1,80,000/mo",
-      bleed: params.get("bleed") || "₹42,000/yr",
+      lcp: params.get("lcp") || "N/A",
+      speed: params.get("speed") || "N/A",
+      leak: params.get("leak") || "N/A",
+      bleed: params.get("bleed") || "N/A",
       site: params.get("site") || "",
-      fee: params.get("fee") || "₹50,000",
-      geo: params.get("geo") || "22% (Missing llms.txt)",
-      llms: params.get("llms") || "MISSING (/llms.txt 404)",
+      fee: params.get("fee") || "N/A",
+      geo: params.get("geo") || "N/A",
+      llms: params.get("llms") || "N/A",
       smokingGun: params.get("smokingGun") || params.get("gun") || "",
       cat: params.get("cat") || "",
       partner: params.get("partner") || params.get("ref") || "",
@@ -981,11 +981,11 @@ function mountTrojanTeardown(data) {
 
   if (clientNameEl) clientNameEl.textContent = data.prospect;
   if (entityNameEl) entityNameEl.textContent = data.prospect;
-  if (lcpEl) lcpEl.textContent = `${data.lcp} (Failing INP)`;
-  if (speedEl) speedEl.textContent = `${data.speed} / 100`;
-  if (leakEl) leakEl.textContent = data.leak;
-  if (bleedEl) bleedEl.textContent = data.bleed;
-  if (geoEl) geoEl.textContent = data.geo || "22% (Missing llms.txt)";
+  if (lcpEl) lcpEl.textContent = (data.lcp && data.lcp !== "N/A") ? `${data.lcp} (Failing INP)` : "N/A";
+  if (speedEl) speedEl.textContent = (data.speed && data.speed !== "N/A") ? `${data.speed} / 100` : "N/A";
+  if (leakEl) leakEl.textContent = data.leak || "N/A";
+  if (bleedEl) bleedEl.textContent = data.bleed || "N/A";
+  if (geoEl) geoEl.textContent = data.geo || "N/A";
   if (agenticBrandEl) agenticBrandEl.textContent = data.prospect || "your website";
   if (geoLlmsEl && data.llms) geoLlmsEl.textContent = data.llms;
 

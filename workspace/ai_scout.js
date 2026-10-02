@@ -148,7 +148,7 @@ Dispatch Email: apoorvxs@gmail.com
     const fullDm = p?.dm || 'Doctor / Owner';
     const lcp = p?.lcpTime || '4.4s';
     const wasted = p?.wastedSpend || '₹42,000/yr on middleman aggregators & bloated plugins';
-    const revenueLeak = p?.revenueLeak || '₹1,80,000/mo Est. Revenue Leak';
+    const revenueLeak = p?.revenueLeak || 'N/A';
 
     let detectedObjection = "We already get patients from Practo/Zomato";
     let practitionerPainPoints = [];
@@ -159,43 +159,43 @@ Dispatch Email: apoorvxs@gmail.com
     if (cat === 'clinic') {
       detectedObjection = "We already get patients from Practo/Zomato";
       practitionerPainPoints = [
-        `15%–25% patient revenue bleed to Practo listing commissions (${wasted})`,
+        `Patient revenue at risk to Practo-listed rivals (probe exposure: ${wasted})`,
         `${lcp} mobile 4G latency causing high-intent patient bounce before booking`,
-        `Unprotected patient intake forms creating DPDP Act statutory fine liability`
+        `Unverified patient-intake consent handling (DPDP posture unaudited)`
       ];
-      sentiment = "RECEPTIVE";
-      strategy = `Highlight direct WhatsApp intake portal, demonstrate 0.8s mobile speed vs their current ${lcp} LCP, and emphasize eliminating the 20% Practo commission fee.`;
-      transcript = `Spoke with ${fullDm}'s office at ${name}. Receptionist confirmed they bleed significant revenue (${wasted}) to Practo and their mobile site is slow on 4G (${lcp}). Receptive to Apoorv's audit walkthrough this Thursday.`;
+      sentiment = "UNCONTACTED";
+      strategy = `Highlight direct WhatsApp intake portal, demonstrate 0.8s mobile speed vs their current ${lcp} LCP, and probe Practo commission exposure (unconfirmed).`;
+      transcript = `DRAFT talk track for ${fullDm}'s office at ${name} (no call made yet). Probe: revenue exposure to Practo (${wasted}), mobile speed pain on 4G (${lcp}). Goal: audit walkthrough this Thursday.`;
     } else if (cat === 'salon') {
       detectedObjection = "We already get patients from Practo/Zomato";
       practitionerPainPoints = [
-        `Fresha/Nearbuy 15%–20% marketplace booking commission bleed (${wasted})`,
+        `Repeat bookings at risk to marketplace-listed rivals (probe exposure: ${wasted})`,
         `${lcp} mobile asset drag on 4G causing luxury styling clients to drop off`,
         `No direct 1-tap WhatsApp stylist booking bridge from Instagram`
       ];
-      sentiment = "RECEPTIVE";
+      sentiment = "UNCONTACTED";
       strategy = `Position 1-tap WhatsApp slot reservation to recover repeat booking commissions and demonstrate 3D visual styling showcase.`;
-      transcript = `Spoke with ${fullDm} at ${name}. Noted high recurring commission deductions (${wasted}) and slow mobile response. Interested in direct booking without aggregator cuts.`;
+      transcript = `DRAFT talk track for ${fullDm} at ${name} (no call made yet). Probe: recurring marketplace deductions (${wasted}), slow mobile response. Goal: direct booking without aggregator cuts.`;
     } else if (cat === 'restaurant') {
       detectedObjection = "We already get patients from Practo/Zomato";
       practitionerPainPoints = [
-        `Swiggy/Zomato 20%–25% delivery and dine-in commission bleed (${wasted})`,
+        `Delivery/dine-in orders at risk to aggregator-listed rivals (probe exposure: ${wasted})`,
         `Slow PDF mobile menus taking ${lcp} on cellular 4G data`,
         `Zero direct table reservation capture leading to ${revenueLeak} drop-off`
       ];
-      sentiment = "RECEPTIVE";
+      sentiment = "UNCONTACTED";
       strategy = `Demonstrate instant-load zero-commission direct reservation portal and mobile digital menu.`;
-      transcript = `Connected with management at ${name} for ${fullDm}. They confirmed heavy commission bleed (${wasted}) to food aggregators. Receptive to Apoorv's direct table booking system.`;
+      transcript = `DRAFT talk track for management at ${name} / ${fullDm} (no call made yet). Probe: aggregator commission exposure (${wasted}). Goal: direct table booking system.`;
     } else if (cat === 'design') {
       detectedObjection = "We already have an agency / web guy";
       practitionerPainPoints = [
-        `Houzz Pro & Justdial annual listing spend (${wasted}) with low conversion`,
+        `Directory-listed rival exposure with low conversion (probe spend: ${wasted})`,
         `Heavy 4K portfolio asset drag (${lcp}) causing ultra-HNI clients to bounce`,
         `Lack of interactive WebGL 3D spatial walkthroughs to command premium retainers`
       ];
-      sentiment = "RECEPTIVE";
+      sentiment = "UNCONTACTED";
       strategy = `Present Apoorv's WebGL 3D spatial visualizer to showcase architectural projects interactively at 0.8s speed without replacing their maintenance vendor.`;
-      transcript = `Spoke with ${fullDm} at ${name}. They have an existing agency, but acknowledged portfolio load times (${lcp}) lose high-ticket clients. Interested in 3D visual showcase.`;
+      transcript = `DRAFT talk track for ${fullDm} at ${name} (no call made yet). They may have an existing agency; probe portfolio load pain (${lcp}). Goal: 3D visual showcase.`;
     } else if (cat === 'academy') {
       detectedObjection = "Send an email / brochure";
       practitionerPainPoints = [
@@ -203,9 +203,9 @@ Dispatch Email: apoorvxs@gmail.com
         `Estimated ${revenueLeak} in missed admissions due to passive intake forms`,
         `Absence of instant 1-tap WhatsApp counselor triage`
       ];
-      sentiment = "RECEPTIVE";
+      sentiment = "UNCONTACTED";
       strategy = `Showcase 1-tap WhatsApp counseling triage and sub-second course syllabus delivery on 4G networks.`;
-      transcript = `Spoke with ${fullDm}'s team at ${name}. Requested email details initially, but agreed to a 10-minute executive screen share on Thursday.`;
+      transcript = `DRAFT talk track for ${fullDm}'s team at ${name} (no call made yet). Goal: email details, then a 10-minute executive screen share on Thursday.`;
     } else {
       detectedObjection = "Not looking to invest right now";
       practitionerPainPoints = [
@@ -213,9 +213,9 @@ Dispatch Email: apoorvxs@gmail.com
         `Recurring legacy software and hosting spend (${wasted})`,
         `Missing DPDP Act compliant consent architecture`
       ];
-      sentiment = "RECEPTIVE";
+      sentiment = "UNCONTACTED";
       strategy = `Deliver Apoorv's 0.8s mobile speed blueprint and direct conversion portal with complimentary ₹4,999 audit applied.`;
-      transcript = `Connected with ${fullDm} at ${name}. Discussed mobile performance bottlenecks (${lcp}) and ${revenueLeak} monthly leak. Open to reviewing Apoorv's teardown.`;
+      transcript = `DRAFT talk track for ${fullDm} at ${name} (no call made yet). Probe: mobile bottlenecks (${lcp}), revenue exposure (${revenueLeak}). Goal: teardown review.`;
     }
 
     const painsSummary = practitionerPainPoints.map(p => p.split(' (')[0]).slice(0, 2).join(', ');
@@ -389,18 +389,15 @@ Return a strict JSON object with these exact keys:
       ? { wastedSpend: p.wastedSpend, wastedBreakdown: p.wastedBreakdown }
       : ((typeof root.deriveWastedSubscriptions === 'function') ? root.deriveWastedSubscriptions(p.cat, p.techStack, p.lcpTime, p.city) : {});
 
-    const dpdpStatus = (p.dpdpCompliance && p.dpdpCompliance.status) || (advGrading.dpdpCompliance && advGrading.dpdpCompliance.status) || 'Non-Compliant (High Risk)';
-    const dpdpRisk = (p.dpdpCompliance && p.dpdpCompliance.risk) || (advGrading.dpdpCompliance && advGrading.dpdpCompliance.risk) || 'Statutory fine exposure under DPDP Act 2023 Sec 4-6';
-    const dpdpDetail = (p.dpdpCompliance && p.dpdpCompliance.detail) || (advGrading.dpdpCompliance && advGrading.dpdpCompliance.detail) || 'Appointment booking form lacks explicit consent checkboxes and collects patient medical phone numbers without encrypted transport.';
+    const dpdpStatus = (p.dpdpCompliance && p.dpdpCompliance.status) || (advGrading.dpdpCompliance && advGrading.dpdpCompliance.status) || 'N/A (intake unaudited)';
+    const dpdpRisk = (p.dpdpCompliance && p.dpdpCompliance.risk) || (advGrading.dpdpCompliance && advGrading.dpdpCompliance.risk) || 'N/A';
+    const dpdpDetail = (p.dpdpCompliance && p.dpdpCompliance.detail) || (advGrading.dpdpCompliance && advGrading.dpdpCompliance.detail) || 'N/A (intake unaudited)';
 
-    const revenueLeak = p.revenueLeak || advGrading.revenueLeak || '₹1,80,000/mo Est. Revenue Leak';
-    const wastedSpend = p.wastedSpend || wasteIntel.wastedSpend || '₹42,000/yr on Practo & bloated plugins';
+    const wastedSpend = p.wastedSpend || wasteIntel.wastedSpend || 'N/A';
     const breakdownArr = (Array.isArray(p.wastedBreakdown) && p.wastedBreakdown.length > 0)
       ? p.wastedBreakdown
       : (wasteIntel.wastedBreakdown || [
-          '₹28,000/yr aggregator profile listing & lead commission bleed',
-          '₹8,500/yr slow shared hosting & bloated plugin renewals',
-          '₹5,500/yr third-party form gateway subscriptions'
+          'N/A (spend breakdown unaudited)'
         ]);
     const wastedItemsMarkdown = breakdownArr.map(item => `  - ${item}`).join('\n');
 

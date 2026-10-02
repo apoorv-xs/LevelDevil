@@ -199,11 +199,11 @@ function deriveWastedSubscriptions(category, techStack, lcpTime, city, siteUrl) 
   if (isNoSite) {
     if (cat === 'clinic') {
       return {
-        wastedSpend: '₹48,000/yr on Practo listings & commission bleed',
+        wastedSpend: '₹48,000/yr in bookings at risk to Practo-listed rivals',
         wastedBreakdown: [
-          '₹32,000/yr Practo listing & per-booking lead commissions',
-          '₹10,500/yr Justdial & Sulekha shared patient inquiry packages',
-          '₹5,500/yr SMS OTP & unverified receptionist callback costs'
+          '₹32,000/yr exposure to Practo-listed rival bookings',
+          '₹10,500/yr shared-lead package exposure (Justdial/Sulekha, est.)',
+          '₹5,500/yr SMS/callback overhead (est.)'
         ],
         callerCheatSheet: {
           icebreaker: 'When patients look up your clinic on Google, are they able to book directly with you, or are they forced through Practo where your competitors are advertised?',
@@ -213,11 +213,11 @@ function deriveWastedSubscriptions(category, techStack, lcpTime, city, siteUrl) 
       };
     } else if (cat === 'salon') {
       return {
-        wastedSpend: '₹44,000/yr on Fresha & marketplace commissions',
+        wastedSpend: '₹44,000/yr in bookings at risk to marketplace-listed rivals',
         wastedBreakdown: [
-          '₹30,000/yr marketplace booking commission bleed (15-20% cut)',
-          '₹8,500/yr sponsored directory visibility charges',
-          '₹5,500/yr third-party reminder notifications'
+          '₹30,000/yr exposure to marketplace repeat-booking capture (15-20% cut)',
+          '₹8,500/yr directory visibility overhead (est.)',
+          '₹5,500/yr reminder-notification overhead (est.)'
         ],
         callerCheatSheet: {
           icebreaker: 'When clients look for your salon online, are they booking on your own brand page or paying fees through directories where rival salons pop up?',
@@ -227,11 +227,11 @@ function deriveWastedSubscriptions(category, techStack, lcpTime, city, siteUrl) 
       };
     } else if (cat === 'restaurant') {
       return {
-        wastedSpend: '₹58,000/yr on aggregator listings & commission bleed',
+        wastedSpend: '₹58,000/yr in orders at risk to aggregator listings',
         wastedBreakdown: [
-          '₹42,000/yr aggregator commission bleed on direct delivery orders',
-          '₹10,500/yr table booking marketplace commissions',
-          '₹5,500/yr third-party QR menu subscription'
+          '₹42,000/yr at risk to delivery-aggregator order capture',
+          '₹10,500/yr at risk to table-booking marketplace capture',
+          '₹5,500/yr QR-menu subscription overhead (est.)'
         ],
         callerCheatSheet: {
           icebreaker: 'When diners search for your restaurant, are you paying 20-30% aggregator commission on orders from guests who already know your brand?',
@@ -241,11 +241,11 @@ function deriveWastedSubscriptions(category, techStack, lcpTime, city, siteUrl) 
       };
     } else if (cat === 'design') {
       return {
-        wastedSpend: '₹52,000/yr on Justdial & broker directory packages',
+        wastedSpend: '₹52,000/yr in inquiries at risk to directory-listed rivals',
         wastedBreakdown: [
-          '₹38,000/yr shared lead broker directory subscriptions',
-          '₹9,000/yr marketplace listing renewal fees',
-          '₹5,000/yr unbranded portfolio hosting add-ons'
+          '₹38,000/yr shared-lead directory exposure (est.)',
+          '₹9,000/yr marketplace listing overhead (est.)',
+          '₹5,000/yr portfolio hosting overhead (est.)'
         ],
         callerCheatSheet: {
           icebreaker: 'When prospective luxury homeowners search for your studio, do they find an owned portfolio or are they routed to middleman directories that sell the same lead to 5 competitors?',
@@ -255,11 +255,11 @@ function deriveWastedSubscriptions(category, techStack, lcpTime, city, siteUrl) 
       };
     } else {
       return {
-        wastedSpend: '₹40,000/yr on directory listings & aggregator bleed',
+        wastedSpend: '₹40,000/yr in business at risk to directory-listed rivals',
         wastedBreakdown: [
-          '₹26,000/yr directory listing packages & commission cuts',
-          '₹8,500/yr shared lead referral service fees',
-          '₹5,500/yr manual callback & admin follow-up friction'
+          '₹26,000/yr at risk to directory-listed rival capture',
+          '₹8,500/yr shared-lead referral exposure (est.)',
+          '₹5,500/yr manual callback/admin overhead (est.)'
         ],
         callerCheatSheet: {
           icebreaker: 'When customers look up your business online, do you own the customer contact directly or are you paying middlemen for shared leads?',
@@ -272,11 +272,11 @@ function deriveWastedSubscriptions(category, techStack, lcpTime, city, siteUrl) 
 
   if (cat === 'clinic') {
     return {
-      wastedSpend: '₹42,000/yr on Practo & bloated plugins',
+      wastedSpend: '₹42,000/yr in bookings at risk (Practo-listed rivals + plugin overhead)',
       wastedBreakdown: [
-        '₹28,000/yr Practo profile listing & lead commission bleed',
-        '₹8,500/yr slow shared hosting & Elementor Pro renewals',
-        '₹5,500/yr SMS OTP pack for non-syncing booking form'
+        '₹28,000/yr exposure to Practo-listed rival bookings',
+        '₹8,500/yr hosting & plugin overhead (est.)',
+        '₹5,500/yr SMS/form-friction overhead (est.)'
       ],
       callerCheatSheet: {
         icebreaker: 'How many of your monthly patient inquiries come straight from your website versus paying 15-25% to Practo?',
@@ -286,11 +286,11 @@ function deriveWastedSubscriptions(category, techStack, lcpTime, city, siteUrl) 
     };
   } else if (cat === 'salon') {
     return {
-      wastedSpend: '₹36,000/yr on Fresha/Nearbuy commissions',
+      wastedSpend: '₹36,000/yr in bookings at risk to marketplace-listed rivals',
       wastedBreakdown: [
-        '₹24,000/yr marketplace appointment commission bleed',
-        '₹7,000/yr legacy booking widget & plugin renewals',
-        '₹5,000/yr bulk promotional SMS packages'
+        '₹24,000/yr at risk to marketplace appointment capture',
+        '₹7,000/yr widget & plugin overhead (est.)',
+        '₹5,000/yr promotional SMS overhead (est.)'
       ],
       callerCheatSheet: {
         icebreaker: 'Are repeat clients booking appointments directly on your site, or are you paying aggregators commission every time they return?',
@@ -300,11 +300,11 @@ function deriveWastedSubscriptions(category, techStack, lcpTime, city, siteUrl) 
     };
   } else if (cat === 'restaurant') {
     return {
-      wastedSpend: '₹54,000/yr on Swiggy/Zomato & ordering widgets',
+      wastedSpend: '₹54,000/yr in orders at risk to delivery-marketplace listings',
       wastedBreakdown: [
-        '₹38,000/yr delivery & table marketplace onboarding commissions',
-        '₹10,500/yr third-party PDF menu & ordering widget subscription',
-        '₹5,500/yr legacy vendor hosting & SSL markups'
+        '₹38,000/yr at risk to delivery/table marketplace capture',
+        '₹10,500/yr menu/ordering-widget overhead (est.)',
+        '₹5,500/yr hosting overhead (est.)'
       ],
       callerCheatSheet: {
         icebreaker: 'When weekend diners look up your menu on mobile, can they reserve in 2 taps or do they have to download a slow PDF and end up on Zomato?',
@@ -314,11 +314,11 @@ function deriveWastedSubscriptions(category, techStack, lcpTime, city, siteUrl) 
     };
   } else if (cat === 'design') {
     return {
-      wastedSpend: '₹48,000/yr on Houzz Pro & directory listings',
+      wastedSpend: '₹48,000/yr in inquiries at risk to aggregator-listed rivals',
       wastedBreakdown: [
-        '₹36,000/yr Houzz Pro & Justdial directory listing subscriptions',
-        '₹8,000/yr unoptimized Squarespace/Wix storage tier upgrades',
-        '₹4,000/yr redundant portfolio PDF bandwidth hosting fees'
+        '₹36,000/yr at risk to Houzz/Justdial-listed rival capture',
+        '₹8,000/yr storage-tier overhead (est.)',
+        '₹4,000/yr portfolio hosting overhead (est.)'
       ],
       callerCheatSheet: {
         icebreaker: 'When luxury homeowners visit your portfolio on mobile, are they seeing interactive spaces or waiting for heavy image grids to buffer?',
@@ -328,11 +328,11 @@ function deriveWastedSubscriptions(category, techStack, lcpTime, city, siteUrl) 
     };
   } else {
     return {
-      wastedSpend: '₹32,000/yr on redundant hosting & plugin packs',
+      wastedSpend: '₹32,000/yr est. hosting & plugin overhead',
       wastedBreakdown: [
-        '₹18,000/yr overpriced shared hosting & annual maintenance retainer',
-        '₹9,000/yr unused plugin renewals & security add-ons',
-        '₹5,000/yr third-party contact form gateway subscriptions'
+        '₹18,000/yr hosting & maintenance overhead (est.)',
+        '₹9,000/yr plugin overhead (est.)',
+        '₹5,000/yr form-gateway overhead (est.)'
       ],
       callerCheatSheet: {
         icebreaker: 'Are you getting direct phone calls and inquiries from your site, or is it mainly sitting there incurring annual hosting & renewal fees?',
@@ -370,11 +370,11 @@ function deriveSecurityVulnerabilities(category, techStack, siteUrl) {
       grade: '[MODERATE RISK]',
       score: '42/100 (Exposure Detected)',
       issues: [
-        'Exposed /wp-json/ user enumeration and login endpoint',
-        'Intake contact form has zero anti-bot rate-limiting (spam flooding)',
-        'Missing HSTS and Strict Content-Security-Policy trust headers'
+        'Unverified /wp-json/ exposure — login endpoint not yet probed for this site',
+        'Anti-bot rate-limiting on intake forms unverified for this site',
+        'HSTS/CSP header presence not yet checked for this site'
       ],
-      callerTalkingPoint: 'Their WordPress login and patient intake form lack anti-bot security, flooding their reception desk with daily junk messages and risking trust warnings on Chrome.'
+      callerTalkingPoint: 'Their WordPress intake and login hardening is unverified — worth probing live before claiming exposure.'
     };
   }
 
@@ -382,11 +382,11 @@ function deriveSecurityVulnerabilities(category, techStack, siteUrl) {
     grade: '[CAUTION]',
     score: '58/100 (Hygiene Flags)',
     issues: [
-      'Missing strict HSTS and Content-Security-Policy headers',
-      'Unprotected lead capture modal without bot CAPTCHA',
-      'Potential mixed-content HTTP scripts triggering browser security warnings'
+      'HSTS/Content-Security-Policy header presence not yet checked for this site',
+      'Bot protection on lead capture not yet verified for this site',
+      'Mixed-content script risk not yet assessed for this site'
     ],
-    callerTalkingPoint: 'Their customer inquiry form has no bot protection and their website lacks modern browser security certificates that Google checks for local search ranking.'
+    callerTalkingPoint: 'Their browser security posture is unaudited — verify headers and form protection live during the walkthrough.'
   };
 }
 
@@ -395,12 +395,15 @@ function deriveAdvancedGrading(category, techStack, lcpTime, siteUrl) {
   const cat = (category || 'clinic').toLowerCase();
   const stack = (techStack || '').toLowerCase();
   const site = (siteUrl || '').toLowerCase();
-  const lcpNum = parseFloat((lcpTime || '4.4s').replace(/[^0-9.]/g, '')) || 4.4;
+  const lcpRaw = parseFloat((lcpTime || '').replace(/[^0-9.]/g, ''));
+  const lcpKnown = !isNaN(lcpRaw) && lcpRaw > 0;
+  const lcpNum = lcpKnown ? lcpRaw : 0;
   const isNoSite = stack.includes('no owned') || site === '#' || !site;
 
   // 1. Cost-of-Delay Lost Revenue Leak (Indian Rupee monthly estimate based on ticket size & latency)
-  let monthlyLeak = '₹1,80,000/mo';
-  let leakNumeric = 180000;
+  // Unknown LCP pins to N/A instead of inventing a 4.4s baseline.
+  let monthlyLeak = 'N/A (LCP unmeasured)';
+  let leakNumeric = 0;
   if (cat === 'clinic') {
     leakNumeric = Math.round((lcpNum * 42000) / 10000) * 10000;
     monthlyLeak = `₹${leakNumeric.toLocaleString('en-IN')}/mo Est. Revenue Leak`;
@@ -417,12 +420,16 @@ function deriveAdvancedGrading(category, techStack, lcpTime, siteUrl) {
     leakNumeric = Math.round((lcpNum * 25000) / 10000) * 10000;
     monthlyLeak = `₹${leakNumeric.toLocaleString('en-IN')}/mo Est. Revenue Leak`;
   }
+  if (!lcpKnown) {
+    monthlyLeak = 'N/A (LCP unmeasured)';
+    leakNumeric = 0;
+  }
 
-  // 2. DPDP Act Compliance Grade
+  // 2. DPDP Act Compliance Grade (heuristic; unaudited intake is marked N/A, never assumed)
   let dpdp = {
-    status: '■ DPDP Non-Compliant',
-    risk: 'High Regulatory & Privacy Exposure',
-    detail: 'Lead/intake form captures personal contact info without explicit consent checkboxes or encrypted storage policies required by DPDP Sec 4-6.'
+    status: '■ Intake Unaudited',
+    risk: 'Unknown Data Handling',
+    detail: 'No intake audit recorded for this business: consent checkboxes and storage policies not yet verified.'
   };
   if (isNoSite) {
     dpdp = {
@@ -438,10 +445,10 @@ function deriveAdvancedGrading(category, techStack, lcpTime, siteUrl) {
     };
   }
 
-  // 3. Mobile Thumb-Zone Action Audit
+  // 3. Mobile Thumb-Zone Action Audit (call-bar presence is measured per site, never assumed)
   let thumbZone = {
-    status: '× No Sticky Action Bar',
-    detail: 'No 1-tap thumb call or WhatsApp bar at screen bottom; client must pinch-zoom or scroll to find phone number.'
+    status: '× Call-Bar Unverified',
+    detail: 'Sticky call/WhatsApp bar presence not yet audited for this business.'
   };
   if (stack.includes('headless') || stack.includes('vite')) {
     thumbZone = {
@@ -450,11 +457,11 @@ function deriveAdvancedGrading(category, techStack, lcpTime, siteUrl) {
     };
   }
 
-  // 4. Booking Friction Index
+  // 4. Booking Friction Index (friction is counted per site, never assumed)
   let bookingFriction = {
-    steps: '7 Friction Steps',
-    severity: '■ Severe Drop-off Risk',
-    detail: 'Requires typing name, email, query, waiting for admin callback, or opening unoptimized external PDF.'
+    steps: 'N/A (unaudited)',
+    severity: '■ Booking Path Unknown',
+    detail: 'Booking path not yet audited for this business.'
   };
   if (isNoSite) {
     bookingFriction = {
@@ -471,9 +478,10 @@ function deriveAdvancedGrading(category, techStack, lcpTime, siteUrl) {
   }
 
   // 5. Google Business Profile Reputation Bridge
+  // No rating is assumed: unverified review equity is stated as such.
   let reputationBridge = {
-    status: '[ALERT] Reputation Disconnect',
-    detail: 'Strong Google review ratings (4.5★+) are wasted because incoming mobile visitors encounter a slow, static website with zero live booking bridge.'
+    status: '[ALERT] Reputation Unverified',
+    detail: 'No Google rating confirmed for this business; whatever review equity exists cannot convert through a slow mobile load — visitors bounce before trust signals register.'
   };
 
   return {

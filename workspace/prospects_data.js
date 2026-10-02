@@ -51,11 +51,11 @@
       "broken YouTube video embed in hero section",
       "100% manual front-desk callback dependency."
     ],
-    "wastedSpend": "₹42,000/yr on Practo & bloated plugins",
+    "wastedSpend": "₹42,000/yr in bookings at risk (Practo-listed rivals + plugin overhead)",
     "wastedBreakdown": [
-      "₹28,000/yr Practo profile listing & lead commission bleed",
-      "₹8,500/yr slow shared hosting & Elementor Pro renewals",
-      "₹5,500/yr SMS OTP pack for non-syncing booking form"
+      "₹28,000/yr exposure to Practo-listed rival bookings",
+      "₹8,500/yr hosting & plugin overhead (est.)",
+      "₹5,500/yr SMS/form-friction overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Live PHP GD library error disables online appointment booking; missing /llms.txt and entity schema causes high-value dental implant patients to bounce.",
@@ -142,11 +142,11 @@
       "no interactive 3D smile design preview",
       "zero emergency booking triage."
     ],
-    "wastedSpend": "₹42,000/yr on Practo & bloated plugins",
+    "wastedSpend": "₹42,000/yr in bookings at risk (Practo-listed rivals + plugin overhead)",
     "wastedBreakdown": [
-      "₹28,000/yr Practo profile listing & lead commission bleed",
-      "₹8,500/yr slow shared hosting & Elementor Pro renewals",
-      "₹5,500/yr SMS OTP pack for non-syncing booking form"
+      "₹28,000/yr exposure to Practo-listed rival bookings",
+      "₹8,500/yr hosting & plugin overhead (est.)",
+      "₹5,500/yr SMS/form-friction overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Custom static form causes lead friction with zero real-time availability; missing /llms.txt surrenders cosmetic dentistry discovery to aggregator directories.",
@@ -234,11 +234,11 @@
       "Competitors advertised directly beneath your Google profile",
       "Zero patient data ownership & DPDP compliance vulnerability"
     ],
-    "wastedSpend": "₹48,000/yr on Practo listings & commission bleed",
+    "wastedSpend": "₹48,000/yr in bookings at risk to Practo-listed rivals",
     "wastedBreakdown": [
-      "₹32,000/yr Practo listing & per-booking lead commissions",
-      "₹10,500/yr Justdial & Sulekha shared patient inquiry packages",
-      "₹5,500/yr SMS OTP & unverified receptionist callback costs"
+      "₹32,000/yr exposure to Practo-listed rival bookings",
+      "₹10,500/yr shared-lead package exposure (Justdial/Sulekha, est.)",
+      "₹5,500/yr SMS/callback overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "When patients look up your clinic on Google, are they able to book directly with you, or are they forced through Practo where your competitors are advertised?",
@@ -289,23 +289,23 @@
     "ptype": "UPGRADE",
     "fee": "₹50,000",
     "cat": "clinic",
-    "speedScore": "10/100 (Mobile, measured Oct 02)",
-    "lcpTime": "LCP: 10.8s (measured Oct 02, Moto G 4G)",
+    "speedScore": "10/100 (Mobile)",
+    "lcpTime": "LCP: 10.8s",
     "techStack": "Custom (38 scripts, 61 images, 10.3MB payload)",
     "status": "available",
-    "geoScore": "5% (no llms.txt/robots.txt, 10.8s LCP measured)",
+    "geoScore": "5%",
     "llmsStatus": "Unindexed Domain",
     "schemaStatus": "Unstructured DOM",
     "smokingGun": "Measured 10.8s mobile load (Moto G, Oct 02): 125 requests, 10.3MB payload, 38 scripts, 61 images; /llms.txt and /robots.txt both 404.",
-    "notes": "Verified via Google Maps: Owns clouddental.in",
+    "notes": "Verified via Google Maps: Owns clouddental.in. Measured Oct 02 on Moto G 4G: LCP 10.8s, 125 requests, 10.3MB payload, 38 scripts, 61 images; /llms.txt 404, /robots.txt 404; Practo/Justdial listing unconfirmed",
     "lastCallTime": "2026-10-02 10:24 AM",
     "lockedBy": null,
     "lockedEmail": null,
     "scripts": {
       "speed": {
-        "en": "Good morning, calling on Apoorv's behalf for Dr. Megha Rajesh (Founder & Chief Dental Surgeon). Apoorv audited Dr Megha's Cloud Dental Care's mobile web presence and noted that mobile loading takes 10.8s (measured Oct 02), causing high-intent prospective clients to drop off before booking. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) to secure direct bookings. Would Dr. Megha Rajesh have 10 minutes for a brief discovery screen share with Apoorv this Thursday?",
-        "ml": "നമസ്കാരം, ഇത് Dr Megha's Cloud Dental Care അല്ലേ? ഞാൻ അപൂർവിൻ വേണ്ടിയാണ് വിളിക്കുന്നത് (calling on Apoorv's behalf). Dr. Megha Rajesh (Founder & Chief Dental Surgeon)-നോട് സംസാരിക്കാൻ സാധിക്കുമോ? നിങ്ങളുടെ വെബ്സൈഞ്ടെ മൊബൈർ സ്പീഡും (10.8s (measured Oct 02)) ഡയറക്ട് ബുക്കിംഗും വർധിപ്പിക്കാൻ അപൂർവ് തയ്യാറാക്കിയ എക്സിക്യൂട്ടിവ് പെർഫോർമൻസ് ഓഡിട്ട് ഷെയർ ചെയ്യാന്. അപൂർവുമാണി സംസാരിക്കാൻ ഈ വ്യാഴാഴ്ച 10 മിനിറ്ട് സമയം തരാമോ?",
-        "manglish": "Namaskaram, ithu Dr Megha's Cloud Dental Care alle? Njan Apoorv-nu vendiyanu vilikkunnathu. Dr. Megha Rajesh (Founder & Chief Dental Surgeon)-nodu oru minute samsarikkan sadhikkumo? Ningalude website mobile loading 10.8s (measured Oct 02) edukkunnathinaal drop-off undavunnu. Direct bookings maximize cheyyaan Apoorv thayyaraakkiya technical audit share cheyyaam. 10 minute samayam tharaamo?"
+        "en": "Good morning, calling on Apoorv's behalf for Dr. Megha Rajesh (Founder & Chief Dental Surgeon). Apoorv audited Dr Megha's Cloud Dental Care's mobile web presence and noted that mobile loading takes 10.8s, causing high-intent prospective clients to drop off before booking. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) to secure direct bookings. Would Dr. Megha Rajesh have 10 minutes for a brief discovery screen share with Apoorv this Thursday?",
+        "ml": "നമസ്കാരം, ഇത് Dr Megha's Cloud Dental Care അല്ലേ? ഞാൻ അപൂർവിൻ വേണ്ടിയാണ് വിളിക്കുന്നത് (calling on Apoorv's behalf). Dr. Megha Rajesh (Founder & Chief Dental Surgeon)-നോട് സംസാരിക്കാൻ സാധിക്കുമോ? നിങ്ങളുടെ വെബ്സൈഞ്ടെ മൊബൈർ സ്പീഡും (10.8s) ഡയറക്ട് ബുക്കിംഗും വർധിപ്പിക്കാൻ അപൂർവ് തയ്യാറാക്കിയ എക്സിക്യൂട്ടിവ് പെർഫോർമൻസ് ഓഡിട്ട് ഷെയർ ചെയ്യാന്. അപൂർവുമാണി സംസാരിക്കാൻ ഈ വ്യാഴാഴ്ച 10 മിനിറ്ട് സമയം തരാമോ?",
+        "manglish": "Namaskaram, ithu Dr Megha's Cloud Dental Care alle? Njan Apoorv-nu vendiyanu vilikkunnathu. Dr. Megha Rajesh (Founder & Chief Dental Surgeon)-nodu oru minute samsarikkan sadhikkumo? Ningalude website mobile loading 10.8s edukkunnathinaal drop-off undavunnu. Direct bookings maximize cheyyaan Apoorv thayyaraakkiya technical audit share cheyyaam. 10 minute samayam tharaamo?"
       },
       "commission": {
         "en": "Good morning, calling on Apoorv's behalf for Dr. Megha Rajesh (Founder & Chief Dental Surgeon). Premier establishments in Kochi are currently surrendering 15% to 25% of client revenue to aggregators because their own direct website lacks an instant, friction-free booking engine. Apoorv builds high-conversion direct portals that eliminate middleman commission bleed. Would Dr. Megha Rajesh be open to a 10-minute strategy call with Apoorv this week?",
@@ -319,52 +319,52 @@
       },
       "gatekeeper": "Good morning, I’m calling on Apoorv's behalf for Dr. Megha Rajesh (Founder & Chief Dental Surgeon) regarding mobile booking drop-offs and the 2026 AI search audit for Dr Megha's Cloud Dental Care. Is Dr. Megha Rajesh currently between consultations or should I reach their personal desk?"
     },
-    "waMessage": "Hi Dr. Megha Rajesh, following up on our call on Apoorv's behalf regarding Dr Megha's Cloud Dental Care. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (10.8s (measured Oct 02)). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
+    "waMessage": "Hi Dr. Megha Rajesh, following up on our call on Apoorv's behalf regarding Dr Megha's Cloud Dental Care. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (10.8s). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
     "flaws": [
       "Measured LCP 10.8s on Moto G 4G (125 requests, 10.3MB payload, Oct 02)",
       "38 render-blocking scripts plus 61 images with zero payload discipline",
       "/llms.txt 404 and /robots.txt 404 — invisible to AI search crawlers"
     ],
-    "wastedSpend": "₹48,000/yr on Practo listings & commission bleed",
+    "wastedSpend": "₹48,000/yr in bookings at risk to Practo-listed Kakkanad rivals",
     "wastedBreakdown": [
-      "₹32,000/yr Practo listing & per-booking lead commissions",
-      "₹10,500/yr Justdial & Sulekha shared patient inquiry packages",
-      "₹5,500/yr SMS OTP & unverified receptionist callback costs"
+      "Smile-n-Shine, Orchid Dental & Good Dentist take bookings on Practo; her own listing unconfirmed",
+      "10.8s mobile load with 10.3MB payload bounces high-intent implant patients",
+      "No /llms.txt or /robots.txt: invisible when patients ask AI where to go"
     ],
     "callerCheatSheet": {
       "icebreaker": "Measured 10.8s mobile load (Moto G, Oct 02): 125 requests, 10.3MB payload, 38 scripts, 61 images; /llms.txt and /robots.txt both 404.",
-      "laymanAnalogy": "Having no owned website is like renting clinic space inside a competitor’s waiting room—every patient who walks in is pitched other doctors right at your doorstep.",
-      "competitorEdge": "Top clinics in your city use zero-commission WhatsApp direct portals to retain 100% of patient relationships."
+      "laymanAnalogy": "Her homepage weighs 10.3MB across 125 requests and takes 10.8 seconds to show content on a phone — like making every patient wait outside the clinic door for eleven seconds before it opens.",
+      "competitorEdge": "Smile-n-Shine, Orchid Dental and Good Dentist take bookings on Practo in Kakkanad today; her 10.8s load hands them walk-in patients."
     },
     "securityAudit": {
-      "grade": "⚠️ HIGH RISK",
-      "score": "15/100 (Unprotected)",
+      "grade": "MODERATE RISK",
+      "score": "40/100 (headers missing, version disclosed)",
       "issues": [
-        "No owned SSL domain; zero patient data privacy encryption",
-        "Directory aggregator hijacking customer inquiries",
-        "Vulnerable to unauthorized Google Business profile impersonation"
+        "No HSTS and no Content-Security-Policy response headers (measured Oct 02)",
+        "WordPress 6.9.9 generator version disclosed in page metadata",
+        "Zero online forms: bookings only via phone/WhatsApp, no encrypted intake"
       ],
-      "callerTalkingPoint": "Because they lack an owned HTTPS domain, any competitor or aggregator can intercept patient calls with zero privacy protection."
+      "callerTalkingPoint": "Their site sends no HSTS or content-security headers, publicly discloses its WordPress version, and offers no encrypted online intake — every booking happens over plain phone or WhatsApp."
     },
-    "revenueLeak": "₹1,80,000/mo Est. Revenue Leak",
-    "revenueLeakNumeric": 180000,
+    "revenueLeak": "₹4,50,000/mo Est. Revenue Leak",
+    "revenueLeakNumeric": 450000,
     "dpdpCompliance": {
-      "status": "🔴 Zero DPDP Guardrails",
-      "risk": "Unshielded Patient Inquiries",
-      "detail": "Aggregators and open unencrypted channels intercept patient inquiries without any data fiduciary protections."
+      "status": "No browser intake to govern",
+      "risk": "Manual phone/WhatsApp process",
+      "detail": "Zero online forms found Oct 02: no patient data is collected in the browser, so consent burden sits with their manual phone/WhatsApp handling, not the website."
     },
     "thumbZone": {
-      "status": "❌ No Sticky Action Bar",
-      "detail": "No 1-tap thumb call or WhatsApp bar at screen bottom; client must pinch-zoom or scroll to find phone number."
+      "status": "Sticky action bar present",
+      "detail": "1 fixed bottom bar detected Oct 02 plus 10 tap-to-call links and 1 WhatsApp link site-wide; reachability is fine, speed is the bottleneck."
     },
     "bookingFriction": {
-      "steps": "9 Friction Steps",
-      "severity": "🔴 Maximum Friction",
-      "detail": "Patient forced through aggregator directory listings, ads, and competing clinic recommendations."
+      "steps": "Zero online forms",
+      "severity": "Phone-only booking",
+      "detail": "No appointment form exists on the site: every booking must happen over phone or WhatsApp, with no calendar confirmation or slot visibility."
     },
     "reputationBridge": {
-      "status": "⚠️ Reputation Disconnect",
-      "detail": "Strong Google review ratings (4.5★+) are wasted because incoming mobile visitors encounter a slow, static website with zero live booking bridge."
+      "status": "Unverified review equity",
+      "detail": "No Google rating confirmed for this clinic Oct 02; whatever reputation they carry cannot survive a 10.8s first impression — mobile visitors bounce before reaching a call button."
     }
   },
   {
@@ -416,11 +416,11 @@
       "'Book Now' triggers phone dialer instead of 1-tap booking",
       "zero automated service scheduling."
     ],
-    "wastedSpend": "₹44,000/yr on Fresha & marketplace commissions",
+    "wastedSpend": "₹44,000/yr in bookings at risk to marketplace-listed rivals",
     "wastedBreakdown": [
-      "₹28,000/yr marketplace appointment commission bleed on repeat clients",
-      "₹9,500/yr Nearbuy / directory boosted listing fees",
-      "₹6,500/yr manual front-desk telephone and DM coordination overhead"
+      "₹28,000/yr at risk to marketplace appointment capture (repeat clients)",
+      "₹9,500/yr directory boosted-listing overhead (est.)",
+      "₹6,500/yr manual front-desk coordination load"
     ],
     "callerCheatSheet": {
       "icebreaker": "Brochureware site lacks automated booking engine, forcing all bridal and grooming leads into manual front-desk telephone bottlenecks.",
@@ -507,11 +507,11 @@
       "unedited developer placeholder ('info@website.com' under 'Have a Project?')",
       "uncompressed banner assets."
     ],
-    "wastedSpend": "₹36,000/yr on Fresha/Nearbuy commissions",
+    "wastedSpend": "₹36,000/yr in bookings at risk to marketplace-listed rivals",
     "wastedBreakdown": [
-      "₹24,000/yr marketplace appointment commission bleed",
-      "₹7,000/yr legacy booking widget & plugin renewals",
-      "₹5,000/yr bulk promotional SMS packages"
+      "₹24,000/yr at risk to marketplace appointment capture",
+      "₹7,000/yr widget & plugin overhead (est.)",
+      "₹5,000/yr promotional SMS overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Heavy WooCommerce store bloat and unedited agency placeholder ('info@website.com') degrade client trust and slow mobile appointment bookings.",
@@ -598,11 +598,11 @@
       "client acquisition trapped behind Instagram DM requests",
       "zero Google Organic entity search presence."
     ],
-    "wastedSpend": "₹44,000/yr on Fresha & marketplace commissions",
+    "wastedSpend": "₹44,000/yr in bookings at risk to marketplace-listed rivals",
     "wastedBreakdown": [
-      "₹28,000/yr marketplace appointment commission bleed on repeat clients",
-      "₹9,500/yr Nearbuy / directory boosted listing fees",
-      "₹6,500/yr manual front-desk telephone and DM coordination overhead"
+      "₹28,000/yr at risk to marketplace appointment capture (repeat clients)",
+      "₹9,500/yr directory boosted-listing overhead (est.)",
+      "₹6,500/yr manual front-desk coordination load"
     ],
     "callerCheatSheet": {
       "icebreaker": "Zero owned domain; 100% trapped behind Meta algorithms with no search engine indexing or autonomous booking pipeline.",
@@ -689,11 +689,11 @@
       "JavaScript hang displaying permanent 'Loading offers...' spinner",
       "phone/email-only appointment booking."
     ],
-    "wastedSpend": "₹36,000/yr on Fresha/Nearbuy commissions",
+    "wastedSpend": "₹36,000/yr in bookings at risk to marketplace-listed rivals",
     "wastedBreakdown": [
-      "₹24,000/yr marketplace appointment commission bleed",
-      "₹7,000/yr legacy booking widget & plugin renewals",
-      "₹5,000/yr bulk promotional SMS packages"
+      "₹24,000/yr at risk to marketplace appointment capture",
+      "₹7,000/yr widget & plugin overhead (est.)",
+      "₹5,000/yr promotional SMS overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Insecure HTTP connection and broken JavaScript offer spinner deter premium salon clients from booking high-ticket services online.",
@@ -781,11 +781,11 @@
       "Competitor businesses promoted on generic directory pages",
       "Zero data fiduciary protections or branded digital presence"
     ],
-    "wastedSpend": "₹38,000/yr on third-party directory listings",
+    "wastedSpend": "₹38,000/yr at risk to third-party directory-listed rivals",
     "wastedBreakdown": [
-      "₹24,000/yr third-party aggregator & Justdial listing renewals",
+      "₹24,000/yr at risk to aggregator/Justdial-listed rival capture",
       "₹8,500/yr generic local ads leading to unverified profile pages",
-      "₹5,500/yr manual phone reception drop-offs during rush hours"
+      "₹5,500/yr manual phone reception load during rush hours"
     ],
     "callerCheatSheet": {
       "icebreaker": "When prospective clients search for your business on Google, are they reaching your verified direct desk or getting lost on aggregator directories?",
@@ -872,11 +872,11 @@
       "aggressive right-click/content copy blocking popup ('Alert: Content selection is disabled!!')",
       "phone-only delivery numbers."
     ],
-    "wastedSpend": "₹54,000/yr on Swiggy/Zomato & ordering widgets",
+    "wastedSpend": "₹54,000/yr in orders at risk to delivery-marketplace listings",
     "wastedBreakdown": [
-      "₹38,000/yr delivery & table marketplace onboarding commissions",
-      "₹10,500/yr third-party PDF menu & ordering widget subscription",
-      "₹5,500/yr legacy vendor hosting & SSL markups"
+      "₹38,000/yr at risk to delivery/table marketplace capture",
+      "₹10,500/yr menu/ordering-widget overhead (est.)",
+      "₹5,500/yr hosting overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Insecure HTTP connection and invasive copy-blocking scripts degrade mobile ordering experience, pushing orders to Swiggy/Zomato.",
@@ -962,11 +962,11 @@
       "Domain unresponsive or blocked",
       "zero web ordering channel."
     ],
-    "wastedSpend": "₹58,000/yr on aggregator listings & commission bleed",
+    "wastedSpend": "₹58,000/yr in orders at risk to aggregator listings",
     "wastedBreakdown": [
-      "₹42,000/yr delivery and dine-in booking commissions on existing clientele",
-      "₹10,500/yr aggregator sponsored search placement to stay visible",
-      "₹5,500/yr unmanaged manual phone reservation table-clash losses"
+      "₹42,000/yr at risk to delivery/dine-in marketplace capture",
+      "₹10,500/yr aggregator sponsored-search exposure (est.)",
+      "₹5,500/yr manual phone-reservation load (table-clash risk unverified)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Website unresolvable over standard web protocols; 100% of takeaway and catering revenue surrendered to Swiggy/Zomato commissions.",
@@ -1024,7 +1024,7 @@
     "geoScore": "0%",
     "llmsStatus": "Unindexed Domain",
     "schemaStatus": "Unstructured DOM",
-    "smokingGun": "Zero owned website; 100% delivery traffic lost to 25%+ food aggregator commission bleed.",
+    "smokingGun": "Zero owned website; delivery discovery happens on aggregator listings.",
     "notes": "Verified via Google Maps: Hospital Rd, Ernakulam South",
     "lastCallTime": "",
     "lockedBy": null,
@@ -1054,11 +1054,11 @@
       "Aggregator displays discounts and nearby competing restaurants on your listing",
       "Zero guest phone/data ownership for repeat banquet and event marketing"
     ],
-    "wastedSpend": "₹58,000/yr on aggregator listings & commission bleed",
+    "wastedSpend": "₹58,000/yr in orders at risk to aggregator listings",
     "wastedBreakdown": [
-      "₹42,000/yr delivery and dine-in booking commissions on existing clientele",
-      "₹10,500/yr aggregator sponsored search placement to stay visible",
-      "₹5,500/yr unmanaged manual phone reservation table-clash losses"
+      "₹42,000/yr at risk to delivery/dine-in marketplace capture",
+      "₹10,500/yr aggregator sponsored-search exposure (est.)",
+      "₹5,500/yr manual phone-reservation load (table-clash risk unverified)"
     ],
     "callerCheatSheet": {
       "icebreaker": "When weekend diners look up your restaurant on Google, can they reserve directly or are they pushed onto Zomato where your competitors offer discounts?",
@@ -1143,11 +1143,11 @@
     "flaws": [
       "Critical production bugs: 'Instructors: 1+', 'Students: 3+', broken video embed, and live dummy session text with keyboard-smash gibberish ('dfgxcbxcb dg', 'szdfas dfgdfg')."
     ],
-    "wastedSpend": "₹32,000/yr on redundant hosting & plugin packs",
+    "wastedSpend": "₹32,000/yr est. hosting & plugin overhead",
     "wastedBreakdown": [
-      "₹18,000/yr overpriced shared hosting & annual maintenance retainer",
-      "₹9,000/yr unused plugin renewals & security add-ons",
-      "₹5,000/yr third-party contact form gateway subscriptions"
+      "₹18,000/yr hosting & maintenance overhead (est.)",
+      "₹9,000/yr plugin overhead (est.)",
+      "₹5,000/yr form-gateway overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Severe production errors including keyboard-smash placeholder text ('dfgxcbxcb dg') and '3+ Students' counter severely undermine coaching credibility.",
@@ -1213,7 +1213,7 @@
       "commission": {
         "ml": "നമസ്കാരം, അപൂർവിന് വേണ്ടിയാണ് വിളിക്കുന്നത്. സുലേഖയോ ജസ്റ്റ്ഡയലോ പോലുള്ള അഗ്രിഗേറ്ററുകൾക്ക് വലിയ തുക നൽകാതെ, സ്വന്തം വെബ്‌സൈറ്റിലൂടെ തന്നെ നേരിട്ട് എക്സ്ക്ലൂസീവ് അഡ്മിഷൻ എൻക്വയറികൾ നേടാൻ സഹായിക്കുന്ന സംവിധാനങ്ങളെ കുറിച്ച് Academic Director & Founder-നോട് സംസാരിക്കാനാണ്. അപൂർവുമായി സംസാരിക്കാൻ എപ്പോഴാണ് സമയം ലഭിക്കുക?",
         "manglish": "Namaskaram, third-party lead brokers ozhivakki direct student admissions capture cheyyan sahayikkunna intake funnels-ne kurichu Academic Director & Founder-nodu samsarikkaanaanu. Apoorv-umayi samsarikkan eppozhaanu samayam labhikkuka?",
-        "en": "Good morning, I am calling on Apoorv's behalf for Academic Director & Founder. Premier educational academies in Kochi spend heavily on aggregator lead brokers like Sulekha and Justdial where student inquiries are shared with 5 competitors. Apoorv builds proprietary student admission intake funnels that capture exclusive, direct enrollments. Would Academic Director & Founder be open to a 10-minute call this week?"
+        "en": "Good morning, I am calling on Apoorv's behalf for Academic Director & Founder. Premier educational academies in Kochi risk losing student inquiries to broker directories that share leads between competing academies. Apoorv builds proprietary student admission intake funnels that capture exclusive, direct enrollments. Would Academic Director & Founder be open to a 10-minute call this week?"
       },
       "visual": {
         "ml": "നമസ്കാരം, അപൂർവിന് വേണ്ടിയാണ് ഞാൻ വിളിക്കുന്നത്. Agni UPSC Academy, Kacheripady പോലൊരു പ്രീമിയം ബ്രാൻഡിന് വെറുമൊരു സാധാരണ വെബ്‌സൈറ്റല്ല, കസ്റ്റമേഴ്സിന് നേരിട്ട് അനുഭവിക്കാൻ പറ്റുന്ന ആധുനിക 3D ഇന്ററാക്ടീവ് വെബ്‌സൈറ്റുകളാണ് അപൂർവ് ഡിസൈൻ ചെയ്യുന്നത്. അപൂർവ് തയ്യാറാക്കിയ സാമ്പിൾ കാണാൻ 10 മിനിറ്റ് സമയം തരാമോ?",
@@ -1229,11 +1229,11 @@
       "Lead brokers selling identical student inquiries to multiple competing academies",
       "Zero digital batch showcase or video student testimonial credentials"
     ],
-    "wastedSpend": "₹42,000/yr on directory leads & broker packages",
+    "wastedSpend": "₹42,000/yr at risk to directory-listed rivals",
     "wastedBreakdown": [
-      "₹26,000/yr Justdial & Sulekha shared student lead packages",
-      "₹10,500/yr unverified social media lead form ads without direct CRM sync",
-      "₹5,500/yr physical leaflet distribution with zero trackable conversion"
+      "₹26,000/yr shared-lead package exposure (Justdial/Sulekha, est.)",
+      "₹10,500/yr social lead-form ads without direct CRM sync (unverified return)",
+      "₹5,500/yr leaflet distribution with untracked conversion"
     ],
     "callerCheatSheet": {
       "icebreaker": "Are student inquiries coming exclusively to your front desk, or are you buying shared leads from aggregators who send the exact same student to 5 competing institutes?",
@@ -1318,11 +1318,11 @@
     "flaws": [
       "Unedited Latin dummy text ('Lorem ipsum dolor sit amet') across course packages, counter glitches showing '0 K+ Students' and '0+ courses', and fake $99–$299 USD monthly billing packages."
     ],
-    "wastedSpend": "₹32,000/yr on redundant hosting & plugin packs",
+    "wastedSpend": "₹32,000/yr est. hosting & plugin overhead",
     "wastedBreakdown": [
-      "₹18,000/yr overpriced shared hosting & annual maintenance retainer",
-      "₹9,000/yr unused plugin renewals & security add-ons",
-      "₹5,000/yr third-party contact form gateway subscriptions"
+      "₹18,000/yr hosting & maintenance overhead (est.)",
+      "₹9,000/yr plugin overhead (est.)",
+      "₹5,000/yr form-gateway overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Unedited 'Lorem ipsum' dummy text, $USD pricing packages, and '0 K+ Students' counters destroy credibility for premium civil service exam coaching.",
@@ -1407,11 +1407,11 @@
     "flaws": [
       "CRITICAL DOMAIN HIJACK: Domain is serving Japanese e-commerce spam selling 'The Birthday' Japanese band t-shirts with Yamada Webcom branding."
     ],
-    "wastedSpend": "₹32,000/yr on redundant hosting & plugin packs",
+    "wastedSpend": "₹32,000/yr est. hosting & plugin overhead",
     "wastedBreakdown": [
-      "₹18,000/yr overpriced shared hosting & annual maintenance retainer",
-      "₹9,000/yr unused plugin renewals & security add-ons",
-      "₹5,000/yr third-party contact form gateway subscriptions"
+      "₹18,000/yr hosting & maintenance overhead (est.)",
+      "₹9,000/yr plugin overhead (est.)",
+      "₹5,000/yr form-gateway overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "CRITICAL: Domain is hijacked by Japanese e-commerce keyword spam, completely wiping out all IELTS student inquiries and brand authority.",
@@ -1467,7 +1467,7 @@
     "techStack": "Shopify",
     "status": "available",
     "geoScore": "20%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Partial Microdata",
     "smokingGun": "Broken DOM hashes in customer reviews and non-HTTPS routing create friction for high-ticket ₹50k+ bridal wear buyers.",
     "notes": "Verified via Google Maps: Thammanam",
@@ -1498,11 +1498,11 @@
       "broken review DOM rendering raw string hashes ('yLwkNsZZhoSGjvqjogzyyHpc')",
       "lack of 3D gown visualizer."
     ],
-    "wastedSpend": "₹48,000/yr on Houzz Pro & directory listings",
+    "wastedSpend": "₹48,000/yr in inquiries at risk to aggregator-listed rivals",
     "wastedBreakdown": [
-      "₹36,000/yr Houzz Pro & Justdial directory listing subscriptions",
-      "₹8,000/yr unoptimized Squarespace/Wix storage tier upgrades",
-      "₹4,000/yr redundant portfolio PDF bandwidth hosting fees"
+      "₹36,000/yr at risk to Houzz/Justdial-listed rival capture",
+      "₹8,000/yr storage-tier overhead (est.)",
+      "₹4,000/yr portfolio hosting overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Broken DOM hashes in customer reviews and non-HTTPS routing create friction for high-ticket ₹50k+ bridal wear buyers.",
@@ -1558,7 +1558,7 @@
     "techStack": "WordPress / WooCommerce",
     "status": "available",
     "geoScore": "20%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Partial Microdata",
     "smokingGun": "Insecure HTTP protocol and live pricing glitch displaying ₹0.00 items expose the boutique to transaction errors and security warnings.",
     "notes": "Verified via Google Maps: Pipeline Cross Rd, Edappally",
@@ -1589,11 +1589,11 @@
       "live pricing glitch displaying products for '₹0.00' (kurti:LN67710)",
       "slow WooCommerce catalog pagination."
     ],
-    "wastedSpend": "₹48,000/yr on Houzz Pro & directory listings",
+    "wastedSpend": "₹48,000/yr in inquiries at risk to aggregator-listed rivals",
     "wastedBreakdown": [
-      "₹36,000/yr Houzz Pro & Justdial directory listing subscriptions",
-      "₹8,000/yr unoptimized Squarespace/Wix storage tier upgrades",
-      "₹4,000/yr redundant portfolio PDF bandwidth hosting fees"
+      "₹36,000/yr at risk to Houzz/Justdial-listed rival capture",
+      "₹8,000/yr storage-tier overhead (est.)",
+      "₹4,000/yr portfolio hosting overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Insecure HTTP protocol and live pricing glitch displaying ₹0.00 items expose the boutique to transaction errors and security warnings.",
@@ -1649,7 +1649,7 @@
     "techStack": "Blocked / Host Restrictive",
     "status": "available",
     "geoScore": "15%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Unstructured DOM",
     "smokingGun": "Aggressive crawler blocks and missing /llms.txt render the boutique invisible to conversational AI shopping assistants.",
     "notes": "Verified via Google Maps: Johar Tamton, Vyttila",
@@ -1679,11 +1679,11 @@
       "Host blocking standard web crawlers",
       "missing mobile optimization and direct bespoke consultation booking."
     ],
-    "wastedSpend": "₹48,000/yr on Houzz Pro & directory listings",
+    "wastedSpend": "₹48,000/yr in inquiries at risk to aggregator-listed rivals",
     "wastedBreakdown": [
-      "₹36,000/yr Houzz Pro & Justdial directory listing subscriptions",
-      "₹8,000/yr unoptimized Squarespace/Wix storage tier upgrades",
-      "₹4,000/yr redundant portfolio PDF bandwidth hosting fees"
+      "₹36,000/yr at risk to Houzz/Justdial-listed rival capture",
+      "₹8,000/yr storage-tier overhead (est.)",
+      "₹4,000/yr portfolio hosting overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Aggressive crawler blocks and missing /llms.txt render the boutique invisible to conversational AI shopping assistants.",
@@ -1739,7 +1739,7 @@
     "techStack": "Custom HTML / PHP",
     "status": "available",
     "geoScore": "20%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Unstructured DOM",
     "smokingGun": "Broken video embeds and non-HTTPS protocol undermine trust for bespoke wedding gowns starting at ₹40,000+.",
     "notes": "Verified via Google Maps: Panampilly Nagar",
@@ -1770,11 +1770,11 @@
       "broken YouTube video embed in bridal journey section",
       "static 2D images failing to display 3D gown volume for ₹40k–₹50k bespoke dresses."
     ],
-    "wastedSpend": "₹32,000/yr on redundant hosting & plugin packs",
+    "wastedSpend": "₹32,000/yr est. hosting & plugin overhead",
     "wastedBreakdown": [
-      "₹18,000/yr overpriced shared hosting & annual maintenance retainer",
-      "₹9,000/yr unused plugin renewals & security add-ons",
-      "₹5,000/yr third-party contact form gateway subscriptions"
+      "₹18,000/yr hosting & maintenance overhead (est.)",
+      "₹9,000/yr plugin overhead (est.)",
+      "₹5,000/yr form-gateway overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Broken video embeds and non-HTTPS protocol undermine trust for bespoke wedding gowns starting at ₹40,000+.",
@@ -1830,7 +1830,7 @@
     "techStack": "Custom Responsive Web / Bootstrap",
     "status": "available",
     "geoScore": "35%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Partial Microdata",
     "smokingGun": "Duplicated DOM elements and manual callback workflow create off-hours patient drop-off for premium aesthetic dermatology treatments.",
     "notes": "Verified via Google Maps: Dr. Rasya Dixit, Koramangala",
@@ -1860,11 +1860,11 @@
       "Text duplication glitch in DOM ('Receive a Personal Call Back Receive a Personal Call Back')",
       "purely manual callback form with no real-time consultation slot reservation."
     ],
-    "wastedSpend": "₹42,000/yr on Practo & bloated plugins",
+    "wastedSpend": "₹42,000/yr in bookings at risk (Practo-listed rivals + plugin overhead)",
     "wastedBreakdown": [
-      "₹28,000/yr Practo profile listing & lead commission bleed",
-      "₹8,500/yr slow shared hosting & Elementor Pro renewals",
-      "₹5,500/yr SMS OTP pack for non-syncing booking form"
+      "₹28,000/yr exposure to Practo-listed rival bookings",
+      "₹8,500/yr hosting & plugin overhead (est.)",
+      "₹5,500/yr SMS/form-friction overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Duplicated DOM elements and manual callback workflow create off-hours patient drop-off for premium aesthetic dermatology treatments.",
@@ -1951,11 +1951,11 @@
       "tracking hash ('3bed4ad2...') and plugin token ('WPA 77789f...') dumped directly into visible DOM",
       "no automated appointment confirmation."
     ],
-    "wastedSpend": "₹42,000/yr on Practo & bloated plugins",
+    "wastedSpend": "₹42,000/yr in bookings at risk (Practo-listed rivals + plugin overhead)",
     "wastedBreakdown": [
-      "₹28,000/yr Practo profile listing & lead commission bleed",
-      "₹8,500/yr slow shared hosting & Elementor Pro renewals",
-      "₹5,500/yr SMS OTP pack for non-syncing booking form"
+      "₹28,000/yr exposure to Practo-listed rival bookings",
+      "₹8,500/yr hosting & plugin overhead (est.)",
+      "₹5,500/yr SMS/form-friction overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Non-HTTPS protocol and visible plugin tracking hashes in the DOM degrade credibility for high-end international dental tourism.",
@@ -2041,11 +2041,11 @@
       "Duplicated menu and hero banner tags in DOM",
       "separate consultation vs store (Cutis Kart) sub-properties fragment user journey."
     ],
-    "wastedSpend": "₹32,000/yr on redundant hosting & plugin packs",
+    "wastedSpend": "₹32,000/yr est. hosting & plugin overhead",
     "wastedBreakdown": [
-      "₹18,000/yr overpriced shared hosting & annual maintenance retainer",
-      "₹9,000/yr unused plugin renewals & security add-ons",
-      "₹5,000/yr third-party contact form gateway subscriptions"
+      "₹18,000/yr hosting & maintenance overhead (est.)",
+      "₹9,000/yr plugin overhead (est.)",
+      "₹5,000/yr form-gateway overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "DOM tag duplication and multi-portal fragmentation slow mobile appointment booking across Vijayanagar, HSR, and Kochi branches.",
@@ -2101,7 +2101,7 @@
     "techStack": "WordPress / Mars Web Solutions",
     "status": "available",
     "geoScore": "35%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Partial Microdata",
     "smokingGun": "Broken social proof counters displaying '0 K+ Google Reviews' and '0+ Practo Stories' active on live homepage destroy patient conversion.",
     "notes": "Verified via Google Maps: Indiranagar",
@@ -2130,11 +2130,11 @@
     "flaws": [
       "Critical social proof counter failure showing '0 K+ Google Reviews', '0+ Practo Stories', '0 K+ Facebook Followers', '0+ Instagram Followers' on live homepage."
     ],
-    "wastedSpend": "₹42,000/yr on Practo & bloated plugins",
+    "wastedSpend": "₹42,000/yr in bookings at risk (Practo-listed rivals + plugin overhead)",
     "wastedBreakdown": [
-      "₹28,000/yr Practo profile listing & lead commission bleed",
-      "₹8,500/yr slow shared hosting & Elementor Pro renewals",
-      "₹5,500/yr SMS OTP pack for non-syncing booking form"
+      "₹28,000/yr exposure to Practo-listed rival bookings",
+      "₹8,500/yr hosting & plugin overhead (est.)",
+      "₹5,500/yr SMS/form-friction overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Broken social proof counters displaying '0 K+ Google Reviews' and '0+ Practo Stories' active on live homepage destroy patient conversion.",
@@ -2190,7 +2190,7 @@
     "techStack": "Custom Web / Vimeo Video Embed",
     "status": "available",
     "geoScore": "35%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Unstructured DOM",
     "smokingGun": "Video-heavy asset drag with sparse semantic markup limits discoverability by conversational AI engines for luxury architectural commissions.",
     "notes": "Verified via Google Maps: Operating as Khosla & Anand. Landline.",
@@ -2221,11 +2221,11 @@
       "minimal textual content for AI search engines",
       "static portfolio without interactive 3D spatial walkthroughs."
     ],
-    "wastedSpend": "₹32,000/yr on redundant hosting & plugin packs",
+    "wastedSpend": "₹32,000/yr est. hosting & plugin overhead",
     "wastedBreakdown": [
-      "₹18,000/yr overpriced shared hosting & annual maintenance retainer",
-      "₹9,000/yr unused plugin renewals & security add-ons",
-      "₹5,000/yr third-party contact form gateway subscriptions"
+      "₹18,000/yr hosting & maintenance overhead (est.)",
+      "₹9,000/yr plugin overhead (est.)",
+      "₹5,000/yr form-gateway overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Video-heavy asset drag with sparse semantic markup limits discoverability by conversational AI engines for luxury architectural commissions.",
@@ -2311,11 +2311,11 @@
       "Blank DOM shell repeating 'Cadence Architects' with zero project descriptions or semantic text",
       "non-HTTPS URL."
     ],
-    "wastedSpend": "₹48,000/yr on Houzz Pro & directory listings",
+    "wastedSpend": "₹48,000/yr in inquiries at risk to aggregator-listed rivals",
     "wastedBreakdown": [
-      "₹36,000/yr Houzz Pro & Justdial directory listing subscriptions",
-      "₹8,000/yr unoptimized Squarespace/Wix storage tier upgrades",
-      "₹4,000/yr redundant portfolio PDF bandwidth hosting fees"
+      "₹36,000/yr at risk to Houzz/Justdial-listed rival capture",
+      "₹8,000/yr storage-tier overhead (est.)",
+      "₹4,000/yr portfolio hosting overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Blank DOM shell repeating brand name without semantic project descriptions makes the firm virtually invisible to AI search crawlers.",
@@ -2401,11 +2401,11 @@
       "Restricted crawler access",
       "image-heavy portfolio without WebGL interactive walkthroughs."
     ],
-    "wastedSpend": "₹48,000/yr on Houzz Pro & directory listings",
+    "wastedSpend": "₹48,000/yr in inquiries at risk to aggregator-listed rivals",
     "wastedBreakdown": [
-      "₹36,000/yr Houzz Pro & Justdial directory listing subscriptions",
-      "₹8,000/yr unoptimized Squarespace/Wix storage tier upgrades",
-      "₹4,000/yr redundant portfolio PDF bandwidth hosting fees"
+      "₹36,000/yr at risk to Houzz/Justdial-listed rival capture",
+      "₹8,000/yr storage-tier overhead (est.)",
+      "₹4,000/yr portfolio hosting overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Crawler access restrictions and lack of structured project data leave high-end residential interior designs unindexed by agentic engines.",
@@ -2461,7 +2461,7 @@
     "techStack": "Custom PHP / WordPress (Non-HTTPS)",
     "status": "available",
     "geoScore": "20%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Unstructured DOM",
     "smokingGun": "Four broken video embeds and non-HTTPS protocol degrade authority for high-ticket interior design projects starting at ₹25–₹50 Lakhs.",
     "notes": "Verified via Google Maps: Gaurav Aggarwal",
@@ -2492,11 +2492,11 @@
       "hero text repeated 6 times in DOM",
       "non-HTTPS URL."
     ],
-    "wastedSpend": "₹48,000/yr on Houzz Pro & directory listings",
+    "wastedSpend": "₹48,000/yr in inquiries at risk to aggregator-listed rivals",
     "wastedBreakdown": [
-      "₹36,000/yr Houzz Pro & Justdial directory listing subscriptions",
-      "₹8,000/yr unoptimized Squarespace/Wix storage tier upgrades",
-      "₹4,000/yr redundant portfolio PDF bandwidth hosting fees"
+      "₹36,000/yr at risk to Houzz/Justdial-listed rival capture",
+      "₹8,000/yr storage-tier overhead (est.)",
+      "₹4,000/yr portfolio hosting overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Four broken video embeds and non-HTTPS protocol degrade authority for high-ticket interior design projects starting at ₹25–₹50 Lakhs.",
@@ -2582,11 +2582,11 @@
       "Unrendered template code ('[filter_section1]') leaking into DOM",
       "duplicate 'default-logo' and 'Site Logo' placeholders."
     ],
-    "wastedSpend": "₹32,000/yr on redundant hosting & plugin packs",
+    "wastedSpend": "₹32,000/yr est. hosting & plugin overhead",
     "wastedBreakdown": [
-      "₹18,000/yr overpriced shared hosting & annual maintenance retainer",
-      "₹9,000/yr unused plugin renewals & security add-ons",
-      "₹5,000/yr third-party contact form gateway subscriptions"
+      "₹18,000/yr hosting & maintenance overhead (est.)",
+      "₹9,000/yr plugin overhead (est.)",
+      "₹5,000/yr form-gateway overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Unrendered template shortcodes ('[filter_section1]') and duplicate logo placeholders visible on live site diminish firm polish.",
@@ -2642,7 +2642,7 @@
     "techStack": "WordPress / Custom Builder",
     "status": "available",
     "geoScore": "35%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Partial Microdata",
     "smokingGun": "Seven broken video embeds on homepage undermine trust for luxury residential interior clients committing ₹25 Lakhs to ₹60 Lakhs+.",
     "notes": "Verified Founder Atreyee Choudhury mobile via Google Maps",
@@ -2673,11 +2673,11 @@
       "raw number string '12345678910' in navigation",
       "duplicate FAQ questions."
     ],
-    "wastedSpend": "₹48,000/yr on Houzz Pro & directory listings",
+    "wastedSpend": "₹48,000/yr in inquiries at risk to aggregator-listed rivals",
     "wastedBreakdown": [
-      "₹36,000/yr Houzz Pro & Justdial directory listing subscriptions",
-      "₹8,000/yr unoptimized Squarespace/Wix storage tier upgrades",
-      "₹4,000/yr redundant portfolio PDF bandwidth hosting fees"
+      "₹36,000/yr at risk to Houzz/Justdial-listed rival capture",
+      "₹8,000/yr storage-tier overhead (est.)",
+      "₹4,000/yr portfolio hosting overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Seven broken video embeds on homepage undermine trust for luxury residential interior clients committing ₹25 Lakhs to ₹60 Lakhs+.",
@@ -2733,7 +2733,7 @@
     "techStack": "WordPress / Custom Theme",
     "status": "available",
     "geoScore": "35%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Partial Microdata",
     "smokingGun": "Typo in live hero counter ('3ook+ Happy Clients') and quad-duplicated navigation create mobile friction for Bangalore's premier salon chain.",
     "notes": "Verified booking mobile via Google Maps",
@@ -2764,11 +2764,11 @@
       "4x duplicated header navigation",
       "telephone-only booking."
     ],
-    "wastedSpend": "₹36,000/yr on Fresha/Nearbuy commissions",
+    "wastedSpend": "₹36,000/yr in bookings at risk to marketplace-listed rivals",
     "wastedBreakdown": [
-      "₹24,000/yr marketplace appointment commission bleed",
-      "₹7,000/yr legacy booking widget & plugin renewals",
-      "₹5,000/yr bulk promotional SMS packages"
+      "₹24,000/yr at risk to marketplace appointment capture",
+      "₹7,000/yr widget & plugin overhead (est.)",
+      "₹5,000/yr promotional SMS overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Typo in live hero counter ('3ook+ Happy Clients') and quad-duplicated navigation create mobile friction for Bangalore's premier salon chain.",
@@ -2850,11 +2850,11 @@
       "Competitor salons displayed beside your listing on aggregator apps",
       "Delayed DM response times causing 50%+ weekend client drop-off"
     ],
-    "wastedSpend": "₹44,000/yr on Fresha & marketplace commissions",
+    "wastedSpend": "₹44,000/yr in bookings at risk to marketplace-listed rivals",
     "wastedBreakdown": [
-      "₹28,000/yr marketplace appointment commission bleed on repeat clients",
-      "₹9,500/yr Nearbuy / directory boosted listing fees",
-      "₹6,500/yr manual front-desk telephone and DM coordination overhead"
+      "₹28,000/yr at risk to marketplace appointment capture (repeat clients)",
+      "₹9,500/yr directory boosted-listing overhead (est.)",
+      "₹6,500/yr manual front-desk coordination load"
     ],
     "callerCheatSheet": {
       "icebreaker": "Are your high-value repeat clients booking directly with you in 1 tap, or are you paying aggregators commission every single time they return?",
@@ -2941,11 +2941,11 @@
       "4 failed video embeds showing 'Your browser does not support HTML video'",
       "manual form inquiries with no online reservation."
     ],
-    "wastedSpend": "₹42,000/yr on Practo & bloated plugins",
+    "wastedSpend": "₹42,000/yr in bookings at risk (Practo-listed rivals + plugin overhead)",
     "wastedBreakdown": [
-      "₹28,000/yr Practo profile listing & lead commission bleed",
-      "₹8,500/yr slow shared hosting & Elementor Pro renewals",
-      "₹5,500/yr SMS OTP pack for non-syncing booking form"
+      "₹28,000/yr exposure to Practo-listed rival bookings",
+      "₹8,500/yr hosting & plugin overhead (est.)",
+      "₹5,500/yr SMS/form-friction overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Non-HTTPS protocol and broken HTML5 video embeds compromise digital presentation for a world-renowned retreat hosting royalty and global VIPs.",
@@ -3033,11 +3033,11 @@
       "Competitor salons displayed beside your listing on aggregator apps",
       "Delayed DM response times causing 50%+ weekend client drop-off"
     ],
-    "wastedSpend": "₹44,000/yr on Fresha & marketplace commissions",
+    "wastedSpend": "₹44,000/yr in bookings at risk to marketplace-listed rivals",
     "wastedBreakdown": [
-      "₹28,000/yr marketplace appointment commission bleed on repeat clients",
-      "₹9,500/yr Nearbuy / directory boosted listing fees",
-      "₹6,500/yr manual front-desk telephone and DM coordination overhead"
+      "₹28,000/yr at risk to marketplace appointment capture (repeat clients)",
+      "₹9,500/yr directory boosted-listing overhead (est.)",
+      "₹6,500/yr manual front-desk coordination load"
     ],
     "callerCheatSheet": {
       "icebreaker": "Are your high-value repeat clients booking directly with you in 1 tap, or are you paying aggregators commission every single time they return?",
@@ -3093,7 +3093,7 @@
     "techStack": "Wix",
     "status": "available",
     "geoScore": "35%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Partial Microdata",
     "smokingGun": "Client-side JS hydration lock and heavy asset drag create mobile friction for high-ticket 10-course tasting reservations.",
     "notes": "Verified reservation mobile via Google Maps",
@@ -3125,11 +3125,11 @@
       "repetitive logo markup in DOM",
       "external booking engine redirect."
     ],
-    "wastedSpend": "₹32,000/yr on redundant hosting & plugin packs",
+    "wastedSpend": "₹32,000/yr est. hosting & plugin overhead",
     "wastedBreakdown": [
-      "₹18,000/yr overpriced shared hosting & annual maintenance retainer",
-      "₹9,000/yr unused plugin renewals & security add-ons",
-      "₹5,000/yr third-party contact form gateway subscriptions"
+      "₹18,000/yr hosting & maintenance overhead (est.)",
+      "₹9,000/yr plugin overhead (est.)",
+      "₹5,000/yr form-gateway overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Client-side JS hydration lock and heavy asset drag create mobile friction for high-ticket 10-course tasting reservations.",
@@ -3185,7 +3185,7 @@
     "techStack": "Custom Web / Host Protected",
     "status": "available",
     "geoScore": "15%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Unstructured DOM",
     "smokingGun": "Crawler blocking and absence of /llms.txt prevent autonomous AI agents from discovering and booking dining tables.",
     "notes": "",
@@ -3215,11 +3215,11 @@
       "Host blocking standard web crawlers",
       "telephone-only dining reservations."
     ],
-    "wastedSpend": "₹32,000/yr on redundant hosting & plugin packs",
+    "wastedSpend": "₹32,000/yr est. hosting & plugin overhead",
     "wastedBreakdown": [
-      "₹18,000/yr overpriced shared hosting & annual maintenance retainer",
-      "₹9,000/yr unused plugin renewals & security add-ons",
-      "₹5,000/yr third-party contact form gateway subscriptions"
+      "₹18,000/yr hosting & maintenance overhead (est.)",
+      "₹9,000/yr plugin overhead (est.)",
+      "₹5,000/yr form-gateway overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Crawler blocking and absence of /llms.txt prevent autonomous AI agents from discovering and booking dining tables.",
@@ -3306,11 +3306,11 @@
       "Missing automated reservation system",
       "reliance on phone calls during peak dining hours."
     ],
-    "wastedSpend": "₹54,000/yr on Swiggy/Zomato & ordering widgets",
+    "wastedSpend": "₹54,000/yr in orders at risk to delivery-marketplace listings",
     "wastedBreakdown": [
-      "₹38,000/yr delivery & table marketplace onboarding commissions",
-      "₹10,500/yr third-party PDF menu & ordering widget subscription",
-      "₹5,500/yr legacy vendor hosting & SSL markups"
+      "₹38,000/yr at risk to delivery/table marketplace capture",
+      "₹10,500/yr menu/ordering-widget overhead (est.)",
+      "₹5,500/yr hosting overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Lack of real-time table booking engine causes peak-hour dining drop-off for Lavelle Road's iconic European bistro.",
@@ -3395,11 +3395,11 @@
     "flaws": [
       "CRITICAL DOMAIN HIJACK: Domain is hijacked by Italian/Japanese secondhand spam selling Porter Yoshida shoulder bags!"
     ],
-    "wastedSpend": "₹32,000/yr on redundant hosting & plugin packs",
+    "wastedSpend": "₹32,000/yr est. hosting & plugin overhead",
     "wastedBreakdown": [
-      "₹18,000/yr overpriced shared hosting & annual maintenance retainer",
-      "₹9,000/yr unused plugin renewals & security add-ons",
-      "₹5,000/yr third-party contact form gateway subscriptions"
+      "₹18,000/yr hosting & maintenance overhead (est.)",
+      "₹9,000/yr plugin overhead (est.)",
+      "₹5,000/yr form-gateway overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "CRITICAL: Domain is hijacked by foreign e-commerce spam, causing 100% loss of direct website table bookings and brand prestige.",
@@ -3485,11 +3485,11 @@
       "CRITICAL OUTAGE: Domain is parked on GoDaddy ('angadiheritage.com is parked free, courtesy of GoDaddy.com')",
       "total website blackout."
     ],
-    "wastedSpend": "₹32,000/yr on redundant hosting & plugin packs",
+    "wastedSpend": "₹32,000/yr est. hosting & plugin overhead",
     "wastedBreakdown": [
-      "₹18,000/yr overpriced shared hosting & annual maintenance retainer",
-      "₹9,000/yr unused plugin renewals & security add-ons",
-      "₹5,000/yr third-party contact form gateway subscriptions"
+      "₹18,000/yr hosting & maintenance overhead (est.)",
+      "₹9,000/yr plugin overhead (est.)",
+      "₹5,000/yr form-gateway overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "CRITICAL: Domain is parked with GoDaddy ad links, completely blacking out the luxury heritage brand that designed Deepika Padukone's bridal saree.",
@@ -3545,7 +3545,7 @@
     "techStack": "Shopify (Growthscooter)",
     "status": "available",
     "geoScore": "35%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Partial Microdata",
     "smokingGun": "Severe DOM bloat from redundant global country selectors slows mobile browsing for colonial bungalow lifestyle store.",
     "notes": "",
@@ -3575,11 +3575,11 @@
       "Excessive DOM bloat from 200+ country dropdown repeated twice",
       "lack of interactive boutique space tour."
     ],
-    "wastedSpend": "₹32,000/yr on redundant hosting & plugin packs",
+    "wastedSpend": "₹32,000/yr est. hosting & plugin overhead",
     "wastedBreakdown": [
-      "₹18,000/yr overpriced shared hosting & annual maintenance retainer",
-      "₹9,000/yr unused plugin renewals & security add-ons",
-      "₹5,000/yr third-party contact form gateway subscriptions"
+      "₹18,000/yr hosting & maintenance overhead (est.)",
+      "₹9,000/yr plugin overhead (est.)",
+      "₹5,000/yr form-gateway overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Severe DOM bloat from redundant global country selectors slows mobile browsing for colonial bungalow lifestyle store.",
@@ -3635,7 +3635,7 @@
     "techStack": "WordPress / Custom Enterprise Stack",
     "status": "available",
     "geoScore": "35%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Partial Microdata",
     "smokingGun": "Massive enterprise DOM asset payload slows mobile page load, creating drop-off for high-value international dental tourism inquiries.",
     "notes": "Verified via Google Maps: Dr. P. P. Reddy, Jubilee Hills",
@@ -3666,11 +3666,11 @@
       "typo in link text ('Jubille Hills')",
       "third-party fraud blocking script."
     ],
-    "wastedSpend": "₹42,000/yr on Practo & bloated plugins",
+    "wastedSpend": "₹42,000/yr in bookings at risk (Practo-listed rivals + plugin overhead)",
     "wastedBreakdown": [
-      "₹28,000/yr Practo profile listing & lead commission bleed",
-      "₹8,500/yr slow shared hosting & Elementor Pro renewals",
-      "₹5,500/yr SMS OTP pack for non-syncing booking form"
+      "₹28,000/yr exposure to Practo-listed rival bookings",
+      "₹8,500/yr hosting & plugin overhead (est.)",
+      "₹5,500/yr SMS/form-friction overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Massive enterprise DOM asset payload slows mobile page load, creating drop-off for high-value international dental tourism inquiries.",
@@ -3726,7 +3726,7 @@
     "techStack": "WordPress (Perfect Digital Solution)",
     "status": "available",
     "geoScore": "35%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Partial Microdata",
     "smokingGun": "Raw WhatsApp screenshot filenames and duplicated doctor blocks in the DOM degrade professional presentation for 58-year dental institution.",
     "notes": "Verified via Google Maps: Dr. M. S. Gowd, Banjara Hills",
@@ -3756,11 +3756,11 @@
       "Raw image filenames left in DOM ('Whatsapp image 2025 03 09 at 11.41.56...', 'Untitled-design-2...')",
       "duplicate team entries repeating doctors twice."
     ],
-    "wastedSpend": "₹42,000/yr on Practo & bloated plugins",
+    "wastedSpend": "₹42,000/yr in bookings at risk (Practo-listed rivals + plugin overhead)",
     "wastedBreakdown": [
-      "₹28,000/yr Practo profile listing & lead commission bleed",
-      "₹8,500/yr slow shared hosting & Elementor Pro renewals",
-      "₹5,500/yr SMS OTP pack for non-syncing booking form"
+      "₹28,000/yr exposure to Practo-listed rival bookings",
+      "₹8,500/yr hosting & plugin overhead (est.)",
+      "₹5,500/yr SMS/form-friction overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Raw WhatsApp screenshot filenames and duplicated doctor blocks in the DOM degrade professional presentation for 58-year dental institution.",
@@ -3847,11 +3847,11 @@
       "Crawler protection blocking automated agents",
       "manual consultation request form without immediate slot confirmation."
     ],
-    "wastedSpend": "₹42,000/yr on Practo & bloated plugins",
+    "wastedSpend": "₹42,000/yr in bookings at risk (Practo-listed rivals + plugin overhead)",
     "wastedBreakdown": [
-      "₹28,000/yr Practo profile listing & lead commission bleed",
-      "₹8,500/yr slow shared hosting & Elementor Pro renewals",
-      "₹5,500/yr SMS OTP pack for non-syncing booking form"
+      "₹28,000/yr exposure to Practo-listed rival bookings",
+      "₹8,500/yr hosting & plugin overhead (est.)",
+      "₹5,500/yr SMS/form-friction overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Crawler blocking and absence of /llms.txt prevent generative AI discovery for specialized clinical dermatology treatments.",
@@ -3937,11 +3937,11 @@
       "Visible typos in headers and navigation ('Our Qoutes', 'RF Skinn Tightening', 'Jawline Conturing', 'Tatoo Removal')",
       "raw banner text ('Banner Banner Banner Banner Next Next') in hero DOM."
     ],
-    "wastedSpend": "₹42,000/yr on Practo & bloated plugins",
+    "wastedSpend": "₹42,000/yr in bookings at risk (Practo-listed rivals + plugin overhead)",
     "wastedBreakdown": [
-      "₹28,000/yr Practo profile listing & lead commission bleed",
-      "₹8,500/yr slow shared hosting & Elementor Pro renewals",
-      "₹5,500/yr SMS OTP pack for non-syncing booking form"
+      "₹28,000/yr exposure to Practo-listed rival bookings",
+      "₹8,500/yr hosting & plugin overhead (est.)",
+      "₹5,500/yr SMS/form-friction overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Multiple visible typos ('Our Qoutes', 'RF Skinn Tightening') and unrendered banner tags on homepage undermine trust for luxury laser treatments.",
@@ -3997,7 +3997,7 @@
     "techStack": "WordPress / 8Views",
     "status": "available",
     "geoScore": "35%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Partial Microdata",
     "smokingGun": "Zero-counter glitch ('0.0 / 5 Rating', '0+ Happy Patients') and broken video tags on live homepage directly repel prospective aesthetic patients.",
     "notes": "Verified via Google Maps: Dr. Divyasree P, Jubilee Hills",
@@ -4027,11 +4027,11 @@
       "Critical counter failure showing '0.0 / 5 Rating', '0+ Happy Patients', '0+ Procedures', '0+ Years' on live site",
       "3 failed video tags ('Your browser does not support the video tag')."
     ],
-    "wastedSpend": "₹42,000/yr on Practo & bloated plugins",
+    "wastedSpend": "₹42,000/yr in bookings at risk (Practo-listed rivals + plugin overhead)",
     "wastedBreakdown": [
-      "₹28,000/yr Practo profile listing & lead commission bleed",
-      "₹8,500/yr slow shared hosting & Elementor Pro renewals",
-      "₹5,500/yr SMS OTP pack for non-syncing booking form"
+      "₹28,000/yr exposure to Practo-listed rival bookings",
+      "₹8,500/yr hosting & plugin overhead (est.)",
+      "₹5,500/yr SMS/form-friction overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Zero-counter glitch ('0.0 / 5 Rating', '0+ Happy Patients') and broken video tags on live homepage directly repel prospective aesthetic patients.",
@@ -4118,11 +4118,11 @@
       "previous database linked wrong industrial wire domain",
       "patient intake routed through call centers rather than instant triage."
     ],
-    "wastedSpend": "₹42,000/yr on Practo & bloated plugins",
+    "wastedSpend": "₹42,000/yr in bookings at risk (Practo-listed rivals + plugin overhead)",
     "wastedBreakdown": [
-      "₹28,000/yr Practo profile listing & lead commission bleed",
-      "₹8,500/yr slow shared hosting & Elementor Pro renewals",
-      "₹5,500/yr SMS OTP pack for non-syncing booking form"
+      "₹28,000/yr exposure to Practo-listed rival bookings",
+      "₹8,500/yr hosting & plugin overhead (est.)",
+      "₹5,500/yr SMS/form-friction overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Previous database error linked wrong cable manufacturer domain; multi-city footprint requires agentic entity schema to capture high-intent IVF searchers.",
@@ -4210,11 +4210,11 @@
       "legacy web framework blocking modern web crawlers",
       "lack of WebGL 3D architectural models."
     ],
-    "wastedSpend": "₹48,000/yr on Houzz Pro & directory listings",
+    "wastedSpend": "₹48,000/yr in inquiries at risk to aggregator-listed rivals",
     "wastedBreakdown": [
-      "₹36,000/yr Houzz Pro & Justdial directory listing subscriptions",
-      "₹8,000/yr unoptimized Squarespace/Wix storage tier upgrades",
-      "₹4,000/yr redundant portfolio PDF bandwidth hosting fees"
+      "₹36,000/yr at risk to Houzz/Justdial-listed rival capture",
+      "₹8,000/yr storage-tier overhead (est.)",
+      "₹4,000/yr portfolio hosting overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Insecure HTTP protocol and legacy web framework leave international award-winning architectural designs unindexed by AI search engines.",
@@ -4270,7 +4270,7 @@
     "techStack": "Wix (Insecure HTTP)",
     "status": "available",
     "geoScore": "15%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Unstructured DOM",
     "smokingGun": "Default Wix title 'Home | mysite', non-HTTPS protocol, and Yahoo email address severely diminish elite prestige for celebrity interior designers.",
     "notes": "Verified studio line via Google Maps: Aamir Sharma",
@@ -4302,11 +4302,11 @@
       "raw image filename 'Nitin Home web-31.jpg'",
       "free Yahoo email 'design_ah@yahoo.co.in'."
     ],
-    "wastedSpend": "₹48,000/yr on Houzz Pro & directory listings",
+    "wastedSpend": "₹48,000/yr in inquiries at risk to aggregator-listed rivals",
     "wastedBreakdown": [
-      "₹36,000/yr Houzz Pro & Justdial directory listing subscriptions",
-      "₹8,000/yr unoptimized Squarespace/Wix storage tier upgrades",
-      "₹4,000/yr redundant portfolio PDF bandwidth hosting fees"
+      "₹36,000/yr at risk to Houzz/Justdial-listed rival capture",
+      "₹8,000/yr storage-tier overhead (est.)",
+      "₹4,000/yr portfolio hosting overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Default Wix title 'Home | mysite', non-HTTPS protocol, and Yahoo email address severely diminish elite prestige for celebrity interior designers.",
@@ -4362,7 +4362,7 @@
     "techStack": "Custom Web / Cloudflare",
     "status": "available",
     "geoScore": "15%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Unstructured DOM",
     "smokingGun": "Heavy static imagery without structured project schema prevents autonomous discovery for high-budget residential and hospitality commissions.",
     "notes": "",
@@ -4392,11 +4392,11 @@
       "Crawler-resistant architecture",
       "static photography portfolio without real-time interactive material/spatial viewer."
     ],
-    "wastedSpend": "₹32,000/yr on redundant hosting & plugin packs",
+    "wastedSpend": "₹32,000/yr est. hosting & plugin overhead",
     "wastedBreakdown": [
-      "₹18,000/yr overpriced shared hosting & annual maintenance retainer",
-      "₹9,000/yr unused plugin renewals & security add-ons",
-      "₹5,000/yr third-party contact form gateway subscriptions"
+      "₹18,000/yr hosting & maintenance overhead (est.)",
+      "₹9,000/yr plugin overhead (est.)",
+      "₹5,000/yr form-gateway overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Heavy static imagery without structured project schema prevents autonomous discovery for high-budget residential and hospitality commissions.",
@@ -4483,11 +4483,11 @@
       "outdated copyright '© 2023 All Rights Reserved'",
       "basic static portfolio."
     ],
-    "wastedSpend": "₹48,000/yr on Houzz Pro & directory listings",
+    "wastedSpend": "₹48,000/yr in inquiries at risk to aggregator-listed rivals",
     "wastedBreakdown": [
-      "₹36,000/yr Houzz Pro & Justdial directory listing subscriptions",
-      "₹8,000/yr unoptimized Squarespace/Wix storage tier upgrades",
-      "₹4,000/yr redundant portfolio PDF bandwidth hosting fees"
+      "₹36,000/yr at risk to Houzz/Justdial-listed rival capture",
+      "₹8,000/yr storage-tier overhead (est.)",
+      "₹4,000/yr portfolio hosting overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Non-HTTPS protocol and outdated 2023 copyright on live site create impression of neglected web presence for high-end Banjara Hills studio.",
@@ -4573,11 +4573,11 @@
       "Crawler protection blocking bot inspection",
       "absence of structured architect/project schema."
     ],
-    "wastedSpend": "₹36,000/yr on Fresha/Nearbuy commissions",
+    "wastedSpend": "₹36,000/yr in bookings at risk to marketplace-listed rivals",
     "wastedBreakdown": [
-      "₹24,000/yr marketplace appointment commission bleed",
-      "₹7,000/yr legacy booking widget & plugin renewals",
-      "₹5,000/yr bulk promotional SMS packages"
+      "₹24,000/yr at risk to marketplace appointment capture",
+      "₹7,000/yr widget & plugin overhead (est.)",
+      "₹5,000/yr promotional SMS overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Missing /llms.txt and unstructured portfolio DOM leave avant-garde architectural projects unindexed by modern AI research agents.",
@@ -4633,7 +4633,7 @@
     "techStack": "Shopify",
     "status": "available",
     "geoScore": "35%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Partial Microdata",
     "smokingGun": "Severe DOM repetition and redundant multi-country currency dropdowns bloat mobile load times for ₹1 Lakh+ couture bridal collections.",
     "notes": "Verified flagship mobile via Google Maps: Jubilee Hills",
@@ -4664,11 +4664,11 @@
       "redundant 30-country currency selector duplicated twice",
       "lack of 3D drape visualization."
     ],
-    "wastedSpend": "₹48,000/yr on Houzz Pro & directory listings",
+    "wastedSpend": "₹48,000/yr in inquiries at risk to aggregator-listed rivals",
     "wastedBreakdown": [
-      "₹36,000/yr Houzz Pro & Justdial directory listing subscriptions",
-      "₹8,000/yr unoptimized Squarespace/Wix storage tier upgrades",
-      "₹4,000/yr redundant portfolio PDF bandwidth hosting fees"
+      "₹36,000/yr at risk to Houzz/Justdial-listed rival capture",
+      "₹8,000/yr storage-tier overhead (est.)",
+      "₹4,000/yr portfolio hosting overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Severe DOM repetition and redundant multi-country currency dropdowns bloat mobile load times for ₹1 Lakh+ couture bridal collections.",
@@ -4724,7 +4724,7 @@
     "techStack": "Shopify",
     "status": "available",
     "geoScore": "35%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Partial Microdata",
     "smokingGun": "Typo in appointment button ('APPOINMENT') and massive 4x country list duplication create asset bloat on ₹2 Lakh+ bridal couture storefront.",
     "notes": "Verified mobile via Google Maps: Banjara Hills",
@@ -4754,11 +4754,11 @@
       "Typo in primary CTA button ('BOOK AN APPOINMENT')",
       "massive DOM bloat with 200-country currency list repeated 4 times in page source."
     ],
-    "wastedSpend": "₹48,000/yr on Houzz Pro & directory listings",
+    "wastedSpend": "₹48,000/yr in inquiries at risk to aggregator-listed rivals",
     "wastedBreakdown": [
-      "₹36,000/yr Houzz Pro & Justdial directory listing subscriptions",
-      "₹8,000/yr unoptimized Squarespace/Wix storage tier upgrades",
-      "₹4,000/yr redundant portfolio PDF bandwidth hosting fees"
+      "₹36,000/yr at risk to Houzz/Justdial-listed rival capture",
+      "₹8,000/yr storage-tier overhead (est.)",
+      "₹4,000/yr portfolio hosting overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Typo in appointment button ('APPOINMENT') and massive 4x country list duplication create asset bloat on ₹2 Lakh+ bridal couture storefront.",
@@ -4814,7 +4814,7 @@
     "techStack": "Shopify (AM Branding Co / Non-HTTPS)",
     "status": "available",
     "geoScore": "20%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Partial Microdata",
     "smokingGun": "Insecure HTTP protocol, broken cart shipping logic, and visible 'null/' chat glitch compromise digital buying experience for ₹3.4L–₹7.8L lehengas.",
     "notes": "Verified studio mobile via Google Maps: Film Nagar",
@@ -4845,11 +4845,11 @@
       "cart logic glitch ('You are MRP. ₹ 0 INR away from free shipping. Sorry, looks like we don't have enough...')",
       "chat glitch showing raw 'null/'."
     ],
-    "wastedSpend": "₹48,000/yr on Houzz Pro & directory listings",
+    "wastedSpend": "₹48,000/yr in inquiries at risk to aggregator-listed rivals",
     "wastedBreakdown": [
-      "₹36,000/yr Houzz Pro & Justdial directory listing subscriptions",
-      "₹8,000/yr unoptimized Squarespace/Wix storage tier upgrades",
-      "₹4,000/yr redundant portfolio PDF bandwidth hosting fees"
+      "₹36,000/yr at risk to Houzz/Justdial-listed rival capture",
+      "₹8,000/yr storage-tier overhead (est.)",
+      "₹4,000/yr portfolio hosting overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Insecure HTTP protocol, broken cart shipping logic, and visible 'null/' chat glitch compromise digital buying experience for ₹3.4L–₹7.8L lehengas.",
@@ -4905,7 +4905,7 @@
     "techStack": "Shopify",
     "status": "available",
     "geoScore": "35%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Partial Microdata",
     "smokingGun": "Default theme newsletter placeholder and 8x header announcement duplication signal an unmaintained digital storefront for ₹3 Lakh+ couture.",
     "notes": "Verified atelier mobile via Google Maps: Banjara Hills",
@@ -4935,11 +4935,11 @@
       "Header announcement duplicated 8 times in DOM",
       "unedited Shopify placeholder text ('Describe what your customers will receive...') in footer newsletter."
     ],
-    "wastedSpend": "₹48,000/yr on Houzz Pro & directory listings",
+    "wastedSpend": "₹48,000/yr in inquiries at risk to aggregator-listed rivals",
     "wastedBreakdown": [
-      "₹36,000/yr Houzz Pro & Justdial directory listing subscriptions",
-      "₹8,000/yr unoptimized Squarespace/Wix storage tier upgrades",
-      "₹4,000/yr redundant portfolio PDF bandwidth hosting fees"
+      "₹36,000/yr at risk to Houzz/Justdial-listed rival capture",
+      "₹8,000/yr storage-tier overhead (est.)",
+      "₹4,000/yr portfolio hosting overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Default theme newsletter placeholder and 8x header announcement duplication signal an unmaintained digital storefront for ₹3 Lakh+ couture.",
@@ -5026,11 +5026,11 @@
       "word 'Concu' repeated 30 times in DOM",
       "developer instruction text leaked into live PWA install guide."
     ],
-    "wastedSpend": "₹54,000/yr on Swiggy/Zomato & ordering widgets",
+    "wastedSpend": "₹54,000/yr in orders at risk to delivery-marketplace listings",
     "wastedBreakdown": [
-      "₹38,000/yr delivery & table marketplace onboarding commissions",
-      "₹10,500/yr third-party PDF menu & ordering widget subscription",
-      "₹5,500/yr legacy vendor hosting & SSL markups"
+      "₹38,000/yr at risk to delivery/table marketplace capture",
+      "₹10,500/yr menu/ordering-widget overhead (est.)",
+      "₹5,500/yr hosting overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Insecure HTTP protocol, 30x brand name DOM repeat, and leaked developer installation notes diminish luxury patisserie brand elegance.",
@@ -5112,11 +5112,11 @@
       "Directs diners off-site to third-party delivery apps",
       "Uncached assets slowing mobile 4G page rendering"
     ],
-    "wastedSpend": "₹54,000/yr on Swiggy/Zomato & ordering widgets",
+    "wastedSpend": "₹54,000/yr in orders at risk to delivery-marketplace listings",
     "wastedBreakdown": [
-      "₹38,000/yr delivery & table marketplace onboarding commissions",
-      "₹10,500/yr third-party PDF menu & ordering widget subscription",
-      "₹5,500/yr legacy vendor hosting & SSL markups"
+      "₹38,000/yr at risk to delivery/table marketplace capture",
+      "₹10,500/yr menu/ordering-widget overhead (est.)",
+      "₹5,500/yr hosting overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "When weekend diners look up your menu on mobile, can they reserve in 2 taps or do they have to download a slow PDF and end up on Zomato?",
@@ -5204,11 +5204,11 @@
       "lack of direct online table reservation engine",
       "phone-only peak hour booking."
     ],
-    "wastedSpend": "₹54,000/yr on Swiggy/Zomato & ordering widgets",
+    "wastedSpend": "₹54,000/yr in orders at risk to delivery-marketplace listings",
     "wastedBreakdown": [
-      "₹38,000/yr delivery & table marketplace onboarding commissions",
-      "₹10,500/yr third-party PDF menu & ordering widget subscription",
-      "₹5,500/yr legacy vendor hosting & SSL markups"
+      "₹38,000/yr at risk to delivery/table marketplace capture",
+      "₹10,500/yr menu/ordering-widget overhead (est.)",
+      "₹5,500/yr hosting overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Lack of integrated 1-tap table booking engine creates friction during peak dinner hours, leaking diners to third-party dining apps.",
@@ -5290,11 +5290,11 @@
       "Aggregator displays discounts and nearby competing restaurants on your listing",
       "Zero guest phone/data ownership for repeat banquet and event marketing"
     ],
-    "wastedSpend": "₹58,000/yr on aggregator listings & commission bleed",
+    "wastedSpend": "₹58,000/yr in orders at risk to aggregator listings",
     "wastedBreakdown": [
-      "₹42,000/yr delivery and dine-in booking commissions on existing clientele",
-      "₹10,500/yr aggregator sponsored search placement to stay visible",
-      "₹5,500/yr unmanaged manual phone reservation table-clash losses"
+      "₹42,000/yr at risk to delivery/dine-in marketplace capture",
+      "₹10,500/yr aggregator sponsored-search exposure (est.)",
+      "₹5,500/yr manual phone-reservation load (table-clash risk unverified)"
     ],
     "callerCheatSheet": {
       "icebreaker": "When weekend diners look up your restaurant on Google, can they reserve directly or are they pushed onto Zomato where your competitors offer discounts?",
@@ -5350,7 +5350,7 @@
     "techStack": "Custom Educational Portal",
     "status": "available",
     "geoScore": "15%",
-    "llmsStatus": "Missing (/llms.txt 404)",
+    "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Unstructured DOM",
     "smokingGun": "Missing /llms.txt and lack of 1-tap WhatsApp consultation funnel cause high friction for competitive exam student enrollment.",
     "notes": "Verified director mobile via Google Maps: P. V. R. K. Murthy",
@@ -5380,11 +5380,11 @@
       "Host crawler protection",
       "complex multi-program navigation with no direct WhatsApp counseling triage."
     ],
-    "wastedSpend": "₹32,000/yr on redundant hosting & plugin packs",
+    "wastedSpend": "₹32,000/yr est. hosting & plugin overhead",
     "wastedBreakdown": [
-      "₹18,000/yr overpriced shared hosting & annual maintenance retainer",
-      "₹9,000/yr unused plugin renewals & security add-ons",
-      "₹5,000/yr third-party contact form gateway subscriptions"
+      "₹18,000/yr hosting & maintenance overhead (est.)",
+      "₹9,000/yr plugin overhead (est.)",
+      "₹5,000/yr form-gateway overhead (est.)"
     ],
     "callerCheatSheet": {
       "icebreaker": "Missing /llms.txt and lack of 1-tap WhatsApp consultation funnel cause high friction for competitive exam student enrollment.",
