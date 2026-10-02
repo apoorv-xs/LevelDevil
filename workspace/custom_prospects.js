@@ -139,23 +139,23 @@
     "ptype": "UPGRADE",
     "fee": "₹50,000",
     "status": "available",
-    "speedScore": "38/100",
-    "lcpTime": "4.2s",
-    "techStack": "WordPress / Elementor",
+    "speedScore": "15/100 (Mobile, cold-load measured Oct 02)",
+    "lcpTime": "LCP: 8.4s cold, 0.9s warm (2 runs, Moto G)",
+    "techStack": "WordPress (generator declares bogus 7.1.2; 94 requests, 3.5MB payload)",
     "flaws": [
-      "Critical theme blunders: Co-founder listed as theme placeholder 'Dianne Russell Co founder'",
-      "counters showing '0 % Satisfaction', '0 % Complete', '0 + Doctors'",
-      "vertical letter spacing bugs in headers."
+      "VERIFIED in raw HTML Oct 02: unedited 'Dianne Russell' co-founder block (Elementor, placeholder photo) live on homepage",
+      "Measured LCP 8.4s cold, 0.9s warm (Moto G, Oct 02, 2 runs); 94 requests, 3.5MB payload",
+      "Generic SEO schema only (WebSite/WebPage boilerplate); no Dentist entity for AI crawlers"
     ],
     "geoScore": "35%",
     "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
-    "schemaStatus": "Unstructured DOM",
-    "smokingGun": "Unedited theme dummy co-founder ('Dianne Russell') and '0% Satisfaction' counters active on live homepage destroy clinical credibility.",
+    "schemaStatus": "Generic SEO schema only (no Dentist entity, verified Oct 02)",
+    "smokingGun": "VERIFIED in raw HTML Oct 02: unedited theme dummy co-founder ('Dianne Russell', Elementor image-box with placeholder photo) live on homepage — invisible to text scrapers, visible to patients. Measured 8.4s cold load (0.9s warm) on Moto G: 94 requests, 3.5MB; generic SEO schema with no Dentist entity; /llms.txt live.",
     "scripts": {
       "speed": {
-        "en": "Good morning, calling on Apoorv's behalf for Clinical Director (facecodentalclinic@gmail.com). Apoorv audited Faceco Dental Clinic & Skin Care Clinic's mobile web presence and noted that mobile loading takes 4.2s, causing high-intent prospective clients to drop off before booking. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) to secure direct bookings. Would Clinical Director have 10 minutes for a brief discovery screen share with Apoorv this Thursday?",
-        "ml": "നമസ്കാരം, ഇത് Faceco Dental Clinic & Skin Care Clinic അല്ലേ? ഞാൻ അപൂർവിൻ വേണ്ടിയാണ് വിളിക്കുന്നത് (calling on Apoorv's behalf). Clinical Director (facecodentalclinic@gmail.com)-നോട് സംസാരിക്കാൻ സാധിക്കുമോ? നിങ്ങളുടെ വെബ്സൈഞ്ടെ മൊബൈർ സ്പീഡും (4.2s) ഡയറക്ട് ബുക്കിംഗും വർധിപ്പിക്കാൻ അപൂർവ് തയ്യാറാക്കിയ എക്സിക്യൂട്ടിവ് പെർഫോർമൻസ് ഓഡിട്ട് ഷെയർ ചെയ്യാന്. അപൂർവുമാണി സംസാരിക്കാൻ ഈ വ്യാഴാഴ്ച 10 മിനിറ്ട് സമയം തരാമോ?",
-        "manglish": "Namaskaram, ithu Faceco Dental Clinic & Skin Care Clinic alle? Njan Apoorv-nu vendiyanu vilikkunnathu. Clinical Director (facecodentalclinic@gmail.com)-nodu oru minute samsarikkan sadhikkumo? Ningalude website mobile loading 4.2s edukkunnathinaal drop-off undavunnu. Direct bookings maximize cheyyaan Apoorv thayyaraakkiya technical audit share cheyyaam. 10 minute samayam tharaamo?"
+        "en": "Good morning, calling on Apoorv's behalf for Clinical Director (facecodentalclinic@gmail.com). Apoorv audited Faceco Dental Clinic & Skin Care Clinic's mobile web presence and noted that mobile loading takes 8.4s cold (0.9s warm), causing high-intent prospective clients to drop off before booking. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) to secure direct bookings. Would Clinical Director have 10 minutes for a brief discovery screen share with Apoorv this Thursday?",
+        "ml": "നമസ്കാരം, ഇത് Faceco Dental Clinic & Skin Care Clinic അല്ലേ? ഞാൻ അപൂർവിൻ വേണ്ടിയാണ് വിളിക്കുന്നത് (calling on Apoorv's behalf). Clinical Director (facecodentalclinic@gmail.com)-നോട് സംസാരിക്കാൻ സാധിക്കുമോ? നിങ്ങളുടെ വെബ്സൈഞ്ടെ മൊബൈർ സ്പീഡും (8.4s cold (0.9s warm)) ഡയറക്ട് ബുക്കിംഗും വർധിപ്പിക്കാൻ അപൂർവ് തയ്യാറാക്കിയ എക്സിക്യൂട്ടിവ് പെർഫോർമൻസ് ഓഡിട്ട് ഷെയർ ചെയ്യാന്. അപൂർവുമാണി സംസാരിക്കാൻ ഈ വ്യാഴാഴ്ച 10 മിനിറ്ട് സമയം തരാമോ?",
+        "manglish": "Namaskaram, ithu Faceco Dental Clinic & Skin Care Clinic alle? Njan Apoorv-nu vendiyanu vilikkunnathu. Clinical Director (facecodentalclinic@gmail.com)-nodu oru minute samsarikkan sadhikkumo? Ningalude website mobile loading 8.4s cold (0.9s warm) edukkunnathinaal drop-off undavunnu. Direct bookings maximize cheyyaan Apoorv thayyaraakkiya technical audit share cheyyaam. 10 minute samayam tharaamo?"
       },
       "commission": {
         "en": "Good morning, calling on Apoorv's behalf for Clinical Director (facecodentalclinic@gmail.com). Premier establishments in Kochi are currently surrendering 15% to 25% of client revenue to aggregators because their own direct website lacks an instant, friction-free booking engine. Apoorv builds high-conversion direct portals that eliminate middleman commission bleed. Would Clinical Director be open to a 10-minute strategy call with Apoorv this week?",
@@ -169,7 +169,7 @@
       },
       "gatekeeper": "Good morning, I’m calling on Apoorv's behalf for Clinical Director (facecodentalclinic@gmail.com) regarding mobile booking drop-offs and the 2026 AI search audit for Faceco Dental Clinic & Skin Care Clinic. Is Clinical Director currently between consultations or should I reach their personal desk?"
     },
-    "waMessage": "Hi Clinical Director, following up on our call on Apoorv's behalf regarding Faceco Dental Clinic & Skin Care Clinic. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (4.2s). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
+    "waMessage": "Hi Clinical Director, following up on our call on Apoorv's behalf regarding Faceco Dental Clinic & Skin Care Clinic. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (8.4s cold (0.9s warm)). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
     "wastedSpend": "₹55,000/yr at risk to aggregator directories",
     "wastedBreakdown": [
       "₹35,000/yr third-party aggregator listings",
@@ -177,11 +177,11 @@
       "₹8,000/yr wasted ad spend on high-bounce mobile traffic"
     ],
     "callerCheatSheet": {
-      "icebreaker": "Unedited theme dummy co-founder ('Dianne Russell') and '0% Satisfaction' counters active on live homepage destroy clinical credibility.",
+      "icebreaker": "VERIFIED in raw HTML Oct 02: unedited 'Dianne Russell' co-founder block live on homepage; plus measured 8.4s cold load and no Dentist entity for AI crawlers.",
       "laymanAnalogy": "Slow mobile site leaks high-intent guests to whoever answers first on an aggregator.",
       "competitorEdge": "Top properties use 60 FPS portals and /llms.txt for direct bookings."
     },
-    "notes": "Verified Edappally clinic line via Google Maps",
+    "notes": "3 branches verified in site HTML Oct 02 — Edappally +91 81380 03200 (flagship, record primary), Vennala +91 70346 72424, Thodupuzha +91 81292 20630. Edappally line also Maps-verified.",
     "lastCallTime": "",
     "lockedBy": null,
     "lockedEmail": null
