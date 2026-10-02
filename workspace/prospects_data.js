@@ -289,14 +289,14 @@
     "ptype": "UPGRADE",
     "fee": "₹50,000",
     "cat": "clinic",
-    "speedScore": "10/100 (Mobile)",
-    "lcpTime": "LCP: 10.8s",
-    "techStack": "Custom (38 scripts, 61 images, 10.3MB payload)",
+    "speedScore": "30/100 (Mobile, from 4.8s LCP)",
+    "lcpTime": "LCP: 4.8s typical (10.8s cold-start)",
+    "techStack": "WordPress 6.9.9 (110+ requests, up to 10MB payload, 61 images)",
     "status": "available",
     "geoScore": "5%",
     "llmsStatus": "Unindexed Domain",
     "schemaStatus": "Unstructured DOM",
-    "smokingGun": "Measured 10.8s mobile load (Moto G, Oct 02): 125 requests, 10.3MB payload, 38 scripts, 61 images; /llms.txt and /robots.txt both 404.",
+    "smokingGun": "Measured 4.8s typical mobile load, 10.8s cold-start (Moto G, Oct 02, 3 runs): 110-125 requests, 4.6-10.3MB payload, 38 scripts, 61 images; origin TTFB swings 2-10s; /llms.txt and /robots.txt both 404.",
     "notes": "Verified via Google Maps: Owns clouddental.in. Measured Oct 02 on Moto G 4G: LCP 10.8s, 125 requests, 10.3MB payload, 38 scripts, 61 images; /llms.txt 404, /robots.txt 404; Practo/Justdial listing unconfirmed",
     "lastCallTime": "2026-10-02 10:24 AM",
     "lockedBy": null,
@@ -321,8 +321,8 @@
     },
     "waMessage": "Hi Dr. Megha Rajesh, following up on our call on Apoorv's behalf regarding Dr Megha's Cloud Dental Care. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (10.8s). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
     "flaws": [
-      "Measured LCP 10.8s on Moto G 4G (125 requests, 10.3MB payload, Oct 02)",
-      "38 render-blocking scripts plus 61 images with zero payload discipline",
+      "Measured LCP 4.8s typical, 10.8s cold-start (Moto G 4G, Oct 02, 3 runs)",
+      "38 render-blocking scripts plus 61 images; payload swings 4.6-10.3MB run to run",
       "/llms.txt 404 and /robots.txt 404 — invisible to AI search crawlers"
     ],
     "wastedSpend": "₹48,000/yr in bookings at risk to Practo-listed Kakkanad rivals",
@@ -332,8 +332,8 @@
       "No /llms.txt or /robots.txt: invisible when patients ask AI where to go"
     ],
     "callerCheatSheet": {
-      "icebreaker": "Measured 10.8s mobile load (Moto G, Oct 02): 125 requests, 10.3MB payload, 38 scripts, 61 images; /llms.txt and /robots.txt both 404.",
-      "laymanAnalogy": "Her homepage weighs 10.3MB across 125 requests and takes 10.8 seconds to show content on a phone — like making every patient wait outside the clinic door for eleven seconds before it opens.",
+      "icebreaker": "Measured 4.8s typical mobile load, 10.8s cold-start (Moto G, Oct 02, 3 runs): 110-125 requests, 4.6-10.3MB payload, 38 scripts, 61 images; origin TTFB swings 2-10s; /llms.txt and /robots.txt both 404.",
+      "laymanAnalogy": "Her homepage swings between 4.6 and 10MB and takes about 5 seconds to show content —11 on a cold start — like making every patient wait outside the clinic door.",
       "competitorEdge": "Smile-n-Shine, Orchid Dental and Good Dentist take bookings on Practo in Kakkanad today; her 10.8s load hands them walk-in patients."
     },
     "securityAudit": {
@@ -346,8 +346,8 @@
       ],
       "callerTalkingPoint": "Their site sends no HSTS or content-security headers, publicly discloses its WordPress version, and offers no encrypted online intake — every booking happens over plain phone or WhatsApp."
     },
-    "revenueLeak": "₹4,50,000/mo Est. Revenue Leak",
-    "revenueLeakNumeric": 450000,
+    "revenueLeak": "₹2,00,000/mo Est. Revenue Leak",
+    "revenueLeakNumeric": 200000,
     "dpdpCompliance": {
       "status": "No browser intake to govern",
       "risk": "Manual phone/WhatsApp process",
@@ -927,23 +927,23 @@
     "ptype": "UPGRADE",
     "fee": "₹50,000",
     "cat": "restaurant",
-    "speedScore": "0/100 (Unresponsive)",
-    "lcpTime": "Timeout (>10s)",
-    "techStack": "Unreachable / Host Connection Failure",
+    "speedScore": "85/100 (Mobile, from 1.2s LCP)",
+    "lcpTime": "LCP: 1.2s (measured Oct 02, Moto G)",
+    "techStack": "Lightweight custom (8 requests, 0.2MB payload)",
     "status": "available",
-    "geoScore": "0%",
+    "geoScore": "10% (llms.txt blocked, no JSON-LD)",
     "llmsStatus": "Unindexed Domain",
     "schemaStatus": "Unstructured DOM",
-    "smokingGun": "Website unresolvable over standard web protocols; 100% of takeaway and catering revenue surrendered to Swiggy/Zomato commissions.",
+    "smokingGun": "Site is fast (1.2s LCP measured Oct 02) but has no JSON-LD menu schema and blocks /llms.txt — AI assistants cannot read the menu, so orders default to Swiggy/Zomato listings.",
     "notes": "Verified via Google Maps: owns biryanistore.in",
     "lastCallTime": "",
     "lockedBy": null,
     "lockedEmail": null,
     "scripts": {
       "speed": {
-        "en": "Good morning, calling on Apoorv's behalf for Founder & Operations Partner. Apoorv audited The Biryani Store's mobile web presence and noted that mobile loading takes Timeout (>10s), causing high-intent prospective clients to drop off before booking. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) to secure direct bookings. Would Founder & Operations Partner have 10 minutes for a brief discovery screen share with Apoorv this Thursday?",
-        "ml": "നമസ്കാരം, ഇത് The Biryani Store അല്ലേ? ഞാൻ അപൂർവിൻ വേണ്ടിയാണ് വിളിക്കുന്നത് (calling on Apoorv's behalf). Founder & Operations Partner-നോട് സംസാരിക്കാൻ സാധിക്കുമോ? നിങ്ങളുടെ വെബ്സൈഞ്ടെ മൊബൈർ സ്പീഡും (Timeout (>10s)) ഡയറക്ട് ബുക്കിംഗും വർധിപ്പിക്കാൻ അപൂർവ് തയ്യാറാക്കിയ എക്സിക്യൂട്ടിവ് പെർഫോർമൻസ് ഓഡിട്ട് ഷെയർ ചെയ്യാന്. അപൂർവുമാണി സംസാരിക്കാൻ ഈ വ്യാഴാഴ്ച 10 മിനിറ്ട് സമയം തരാമോ?",
-        "manglish": "Namaskaram, ithu The Biryani Store alle? Njan Apoorv-nu vendiyanu vilikkunnathu. Founder & Operations Partner-nodu oru minute samsarikkan sadhikkumo? Ningalude website mobile loading Timeout (>10s) edukkunnathinaal drop-off undavunnu. Direct bookings maximize cheyyaan Apoorv thayyaraakkiya technical audit share cheyyaam. 10 minute samayam tharaamo?"
+        "en": "Good morning, calling on Apoorv's behalf for Founder & Operations Partner. Apoorv audited The Biryani Store's mobile web presence and noted that mobile loading takes 1.2s (measured Oct 02), causing high-intent prospective clients to drop off before booking. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) to secure direct bookings. Would Founder & Operations Partner have 10 minutes for a brief discovery screen share with Apoorv this Thursday?",
+        "ml": "നമസ്കാരം, ഇത് The Biryani Store അല്ലേ? ഞാൻ അപൂർവിൻ വേണ്ടിയാണ് വിളിക്കുന്നത് (calling on Apoorv's behalf). Founder & Operations Partner-നോട് സംസാരിക്കാൻ സാധിക്കുമോ? നിങ്ങളുടെ വെബ്സൈഞ്ടെ മൊബൈർ സ്പീഡും (1.2s (measured Oct 02)) ഡയറക്ട് ബുക്കിംഗും വർധിപ്പിക്കാൻ അപൂർവ് തയ്യാറാക്കിയ എക്സിക്യൂട്ടിവ് പെർഫോർമൻസ് ഓഡിട്ട് ഷെയർ ചെയ്യാന്. അപൂർവുമാണി സംസാരിക്കാൻ ഈ വ്യാഴാഴ്ച 10 മിനിറ്ട് സമയം തരാമോ?",
+        "manglish": "Namaskaram, ithu The Biryani Store alle? Njan Apoorv-nu vendiyanu vilikkunnathu. Founder & Operations Partner-nodu oru minute samsarikkan sadhikkumo? Ningalude website mobile loading 1.2s (measured Oct 02) edukkunnathinaal drop-off undavunnu. Direct bookings maximize cheyyaan Apoorv thayyaraakkiya technical audit share cheyyaam. 10 minute samayam tharaamo?"
       },
       "commission": {
         "en": "Good morning, calling on Apoorv's behalf for Founder & Operations Partner. Premier establishments in Kochi are currently surrendering 15% to 25% of client revenue to aggregators because their own direct website lacks an instant, friction-free booking engine. Apoorv builds high-conversion direct portals that eliminate middleman commission bleed. Would Founder & Operations Partner be open to a 10-minute strategy call with Apoorv this week?",
@@ -957,10 +957,11 @@
       },
       "gatekeeper": "Good morning, I’m calling on Apoorv's behalf for Founder & Operations Partner regarding mobile booking drop-offs and the 2026 AI search audit for The Biryani Store. Is Founder & Operations Partner currently between consultations or should I reach their personal desk?"
     },
-    "waMessage": "Hi Founder & Operations Partner, following up on our call on Apoorv's behalf regarding The Biryani Store. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (Timeout (>10s)). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
+    "waMessage": "Hi Founder & Operations Partner, following up on our call on Apoorv's behalf regarding The Biryani Store. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (1.2s (measured Oct 02)). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
     "flaws": [
-      "Domain unresponsive or blocked",
-      "zero web ordering channel."
+      "1.2s LCP measured Oct 02 — speed is not the problem",
+      "No JSON-LD menu schema; /llms.txt returns 403",
+      "Zero online ordering forms — phone-only takeaway"
     ],
     "wastedSpend": "₹58,000/yr in orders at risk to aggregator listings",
     "wastedBreakdown": [
@@ -969,8 +970,8 @@
       "₹5,500/yr manual phone-reservation load (table-clash risk unverified)"
     ],
     "callerCheatSheet": {
-      "icebreaker": "Website unresolvable over standard web protocols; 100% of takeaway and catering revenue surrendered to Swiggy/Zomato commissions.",
-      "laymanAnalogy": "Relying solely on food delivery apps is like paying a 25% toll gate right outside your dining room door to greet guests who specifically came for your food.",
+      "icebreaker": "Site is fast (1.2s LCP measured Oct 02) but has no JSON-LD menu schema and blocks /llms.txt — AI assistants cannot read the menu, so orders default to Swiggy/Zomato listings.",
+      "laymanAnalogy": "Relying solely on food delivery apps is like paying a toll at your own dining room door to greet guests who came for your food.",
       "competitorEdge": "Top dining destinations capture 100% of guest table bookings and party catering inquiries directly via high-speed WhatsApp portals."
     },
     "securityAudit": {
@@ -983,25 +984,25 @@
       ],
       "callerTalkingPoint": "Because they lack an owned HTTPS domain, any competitor or aggregator can intercept patient calls with zero privacy protection."
     },
-    "revenueLeak": "₹1,00,000/mo Est. Cover Leak",
-    "revenueLeakNumeric": 100000,
+    "revenueLeak": "₹30,000/mo Est. Cover Leak",
+    "revenueLeakNumeric": 30000,
     "dpdpCompliance": {
-      "status": "🔴 Zero DPDP Guardrails",
-      "risk": "Unshielded Patient Inquiries",
-      "detail": "Aggregators and open unencrypted channels intercept patient inquiries without any data fiduciary protections."
+      "status": "No browser intake to govern",
+      "risk": "Manual phone process",
+      "detail": "Zero online forms found Oct 02: no order data is collected in the browser, so consent burden sits with manual phone handling."
     },
     "thumbZone": {
-      "status": "❌ No Sticky Action Bar",
-      "detail": "No 1-tap thumb call or WhatsApp bar at screen bottom; client must pinch-zoom or scroll to find phone number."
+      "status": "Call-bar presence unaudited",
+      "detail": "Sticky call-bar presence not verified Oct 02; 1 tap-to-call link found site-wide."
     },
     "bookingFriction": {
-      "steps": "9 Friction Steps",
-      "severity": "🔴 Maximum Friction",
-      "detail": "Patient forced through aggregator directory listings, ads, and competing clinic recommendations."
+      "steps": "Zero online forms",
+      "severity": "Phone-only ordering",
+      "detail": "No ordering form exists: every takeaway order must happen over phone, with no slot or confirmation visibility."
     },
     "reputationBridge": {
       "status": "⚠️ Reputation Disconnect",
-      "detail": "Strong Google review ratings (4.5★+) are wasted because incoming mobile visitors encounter a slow, static website with zero live booking bridge."
+      "detail": "No Google rating confirmed Oct 02; the fast 1.2s load means visitors reach the call button — reviews, if strong, can convert."
     }
   },
   {
@@ -1651,7 +1652,7 @@
     "geoScore": "15%",
     "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Unstructured DOM",
-    "smokingGun": "Aggressive crawler blocks and missing /llms.txt render the boutique invisible to conversational AI shopping assistants.",
+    "smokingGun": "AI crawler doors verified open Oct 02 (robots.txt + agents.md + llms.txt live); audit focus shifts to mobile catalog speed, not discoverability.",
     "notes": "Verified via Google Maps: Johar Tamton, Vyttila",
     "lastCallTime": "",
     "lockedBy": null,
@@ -1999,8 +2000,8 @@
     "city": "Bangalore",
     "name": "Cutis Academy of Cutaneous Sciences (Vijayanagar)",
     "dm": "Dr. B. S. Chandrashekar (Chief Dermatologist & Managing Director)",
-    "phone": "#ERROR!",
-    "tel": "+",
+    "phone": "Verified Phone: +91 80 2315 2200",
+    "tel": "+918023152200",
     "wa": "918023152200",
     "site": "https://cutis.org.in/",
     "ptype": "UPGRADE",
@@ -3081,9 +3082,9 @@
     "city": "Bangalore",
     "name": "Farmlore (Bagalur / North Bangalore)",
     "dm": "Kaushik Raju (Founder & Owner) & Chef Johnson Ebenezer (Co-Founder & Chef Patron)",
-    "phone": "#ERROR!",
-    "tel": "+",
-    "wa": "918050248469",
+    "phone": "Verified Phone: +91 96060 71400",
+    "tel": "+919606071400",
+    "wa": "919606071400",
     "site": "https://www.farmlore.in/",
     "ptype": "UPGRADE",
     "fee": "₹50,000",
@@ -3987,7 +3988,7 @@
     "dm": "Dr. Divyasree P & Dr. Lakshmi Divya, Co-Founders & Chief Dermatologists",
     "phone": "+91 91212 19123",
     "tel": "+919121219123",
-    "wa": "9121219123",
+    "wa": "919121219123",
     "site": "https://www.dermiqclinic.com/",
     "ptype": "UPGRADE",
     "fee": "₹50,000",
@@ -4075,9 +4076,9 @@
     "city": "Hyderabad",
     "name": "Oasis Fertility, Banjara Hills",
     "dm": "Dr. Durga G. Rao, Co-Founder & Medical Director / Kiran Gadela, Co-Founder & Managing Director",
-    "phone": "#ERROR!",
-    "tel": "+",
-    "wa": "918951394359",
+    "phone": "Verified Phone: +91 79933 66671",
+    "tel": "+917993366671",
+    "wa": "917993366671",
     "site": "https://oasisindia.net/",
     "ptype": "UPGRADE",
     "fee": "₹50,000",
@@ -5352,7 +5353,7 @@
     "geoScore": "15%",
     "llmsStatus": "Present (/llms.txt live, verified Oct 02)",
     "schemaStatus": "Unstructured DOM",
-    "smokingGun": "Missing /llms.txt and lack of 1-tap WhatsApp consultation funnel cause high friction for competitive exam student enrollment.",
+    "smokingGun": "AI files verified in place Oct 02 (llms.txt live, sitemap indexed); walkthrough to verify whether intake friction (not discoverability) blocks enrollment.",
     "notes": "Verified director mobile via Google Maps: P. V. R. K. Murthy",
     "lastCallTime": "",
     "lockedBy": null,
