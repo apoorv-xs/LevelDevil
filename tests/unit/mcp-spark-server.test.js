@@ -1,13 +1,22 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import http from 'http';
 import path from 'path';
+import fs from 'fs';
+import os from 'os';
 
 describe('SprintDial Cloud MCP Server for Gemini Spark', () => {
   let serverModule;
   let testPort = 3199;
   let runningServer;
+  let tempOverridesPath = null;
 
   beforeAll(async () => {
+    // Isolate pipeline writes: the mutating tool calls below must never touch
+    // the production workspace/pipeline_overrides.json. Set before import so
+    // the module picks up the temp path at evaluation time.
+    tempOverridesPath = path.join(fs.realpathSync(os.tmpdir()), `pipeline_overrides_test_${process.pid}.json`);
+    try { if (fs.existsSync(tempOverridesPath)) fs.unlinkSync(tempOverridesPath); } catch (e) {}
+    process.env.PIPELINE_OVERRIDES_FILE = tempOverridesPath;
     serverModule = await import(path.resolve(__dirname, '../../mcp_spark_server.cjs'));
     await new Promise((resolve) => {
       runningServer = serverModule.server.listen(testPort, () => {
@@ -20,6 +29,8 @@ describe('SprintDial Cloud MCP Server for Gemini Spark', () => {
     if (runningServer) {
       await new Promise(resolve => runningServer.close(resolve));
     }
+    try { if (tempOverridesPath && fs.existsSync(tempOverridesPath)) fs.unlinkSync(tempOverridesPath); } catch (e) {}
+    delete process.env.PIPELINE_OVERRIDES_FILE;
   });
 
   it('1. getAllProspects loads base prospects from workspace/prospects_data.js', () => {

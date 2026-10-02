@@ -27,7 +27,9 @@ try {
 const PORT = process.env.PORT || 3099;
 const CUSTOM_LEADS_FILE = path.join(__dirname, 'workspace', 'custom_prospects.json');
 const PROSPECTS_DATA_FILE = path.join(__dirname, 'workspace', 'prospects_data.js');
-const PIPELINE_OVERRIDES_FILE = path.join(__dirname, 'workspace', 'pipeline_overrides.json');
+// Test isolation: unit tests point this at a temp file so suite runs never
+// pollute the production pipeline notebook with fixture writes.
+const PIPELINE_OVERRIDES_FILE = process.env.PIPELINE_OVERRIDES_FILE || path.join(__dirname, 'workspace', 'pipeline_overrides.json');
 
 // Active SSE client sessions: sessionId -> response object
 const sseSessions = new Map();
