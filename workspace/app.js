@@ -1374,8 +1374,12 @@ function getTeardownUrl(p) {
   const schema = p.schemaStatus || "";
   // Hydration wording only from measured payload evidence in the record — never asserted blind.
   const payloadEvidence = [p.techStack, (p.flaws || []).join(' ')].join(' ');
+  const techShort = String(p.techStack || '');
+  const techClipped = techShort.length > 60
+    ? (techShort.slice(0, 60).lastIndexOf(' ') > 0 ? techShort.slice(0, techShort.slice(0, 60).lastIndexOf(' ')) : techShort.slice(0, 60)) + '…'
+    : techShort;
   const hydration = /MB|requests|scripts|payload/i.test(payloadEvidence)
-    ? `Heavy measured payload strains crawler hydration budgets (${String(p.techStack || '').slice(0, 90)})`
+    ? `Heavy measured payload strains crawler hydration budgets (${techClipped})`
     : "";
 
   // Top-card commission uses the funnel model at simulator defaults so the card
@@ -1386,6 +1390,7 @@ function getTeardownUrl(p) {
   // no lead has a confirmed aggregator cut, so no record claims a higher default.
   const params = new URLSearchParams({
     prospect: p.name || "",
+    lid: p.id || "",
     dm: (p.dm || "").split("(")[0].trim(),
     site: (p.site && p.site !== '#') ? p.site : "",
     lcp: lcp,

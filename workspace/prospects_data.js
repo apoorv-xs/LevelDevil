@@ -15,7 +15,7 @@
     "ptype": "UPGRADE",
     "fee": "₹50,000",
     "cat": "clinic",
-    "speedScore": "5/100 (Mobile, measured Oct 02)",
+    "speedScore": "5 (Mobile estimate from 16s LCP)",
     "lcpTime": "LCP: 16s typical (9-28s, 3 runs)",
     "techStack": "WordPress (generator tag declares bogus 7.1.2; Booking Calendar + Contact Form 7, 77 scripts, 9.5MB payload)",
     "status": "available",
@@ -52,7 +52,7 @@
       "Measured LCP 16s typical, 28s worst cold-start (Moto G 4G, Oct 02, 3 runs)",
       "122 requests, 9.5MB payload, 9 failed requests (404s + dead DNS host)"
     ],
-    "wastedSpend": "₹42,000/yr in bookings at risk (Practo-listed rivals + plugin overhead)",
+    "wastedSpend": "₹40,000/mo funnel exposure (funnel model, 10% cut)",
     "wastedBreakdown": [
       "₹28,000/yr exposure to Practo-listed rival bookings",
       "₹8,500/yr hosting & plugin overhead (est.)",

@@ -177,10 +177,15 @@
             localStorage.removeItem("apoorv_custom_rails_v3");
         } catch (e) {}
 
-        // Toggle Button in bottom-right corner (omitted on /workspace/ to eliminate UI collision & clutter)
+        // Toggle Button in bottom-right corner (omitted on /workspace/ to eliminate UI collision & clutter,
+        // and on client dossier views (?prospect=) so the dev tool never leaks onto shared teardown links)
         if (typeof window !== "undefined" && window.location && window.location.pathname.includes("/workspace/")) {
             return;
         }
+        try {
+            const _q = new URLSearchParams(window.location.search);
+            if (_q.get("prospect") || _q.get("client") || _q.get("teardown")) return;
+        } catch (e) {}
 
         const toggleBtn = document.createElement("button");
         toggleBtn.id = "collision-editor-toggle-btn";

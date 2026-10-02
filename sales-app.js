@@ -882,11 +882,19 @@ function resolveTrojanRecord(key, list) {
     || null;
 }
 
+function truncateWords(s, n) {
+  const str = String(s || "");
+  if (str.length <= n) return str;
+  const cut = str.slice(0, n);
+  const lastSpace = cut.lastIndexOf(" ");
+  return (lastSpace > 0 ? cut.slice(0, lastSpace) : cut) + "…";
+}
+
 function deriveTrojanFromRecord(p) {
   const isNoSite = !p.site || p.site === "#" || p.ptype === "STARTER";
   const payloadEvidence = [p.techStack, ((p.flaws || []).join(' '))].join(' ');
   const hydration = /MB|requests|scripts|payload/i.test(payloadEvidence)
-    ? `Heavy measured payload strains crawler hydration budgets (${String(p.techStack || '').slice(0, 90)})`
+    ? truncateWords("Heavy measured payload strains crawler hydration budgets (" + String(p.techStack || '').slice(0, 60) + ")", 140)
     : "";
   return {
     prospect: p.name || "",
@@ -916,6 +924,7 @@ async function initTrojanPitchFromUrl() {
     const has = (k) => { const v = params.get(k); return v !== null && v !== ""; };
     const data = {
       prospect: prospect,
+      lid: params.get("lid") || "",
       dm: params.get("dm") || "",
       lcp: params.get("lcp") || "N/A",
       speed: params.get("speed") || "N/A",
@@ -1026,8 +1035,9 @@ function mountTrojanTeardown(data) {
   if (geoSchemaEl) geoSchemaEl.textContent = data.schema || "N/A (pending audit)";
   if (geoHydrationEl) geoHydrationEl.textContent = data.hydration || "N/A (crawler behavior unmeasured)";
 
+  const lidCode = String(data.lid || "").toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 16);
   const cleanProspectCode = (data.prospect || "CLIENT").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12);
-  if (dossierIdEl) dossierIdEl.textContent = `AUDIT-${cleanProspectCode || "STUDIO"}`;
+  if (dossierIdEl) dossierIdEl.textContent = lidCode ? `AUDIT-${lidCode}` : `AUDIT-${cleanProspectCode || "STUDIO"}`;
   
   const savedPartner = (() => {
     try { return localStorage.getItem("apoorv_partner_id"); } catch (e) { return ""; }
@@ -1039,6 +1049,13 @@ function mountTrojanTeardown(data) {
   if (partnerCard) {
     if (data.prospect) partnerCard.classList.add("hidden");
     else partnerCard.classList.remove("hidden");
+  }
+  // Workspace nav leads to the private pipeline: hide it on client dossier views.
+  // Owner keeps direct URL access; this only removes the visible entry point.
+  const workspaceNavLink = document.getElementById("nav-workspace-link");
+  if (workspaceNavLink) {
+    if (data.prospect) workspaceNavLink.style.display = "none";
+    else workspaceNavLink.style.display = "";
   }
 
   section.classList.remove("hidden");

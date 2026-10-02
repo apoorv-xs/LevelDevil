@@ -128,7 +128,7 @@ describe('Subsystem 5: Client Radar Workspace & Outreach Cockpit (Expanded Matri
     it('verifies wasted spend analysis and annual breakdown for every prospect', () => {
       prospectsData.forEach((p) => {
         expect(p.wastedSpend).toBeDefined();
-        expect(p.wastedSpend).toMatch(/₹[\d,]+\/yr/);
+        expect(p.wastedSpend).toMatch(/₹[\d,]+\/(yr|mo)/);
         expect(Array.isArray(p.wastedBreakdown)).toBe(true);
         expect(p.wastedBreakdown.length).toBeGreaterThanOrEqual(2);
       });

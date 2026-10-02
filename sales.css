@@ -586,10 +586,31 @@ pre {
 
 .metric-label {
   color: #4b5563;
+  flex: 0 0 200px;
 }
 
 .metric-val {
   font-weight: 700;
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  .metric-label {
+    flex: 1 1 auto;
+  }
+}
+
+/* Dossier mode: teardown cards always paint above the companion canvas
+   so the droid can never cover client-facing numbers. */
+body.dossier-mode #three-canvas,
+body.dossier-mode #game-container {
+  z-index: 0;
+}
+
+body.dossier-mode .trojan-simulator-card,
+body.dossier-mode .trojan-grid {
+  position: relative;
+  z-index: 1;
 }
 
 .val-bad {
