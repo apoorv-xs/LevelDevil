@@ -832,33 +832,130 @@ window.addEventListener("keydown", (e) => {
 // ==========================================================================
 // TROJAN 3D PERFORMANCE TEARDOWN (INTERACTIVE URL AUDIT)
 // ==========================================================================
-function initTrojanPitchFromUrl() {
+// TROJAN 3D PERFORMANCE TEARDOWN (INTERACTIVE URL AUDIT)
+let _trojanDatasetPromise = null;
+function loadTrojanDatasets() {
+  if (typeof window === "undefined" || !window.document) return Promise.resolve([]);
+  if (_trojanDatasetPromise) return _trojanDatasetPromise;
+  _trojanDatasetPromise = new Promise((resolve) => {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      try {
+        const base = (Array.isArray(window.PROSPECTS) && window.PROSPECTS.length)
+          ? window.PROSPECTS
+          : (window.DEFAULT_PROSPECTS || []);
+        const custom = Array.isArray(window.CUSTOM_PROSPECTS) ? window.CUSTOM_PROSPECTS : [];
+        const seen = new Set();
+        const merged = [];
+        base.concat(custom).forEach((p) => {
+          if (p && p.id && !seen.has(p.id)) { seen.add(p.id); merged.push(p); }
+        });
+        resolve(merged);
+      } catch (e) { resolve([]); }
+    };
+    try {
+      const files = ["/workspace/prospects_data.js", "/workspace/custom_prospects.js"];
+      let pending = files.length;
+      const tick = () => { pending -= 1; if (pending <= 0) finish(); };
+      files.forEach((src) => {
+        const s = window.document.createElement("script");
+        s.src = src;
+        s.async = true;
+        s.onload = tick;
+        s.onerror = tick;
+        window.document.head.appendChild(s);
+      });
+      setTimeout(finish, 3500);
+    } catch (e) { finish(); }
+  });
+  return _trojanDatasetPromise;
+}
+
+function resolveTrojanRecord(key, list) {
+  if (!key || !Array.isArray(list) || !list.length) return null;
+  const k = String(key).trim().toLowerCase();
+  return list.find((p) => String(p.id || "").toLowerCase() === k)
+    || list.find((p) => String(p.name || "").toLowerCase() === k)
+    || list.find((p) => k.length > 3 && String(p.name || "").toLowerCase().indexOf(k) !== -1)
+    || null;
+}
+
+function deriveTrojanFromRecord(p) {
+  const isNoSite = !p.site || p.site === "#" || p.ptype === "STARTER";
+  return {
+    prospect: p.name || "",
+    dm: (p.dm || "").split("(")[0].trim(),
+    site: (!p.site || p.site === "#") ? "" : p.site,
+    lcp: isNoSite ? "No Owned Site" : String(p.lcpTime || "4.5s").replace("LCP: ", "").trim(),
+    speed: isNoSite ? "0" : String(p.speedScore || 35).replace("/100", "").trim(),
+    leak: p.revenueLeak || "₹11,80,000/mo",
+    bleed: p.wastedSpend || "₹1,42,000/yr",
+    fee: p.fee || "₹1,50,000",
+    geo: p.geoScore || (isNoSite ? "0% (Unindexed)" : "22% (Missing llms.txt)"),
+    llms: p.llmsStatus || (isNoSite ? "UNINDEXED DOMAIN" : "MISSING (/llms.txt 404)"),
+    smokingGun: p.smokingGun || ((p.flaws && p.flaws[0]) || ""),
+    cat: p.cat || ""
+  };
+}
+
+async function initTrojanPitchFromUrl() {
   if (typeof window === "undefined" || !window.location) return;
   try {
     const params = new URLSearchParams(window.location.search);
     const prospect = params.get("prospect") || params.get("client") || params.get("target") || params.get("proposal") || params.get("teardown");
     if (!prospect) return;
 
-    const dm = params.get("dm") || "";
-    const lcp = params.get("lcp") || "4.4s";
-    const speed = params.get("speed") || "35";
-    const leak = params.get("leak") || "₹1,80,000/mo";
-    const bleed = params.get("bleed") || "₹42,000/yr";
-    const site = params.get("site") || "";
-    const fee = params.get("fee") || "₹50,000";
-    const geo = params.get("geo") || "22% (Missing llms.txt)";
-    const llms = params.get("llms") || "MISSING (/llms.txt 404)";
-    const smokingGun = params.get("smokingGun") || params.get("gun") || "";
-    const partner = params.get("partner") || params.get("ref") || "";
-    const isProposalFastTrack = Boolean(params.get("proposal"));
+    const has = (k) => { const v = params.get(k); return v !== null && v !== ""; };
+    const data = {
+      prospect: prospect,
+      dm: params.get("dm") || "",
+      lcp: params.get("lcp") || "4.4s",
+      speed: params.get("speed") || "35",
+      leak: params.get("leak") || "₹1,80,000/mo",
+      bleed: params.get("bleed") || "₹42,000/yr",
+      site: params.get("site") || "",
+      fee: params.get("fee") || "₹50,000",
+      geo: params.get("geo") || "22% (Missing llms.txt)",
+      llms: params.get("llms") || "MISSING (/llms.txt 404)",
+      smokingGun: params.get("smokingGun") || params.get("gun") || "",
+      cat: params.get("cat") || "",
+      partner: params.get("partner") || params.get("ref") || "",
+      isProposalFastTrack: Boolean(params.get("proposal"))
+    };
 
+    // Dynamic record resolution: explicit URL params always win; anything missing
+    // is backfilled from the live workspace dataset so shared ?prospect=<id> links
+    // render real per-lead numbers instead of generic fallbacks.
+    let rec = null;
+    try {
+      rec = resolveTrojanRecord(prospect, await loadTrojanDatasets());
+    } catch (e) { rec = null; }
+    if (rec) {
+      const d = deriveTrojanFromRecord(rec);
+      if (/^(p-\d+|sdl-|gemini-)/i.test(String(prospect).trim())) data.prospect = d.prospect;
+      if (!has("dm")) data.dm = d.dm;
+      if (!has("site")) data.site = d.site;
+      if (!has("lcp")) data.lcp = d.lcp;
+      if (!has("speed")) data.speed = d.speed;
+      if (!has("leak")) data.leak = d.leak;
+      if (!has("bleed")) data.bleed = d.bleed;
+      if (!has("fee")) data.fee = d.fee;
+      if (!has("geo")) data.geo = d.geo;
+      if (!has("llms")) data.llms = d.llms;
+      if (!has("cat")) data.cat = d.cat;
+      if (!data.smokingGun) data.smokingGun = d.smokingGun;
+    }
+
+    const partner = data.partner;
     if (partner) {
       try {
         localStorage.setItem("apoorv_partner_id", partner);
       } catch (e) {}
     }
 
-    mountTrojanTeardown({ prospect, dm, lcp, speed, leak, bleed, site, fee, geo, llms, smokingGun, partner, isProposalFastTrack });
+    mountTrojanTeardown(data);
   } catch (err) {
     console.warn("[Trojan] URL parameter parsing failed:", err);
   }

@@ -1,0 +1,21 @@
+// One-shot: refresh p-4 scripts/wa/cheatsheet to measured Oct-02 truth. Scoped to p-4 only.
+const fs = require('fs');
+const path = require('path');
+const F = path.join(__dirname, '..', 'workspace', 'prospects_data.js');
+let t = fs.readFileSync(F, 'utf8');
+const start = t.indexOf('"id": "p-4"');
+if (start === -1) throw new Error('p-4 not found');
+let end = t.indexOf('"id": "p-5"', start);
+if (end === -1) end = t.length;
+let rec = t.slice(start, end);
+const before = rec;
+rec = rec.split('Timeout (>10s)').join('10.8s (measured Oct 02)');
+rec = rec.split('takes 10.8s (measured Oct 02) (measured Oct 02)').join('takes 10.8s (measured Oct 02)');
+const newGun = 'Measured 10.8s mobile load (Moto G, Oct 02): 125 requests, 10.3MB payload, 38 scripts, 61 images; /llms.txt and /robots.txt both 404.';
+rec = rec.split('Unresponsive server connection blocks inbound patient inquiries; missing /llms.txt leaves practice invisible to conversational AI search.').join(newGun);
+const newAnalogy = 'Her homepage weighs 10.3MB across 125 requests and takes 10.8 seconds to show content on mobile\u2014like making every patient wait outside the clinic door for eleven seconds before it opens.';
+rec = rec.split('Having no owned website is like renting clinic space inside a competitor\'s waiting room-every patient who walks in is pitched other doctors right at your doorstep.').join(newAnalogy);
+if (rec === before) throw new Error('no replacements made');
+t = t.slice(0, start) + rec + t.slice(end);
+fs.writeFileSync(F, t, 'utf8');
+console.log('p-4 truth refresh applied');

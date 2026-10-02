@@ -289,23 +289,23 @@
     "ptype": "UPGRADE",
     "fee": "₹50,000",
     "cat": "clinic",
-    "speedScore": "0/100 (Unresponsive)",
-    "lcpTime": "Timeout (>10s)",
-    "techStack": "Unreachable / Host Connection Failure",
+    "speedScore": "10/100 (Mobile, measured Oct 02)",
+    "lcpTime": "LCP: 10.8s (measured Oct 02, Moto G 4G)",
+    "techStack": "Custom (38 scripts, 61 images, 10.3MB payload)",
     "status": "available",
-    "geoScore": "0%",
+    "geoScore": "5% (no llms.txt/robots.txt, 10.8s LCP measured)",
     "llmsStatus": "Unindexed Domain",
     "schemaStatus": "Unstructured DOM",
-    "smokingGun": "Unresponsive server connection blocks inbound patient inquiries; missing /llms.txt leaves practice invisible to conversational AI search.",
+    "smokingGun": "Measured 10.8s mobile load (Moto G, Oct 02): 125 requests, 10.3MB payload, 38 scripts, 61 images; /llms.txt and /robots.txt both 404.",
     "notes": "Verified via Google Maps: Owns clouddental.in",
     "lastCallTime": "2026-10-02 10:24 AM",
     "lockedBy": null,
     "lockedEmail": null,
     "scripts": {
       "speed": {
-        "en": "Good morning, calling on Apoorv's behalf for Dr. Megha Rajesh (Founder & Chief Dental Surgeon). Apoorv audited Dr Megha's Cloud Dental Care's mobile web presence and noted that mobile loading takes Timeout (>10s), causing high-intent prospective clients to drop off before booking. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) to secure direct bookings. Would Dr. Megha Rajesh have 10 minutes for a brief discovery screen share with Apoorv this Thursday?",
-        "ml": "നമസ്കാരം, ഇത് Dr Megha's Cloud Dental Care അല്ലേ? ഞാൻ അപൂർവിൻ വേണ്ടിയാണ് വിളിക്കുന്നത് (calling on Apoorv's behalf). Dr. Megha Rajesh (Founder & Chief Dental Surgeon)-നോട് സംസാരിക്കാൻ സാധിക്കുമോ? നിങ്ങളുടെ വെബ്സൈഞ്ടെ മൊബൈർ സ്പീഡും (Timeout (>10s)) ഡയറക്ട് ബുക്കിംഗും വർധിപ്പിക്കാൻ അപൂർവ് തയ്യാറാക്കിയ എക്സിക്യൂട്ടിവ് പെർഫോർമൻസ് ഓഡിട്ട് ഷെയർ ചെയ്യാന്. അപൂർവുമാണി സംസാരിക്കാൻ ഈ വ്യാഴാഴ്ച 10 മിനിറ്ട് സമയം തരാമോ?",
-        "manglish": "Namaskaram, ithu Dr Megha's Cloud Dental Care alle? Njan Apoorv-nu vendiyanu vilikkunnathu. Dr. Megha Rajesh (Founder & Chief Dental Surgeon)-nodu oru minute samsarikkan sadhikkumo? Ningalude website mobile loading Timeout (>10s) edukkunnathinaal drop-off undavunnu. Direct bookings maximize cheyyaan Apoorv thayyaraakkiya technical audit share cheyyaam. 10 minute samayam tharaamo?"
+        "en": "Good morning, calling on Apoorv's behalf for Dr. Megha Rajesh (Founder & Chief Dental Surgeon). Apoorv audited Dr Megha's Cloud Dental Care's mobile web presence and noted that mobile loading takes 10.8s (measured Oct 02), causing high-intent prospective clients to drop off before booking. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) to secure direct bookings. Would Dr. Megha Rajesh have 10 minutes for a brief discovery screen share with Apoorv this Thursday?",
+        "ml": "നമസ്കാരം, ഇത് Dr Megha's Cloud Dental Care അല്ലേ? ഞാൻ അപൂർവിൻ വേണ്ടിയാണ് വിളിക്കുന്നത് (calling on Apoorv's behalf). Dr. Megha Rajesh (Founder & Chief Dental Surgeon)-നോട് സംസാരിക്കാൻ സാധിക്കുമോ? നിങ്ങളുടെ വെബ്സൈഞ്ടെ മൊബൈർ സ്പീഡും (10.8s (measured Oct 02)) ഡയറക്ട് ബുക്കിംഗും വർധിപ്പിക്കാൻ അപൂർവ് തയ്യാറാക്കിയ എക്സിക്യൂട്ടിവ് പെർഫോർമൻസ് ഓഡിട്ട് ഷെയർ ചെയ്യാന്. അപൂർവുമാണി സംസാരിക്കാൻ ഈ വ്യാഴാഴ്ച 10 മിനിറ്ട് സമയം തരാമോ?",
+        "manglish": "Namaskaram, ithu Dr Megha's Cloud Dental Care alle? Njan Apoorv-nu vendiyanu vilikkunnathu. Dr. Megha Rajesh (Founder & Chief Dental Surgeon)-nodu oru minute samsarikkan sadhikkumo? Ningalude website mobile loading 10.8s (measured Oct 02) edukkunnathinaal drop-off undavunnu. Direct bookings maximize cheyyaan Apoorv thayyaraakkiya technical audit share cheyyaam. 10 minute samayam tharaamo?"
       },
       "commission": {
         "en": "Good morning, calling on Apoorv's behalf for Dr. Megha Rajesh (Founder & Chief Dental Surgeon). Premier establishments in Kochi are currently surrendering 15% to 25% of client revenue to aggregators because their own direct website lacks an instant, friction-free booking engine. Apoorv builds high-conversion direct portals that eliminate middleman commission bleed. Would Dr. Megha Rajesh be open to a 10-minute strategy call with Apoorv this week?",
@@ -319,10 +319,11 @@
       },
       "gatekeeper": "Good morning, I’m calling on Apoorv's behalf for Dr. Megha Rajesh (Founder & Chief Dental Surgeon) regarding mobile booking drop-offs and the 2026 AI search audit for Dr Megha's Cloud Dental Care. Is Dr. Megha Rajesh currently between consultations or should I reach their personal desk?"
     },
-    "waMessage": "Hi Dr. Megha Rajesh, following up on our call on Apoorv's behalf regarding Dr Megha's Cloud Dental Care. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (Timeout (>10s)). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
+    "waMessage": "Hi Dr. Megha Rajesh, following up on our call on Apoorv's behalf regarding Dr Megha's Cloud Dental Care. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (10.8s (measured Oct 02)). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
     "flaws": [
-      "Server connection failure / unreachable host",
-      "prospective patients encountering connection errors."
+      "Measured LCP 10.8s on Moto G 4G (125 requests, 10.3MB payload, Oct 02)",
+      "38 render-blocking scripts plus 61 images with zero payload discipline",
+      "/llms.txt 404 and /robots.txt 404 — invisible to AI search crawlers"
     ],
     "wastedSpend": "₹48,000/yr on Practo listings & commission bleed",
     "wastedBreakdown": [
@@ -331,7 +332,7 @@
       "₹5,500/yr SMS OTP & unverified receptionist callback costs"
     ],
     "callerCheatSheet": {
-      "icebreaker": "Unresponsive server connection blocks inbound patient inquiries; missing /llms.txt leaves practice invisible to conversational AI search.",
+      "icebreaker": "Measured 10.8s mobile load (Moto G, Oct 02): 125 requests, 10.3MB payload, 38 scripts, 61 images; /llms.txt and /robots.txt both 404.",
       "laymanAnalogy": "Having no owned website is like renting clinic space inside a competitor’s waiting room—every patient who walks in is pitched other doctors right at your doorstep.",
       "competitorEdge": "Top clinics in your city use zero-commission WhatsApp direct portals to retain 100% of patient relationships."
     },

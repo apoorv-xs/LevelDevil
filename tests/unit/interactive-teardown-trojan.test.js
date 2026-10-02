@@ -101,6 +101,14 @@ describe('Interactive 3D Deal Teardown & Trojan Pitch Engine', () => {
       expect(salesAppJs).toContain('initTrojanPitchFromUrl()');
     });
 
+    it('resolves thin ?prospect links against the live dataset instead of generic fallbacks', () => {
+      expect(salesAppJs).toContain('function loadTrojanDatasets');
+      expect(salesAppJs).toContain('function resolveTrojanRecord');
+      expect(salesAppJs).toContain('function deriveTrojanFromRecord');
+      expect(salesAppJs).toContain('/workspace/prospects_data.js');
+      expect(salesAppJs).toContain('/workspace/custom_prospects.js');
+    });
+
     it('exports Trojan methods to global window scope for inline event accessibility', () => {
       expect(salesAppJs).toContain('window.initTrojanPitchFromUrl = initTrojanPitchFromUrl;');
       expect(salesAppJs).toContain('window.mountTrojanTeardown = mountTrojanTeardown;');
