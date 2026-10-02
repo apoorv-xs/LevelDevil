@@ -440,28 +440,28 @@
         <div class="simulator-sliders-grid">
           <div class="slider-control">
             <div class="slider-label-row">
-              <label for="sim-visitors" class="font-mono text-xs">Monthly Inbound Footfall / Visitors:</label>
+              <label for="sim-visitors" class="font-mono text-xs">Monthly Footfall:</label>
               <span id="sim-visitors-val" class="font-mono font-bold text-xs">3,000 / mo</span>
             </div>
             <input type="range" id="sim-visitors" min="500" max="25000" step="500" value="3000" oninput="calculateRevenueRecovery()" class="retro-slider">
           </div>
           <div class="slider-control">
             <div class="slider-label-row">
-              <label for="sim-aov" class="font-mono text-xs">Average Order / Booking Value:</label>
+              <label for="sim-aov" class="font-mono text-xs">Avg Booking Value:</label>
               <span id="sim-aov-val" class="font-mono font-bold text-xs">₹2,500</span>
             </div>
             <input type="range" id="sim-aov" min="500" max="15000" step="250" value="2500" oninput="calculateRevenueRecovery()" class="retro-slider">
           </div>
           <div class="slider-control">
             <div class="slider-label-row">
-              <label for="sim-commission" class="font-mono text-xs">Aggregator Commission Cut:</label>
+              <label for="sim-commission" class="font-mono text-xs">Commission Cut:</label>
               <span id="sim-commission-val" class="font-mono font-bold text-xs">20%</span>
             </div>
             <input type="range" id="sim-commission" min="0" max="30" step="1" value="20" oninput="calculateRevenueRecovery()" class="retro-slider">
           </div>
         </div>
         <div class="simulator-assumptions font-mono">
-          Illustrative model: 5% booking rate on your footfall. Adjust all three sliders to her real numbers — defaults are starting points, not her data.
+          Illustrative model: 5% booking rate on your footfall. Adjust all three sliders to their real numbers — defaults are starting points, not their data.
         </div>
         <div class="simulator-results-row">
           <div class="sim-result-box sim-result-bad">
@@ -472,7 +472,7 @@
           <div class="sim-result-box sim-result-good">
             <span class="sim-metric-lbl font-mono">RECOVERED DIRECT EARNINGS:</span>
             <span id="sim-recovered-val" class="sim-metric-num text-good font-mono">₹1,50,000 / mo</span>
-            <span class="sim-metric-sub font-mono">100% owned directly by your brand</span>
+            <span class="sim-metric-sub font-mono">100% owned by your brand (if fully captured)</span>
           </div>
           <div class="sim-result-box sim-result-highlight">
             <span class="sim-metric-lbl font-mono">EST. SPRINT PAYBACK PERIOD:</span>

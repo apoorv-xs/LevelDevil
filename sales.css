@@ -737,6 +737,19 @@ pre {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
+}
+
+.slider-label-row span[id$="-val"] {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.simulator-assumptions {
+  font-size: 11px;
+  line-height: 1.6;
+  opacity: 0.75;
+  margin: 4px 0 14px;
 }
 
 .retro-slider {
