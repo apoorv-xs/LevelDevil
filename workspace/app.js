@@ -1358,6 +1358,27 @@ function setCallWorkflowState(s) {
 // ==========================================================================
 // CLIENT TEARDOWN & TROJAN 3D PITCH CONTROLLER
 // ==========================================================================
+// Bridge: the teardown controller below calls these engine names, which live
+// namespaced on WorkspaceQueueEngine. These aliases adapt the single-record
+// signature to the engines' argument lists; unknown inputs yield {} (N/A path).
+function gradeProspectData(p) {
+  try {
+    const fn = (typeof window !== "undefined" && window.WorkspaceQueueEngine?.deriveAdvancedGrading)
+      || (typeof global !== "undefined" && global.WorkspaceQueueEngine?.deriveAdvancedGrading)
+      || (typeof deriveAdvancedGrading === "function" ? deriveAdvancedGrading : null);
+    if (typeof fn !== "function" || !p) return {};
+    return fn(p.cat, p.techStack, p.lcpTime, p.site) || {};
+  } catch (e) { return {}; }
+}
+function calculateAggregatorWaste(p) {
+  try {
+    const fn = (typeof window !== "undefined" && window.WorkspaceQueueEngine?.deriveWastedSubscriptions)
+      || (typeof global !== "undefined" && global.WorkspaceQueueEngine?.deriveWastedSubscriptions)
+      || (typeof deriveWastedSubscriptions === "function" ? deriveWastedSubscriptions : null);
+    if (typeof fn !== "function" || !p) return {};
+    return fn(p.cat, p.techStack, p.lcpTime, p.city, p.site) || {};
+  } catch (e) { return {}; }
+}
 function getTeardownUrl(p) {
   if (!p) return "";
   const isNoSite = !p.site || p.site === '#' || p.ptype === 'STARTER';
@@ -1374,12 +1395,8 @@ function getTeardownUrl(p) {
   const schema = p.schemaStatus || "";
   // Hydration wording only from measured payload evidence in the record — never asserted blind.
   const payloadEvidence = [p.techStack, (p.flaws || []).join(' ')].join(' ');
-  const techShort = String(p.techStack || '');
-  const techClipped = techShort.length > 60
-    ? (techShort.slice(0, 60).lastIndexOf(' ') > 0 ? techShort.slice(0, techShort.slice(0, 60).lastIndexOf(' ')) : techShort.slice(0, 60)) + '…'
-    : techShort;
   const hydration = /MB|requests|scripts|payload/i.test(payloadEvidence)
-    ? `Heavy measured payload strains crawler hydration budgets (${techClipped})`
+    ? "Heavy measured payload strains crawler hydration budgets"
     : "";
 
   // Top-card commission uses the funnel model at simulator defaults so the card

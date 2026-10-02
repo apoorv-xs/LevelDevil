@@ -882,19 +882,11 @@ function resolveTrojanRecord(key, list) {
     || null;
 }
 
-function truncateWords(s, n) {
-  const str = String(s || "");
-  if (str.length <= n) return str;
-  const cut = str.slice(0, n);
-  const lastSpace = cut.lastIndexOf(" ");
-  return (lastSpace > 0 ? cut.slice(0, lastSpace) : cut) + "…";
-}
-
 function deriveTrojanFromRecord(p) {
   const isNoSite = !p.site || p.site === "#" || p.ptype === "STARTER";
   const payloadEvidence = [p.techStack, ((p.flaws || []).join(' '))].join(' ');
   const hydration = /MB|requests|scripts|payload/i.test(payloadEvidence)
-    ? truncateWords("Heavy measured payload strains crawler hydration budgets (" + String(p.techStack || '').slice(0, 60) + ")", 140)
+    ? "Heavy measured payload strains crawler hydration budgets"
     : "";
   return {
     prospect: p.name || "",
@@ -1032,8 +1024,15 @@ function mountTrojanTeardown(data) {
 
   const geoSchemaEl = document.getElementById("trojan-geo-schema");
   const geoHydrationEl = document.getElementById("trojan-geo-hydration");
+  const geoLlmsSubEl = document.getElementById("trojan-geo-llms-sub");
   if (geoSchemaEl) geoSchemaEl.textContent = data.schema || "N/A (pending audit)";
   if (geoHydrationEl) geoHydrationEl.textContent = data.hydration || "N/A (crawler behavior unmeasured)";
+  if (geoLlmsSubEl) {
+    const llmsLive = /present|live/i.test(data.llms || "");
+    geoLlmsSubEl.textContent = llmsLive
+      ? "Context manifest present — verify it covers pricing, booking endpoints, and contact details."
+      : "AI models burn excessive tokens or hallucinate outdated services and pricing.";
+  }
 
   const lidCode = String(data.lid || "").toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 16);
   const cleanProspectCode = (data.prospect || "CLIENT").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12);

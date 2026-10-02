@@ -170,7 +170,7 @@
       "gatekeeper": "Good morning, I’m calling on Apoorv's behalf for Clinical Director (facecodentalclinic@gmail.com) regarding mobile booking drop-offs and the 2026 AI search audit for Faceco Dental Clinic & Skin Care Clinic. Is Clinical Director currently between consultations or should I reach their personal desk?"
     },
     "waMessage": "Hi Clinical Director, following up on our call on Apoorv's behalf regarding Faceco Dental Clinic & Skin Care Clinic. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (8.4s cold (0.9s warm)). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
-    "wastedSpend": "₹55,000/yr at risk to aggregator directories",
+    "wastedSpend": "₹40,000/mo funnel exposure (funnel model, 10% cut)",
     "wastedBreakdown": [
       "₹35,000/yr third-party aggregator listings",
       "₹12,000/yr maintenance & slow hosting",

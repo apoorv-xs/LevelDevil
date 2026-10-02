@@ -131,6 +131,11 @@ describe('Interactive 3D Deal Teardown & Trojan Pitch Engine', () => {
       expect(salesAppJs).not.toContain('|| "CORE-STUDIO"');
     });
 
+    it('adapts the llms box subtext to measured llms presence', () => {
+      expect(salesAppJs).toContain('trojan-geo-llms-sub');
+      expect(salesAppJs).toContain('Context manifest present');
+    });
+
     it('exports Trojan methods to global window scope for inline event accessibility', () => {
       expect(salesAppJs).toContain('window.initTrojanPitchFromUrl = initTrojanPitchFromUrl;');
       expect(salesAppJs).toContain('window.mountTrojanTeardown = mountTrojanTeardown;');

@@ -1,13 +1,13 @@
 const portfolioScripts = [
-  "sfx_synth.js?v=1022",
-  "sky_engine.js?v=1022",
-  "kaboom.js?v=1022",
-  "system1_brain.js?v=1022",
-  "three_engine.js?v=1022",
-  "player_3d.js?v=1022",
-  "player.js?v=1022",
-  "portfolio_engine.js?v=1022",
-  "collision_editor.js?v=1022"
+  "sfx_synth.js?v=1023",
+  "sky_engine.js?v=1023",
+  "kaboom.js?v=1023",
+  "system1_brain.js?v=1023",
+  "three_engine.js?v=1023",
+  "player_3d.js?v=1023",
+  "player.js?v=1023",
+  "portfolio_engine.js?v=1023",
+  "collision_editor.js?v=1023"
 ];
 
 function isAuditRoute(pathname = window.location.pathname) {
