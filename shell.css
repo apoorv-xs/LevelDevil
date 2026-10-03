@@ -1903,3 +1903,190 @@ html.shield-owner-exempt .forensic-watermark-overlay {
   background: #4deeea !important;
 }
 
+/* ==========================================================================
+   TACTICAL AVIONICS RETICLE CURSOR (60 FPS HARDWARE SYNCHRONIZED)
+   ========================================================================== */
+@media (hover: hover) and (pointer: fine) {
+  html.has-tactical-cursor,
+  html.has-tactical-cursor body,
+  html.has-tactical-cursor a,
+  html.has-tactical-cursor button,
+  html.has-tactical-cursor [role="button"],
+  html.has-tactical-cursor [data-trap],
+  html.has-tactical-cursor .topbar-btn,
+  html.has-tactical-cursor .cta-btn-primary,
+  html.has-tactical-cursor .cta-btn-secondary {
+    cursor: none !important;
+  }
+
+  html.has-tactical-cursor input,
+  html.has-tactical-cursor textarea {
+    cursor: text !important;
+  }
+
+  .tactical-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    z-index: 999999;
+    opacity: 0;
+    transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .tactical-cursor.visible {
+    opacity: 1;
+  }
+
+  /* Center hardware targeting dot */
+  .tactical-cursor .cursor-dot {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: 4px;
+    height: 4px;
+    background: var(--shell-accent, #fce566);
+    border: 1px solid var(--shell-ink, #17120f);
+    box-shadow: 1px 1px 0 var(--shell-ink, #17120f);
+    will-change: transform;
+    pointer-events: none;
+  }
+
+  /* Avionics Corner Brackets Reticle */
+  .tactical-cursor .cursor-reticle {
+    position: absolute;
+    top: -11px;
+    left: -11px;
+    width: 22px;
+    height: 22px;
+    will-change: transform;
+    transition: width 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+                height 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+                top 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+                left 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+    filter: drop-shadow(2px 2px 0 var(--shell-ink, #17120f));
+    pointer-events: none;
+  }
+
+  .tactical-cursor .reticle-bracket {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-color: var(--shell-ink, #17120f);
+    border-style: solid;
+    transition: border-color 0.15s ease;
+  }
+
+  .tactical-cursor .reticle-bracket.tl {
+    top: 0;
+    left: 0;
+    border-width: 2px 0 0 2px;
+  }
+
+  .tactical-cursor .reticle-bracket.tr {
+    top: 0;
+    right: 0;
+    border-width: 2px 2px 0 0;
+  }
+
+  .tactical-cursor .reticle-bracket.bl {
+    bottom: 0;
+    left: 0;
+    border-width: 0 0 2px 2px;
+  }
+
+  .tactical-cursor .reticle-bracket.br {
+    bottom: 0;
+    right: 0;
+    border-width: 0 2px 2px 0;
+  }
+
+  /* Avionics Telemetry Micro-Badge */
+  .tactical-cursor .cursor-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    will-change: transform;
+    pointer-events: none;
+  }
+
+  .tactical-cursor .badge-text {
+    display: inline-block;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 6px;
+    line-height: 1;
+    color: var(--shell-ink, #17120f);
+    background: var(--shell-paper, #fff4c9);
+    border: 1px solid var(--shell-ink, #17120f);
+    box-shadow: 1px 1px 0 var(--shell-ink, #17120f);
+    padding: 2px 4px;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  /* --- HOVER TARGET LOCK STATE --- */
+  .tactical-cursor.hovering .cursor-reticle {
+    top: -15px;
+    left: -15px;
+    width: 30px;
+    height: 30px;
+    filter: drop-shadow(2px 2px 0 var(--shell-purple, #6d3bb8));
+  }
+
+  .tactical-cursor.hovering .reticle-bracket {
+    border-color: var(--shell-purple, #6d3bb8);
+  }
+
+  .tactical-cursor.hovering .badge-text {
+    background: var(--shell-accent, #fce566);
+    box-shadow: 2px 2px 0 var(--shell-purple, #6d3bb8);
+    font-weight: bold;
+  }
+
+  /* --- LOCK-ON HIGH-PRIORITY CTA STATE --- */
+  .tactical-cursor.lock-mode .cursor-reticle {
+    top: -17px;
+    left: -17px;
+    width: 34px;
+    height: 34px;
+    filter: drop-shadow(2px 2px 0 #eb5e28);
+  }
+
+  .tactical-cursor.lock-mode .reticle-bracket {
+    border-color: #eb5e28;
+  }
+
+  .tactical-cursor.lock-mode .badge-text {
+    background: #eb5e28;
+    color: #fffdf1;
+    box-shadow: 2px 2px 0 var(--shell-ink, #17120f);
+  }
+
+  /* --- INPUT / TEXTAREA FOCUS STATE --- */
+  .tactical-cursor.input-mode .cursor-reticle {
+    top: -10px;
+    left: -5px;
+    width: 10px;
+    height: 20px;
+  }
+
+  .tactical-cursor.input-mode .cursor-dot {
+    display: none;
+  }
+
+  /* --- CLICK MECHANICAL RECOIL STATE --- */
+  .tactical-cursor.clicking .cursor-reticle {
+    transform: scale(0.68) !important;
+    filter: drop-shadow(1px 1px 0 var(--shell-ink, #17120f));
+  }
+
+  .tactical-cursor.clicking .cursor-dot {
+    background: #eb5e28;
+    transform: scale(1.6);
+  }
+}
+
+

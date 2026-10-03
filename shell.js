@@ -1,4 +1,5 @@
 const portfolioScripts = [
+  "cursor.js?v=1024",
   "sfx_synth.js?v=1023",
   "sky_engine.js?v=1023",
   "kaboom.js?v=1023",
