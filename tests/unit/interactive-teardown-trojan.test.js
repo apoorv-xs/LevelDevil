@@ -117,6 +117,11 @@ describe('Interactive 3D Deal Teardown & Trojan Pitch Engine', () => {
       expect(salesAppJs).toContain('sim-fee-sub');
     });
 
+    it('falls back to record id for refs and computes leak from measured LCP', () => {
+      expect(salesAppJs).toContain('leakFromLcp');
+      expect(salesAppJs).toContain('if (!data.lid) data.lid = rec.id');
+    });
+
     it('renders schema and hydration boxes dynamically with N/A fallbacks', () => {
       expect(salesAppJs).toContain('trojan-geo-schema');
       expect(salesAppJs).toContain('trojan-geo-hydration');

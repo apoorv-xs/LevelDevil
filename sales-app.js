@@ -882,6 +882,16 @@ function resolveTrojanRecord(key, list) {
     || null;
 }
 
+function leakFromLcp(p) {
+  const cat = String(p.cat || "").toLowerCase();
+  const lcpNum = parseFloat(String(p.lcpTime || "").replace(/[^0-9.]/g, "")) || 0;
+  if (!lcpNum) return "";
+  const rate = cat === "clinic" ? 42000 : cat === "design" ? 65000 : cat === "restaurant" ? 22000 : cat === "salon" ? 18000 : 25000;
+  const leakNumeric = Math.round((lcpNum * rate) / 10000) * 10000;
+  const kind = cat === "design" ? "Project Leak" : cat === "restaurant" ? "Cover Leak" : cat === "salon" ? "Client Leak" : "Revenue Leak";
+  return `₹${leakNumeric.toLocaleString("en-IN")}/mo Est. ${kind}`;
+}
+
 function deriveTrojanFromRecord(p) {
   const isNoSite = !p.site || p.site === "#" || p.ptype === "STARTER";
   const payloadEvidence = [p.techStack, ((p.flaws || []).join(' '))].join(' ');
@@ -894,7 +904,7 @@ function deriveTrojanFromRecord(p) {
     site: (!p.site || p.site === "#") ? "" : p.site,
     lcp: isNoSite ? "No Owned Site" : String(p.lcpTime || "N/A").replace("LCP: ", "").trim(),
     speed: isNoSite ? "0" : String(p.speedScore != null ? p.speedScore : "N/A").replace("/100", "").trim(),
-    leak: p.revenueLeak || "N/A",
+    leak: p.revenueLeak || leakFromLcp(p) || "N/A",
     bleed: p.wastedSpend || "N/A",
     fee: p.fee || "N/A",
     geo: p.geoScore || (isNoSite ? "0% (Unindexed)" : "N/A"),
@@ -955,6 +965,7 @@ async function initTrojanPitchFromUrl() {
       if (!has("llms")) data.llms = d.llms;
       if (!has("cat")) data.cat = d.cat;
       if (!data.smokingGun) data.smokingGun = d.smokingGun;
+      if (!data.lid) data.lid = rec.id || "";
       if (!data.schema) data.schema = d.schema;
       if (!data.hydration) data.hydration = d.hydration;
     }
