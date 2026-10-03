@@ -200,7 +200,7 @@
     "ptype": "UPGRADE",
     "fee": "₹50,000",
     "status": "available",
-    "speedScore": "5/100 (Mobile, cold-load measured Oct 02)",
+    "speedScore": "5 (Mobile estimate from measured LCP)",
     "lcpTime": "LCP: 13.5s cold, 1.8s warm (2 runs, Moto G)",
     "techStack": "Custom theme, LiteSpeed server (no WP markers; 87 requests, 11.8MB payload)",
     "flaws": [
@@ -233,7 +233,7 @@
       "gatekeeper": "Good morning, I’m calling on Apoorv's behalf for Dr. Harish B (Founder & Medical Director, B.D.S, F.A.M, F.H.T, MBA-HM) regarding mobile booking drop-offs and the 2026 AI search audit for Livglam Aesthetic Clinic. Is Dr. Harish B currently between consultations or should I reach their personal desk?"
     },
     "waMessage": "Hi Dr. Harish B, following up on our call on Apoorv's behalf regarding Livglam Aesthetic Clinic. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (13.5s cold (1.8s warm)). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
-    "wastedSpend": "₹55,000/yr at risk to aggregator directories",
+    "wastedSpend": "₹40,000/mo funnel exposure (funnel model, 10% cut)",
     "wastedBreakdown": [
       "₹35,000/yr third-party aggregator listings",
       "₹12,000/yr maintenance & slow hosting",
