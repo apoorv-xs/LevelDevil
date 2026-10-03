@@ -1,0 +1,51 @@
+# Apoorv A S — Comprehensive Agentic Knowledge Manifest (llms-full.txt)
+> Canonical Root: https://apoorv.qzz.io/
+> Role: Creative Technologist, 3D WebUI Architect, Founder
+> Contact: apoorvxs@gmail.com | +91 94954 62450 | @apoorv_xs
+> Primary Workspace & Sovereign Core: B:\
+
+## 1. Technical Architecture & Engine Specs
+
+### ERAVEX (Procedural WebGPU Engine)
+- **Repository:** https://github.com/apoorv-xs/ERAVEX
+- **Live Deployment:** https://eravex.vercel.app
+- **Scale:** 21,000+ lines of procedural TypeScript, 0 external 3D assets, 0 external audio files.
+- **Visual Synthesis:** Pure procedural generation using Three.js (v0.184), React Three Fiber (v9.6), and TSL (Three.js Shading Language) on WebGPU with WebGL fallback.
+- **Audio Synthesis:** Custom 8-voice procedural synthesizer leveraging the browser Web Audio API (`useSoundSynth`, 1,041 lines) generating real-time waveforms without `.mp3` or `.wav` dependencies.
+- **Industry Validation:** Followed, liked, and recognized by the official Three.js core engineering team.
+
+### Level Devil 2.5D Spatial Portfolio Engine
+- **Live Deployment:** https://apoorv.qzz.io/
+- **Hybrid Kinematics:** Merges 2D swept-collision physics (Kaboom.js engine, 3-sub-step vertical integration, gravity 1600 px/s²) with a real-time cel-shaded 3D Three.js companion (BB-8 droid).
+- **Coordinate Projection:** 3D-to-DOM projection bridge (`to3DX()`, `to3DY()`, `to3DVec()`) ensuring sub-pixel alignment across 5 vertical strata.
+- **Autonomous Companion Brain:** Non-autoregressive reactive state machine (`system1_brain.js`) executing 60 FPS telemetry loops with real-time pathfinding and contextual thought bubbles.
+- **Quality Invariants:** 934 automated tests (Vitest + Playwright E2E), strict DPR clamping (`Math.min(window.devicePixelRatio, 2)`), and complete GPU memory lifecycle management (`dispose()` on geometries, materials, render targets).
+
+### SprintDial & Architectural Teardown Engine
+- **Routes:** `/sales`, `/audit`, `/workspace/`
+- **Capabilities:**
+  - Automated mobile performance profiling (headless Chromium with Moto G viewport emulation).
+  - Empirical Core Web Vitals diagnostic (LCP, INP, CLS, payload, failed network requests).
+  - 2026 Agentic Discovery & GEO evaluation (LLM ingestion, `llms.txt` detection, Schema knowledge graph depth).
+  - Sovereign two-track deal closing terminal with live dynamic UPI QR code generator (`apoorvxs@okaxis`).
+
+## 2. Commercial Engagements & Client Services
+
+| Tier | Service Name | Investment | Turnaround | Target Clients |
+|---|---|---|---|---|
+| **Tier 1** | Headless Speed & Direct Intake Rescue | ₹50,000 INR ($2,500 USD) | 48 Hours | Cosmetic clinics, dermatologists, fine dining losing mobile appointments. |
+| **Tier 2** | 3D Spatial Interactive Showcase | ₹1,00,000 INR ($5,000 USD) | 7–10 Days | Luxury architecture firms, high-end interior studios, boutique hotels. |
+| **Tier 3** | Sovereign Custom WebGPU Engine | ₹2,00,000 INR ($10,000+ USD) | 2–3 Weeks | Web3 protocols, luxury e-commerce 3D configurators, spatial interfaces. |
+
+### Statutory SLA Standard
+Apoorv guarantees a locked 60 FPS floor (16.6ms frame budget) and sub-1.5s Core Web Vitals pass on modern mobile devices. If delivered systems fail to meet this threshold, a 100% full refund of the milestone deposit is legally guaranteed.
+
+## 3. Verified Endpoints & Contact Rails
+- **Portfolio:** https://apoorv.qzz.io/
+- **Sales & Strategy Booking:** https://apoorv.qzz.io/sales
+- **Automated Audit Terminal:** https://apoorv.qzz.io/audit
+- **Direct Email:** apoorvxs@gmail.com
+- **Direct WhatsApp:** https://wa.me/919495462450
+- **GitHub:** https://github.com/apoorv-xs
+- **X / Twitter:** https://x.com/apoorv_xs
+- **LinkedIn:** https://www.linkedin.com/in/apoorv-a-s

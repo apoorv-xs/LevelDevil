@@ -1,0 +1,54 @@
+# Apoorv A S — Creative Technologist & 3D WebUI Architect
+> Canonical URL: https://apoorv.qzz.io/
+> Primary Specialization: Locked 60 FPS WebGL, Three.js, WebGPU, GLSL Shaders, 2.5D Spatial Interfaces, and Core Web Vitals Performance Optimization.
+> Email: apoorvxs@gmail.com
+> GitHub: https://github.com/apoorv-xs
+> X / Twitter: https://x.com/apoorv_xs
+> LinkedIn: https://www.linkedin.com/in/apoorv-a-s
+
+## 1. Professional Overview & Standing
+Apoorv A S is an independent Creative Technologist and 3D WebUI Architect specializing in high-performance browser computing, procedural mathematics, and sub-second web performance. 
+
+Key proprietary systems and verified proof of work:
+- **ERAVEX (Flagship WebGPU Engine):** Solo-built narrative 3D spatial computing engine featuring 21,000+ lines of procedural TypeScript, TSL (Three.js Shading Language) math loops, zero external 3D models/textures, and an 8-voice procedural Web Audio synthesizer. Featured, liked, and recognized by the core Three.js team. Repository: https://github.com/apoorv-xs/ERAVEX | Live: https://eravex.vercel.app
+- **Level Devil 2.5D Spatial Portfolio Engine:** Arcade 2D platformer kinematics (Kaboom.js) merged with a real-time cel-shaded 3D Three.js companion (BB-8 droid) across a 5-strata sky-to-ground vertical descent. Backed by 934 automated unit and Playwright E2E tests, guaranteed locked 60 FPS, and DPR-clamped mobile rendering. Live: https://apoorv.qzz.io/
+- **SprintDial / Client Radar:** High-ticket performance diagnostic and automated revenue recovery terminal for luxury hospitality, medical aesthetics, and spatial commerce. Live: https://apoorv.qzz.io/sales
+
+## 2. Core Service Offerings & Pricing Architecture
+
+### Tier 1: 48-Hour Headless Speed & Intake Rescue
+- **Fee:** ₹50,000 INR (~$2,500 USD) | 50% upfront deposit via UPI / Bank Wire (₹25,000)
+- **Turnaround:** 48 Hours
+- **Deliverables:**
+  - Sub-1.0s mobile paint (LCP reduction from 5s+ to <1.5s on mobile cellular)
+  - Critical JavaScript deferral and headless asset compression (WebP/AVIF, Draco)
+  - 1-tap direct WhatsApp consultation and VIP booking dock
+  - Statutory DPDP Act 2023 / GDPR patient & client data compliance shield
+  - Statutory 60 FPS performance floor SLA
+
+### Tier 2: Interactive 3D Spatial Showcase & WebUI
+- **Fee:** ₹1,00,000 INR (~$5,000 USD) | 50% upfront deposit (₹50,000)
+- **Turnaround:** 7–10 Days
+- **Deliverables:**
+  - All Tier 1 performance and speed optimizations
+  - Bespoke Three.js / React Three Fiber (R3F) interactive 3D spatial showcase
+  - Real-time procedural lighting, camera lerps, and custom GLSL fragment shaders
+  - Mobile 60 FPS guarantee with strict DPR clamping and zero GPU memory leaks
+
+### Tier 3: Sovereign Custom WebGPU Engine
+- **Fee:** ₹2,00,000 INR (~$10,000+ USD) | 50% upfront deposit (₹1,00,000)
+- **Turnaround:** 2–3 Weeks
+- **Deliverables:**
+  - Proprietary WebGPU compute pipelines and TSL procedural shaders
+  - Real-time 3D product configurator or narrative spatial environment
+  - Multi-channel direct intake, headless infrastructure, and dedicated SLA handover
+
+## 3. Statutory Performance Guarantee (SLA)
+"If any delivered site or 3D system fails to achieve a locked 60 FPS floor (16.6ms budget) or pass Core Web Vitals on modern mobile cellular devices, Apoorv guarantees a 100% full refund of the milestone deposit."
+
+## 4. Key Machine Action Endpoints
+- **Direct Consultation / SOW Booking:** https://apoorv.qzz.io/sales
+- **Automated Performance Audit Terminal:** https://apoorv.qzz.io/audit
+- **Direct WhatsApp:** https://wa.me/919495462450
+- **Direct Email:** apoorvxs@gmail.com
+- **Sovereign UPI Payment VPA:** apoorvxs@okaxis

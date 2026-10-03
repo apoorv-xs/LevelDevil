@@ -5,4 +5,29 @@ Disallow: /api/
 Disallow: /api/*
 Allow: /
 
+# 2026 AI Agent & LLM Ingestion Directives (Open for AI Mode, GEO & Answer Engines)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+# Sitemaps & Agentic Manifests
 Sitemap: https://apoorv.qzz.io/sitemap.xml
+# LLM Manifest: https://apoorv.qzz.io/llms.txt
+# Full LLM Context: https://apoorv.qzz.io/llms-full.txt
