@@ -129,6 +129,20 @@
     <link rel="stylesheet" href="shell.css">
     <link rel="stylesheet" href="sales.css">
     <style>
+        /* --- ELIMINATE CLUNKY SYSTEM WINDOW SCROLLBAR --- */
+        html,
+        body {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+
         body:not(.sales-page) {
             background: transparent !important;
         }

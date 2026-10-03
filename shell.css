@@ -8,6 +8,20 @@
   --shell-header-h: 54px;
 }
 
+/* --- ELIMINATE CLUNKY SYSTEM WINDOW SCROLLBAR (PRESERVES NATIVE SCROLL) --- */
+html,
+body {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
 /* --- UNIVERSAL HIGH-CONTRAST FOCUS ACCESSIBILITY --- */
 :focus-visible {
   outline: 3px solid var(--shell-purple, #6d3bb8) !important;
