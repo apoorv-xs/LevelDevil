@@ -6,8 +6,7 @@ const portfolioScripts = [
   "three_engine.js?v=1023",
   "player_3d.js?v=1023",
   "player.js?v=1023",
-  "portfolio_engine.js?v=1023",
-  "collision_editor.js?v=1023"
+  "portfolio_engine.js?v=1023"
 ];
 
 function isAuditRoute(pathname = window.location.pathname) {
@@ -290,13 +289,7 @@ async function loadPortfolio() {
         : portfolioScripts.filter(s => !s.includes("sky_engine"));
 
     for (const script of scriptsToLoad) {
-      if (script.includes("collision_editor")) {
-        await loadScript(resolveScriptPath(script)).catch((err) => {
-          console.warn(`Optional module failed to load: ${script}`, err);
-        });
-      } else {
-        await loadScript(resolveScriptPath(script));
-      }
+      await loadScript(resolveScriptPath(script));
     }
     window.SFX?.initUI?.();
     window.showUIButtons?.();
