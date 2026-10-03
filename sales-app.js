@@ -1030,6 +1030,10 @@ function mountTrojanTeardown(data) {
   }
   const smokingGunCard = document.getElementById("trojan-smoking-gun-card");
   const smokingGunTextEl = document.getElementById("trojan-smoking-gun-text");
+  const geoSchemaEl = document.getElementById("trojan-geo-schema");
+  const geoHydrationEl = document.getElementById("trojan-geo-hydration");
+  const geoLlmsSubEl = document.getElementById("trojan-geo-llms-sub");
+  const remediationEl = document.getElementById("trojan-remediation-text");
 
   if (clientNameEl) clientNameEl.textContent = data.prospect;
   if (entityNameEl) entityNameEl.textContent = data.prospect;
@@ -1060,10 +1064,6 @@ function mountTrojanTeardown(data) {
     }
   }
 
-  const geoSchemaEl = document.getElementById("trojan-geo-schema");
-  const geoHydrationEl = document.getElementById("trojan-geo-hydration");
-  const geoLlmsSubEl = document.getElementById("trojan-geo-llms-sub");
-  const remediationEl = document.getElementById("trojan-remediation-text");
   const setStateColor = (el, positive) => {
     if (!el) return;
     el.classList.remove("text-bad", "text-good");
@@ -1093,8 +1093,13 @@ function mountTrojanTeardown(data) {
   // Partner-network upsell is an internal surface: hide it on lead-attached dossier views.
   const partnerCard = document.getElementById("trojan-partner-card");
   if (partnerCard) {
-    if (data.prospect) partnerCard.classList.add("hidden");
-    else partnerCard.classList.remove("hidden");
+    if (data.prospect) {
+      partnerCard.classList.add("hidden");
+      partnerCard.style.display = "none";
+    } else {
+      partnerCard.classList.remove("hidden");
+      partnerCard.style.display = "";
+    }
   }
   // Workspace nav leads to the private pipeline: hide it on client dossier views.
   // Owner keeps direct URL access; this only removes the visible entry point.

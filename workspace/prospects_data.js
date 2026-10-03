@@ -293,7 +293,7 @@
     "cat": "clinic",
     "speedScore": "30/100 (Mobile, from 4.8s LCP)",
     "lcpTime": "LCP: 4.8s typical (10.8s cold-start)",
-    "techStack": "WordPress 6.9.9 (110+ requests, up to 10MB payload, 61 images)",
+    "techStack": "WordPress (generator tag unstable across crawls: bogus 7.1.2, then 6.9.9; 110+ requests, up to 10MB payload, 61 images)",
     "status": "available",
     "geoScore": "5%",
     "llmsStatus": "Unindexed Domain",
@@ -473,8 +473,8 @@
     "ptype": "UPGRADE",
     "fee": "₹50,000",
     "cat": "salon",
-    "speedScore": "36/100",
-    "lcpTime": "4.2s",
+    "speedScore": "10/100 (Mobile, 2-run measured Oct 03)",
+    "lcpTime": "LCP: 12s typical (10-15s, 2 runs)",
     "techStack": "WordPress / WooCommerce",
     "status": "available",
     "geoScore": "35%",
@@ -505,6 +505,7 @@
     },
     "waMessage": "Hi A.J. Shafeeq, following up on our call on Apoorv's behalf regarding Ashtamudi Wellness. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (4.2s). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
     "flaws": [
+      "Measured LCP 12s typical across 2 runs with 21.4MB payload (Oct 03 sweep)",
       "Heavy WooCommerce retail shop bloat on salon service site",
       "unedited developer placeholder ('info@website.com' under 'Have a Project?')",
       "uncompressed banner assets."
@@ -1860,6 +1861,7 @@
     },
     "waMessage": "Hi Dr. Rasya Dixit, following up on our call on Apoorv's behalf regarding Dr. Dixit Cosmetic Dermatology Clinic (Koramangala). Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (3.2s). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
     "flaws": [
+      "Latin dummy text present in live DOM (verified Oct 03 sweep)",
       "Text duplication glitch in DOM ('Receive a Personal Call Back Receive a Personal Call Back')",
       "purely manual callback form with no real-time consultation slot reservation."
     ],
@@ -2582,6 +2584,7 @@
     },
     "waMessage": "Hi Chitra Vishwanath, following up on our call on Apoorv's behalf regarding Biome Environmental Solutions (Sanjaynagar). Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (2.8s). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
     "flaws": [
+      "Unrendered template shortcode ('[filter_...') in live DOM (verified Oct 03 sweep)",
       "Unrendered template code ('[filter_section1]') leaking into DOM",
       "duplicate 'default-logo' and 'Site Logo' placeholders."
     ],
@@ -2908,8 +2911,8 @@
     "ptype": "UPGRADE",
     "fee": "₹50,000",
     "cat": "clinic",
-    "speedScore": "51/100",
-    "lcpTime": "3.3s",
+    "speedScore": "25/100 (Mobile, 2-run measured Oct 03)",
+    "lcpTime": "LCP: 6.5s typical (2 runs)",
     "techStack": "Custom PHP (Non-HTTPS)",
     "status": "available",
     "geoScore": "20%",
@@ -2940,6 +2943,7 @@
     },
     "waMessage": "Hi Dr. Issac Mathai, following up on our call on Apoorv's behalf regarding Soukya International Holistic Health Centre (Whitefield). Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (3.3s). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
     "flaws": [
+      "Measured LCP 6.5s on both runs with 8.5MB payload (Oct 03 sweep)",
       "Insecure HTTP URL",
       "4 failed video embeds showing 'Your browser does not support HTML video'",
       "manual form inquiries with no online reservation."
@@ -3937,6 +3941,7 @@
     },
     "waMessage": "Hi Dr. Raj Kirit E. P., Founder & Medical Director, following up on our call on Apoorv's behalf regarding Celestee Skin Laser and Hair Clinic. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (3.7s). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
     "flaws": [
+      "'Our Qoutes' typo live on site (verified Oct 03 sweep)",
       "Visible typos in headers and navigation ('Our Qoutes', 'RF Skinn Tightening', 'Jawline Conturing', 'Tatoo Removal')",
       "raw banner text ('Banner Banner Banner Banner Next Next') in hero DOM."
     ],
@@ -4027,6 +4032,7 @@
     },
     "waMessage": "Hi Dr. Divyasree P & Dr. Lakshmi Divya, Co-Founders & Chief Dermatologists, following up on our call on Apoorv's behalf regarding Dermiq Skin and Hair Clinic. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (3.9s). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
     "flaws": [
+      "Latin dummy text present in live DOM (verified Oct 03 sweep)",
       "Critical counter failure showing '0.0 / 5 Rating', '0+ Happy Patients', '0+ Procedures', '0+ Years' on live site",
       "3 failed video tags ('Your browser does not support the video tag')."
     ],
@@ -4754,6 +4760,7 @@
     },
     "waMessage": "Hi Anushree Reddy, Founder & Creative Director, following up on our call on Apoorv's behalf regarding Anushree Reddy Flagship Boutique. Apoorv prepared an executive mobile performance teardown (normally our ₹4,999 audit, shared complimentary) showing key conversion bottlenecks (3.9s). Would Thursday 4 PM suit you for a brief 10-minute walkthrough?",
     "flaws": [
+      "'APPOINMENT' typo live on site (verified Oct 03 sweep)",
       "Typo in primary CTA button ('BOOK AN APPOINMENT')",
       "massive DOM bloat with 200-country currency list repeated 4 times in page source."
     ],
