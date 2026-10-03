@@ -1385,7 +1385,7 @@ function getTeardownUrl(p) {
   const advGrading = (typeof gradeProspectData === 'function') ? gradeProspectData(p) : {};
   const wasteIntel = (typeof calculateAggregatorWaste === 'function') ? calculateAggregatorWaste(p) : {};
   const lcp = isNoSite ? "No Owned Site" : (p.lcpTime || "N/A").replace("LCP: ", "").trim();
-  const speed = isNoSite ? "0" : String(p.speedScore != null ? p.speedScore : "N/A").replace("/100", "").trim();
+  const speed = isNoSite ? "0" : String(p.speedScore != null ? p.speedScore : "N/A").trim();
   const leak = p.revenueLeak || advGrading.revenueLeak || "N/A";
   const bleed = p.wastedSpend || wasteIntel.wastedSpend || "N/A";
   const fee = (typeof calculateUpgradeFee === 'function') ? calculateUpgradeFee(p.techStack, p.lcpTime, p.flaws, p.cat) : (p.fee || "N/A");
@@ -1443,8 +1443,8 @@ function openClientTeardownModal() {
   const lcpText = isNoSite
     ? 'Zero Owned Domain (Aggregator Bleed)'
     : (lcpRaw ? `${lcpRaw} (Poor LCP)` : 'N/A');
-  const speedRaw = isNoSite ? "" : String(p.speedScore != null ? p.speedScore : '').replace('/100', '').trim();
-  const speedText = isNoSite ? '0 / 100' : (speedRaw ? `${speedRaw} / 100` : 'N/A');
+  const speedRaw = isNoSite ? "" : String(p.speedScore != null ? p.speedScore : '').trim();
+  const speedText = isNoSite ? '0 / 100' : (speedRaw ? (/\/ ?100/.test(speedRaw) ? speedRaw : `${speedRaw} / 100`) : 'N/A');
   const leakText = p.revenueLeak || advGrading.revenueLeak || 'N/A';
   const bleedText = p.wastedSpend || wasteIntel.wastedSpend || 'N/A';
 

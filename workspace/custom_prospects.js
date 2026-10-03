@@ -201,7 +201,7 @@
     "fee": "₹50,000",
     "status": "available",
     "speedScore": "5 (Mobile estimate from measured LCP)",
-    "lcpTime": "LCP: 13.5s cold, 1.8s warm (2 runs, Moto G)",
+    "lcpTime": "LCP: 13.5s cold, 1.8s warm",
     "techStack": "Custom theme, LiteSpeed server (no WP markers; 87 requests, 11.8MB payload)",
     "flaws": [
       "Broken counter stats displaying blank numbers ('+ Procedures', '+ Years', '% success rate')",

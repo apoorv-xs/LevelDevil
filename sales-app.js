@@ -903,7 +903,7 @@ function deriveTrojanFromRecord(p) {
     dm: (p.dm || "").split("(")[0].trim(),
     site: (!p.site || p.site === "#") ? "" : p.site,
     lcp: isNoSite ? "No Owned Site" : String(p.lcpTime || "N/A").replace("LCP: ", "").trim(),
-    speed: isNoSite ? "0" : String(p.speedScore != null ? p.speedScore : "N/A").replace("/100", "").trim(),
+    speed: isNoSite ? "0" : String(p.speedScore != null ? p.speedScore : "N/A").trim(),
     leak: p.revenueLeak || leakFromLcp(p) || "N/A",
     bleed: p.wastedSpend || "N/A",
     fee: p.fee || "N/A",
@@ -1049,7 +1049,7 @@ function mountTrojanTeardown(data) {
   if (clientNameEl) clientNameEl.textContent = data.prospect;
   if (entityNameEl) entityNameEl.textContent = data.prospect;
   if (lcpEl) lcpEl.textContent = (data.lcp && data.lcp !== "N/A") ? `${data.lcp} (Poor LCP)` : "N/A";
-  if (speedEl) speedEl.textContent = (data.speed && data.speed !== "N/A") ? `${data.speed} / 100` : "N/A";
+  if (speedEl) speedEl.textContent = (data.speed && data.speed !== "N/A") ? (/\/ ?100/.test(data.speed) ? data.speed : `${data.speed} / 100`) : "N/A";
   if (leakEl) leakEl.textContent = data.leak || "N/A";
   if (bleedEl) bleedEl.textContent = data.bleed || "N/A";
   if (geoEl) geoEl.textContent = data.geo || "N/A";
