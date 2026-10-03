@@ -502,26 +502,6 @@
                 ctx.stroke();
             }
 
-            // Tactical Avionics Readout Card (Right bottom margin)
-            ctx.fillStyle = "rgba(255, 253, 241, 0.85)";
-            ctx.strokeStyle = "#17120f";
-            ctx.lineWidth = 2;
-            const cardW = 140;
-            const cardH = 80;
-            const cardX = w - cardW - 36;
-            const cardY = h - cardH - 45;
-
-            ctx.fillRect(cardX, cardY, cardW, cardH);
-            ctx.strokeRect(cardX, cardY, cardW, cardH);
-
-            ctx.fillStyle = "#17120f";
-            ctx.font = "7px 'Press Start 2P', monospace";
-            ctx.fillText("AIRSPACE HUD", cardX + 10, cardY + 16);
-            ctx.fillText(`ALT : ${curAlt} FT`, cardX + 10, cardY + 32);
-            ctx.fillText(`VSI : -1200 FPM`, cardX + 10, cardY + 46);
-            ctx.fillText(`WND : 24 KT 270°`, cardX + 10, cardY + 60);
-            ctx.fillText(`AIR : 60.0 FPS`, cardX + 10, cardY + 74);
-
             ctx.restore();
         },
 
